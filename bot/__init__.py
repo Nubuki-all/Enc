@@ -87,7 +87,23 @@ except Exception as e:
 
 
 def enmoji():
-    emoji = ("🤓", "😎", "🤠", "🌚", "🛰️", "❤️", "📡", "🥺", "🌝", "☺️", "😊", "😑", "🥸", "😵‍💫", "✅")
+    emoji = (
+        "🤓",
+        "😎",
+        "🤠",
+        "🌚",
+        "🛰️",
+        "❤️",
+        "📡",
+        "🥺",
+        "🌝",
+        "☺️",
+        "😊",
+        "😑",
+        "🥸",
+        "😵‍💫",
+        "✅",
+    )
     y = random.choice(emoji)
     return y
 
@@ -97,6 +113,8 @@ async def startup():
         for i in OWNER.split():
             await bot.send_message(int(i), f"**I'm Up! {enmoji()}**")
         if LOG_CHANNEL:
-            await bot.send_message(int(LOG_CHANNEL), f"**Bot Is Back Online! {enmoji()}**")
+            await bot.send_message(
+                int(LOG_CHANNEL), f"**Bot Is Back Online! {enmoji()}**"
+            )
     except BaseException:
         pass

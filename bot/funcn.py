@@ -187,7 +187,7 @@ async def enquoter(msg, rply):
         ers = traceback.format_exc()
         LOGS.info(ers)
 
-  
+
 async def enquotes():
     res = ""
     while not res:
@@ -204,7 +204,6 @@ async def enquotes():
         except Exception:
             pass
     return output
-
 
 
 async def progress_for_pyrogram(current, total, bot, ud_type, message, start):

@@ -476,7 +476,9 @@ async def clearqueue(event):
             try:
                 q, user = QUEUE[list(QUEUE.keys())[temp]]
                 if str(event.sender_id) not in OWNER and event.sender_id != user:
-                    return await event.reply("You didn't add this to queue so you can't remove it!")
+                    return await event.reply(
+                        "You didn't add this to queue so you can't remove it!"
+                    )
                 QUEUE.pop(list(QUEUE.keys())[temp])
                 yo = await event.reply(f"{q} has been removed from queue")
                 await save2db()
@@ -645,7 +647,7 @@ async def pencode(message):
                         await yo.delete()
                         return
             except BaseException:
-                
+
                 yo = await message.reply(f"{enmoji()}")
                 await asyncio.sleep(5)
                 return await yo.delete()
