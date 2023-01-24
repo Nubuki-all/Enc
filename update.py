@@ -11,9 +11,9 @@ except Exception:
     traceback.print_exc()
 try:
     if not UPSTREAM_REPO:
-        UPSTREAM_REPO = "https://github.com/Niffy-the-conqueror/Encode2Tg"
+        UPSTREAM_REPO = "https://github.com/Nubuki-all/Tg-coder"
     if not UPSTREAM_BRANCH:
-        UPSTREAM_BRANCH = "anime"
+        UPSTREAM_BRANCH = "main"
     if os.path.exists('.git'):
         bashrun(["rm", "-rf", ".git"])
     update = bashrun([f"git init -q \
