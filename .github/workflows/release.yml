@@ -1,0 +1,22 @@
+name: Create Archive
+
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Archive Release
+      uses: thedoctor0/zip-release@main
+      with:
+        type: 'tar'
+        filename: 'release.tar'
+        exclusions: '*.git* .github'
+    - name: Upload Release
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "release.tar"
+        token: ${{ secrets.TOKEN }}

@@ -1,0 +1,25 @@
+# Docker
+# Build a Docker image
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - anime
+
+resources:
+- repo: self
+
+variables:
+  tag: '$(Build.BuildId)'
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+- job: Work
+  steps:
+  - script: docker build . -t encode2tg && docker run --ulimit cpu=60 -e APP_ID=$(APP_ID) -e API_HASH=$(API_HASH) -e BOT_TOKEN=$(BOT_TOKEN) -e OWNER=$(OWNER) -e FCHANNEL=$(FCHANNEL) -e FCHANNEL_STAT=$(FCHANNEL_STAT) encode2tg && echo "Container ran for 10 minutes without failing" 
+    displayName: 'Building & Testing…'
+    continueOnError: true

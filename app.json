@@ -1,0 +1,51 @@
+{
+    "name": "Encode2tg",
+    "description": "A Normal Telegram Bot Which can Encode/ Generate Samples of videos.",
+    "logo": "https://telegra.ph/file/75ee20ec8d8c8bba84f02.jpg",
+    "keywords": ["Telegram","python", "Video","Compressor","Encoder"],
+    "repository": "https://github.com/Niffy-the-conqueror/Encode2Tg",
+    "success_url": "https://t.me/Ani_Mine",
+    "stack": "container",
+    "env": {
+        "APP_ID": {
+            "description": "You api id, from my.telegram.org or @apiScrapperRoBot.",
+            "value": ""
+        },
+        "API_HASH": {
+            "description": "You api hash, from my.telegram.org or @apiScrapperRoBot.",
+            "value": ""
+        },
+        "BOT_TOKEN": {
+            "description": "Make a bot from @BotFather, and enter it's api token here.",
+            "value": ""
+        },
+        "OWNER": {
+            "description": "Get ur Id Of Telegram nd Paste Here.",
+            "value": ""
+        },
+        "THUMBNAIL": {
+            "description": "Put Link of any picture.",
+            "value": "https://telegra.ph//file/6370f098231e0bc94be70.jpg",
+            "required": false
+        },
+        "DBNAME": {
+            "description": "Name Of Database Useful if sharing same database amoung multiple bots.",
+            "value": "",
+            "required": false
+        },
+        "LOG_CHANNEL": {
+            "description": "Input Log Channel Id",
+            "value": "",
+            "required": false
+        },
+        "DATABASE_URL": {
+            "description": "Mongodb Database Url",
+            "value": ""
+        },
+        "FFMPEG": {
+            "description": "Put your FFMPEG code.",
+            "value": "ffmpeg -i '''{}''' -preset ultrafast -c:v libx265 -crf 27 -map 0:v -c:a aac -map 0:a -c:s copy -map 0:s? '''{}''' -y",
+            "required": false
+        }
+    }
+}
