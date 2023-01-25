@@ -294,7 +294,17 @@ async def stateditor(x, channel, id):
 async def autostat():
     try:
         if FCHANNEL and FCHANNEL_STAT:
+            CHECK = []
             while FCHANNEL_STAT:
+                if not QUEUE and not WORKING:
+                    if not CHECK:
+                        CHECK.append(1)
+                    else:
+                        await asyncio.sleep(60)
+                        continue
+                else:
+                    if CHECK:
+                        CHECK.clear()
                 estat = await encodestat()
                 await stateditor(estat, int(FCHANNEL), int(FCHANNEL_STAT))
                 await asyncio.sleep(60)
