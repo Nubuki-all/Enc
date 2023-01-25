@@ -305,7 +305,10 @@ async def autostat():
                 else:
                     if CHECK:
                         CHECK.clear()
-                estat = await encodestat()
+                if STARTUP:
+                    estat = await encodestat()
+                else:
+                    estat = "**What's Popping 🪩**"
                 await stateditor(estat, int(FCHANNEL), int(FCHANNEL_STAT))
                 await asyncio.sleep(60)
     except Exception:
