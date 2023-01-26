@@ -478,63 +478,68 @@ async def filter(event):
 
 
 async def clearqueue(event):
-  async with bot.action(chat, 'typing'):
-    if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
-        return await event.delete()
-    temp = ""
-    try:
-        temp = event.text.split(" ", maxsplit=1)[1]
-    except Exception:
-        pass
-    if temp:
+    async with bot.action(chat, "typing"):
+        if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
+            return await event.delete()
+        temp = ""
         try:
-            temp = int(temp)
+            temp = event.text.split(" ", maxsplit=1)[1]
+        except Exception:
+            pass
+        if temp:
             try:
-                q, user = QUEUE[list(QUEUE.keys())[temp]]
-                if str(event.sender_id) not in OWNER and event.sender_id != user:
-                    return await event.reply(
-                        "You didn't add this to queue so you can't remove it!"
-                    )
-                QUEUE.pop(list(QUEUE.keys())[temp])
-                yo = await event.reply(f"{q} has been removed from queue")
-                await save2db()
+                temp = int(temp)
+                try:
+                    q, user = QUEUE[list(QUEUE.keys())[temp]]
+                    if str(event.sender_id) not in OWNER and event.sender_id != user:
+                        return await event.reply(
+                            "You didn't add this to queue so you can't remove it!"
+                        )
+                    QUEUE.pop(list(QUEUE.keys())[temp])
+                    yo = await event.reply(f"{q} has been removed from queue")
+                    await save2db()
+                except Exception:
+                    yo = await event.reply("Enter a valid queue number")
             except Exception:
-                yo = await event.reply("Enter a valid queue number")
-        except Exception:
-            yo = await event.reply("Pass a number for an item on queue to be removed")
-    else:
-        try:
-            xx = "**Cleared the following files from queue:**\n"
-            x = ""
-            xxn = 1
-            if WORKING:
-                i = 0
-            else:
-                i = 1
-            while i < len(QUEUE):
-                y, user = QUEUE[list(QUEUE.keys())[i]]
-                if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
-                    i = i + 1
-                else:
-                    QUEUE.pop(list(QUEUE.keys())[i])
-                    x += f"{xxn}. {y} \n"
-                xxn = xxn + 1
-        except Exception:
-            ers = traceback.format_exc()
-            xx = "⚠️"
-            x = " __An Error occurred check /logs for more info__"
-            LOGS.info(ers)
-        if x:
-            x = f"{xx}{x}"
+                yo = await event.reply(
+                    "Pass a number for an item on queue to be removed"
+                )
         else:
-            x = "**Nothing to clear!**"
-        yo = await event.reply(x)
-        if DATABASE_URL:
-            queue.delete_many({})
-    await asyncio.sleep(7)
-    await event.delete()
-    await yo.delete()
-    return
+            try:
+                xx = "**Cleared the following files from queue:**\n"
+                x = ""
+                xxn = 1
+                if WORKING:
+                    i = 0
+                else:
+                    i = 1
+                while i < len(QUEUE):
+                    y, user = QUEUE[list(QUEUE.keys())[i]]
+                    if (
+                        str(event.sender_id) not in OWNER
+                        and str(event.sender_id) not in TEMP_USERS
+                    ):
+                        i = i + 1
+                    else:
+                        QUEUE.pop(list(QUEUE.keys())[i])
+                        x += f"{xxn}. {y} \n"
+                    xxn = xxn + 1
+            except Exception:
+                ers = traceback.format_exc()
+                xx = "⚠️"
+                x = " __An Error occurred check /logs for more info__"
+                LOGS.info(ers)
+            if x:
+                x = f"{xx}{x}"
+            else:
+                x = "**Nothing to clear!**"
+            yo = await event.reply(x)
+            if DATABASE_URL:
+                queue.delete_many({})
+        await asyncio.sleep(7)
+        await event.delete()
+        await yo.delete()
+        return
 
 
 async def thumb(event):
