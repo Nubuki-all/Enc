@@ -535,7 +535,7 @@ async def clearqueue(event):
                 x = "**Nothing to clear!**"
             yo = await event.reply(x)
             if DATABASE_URL:
-                queue.delete_many({})
+                await save2db()
         await asyncio.sleep(7)
         await event.delete()
         await yo.delete()
@@ -912,10 +912,11 @@ async def pencode(message):
                 ],
             )
         cmd = ffmpeg.format(dl, out)
-        process = await asyncio.create_subprocess_shell(
-            cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-        )
-        stdout, stderr = await process.communicate()
+        async with client.action(message.from_user.id, 'game'):
+            process = await asyncio.create_subprocess_shell(
+                cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+            )
+            stdout, stderr = await process.communicate()
         er = stderr.decode()
         try:
             if process.returncode != 0:
