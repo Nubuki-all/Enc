@@ -514,7 +514,7 @@ async def lock(event):
             await edito(ot)
             await edito(op)
         if LOCKFILE:
-           return await event.reply(**"Bot already locked\nDo /lock off to unlock"**)
+           return await event.reply("**Bot already locked\nDo /lock off to unlock**")
     except Exception:
         await event.reply("Error Occurred")
         ers = traceback.format_exc()

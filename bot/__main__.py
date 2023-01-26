@@ -106,7 +106,7 @@ async def _(e):
 ########## Direct ###########
 
 
-@bot.on(events.NewMessage(pattern="/eval"))
+@bot.on(events.NewMessage(pattern="/^eval$"))
 async def _(e):
     await eval(e)
 
@@ -174,6 +174,11 @@ async def _(e):
 @bot.on(events.NewMessage(pattern="/queue"))
 async def _(e):
     await listqueue(e)
+
+
+@bot.on(events.NewMessage(pattern="^/lock$"))
+async def _(e):
+    await lock(e)
 
 
 @bot.on(events.NewMessage(pattern="/encodequeue"))
