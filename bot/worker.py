@@ -503,7 +503,7 @@ async def lock(event):
                     log,
                     f"[{event.sender.first_name}](tg://user?id={event.sender_id}) locked the bot for `{LOCKFILE[0]}s`",
                 )
-            countdown = LOCKFILE[0]
+            countdown = int(LOCKFILE[0])
             while countdown > 1:
                 await asyncio.sleep(1)
                 countdown - 1
@@ -520,7 +520,7 @@ async def lock(event):
 
             await edito(oo)
             await edito(ot)
-            await edito(op)
+            return await edito(op)
         if LOCKFILE:
             return await event.reply("**Bot already locked\nDo /lock off to unlock**")
     except Exception:
