@@ -261,12 +261,12 @@ async def encodestat():
         try:
             if WORKING:
                 i = 0
-                x = "**QUEUE:**\n──────\n"
+                x = "    **CURRENT ITEMS ON QUEUE:**\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
             else:
                 i = 1
                 y, yy = QUEUE[list(QUEUE.keys())[0]]
                 y = await qparse(y)
-                x = f"**STATUS:**\n\n🟢. `{y}`\n\n**QUEUE:**\n──────\n"
+                x = f"🟢. `{y}`\n\n    **CURRRENT ITEMS ON QUEUE:**\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
             while i < len(QUEUE) and i < 6:
                 y, yy = QUEUE[list(QUEUE.keys())[i]]
                 y = await qparse(y)
@@ -279,6 +279,8 @@ async def encodestat():
             y, yy = QUEUE[list(QUEUE.keys())[0]]
             y = await qparse(y)
             x = f"**Currently Encoding:** `{y}`\n\n**QUEUE:**\n──────\n`Nothing Here.`"
+        me = await app.get_users("me")
+        x += f"\n\nYours truly,\n  {enmoji()} `{me.first_name}`"
         return x
 
 
@@ -476,6 +478,7 @@ async def filter(event):
 
 
 async def clearqueue(event):
+  async with bot.action(chat, 'typing'):
     if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
         return await event.delete()
     temp = ""
@@ -501,20 +504,28 @@ async def clearqueue(event):
             yo = await event.reply("Pass a number for an item on queue to be removed")
     else:
         try:
-            if str(event.sender_id) in OWNER:
-                QUEUE.clear()
-                xx = "✅"
-                x = "**Queue cleared successfully.**"
+            xx = "**Cleared the following files from queue:**\n"
+            x = ""
+            xxn = 1
+            if WORKING:
+                i = 0
             else:
-                xx = "🚫"
-                x = "**You're not allowed to use this specify a number instead**"
+                i = 1
+            while i < len(QUEUE):
+                y, user = QUEUE[list(QUEUE.keys())[i]]
+                if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
+                    i = i + 1
+                else:
+                    QUEUE.pop(list(QUEUE.keys())[i])
+                    x += f"{xxn}. {y} \n"
+                xxn = xxn + 1
         except Exception:
             ers = traceback.format_exc()
             xx = "⚠️"
-            x = "__An Error occurred check /logs for more info__"
+            x = " __An Error occurred check /logs for more info__"
             LOGS.info(ers)
         if x:
-            x = f"{xx} {x}"
+            x = f"{xx}{x}"
         else:
             x = "**Nothing to clear!**"
         yo = await event.reply(x)
