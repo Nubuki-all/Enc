@@ -120,6 +120,7 @@ async def clean(event):
 
 
 async def upload2(bot, from_user_id, filepath, reply, thum, caption):
+  async with bot.action(from_user.id, "file"):
     await reply.edit("🔺Uploading🔺")
     u_start = time.time()
     s = await bot.send_document(
@@ -220,6 +221,7 @@ async def listqueue(event):
 
 
 async def listqueuep(event):
+  async with bot.action(event.sender_id, "typing"):
     if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
         return await event.delete()
     if not QUEUE:
@@ -912,7 +914,7 @@ async def pencode(message):
                 ],
             )
         cmd = ffmpeg.format(dl, out)
-        async with client.action(message.from_user.id, "game"):
+        async with bot.action(message.from_user.id, "game"):
             process = await asyncio.create_subprocess_shell(
                 cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
             )
