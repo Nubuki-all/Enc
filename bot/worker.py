@@ -478,7 +478,7 @@ async def filter(event):
 
 
 async def clearqueue(event):
-    async with bot.action(chat, "typing"):
+    async with bot.action(event.sender_id, "typing"):
         if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
             return await event.delete()
         temp = ""
