@@ -524,7 +524,9 @@ async def lock(event):
             await edito(oo)
             if ot:
                 await edito(ot)
-            return await edito(op)
+            if LOG_CHANNEL:
+                await edito(op)
+            return 
         if LOCKFILE:
             return await event.reply("**Bot already locked\nDo /lock off to unlock**")
     except Exception:
