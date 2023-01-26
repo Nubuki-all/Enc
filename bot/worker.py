@@ -477,18 +477,24 @@ async def lock(event):
         try:
             int(temp)
         except Exception:
-            return await event.reply("**Locking failed: Send a number instead**\n For instance:\n /lock 900 to lock for 900 seconds or /lock 0 to lock infinitely till you cancel with /lock off")
+            return await event.reply(
+                "**Locking failed: Send a number instead**\n For instance:\n /lock 900 to lock for 900 seconds or /lock 0 to lock infinitely till you cancel with /lock off"
+            )
         if not LOCKFILE:
             LOCKFILE.append(temp)
             await event.reply(f"**Locking for** `{temp}s`")
             try:
                 for i in OWNER.split():
-                    oo = await bot.send_message(int(i), f"Bot has been locked for `{LOCKFILE[0]}s`")
+                    oo = await bot.send_message(
+                        int(i), f"Bot has been locked for `{LOCKFILE[0]}s`"
+                    )
             except Exception:
                 pass
             try:
                 for i in TEMP_USERS.split():
-                    ot = await bot.send_message(int(i), f"Bot has been locked for `{LOCKFILE[0]}s`")
+                    ot = await bot.send_message(
+                        int(i), f"Bot has been locked for `{LOCKFILE[0]}s`"
+                    )
             except Exception:
                 pass
             if LOG_CHANNEL:
@@ -508,13 +514,15 @@ async def lock(event):
                 if not LOCKFILE:
                     countdown = 1
             LOCKFILE.clear()
+
             async def edito(rst):
                 await rst.edit("**Lock Ended and bot has been unlocked automatically**")
+
             await edito(oo)
             await edito(ot)
             await edito(op)
         if LOCKFILE:
-           return await event.reply("**Bot already locked\nDo /lock off to unlock**")
+            return await event.reply("**Bot already locked\nDo /lock off to unlock**")
     except Exception:
         await event.reply("Error Occurred")
         ers = traceback.format_exc()
@@ -983,11 +991,11 @@ async def pencode(message):
             )
         cmd = ffmpeg.format(dl, out)
         if ALLOW_ACTION is True:
-          async with bot.action(message.from_user.id, "game"):
-            process = await asyncio.create_subprocess_shell(
-                cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-            )
-            stdout, stderr = await process.communicate()
+            async with bot.action(message.from_user.id, "game"):
+                process = await asyncio.create_subprocess_shell(
+                    cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+                )
+                stdout, stderr = await process.communicate()
         else:
             process = await asyncio.create_subprocess_shell(
                 cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE

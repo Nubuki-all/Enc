@@ -109,7 +109,18 @@ def enmoji():
 
 
 def enquip():
-    quip = ("awake and ready to serve you, young master!", "Up!", "ready to encode from dusk till Dawn.", "ready and awaiting orders, Sir! Yes Sir!", "feeling lucky+", "(technically) a noble bot.", "the... Core of the Tsia Dungeon!", "stunned, yet not surprised, by your kind gesture.", "the eldest sister.", "the Archduke’s daughter, Maiodore in disguise.")
+    quip = (
+        "awake and ready to serve you, young master!",
+        "Up!",
+        "ready to encode from dusk till Dawn.",
+        "ready and awaiting orders, Sir! Yes Sir!",
+        "feeling lucky+",
+        "(technically) a noble bot.",
+        "the... Core of the Tsia Dungeon!",
+        "stunned, yet not surprised, by your kind gesture.",
+        "the eldest sister.",
+        "the Archduke’s daughter, Maiodore in disguise.",
+    )
     y = random.choice(quip)
     return y
 

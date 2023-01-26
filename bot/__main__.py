@@ -310,14 +310,18 @@ async def something():
                     )
                 cmd = ffmpeg.format(dl, out)
                 if ALLOW_ACTION is True:
-                  async with bot.action(user, "game"):
-                    process = await asyncio.create_subprocess_shell(
-                        cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-                    )
-                    stdout, stderr = await process.communicate()
+                    async with bot.action(user, "game"):
+                        process = await asyncio.create_subprocess_shell(
+                            cmd,
+                            stdout=asyncio.subprocess.PIPE,
+                            stderr=asyncio.subprocess.PIPE,
+                        )
+                        stdout, stderr = await process.communicate()
                 else:
                     process = await asyncio.create_subprocess_shell(
-                        cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+                        cmd,
+                        stdout=asyncio.subprocess.PIPE,
+                        stderr=asyncio.subprocess.PIPE,
                     )
                     stdout, stderr = await process.communicate()
                 er = stderr.decode()
