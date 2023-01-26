@@ -119,18 +119,18 @@ async def clean(event):
     return
 
 
-async def upload2(bot, from_user_id, filepath, reply, thum, caption):
+async def upload2(from_user_id, filepath, reply, thum, caption):
     async with bot.action(from_user.id, "file"):
         await reply.edit("🔺Uploading🔺")
         u_start = time.time()
-        s = await bot.send_document(
+        s = await app.send_document(
             document=filepath,
             chat_id=from_user_id,
             force_document=True,
             thumb=thum,
             caption=caption,
             progress=progress_for_pyrogram,
-            progress_args=(bot, "Uploading 👘", reply, u_start),
+            progress_args=(app, "Uploading 👘", reply, u_start),
         )
         return s
 
@@ -325,6 +325,7 @@ async def statuschecker():
             asyncio.create_task(autostat())
             # some other stuff to do ONLY on startup couldn't find a better way
             # even after more than 8 trials which i committed
+            await asyncio.sleep(30)
         except Exception:
             ers = traceback.format_exc()
             LOGS.info(ers)
@@ -451,6 +452,73 @@ async def vfilter(event):
         await event.reply(
             "An Error Occurred\n Filter was wrongly set check accepted  format with /filter"
         )
+
+
+async def lock(event):
+    if str(event.sender_id) not in OWNER:
+        return await event.delete()
+    try:
+        temp = ""
+        try:
+            temp = event.text.split(" ", maxsplit=1)[1]
+        except Exception:
+            pass
+        if not temp:
+            await event.reply(
+                f"`Locking Failed: send amount of time to lock in seconds`\nFor instance /lock 30\n\n**Peace**"
+            )
+            return
+        if temp.casefold() == "disable" or temp.casefold() == "off":
+            try:
+                LOCKFILE.clear()
+                return await event.reply("**Locking Cancelled**")
+            except Exception:
+                return await event.reply("**Unlocking Failed / Lock Doesn't exit**")
+        try:
+            int(temp)
+        except Exception:
+            return await event.reply("**Locking failed: Send a number instead**\n For instance:\n /lock 900 to lock for 900 seconds or /lock 0 to lock infinitely till you cancel with /lock off")
+        if not LOCKFILE:
+            LOCKFILE.append(temp)
+            await event.reply(f"**Locking for** `{temp}s`")
+            try:
+                for i in OWNER.split():
+                    oo = await bot.send_message(int(i), f"Bot has been locked for `{LOCKFILE[0]}s`")
+            except Exception:
+                pass
+            try:
+                for i in TEMP_USERS.split():
+                    ot = await bot.send_message(int(i), f"Bot has been locked for `{LOCKFILE[0]}s`")
+            except Exception:
+                pass
+            if LOG_CHANNEL:
+                log = int(LOG_CHANNEL)
+                op = await bot.send_message(
+                    log,
+                    f"[{sender.first_name}](tg://user?id={user}) locked the bot for `{LOCKFILE[0]}s`",
+                )
+            countdown = LOCKFILE[0]
+            while countdown > 1:
+                await asyncio.sleep(1)
+                countdown - 1
+                if not LOCKFILE:
+                    countdown = 1
+            while countdown == 0:
+                await asyncio.sleep(5)
+                if not LOCKFILE:
+                    countdown = 1
+            LOCKFILE.clear()
+            async def edito(rst):
+                await rst.edit("**Lock Ended and bot has been unlocked automatically**")
+            await edito(oo)
+            await edito(ot)
+            await edito(op)
+        if LOCKFILE:
+           return await event.reply(**"Bot already locked\nDo /lock off to unlock"**)
+    except Exception:
+        await event.reply("Error Occurred")
+        ers = traceback.format_exc()
+        LOGS.info(ers)
 
 
 async def filter(event):
@@ -682,7 +750,7 @@ async def pencode(message):
                 yo = await message.reply(f"{enmoji()}")
                 await asyncio.sleep(5)
                 return await yo.delete()
-        if WORKING or QUEUE:
+        if WORKING or QUEUE or LOCKFILE:
             xxx = await message.reply("`Adding To Queue`", quote=True)
             media_type = str(message.media)
             if media_type == "MessageMediaType.VIDEO":
@@ -914,7 +982,13 @@ async def pencode(message):
                 ],
             )
         cmd = ffmpeg.format(dl, out)
-        async with bot.action(message.from_user.id, "game"):
+        if ALLOW_ACTION is True:
+          async with bot.action(message.from_user.id, "game"):
+            process = await asyncio.create_subprocess_shell(
+                cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+            )
+            stdout, stderr = await process.communicate()
+        else:
             process = await asyncio.create_subprocess_shell(
                 cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
             )
@@ -958,7 +1032,7 @@ async def pencode(message):
         nnn = await xxx.edit("`▲ Uploading ▲`")
         fname = out.split("/")[1]
         pcap = await custcap(name, fname)
-        ds = await upload2(app, message.from_user.id, out, nnn, thum, pcap)
+        ds = await upload2(message.from_user.id, out, nnn, thum, pcap)
         await nnn.delete()
         if FCHANNEL:
             chat = int(FCHANNEL)

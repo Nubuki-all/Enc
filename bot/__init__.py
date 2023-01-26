@@ -108,13 +108,20 @@ def enmoji():
     return y
 
 
+def enquip():
+    quip = ("awake and ready to serve you, young master!", "Up!", "ready to encode from dusk till Dawn.", "ready and awaiting orders, Sir! Yes Sir!", "feeling lucky+", "(technically) a noble bot.", "the... Core of the Tsia Dungeon!", "stunned, yet not surprised, by your kind gesture.", "the eldest sister.", "the Archduke’s daughter, Maiodore in disguise.")
+    y = random.choice(quip)
+    return y
+
+
 async def startup():
     try:
         for i in OWNER.split():
-            await bot.send_message(int(i), f"**I'm Up! {enmoji()}**")
+            await bot.send_message(int(i), f"**I'm {enquip()} {enmoji()}**")
         if LOG_CHANNEL:
+            me = await app.get_users("me")
             await bot.send_message(
-                int(LOG_CHANNEL), f"**Bot Is Back Online! {enmoji()}**"
+                int(LOG_CHANNEL), f"**{me.first_name} is {enquip()} {enmoji()}**"
             )
     except BaseException:
         pass

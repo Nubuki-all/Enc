@@ -213,6 +213,8 @@ async def something():
     for i in itertools.count():
         await statuschecker()
         try:
+            while LOCKFILE:
+                await asyncio.sleep(2)
             if not WORKING and QUEUE:
                 # user = int(OWNER.split()[0])
                 file = list(QUEUE.keys())[0]
@@ -302,10 +304,17 @@ async def something():
                         ],
                     )
                 cmd = ffmpeg.format(dl, out)
-                process = await asyncio.create_subprocess_shell(
-                    cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-                )
-                stdout, stderr = await process.communicate()
+                if ALLOW_ACTION is True:
+                  async with bot.action(user, "game"):
+                    process = await asyncio.create_subprocess_shell(
+                        cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+                    )
+                    stdout, stderr = await process.communicate()
+                else:
+                    process = await asyncio.create_subprocess_shell(
+                        cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+                    )
+                    stdout, stderr = await process.communicate()
                 er = stderr.decode()
                 try:
                     if process.returncode != 0:
@@ -354,7 +363,7 @@ async def something():
                 nnn = await app.send_message(chat_id=e.chat_id, text=tex)
                 fname = out.split("/")[1]
                 pcap = await custcap(name, fname)
-                ds = await upload2(app, e.chat_id, out, nnn, thum, pcap)
+                ds = await upload2(e.chat_id, out, nnn, thum, pcap)
                 await nnn.delete()
                 if FCHANNEL:
                     chat = int(FCHANNEL)

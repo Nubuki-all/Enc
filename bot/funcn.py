@@ -30,6 +30,7 @@ from . import *
 from .config import *
 
 GROUPENC = []
+LOCKFILE = []
 VERSION2 = []
 EVENT2 = []
 STARTUP = []
