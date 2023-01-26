@@ -106,7 +106,7 @@ async def _(e):
 ########## Direct ###########
 
 
-@bot.on(events.NewMessage(pattern="/^eval$"))
+@bot.on(events.NewMessage(pattern="/eval"))
 async def _(e):
     await eval(e)
 
@@ -176,7 +176,7 @@ async def _(e):
     await listqueue(e)
 
 
-@bot.on(events.NewMessage(pattern="^/lock$"))
+@bot.on(events.NewMessage(pattern="/lock"))
 async def _(e):
     await lock(e)
 
@@ -354,7 +354,8 @@ async def something():
                             await wak.delete()
                         except Exception:
                             pass
-                        QUEUE.pop(list(QUEUE.keys())[0])
+                        if QUEUE:
+                            QUEUE.pop(list(QUEUE.keys())[0])
                         await save2db()
                         continue
                 except BaseException:
