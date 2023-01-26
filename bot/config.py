@@ -27,7 +27,7 @@ try:
     )
     THUMB = config("THUMBNAIL", default="")
     ICON = config("ICON", default="")
-#https://te.legra.ph/file/462b5a002f80bdf8a1ec1.png
+    # https://te.legra.ph/file/462b5a002f80bdf8a1ec1.png
     LOG_CHANNEL = config("LOG_CHANNEL", default="")
     DBNAME = config("DBNAME", default=str(BOT_TOKEN.split(":", 1)[0]))
     DATABASE_URL = config("DATABASE_URL", default="")
