@@ -120,7 +120,7 @@ async def clean(event):
 
 
 async def upload2(from_user_id, filepath, reply, thum, caption):
-    async with bot.action(from_user.id, "file"):
+    async with bot.action(from_user_id, "file"):
         await reply.edit("🔺Uploading🔺")
         u_start = time.time()
         s = await app.send_document(
@@ -481,19 +481,22 @@ async def lock(event):
                 "**Locking failed: Send a number instead**\n For instance:\n /lock 900 to lock for 900 seconds or /lock 0 to lock infinitely till you cancel with /lock off"
             )
         if not LOCKFILE:
+            ot = ""
             LOCKFILE.append(temp)
             await event.reply(f"**Locking for** `{temp}s`")
+            lock _dur = f"for `{LOCKFILE[0]}s`"
+            lock_dur = "Indefinitely" if lock_dur == "`for 0s`" else lock_dur
             try:
                 for i in OWNER.split():
                     oo = await bot.send_message(
-                        int(i), f"Bot has been locked for `{LOCKFILE[0]}s`"
+                        int(i), f"Bot has been locked {lock_dur}"
                     )
             except Exception:
                 pass
             try:
                 for i in TEMP_USERS.split():
                     ot = await bot.send_message(
-                        int(i), f"Bot has been locked for `{LOCKFILE[0]}s`"
+                        int(i), f"Bot has been locked {lock_dur}"
                     )
             except Exception:
                 pass
@@ -501,12 +504,12 @@ async def lock(event):
                 log = int(LOG_CHANNEL)
                 op = await bot.send_message(
                     log,
-                    f"[{event.sender.first_name}](tg://user?id={event.sender_id}) locked the bot for `{LOCKFILE[0]}s`",
+                    f"[{event.sender.first_name}](tg://user?id={event.sender_id}) locked the bot {lock_dur}",
                 )
             countdown = int(LOCKFILE[0])
             while countdown > 1:
                 await asyncio.sleep(1)
-                countdown - 1
+                countdown = countdown - 1
                 if not LOCKFILE:
                     countdown = 1
             while countdown == 0:
@@ -519,7 +522,8 @@ async def lock(event):
                 await rst.edit("**Lock Ended and bot has been unlocked automatically**")
 
             await edito(oo)
-            await edito(ot)
+            if ot:
+                await edito(ot)
             return await edito(op)
         if LOCKFILE:
             return await event.reply("**Bot already locked\nDo /lock off to unlock**")
