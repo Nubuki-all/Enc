@@ -912,7 +912,7 @@ async def pencode(message):
                 ],
             )
         cmd = ffmpeg.format(dl, out)
-        async with client.action(message.from_user.id, 'game'):
+        async with client.action(message.from_user.id, "game"):
             process = await asyncio.create_subprocess_shell(
                 cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
             )
