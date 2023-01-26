@@ -120,19 +120,19 @@ async def clean(event):
 
 
 async def upload2(bot, from_user_id, filepath, reply, thum, caption):
-  async with bot.action(from_user.id, "file"):
-    await reply.edit("🔺Uploading🔺")
-    u_start = time.time()
-    s = await bot.send_document(
-        document=filepath,
-        chat_id=from_user_id,
-        force_document=True,
-        thumb=thum,
-        caption=caption,
-        progress=progress_for_pyrogram,
-        progress_args=(bot, "Uploading 👘", reply, u_start),
-    )
-    return s
+    async with bot.action(from_user.id, "file"):
+        await reply.edit("🔺Uploading🔺")
+        u_start = time.time()
+        s = await bot.send_document(
+            document=filepath,
+            chat_id=from_user_id,
+            force_document=True,
+            thumb=thum,
+            caption=caption,
+            progress=progress_for_pyrogram,
+            progress_args=(bot, "Uploading 👘", reply, u_start),
+        )
+        return s
 
 
 async def update2(client, message):
@@ -221,35 +221,35 @@ async def listqueue(event):
 
 
 async def listqueuep(event):
-  async with bot.action(event.sender_id, "typing"):
-    if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
-        return await event.delete()
-    if not QUEUE:
-        yo = await event.reply("Nothing In Queue")
-        await asyncio.sleep(3)
+    async with bot.action(event.sender_id, "typing"):
+        if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
+            return await event.delete()
+        if not QUEUE:
+            yo = await event.reply("Nothing In Queue")
+            await asyncio.sleep(3)
+            await yo.delete()
+            return await event.delete()
+        try:
+            if WORKING:
+                i = 0
+            else:
+                i = 1
+            x = ""
+            while i < len(QUEUE):
+                y, yy = QUEUE[list(QUEUE.keys())[i]]
+                y = await qparse(y)
+                x += f"{i}. {y}\n"
+                i = i + 1
+            if x:
+                x += "\n**Queue based on auto-generated filename if you you want the actual queue use the command** /queue "
+            else:
+                x += "wow, such emptiness 😶"
+        except Exception:
+            x = "No Pending Item in Queue 😒"
+        yo = await event.reply(x)
+        await asyncio.sleep(10)
+        await event.delete()
         await yo.delete()
-        return await event.delete()
-    try:
-        if WORKING:
-            i = 0
-        else:
-            i = 1
-        x = ""
-        while i < len(QUEUE):
-            y, yy = QUEUE[list(QUEUE.keys())[i]]
-            y = await qparse(y)
-            x += f"{i}. {y}\n"
-            i = i + 1
-        if x:
-            x += "\n**Queue based on auto-generated filename if you you want the actual queue use the command** /queue "
-        else:
-            x += "wow, such emptiness 😶"
-    except Exception:
-        x = "No Pending Item in Queue 😒"
-    yo = await event.reply(x)
-    await asyncio.sleep(10)
-    await event.delete()
-    await yo.delete()
 
 
 async def encodestat():
