@@ -42,8 +42,10 @@ UN_FINISHED_PROGRESS_STR = "🤍"
 MAX_MESSAGE_LENGTH = 4096
 
 uptime = dt.now()
-os.system(f"wget {THUMB} -O thumb.jpg")
-os.system(f"wget {ICON} -O icon.png")
+if THUMB:
+    os.system(f"wget {THUMB} -O thumb.jpg")
+if ICON:
+    os.system(f"wget {ICON} -O icon.png")
 
 ffmpegfile = Path("ffmpeg.txt")
 if ffmpegfile.is_file():

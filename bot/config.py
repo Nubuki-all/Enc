@@ -25,10 +25,9 @@ try:
         "FFMPEG",
         default='ffmpeg -i "{}" -preset ultrafast -c:v libx265 -crf 27 -map 0:v -c:a aac -map 0:a -c:s copy -map 0:s? "{}"',
     )
-    THUMB = config(
-        "THUMBNAIL", default="https://telegra.ph/file/0213f7d29de1cc145dd49.jpg"
-    )
-    ICON = config("ICON", default="https://te.legra.ph/file/462b5a002f80bdf8a1ec1.png")
+    THUMB = config("THUMBNAIL", default="")
+    ICON = config("ICON", default="")
+#https://te.legra.ph/file/462b5a002f80bdf8a1ec1.png
     LOG_CHANNEL = config("LOG_CHANNEL", default="")
     DBNAME = config("DBNAME", default=str(BOT_TOKEN.split(":", 1)[0]))
     DATABASE_URL = config("DATABASE_URL", default="")
