@@ -501,7 +501,7 @@ async def lock(event):
                 log = int(LOG_CHANNEL)
                 op = await bot.send_message(
                     log,
-                    f"[{sender.first_name}](tg://user?id={user}) locked the bot for `{LOCKFILE[0]}s`",
+                    f"[{event.sender.first_name}](tg://user?id={event.sender_id}) locked the bot for `{LOCKFILE[0]}s`",
                 )
             countdown = LOCKFILE[0]
             while countdown > 1:
