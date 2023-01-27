@@ -473,7 +473,7 @@ async def lock(event):
                 LOCKFILE.clear()
                 return await event.reply("**Locking Cancelled**")
             except Exception:
-                return await event.reply("**Unlocking Failed / Lock Doesn't exit**")
+                return await event.reply("**Unlocking Failed / Bot was not Locked**")
         try:
             int(temp)
         except Exception:
@@ -485,7 +485,8 @@ async def lock(event):
             LOCKFILE.append(temp)
             await event.reply(f"**Locking for** `{temp}s`")
             lock_dur = f"for `{LOCKFILE[0]}s`"
-            lock_dur = "Indefinitely" if lock_dur == "`for 0s`" else lock_dur
+            if int(LOCKFILE[0]) = 0:
+                lock_dur = "Indefinitely!"
             try:
                 for i in OWNER.split():
                     oo = await bot.send_message(
@@ -519,7 +520,7 @@ async def lock(event):
             LOCKFILE.clear()
 
             async def edito(rst):
-                await rst.edit("**Lock Ended and bot has been unlocked automatically**")
+                await rst.edit("**Lock Ended or cancelled and bot has been unlocked automatically**")
 
             await edito(oo)
             if ot:
