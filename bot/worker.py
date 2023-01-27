@@ -520,7 +520,9 @@ async def lock(event):
             LOCKFILE.clear()
 
             async def edito(rst):
-                await rst.edit("**Lock Ended or cancelled and bot has been unlocked automatically**")
+                await rst.edit(
+                    "**Lock Ended or cancelled and bot has been unlocked automatically**"
+                )
 
             await edito(oo)
             if ot:
