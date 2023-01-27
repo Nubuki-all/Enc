@@ -485,7 +485,7 @@ async def lock(event):
             LOCKFILE.append(temp)
             await event.reply(f"**Locking for** `{temp}s`")
             lock_dur = f"for `{LOCKFILE[0]}s`"
-            if int(LOCKFILE[0]) = 0:
+            if int(LOCKFILE[0]) == 0:
                 lock_dur = "Indefinitely!"
             try:
                 for i in OWNER.split():
