@@ -223,11 +223,7 @@ async def progress_for_pyrogram(current, total, bot, ud_type, message, start):
                     bot.stop_transmission()
         speed = current / diff
         elapsed_time = round(diff) * 1000
-        time_to_completion = round((total - current) / speed) * 1000
-        estimated_total_time = elapsed_time + time_to_completion
-
-        elapsed_time = TimeFormatter(milliseconds=elapsed_time)
-        estimated_total_time = TimeFormatter(milliseconds=estimated_total_time)
+        time_to_completion = ts(int((total - current) / speed))
 
         progress = "{0}{1} \n<b>Progress:</b> {2}%\n".format(
             "".join(
@@ -247,7 +243,7 @@ async def progress_for_pyrogram(current, total, bot, ud_type, message, start):
             hbs(total),
             hbs(speed),
             # elapsed_time if elapsed_time != '' else "0 s",
-            estimated_total_time if estimated_total_time != "" else "0 s",
+            time_to_completion if time_to_completion else "0 s",
         )
         try:
             if not message.photo:
