@@ -121,6 +121,18 @@ def stdr(seconds: int) -> str:
     return dur
 
 
+def time_formatter(seconds: float) -> str:
+    """ humanize time """
+    minutes, seconds = divmod(int(seconds), 60)
+    hours, minutes = divmod(minutes, 60)
+    days, hours = divmod(hours, 24)
+    tmp = ((str(days) + "d, ") if days else "") + \
+        ((str(hours) + "h, ") if hours else "") + \
+        ((str(minutes) + "m, ") if minutes else "") + \
+        ((str(seconds) + "s, ") if seconds else "")
+    return tmp[:-2]
+
+
 def TimeFormatter(milliseconds: int) -> str:
     seconds, milliseconds = divmod(int(milliseconds), 1000)
     minutes, seconds = divmod(seconds, 60)
@@ -222,8 +234,7 @@ async def progress_for_pyrogram(current, total, bot, ud_type, message, start):
                 if not statusMsg["running"]:
                     bot.stop_transmission()
         speed = current / diff
-        round(diff) * 1000
-        time_to_completion = TimeFormatter(int((total - current) / speed))
+        time_to_completion = time_formatter(int((total - current) / speed))
 
         progress = "{0}{1} \n<b>Progress:</b> {2}%\n".format(
             "".join(
