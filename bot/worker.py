@@ -768,7 +768,7 @@ async def pencode(message):
                 await asyncio.sleep(5)
                 return await yo.delete()
         if message.document:
-            if not message.document.mime_type in video_mimetype:
+            if message.document.mime_type not in video_mimetype:
                 return
         if WORKING or QUEUE or LOCKFILE:
             xxx = await message.reply("`Adding To Queue`", quote=True)

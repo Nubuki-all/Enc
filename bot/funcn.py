@@ -117,7 +117,7 @@ video_mimetype = [
     "video/webm",
     "video/x-m4v",
     "video/quicktime",
-    "video/mpeg"
+    "video/mpeg",
 ]
 
 
