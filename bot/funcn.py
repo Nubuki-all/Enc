@@ -223,7 +223,7 @@ async def progress_for_pyrogram(current, total, bot, ud_type, message, start):
                     bot.stop_transmission()
         speed = current / diff
         round(diff) * 1000
-        time_to_completion = ts(int((total - current) / speed))
+        time_to_completion = TimeFormatter(int((total - current) / speed))
 
         progress = "{0}{1} \n<b>Progress:</b> {2}%\n".format(
             "".join(
