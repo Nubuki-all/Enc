@@ -152,7 +152,8 @@ async def parser(name):
             fil2 = ""
             fil3 = ""
         if olif.is_file() and fil != "Disable":
-            name = name.replace(fil1, "")
+            for i in fil1.split("|"):
+                name = name.replace(i, "")
         if fil3 == "Disable":
             fil3 = ""
         na = anitopy.parse(f"{name}")
