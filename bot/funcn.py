@@ -222,7 +222,7 @@ async def progress_for_pyrogram(current, total, bot, ud_type, message, start):
                 if not statusMsg["running"]:
                     bot.stop_transmission()
         speed = current / diff
-        elapsed_time = round(diff) * 1000
+        round(diff) * 1000
         time_to_completion = ts(int((total - current) / speed))
 
         progress = "{0}{1} \n<b>Progress:</b> {2}%\n".format(
