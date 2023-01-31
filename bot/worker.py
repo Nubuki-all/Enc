@@ -76,7 +76,7 @@ async def discap(event):
         temp = event.text.split(" ", maxsplit=1)[1]
     except Exception:
         pass
-    if not temp:
+    if temp.casefold() == "caption":
         ttx = Path("cap.txt")
         if ttx.is_file():
             os.remove(ttx)
@@ -767,6 +767,9 @@ async def pencode(message):
                 yo = await message.reply(f"{enmoji()}")
                 await asyncio.sleep(5)
                 return await yo.delete()
+        if message.document:
+            if not message.document.mime_type in video_mimetype:
+                return
         if WORKING or QUEUE or LOCKFILE:
             xxx = await message.reply("`Adding To Queue`", quote=True)
             media_type = str(message.media)

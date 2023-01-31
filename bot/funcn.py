@@ -104,6 +104,23 @@ else:
     filterz = ""
 
 
+video_mimetype = [
+    "video/x-flv",
+    "video/mp4",
+    "application/x-mpegURL",
+    "video/MP2T",
+    "video/3gpp",
+    "video/quicktime",
+    "video/x-msvideo",
+    "video/x-ms-wmv",
+    "video/x-matroska",
+    "video/webm",
+    "video/x-m4v",
+    "video/quicktime",
+    "video/mpeg"
+]
+
+
 def stdr(seconds: int) -> str:
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
@@ -251,7 +268,7 @@ async def progress_for_pyrogram(current, total, bot, ud_type, message, start):
             round(percentage, 2),
         )
 
-        tmp = progress + "{0} of {1}\nSpeed: {2}/s\nETA: {3}\n".format(
+        tmp = progress + "`{0} of {1}`\n**Speed:** `{2}/s`\n**ETA:** `{3}`\n".format(
             hbs(current),
             hbs(total),
             hbs(speed),
