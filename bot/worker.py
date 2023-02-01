@@ -276,7 +276,7 @@ async def encodestat():
                 i = i + 1
                 if i > 5:
                     xr = len(QUEUE) - i
-                    x += f"+{xr} more…"
+                    x += f"__+{xr} more…__\n"
                     break
             if len(QUEUE) == 1 and not WORKING:
                 loc = await enquotes()
