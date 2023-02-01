@@ -269,11 +269,15 @@ async def encodestat():
                 y, yy = QUEUE[list(QUEUE.keys())[0]]
                 y = await qparse(y)
                 x = f"🟢. `{y}`\n\n    **CURRRENT ITEMS ON QUEUE:**\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-            while i < len(QUEUE) and i < 6:
+            while i < len(QUEUE):
                 y, yy = QUEUE[list(QUEUE.keys())[i]]
                 y = await qparse(y)
                 x += f"{i}. `{y}`\n"
                 i = i + 1
+                if i > 5:
+                    xr = len(QUEUE) - i
+                    x += f"+{xr} more…"
+                    break
             if len(QUEUE) == 1 and not WORKING:
                 loc = await enquotes()
                 x += f"Nothing Here; While you wait:\n\n{loc}"

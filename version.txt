@@ -1,1 +1,1 @@
-v1.0.3-beta.0 (stable)
+v1.0.3-beta.1 (stable)
