@@ -151,10 +151,10 @@ async def parser(name):
             fil1 = ""
             fil2 = ""
             fil3 = ""
-        if olif.is_file() and fil != "Disable":
+        if olif.is_file() and fil1.casefold() != "disable":
             for i in fil1.split("|"):
                 name = name.replace(i, "")
-        if fil3 == "Disable":
+        if fil3.casefold() == "disable":
             fil3 = ""
         na = anitopy.parse(f"{name}")
         print(na)
@@ -168,6 +168,7 @@ async def parser(name):
             d = ""
         try:
             c = na["anime_season"]
+            c = c.lstrip("0") if int(c) > 1 else c
         except Exception:
             c = ""
         try:
@@ -224,10 +225,10 @@ async def parse(name, kk, aa):
                 )
                 b = f"{json['title']['english']}"
                 b = f"{json['title']['romaji']}" if b == "None" else b
-                if fil2 == "Auto":
+                if fil2.casefold() == "auto":
                     fil2 = f"{json['countryOfOrigin']}"
                     fil2 = await conconvert(fil2)
-                fil2 = "" if fil2 == "Disable" else fil2
+                fil2 = "" if fil2.casefold() == "disable" else fil2
             except Exception:
                 ers = traceback.format_exc()
                 LOGS.info(ers)
