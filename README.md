@@ -20,8 +20,9 @@ Optional Variables | Explanation
 `TEMP_USERS` | Additional restricted users allowed to use the bot
 `LOG_CHANNEL` | Input Log Group/Channel ID (bot must be an admin in target group or channel)
 `DATABASE_URL` | input valid Mongodb Database Url
+`ENCODER` | Encoder's name/nickname to be included in captions can also contain encode info.
 `FCHANNEL` `FCHANNEL_STATS` | Input Channel id where **only** the output video will get forwarded. For the 2nd variable input message id of a message in channel to be used as live status for encodes.
-`ALLOW_ACTION` type=bool | Set to True or False depending on whether you want chat actions enabled for bot
+`ALLOW_ACTION` type=bool | Set to True or False depending on whether you want encoding chat actions enabled for bot
 `UPSTREAM_REPO` `UPSTREAM_BRANCH` | Input custom repo link and custom repo branch name, For use with the update function
    | *Note:* Update will fail if there are new modules or dependencies in bot. Redeploy if that happens 
 ---
