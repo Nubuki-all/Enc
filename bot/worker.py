@@ -13,7 +13,7 @@
 # License can be found in <
 # https://github.com/1Danish-00/CompressorQueue/blob/main/License> .
 
-import shutil
+import shutil, signal
 import time
 from pathlib import Path
 from subprocess import run as bashrun
