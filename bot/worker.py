@@ -69,6 +69,8 @@ async def on_termination():
         if FCHANNEL_STAT:
             estat = "**#Dead**"
              await stateditor(estat, int(FCHANNEL), int(FCHANNEL_STAT))
+    except Exception:
+        pass
     # More cleanup code?
 
 
