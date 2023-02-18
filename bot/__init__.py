@@ -108,6 +108,23 @@ def enmoji():
     return y
 
 
+def enmoji2():
+    emoji = (
+        "❌",
+        "❎",
+        "✖️",
+        "☠️",
+        "💀",
+        "💜",
+        "💔",
+        "⚰️",
+        "⛔",
+        "🫠",
+    )
+    y = random.choice(emoji)
+    return y
+
+
 def enquip():
     quip = (
         "awake and ready to serve you, young master!",
@@ -120,6 +137,23 @@ def enquip():
         "stunned, yet not surprised, by your kind gesture.",
         "the eldest sister.",
         "the Archduke’s daughter, Maiodore in disguise.",
+    )
+    y = random.choice(quip)
+    return y
+
+
+def enquip2():
+    quip = (
+        "dying…\nSo the end is nigh uh \n thank you for allowing me to serve you bo-chan!\nfarewell.",
+        "Down!",
+        "ready to retire.",
+        "done, Sir! Yes Sir!",
+        "dismayed\nHow could you do this to me",
+        "still (technically) a noble bot.\nand would remain one even in death.",
+        "or has evolved to become the grim reaper.",
+        "dismayed, yet not seeking vengeance, by your gesture\n'though alas this is where I meet my end.'",
+        "…\n\n Screw this!\n It's those servers they're ev---. [dies]",
+        "[Terminated].",
     )
     y = random.choice(quip)
     return y

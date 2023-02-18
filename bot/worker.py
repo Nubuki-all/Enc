@@ -14,6 +14,7 @@
 # https://github.com/1Danish-00/CompressorQueue/blob/main/License> .
 
 import shutil
+import signal
 import time
 from pathlib import Path
 from subprocess import run as bashrun
@@ -49,6 +50,29 @@ async def save2db2(mara, para):
         y = json.dumps(para)
         mara.delete_many({})
         mara.insert_one({"queue": [y, "0"]})
+
+
+async def on_termination():
+    try:
+        for i in OWNER.split():
+            await bot.send_message(int(i), f"**I'm {enquip2()} {enmoji2()}**")
+    except Exception:
+        pass
+    try:
+        if LOG_CHANNEL:
+            me = await app.get_users("me")
+            await bot.send_message(
+                int(LOG_CHANNEL), f"**{me.first_name} is {enquip2()} {enmoji2()}**"
+            )
+    except BaseException:
+        pass
+    try:
+        if FCHANNEL_STAT:
+            estat = "**#Dead**"
+            await stateditor(estat, int(FCHANNEL), int(FCHANNEL_STAT))
+    except Exception:
+        pass
+    # More cleanup code?
 
 
 async def version2(event):
@@ -327,6 +351,12 @@ async def statuschecker():
     if not STARTUP:
         try:
             asyncio.create_task(autostat())
+            loop = asyncio.get_running_loop()
+            for signame in {"SIGINT", "SIGTERM"}:
+                loop.add_signal_handler(
+                    getattr(signal, signame),
+                    lambda: asyncio.create_task(on_termination()),
+                )
             # some other stuff to do ONLY on startup couldn't find a better way
             # even after more than 8 trials which i committed
             await asyncio.sleep(30)
