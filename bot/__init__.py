@@ -141,6 +141,7 @@ def enquip():
     y = random.choice(quip)
     return y
 
+
 def enquip2():
     quip = (
         "dying…\nSo the end is nigh uh \n thank you for allowing me to serve you bo-chan!\nfarewell.",
@@ -156,6 +157,7 @@ def enquip2():
     )
     y = random.choice(quip)
     return y
+
 
 async def startup():
     try:
