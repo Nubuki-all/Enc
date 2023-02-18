@@ -68,7 +68,7 @@ async def on_termination():
     try:
         if FCHANNEL_STAT:
             estat = "**#Dead**"
-             await stateditor(estat, int(FCHANNEL), int(FCHANNEL_STAT))
+            await stateditor(estat, int(FCHANNEL), int(FCHANNEL_STAT))
     except Exception:
         pass
     # More cleanup code?
@@ -351,8 +351,11 @@ async def statuschecker():
         try:
             asyncio.create_task(autostat())
             loop = asyncio.get_running_loop()
-            for signame in {'SIGINT', 'SIGTERM'}:
-                loop.add_signal_handler(getattr(signal, signame), lambda: asyncio.create_task(on_termination()))
+            for signame in {"SIGINT", "SIGTERM"}:
+                loop.add_signal_handler(
+                    getattr(signal, signame),
+                    lambda: asyncio.create_task(on_termination()),
+                )
             # some other stuff to do ONLY on startup couldn't find a better way
             # even after more than 8 trials which i committed
             await asyncio.sleep(30)
