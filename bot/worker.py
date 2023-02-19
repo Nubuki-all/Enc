@@ -73,6 +73,7 @@ async def on_termination():
     except Exception:
         pass
     # More cleanup code?
+    exit()
 
 
 async def version2(event):
@@ -352,11 +353,12 @@ async def statuschecker():
         try:
             asyncio.create_task(autostat())
             loop = asyncio.get_running_loop()
-            for signame in {"SIGINT", "SIGTERM"}:
-                loop.add_signal_handler(
-                    getattr(signal, signame),
-                    lambda: asyncio.create_task(on_termination()),
-                )
+            for signame in dir(signal):
+                if signame.startswith("SIG") and "_" not in signame:
+                    loop.add_signal_handler(
+                        getattr(signal, signame),
+                        lambda: asyncio.create_task(on_termination()),
+                    )
             # some other stuff to do ONLY on startup couldn't find a better way
             # even after more than 8 trials which i committed
             await asyncio.sleep(30)
