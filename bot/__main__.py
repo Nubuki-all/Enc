@@ -93,7 +93,7 @@ async def _(e):
     await skip(e)
 
 
-@bot.on(events.callbackquery.CallbackQuery(data=re.compile(b"stats2(.*)")))
+@bot.on(events.callbackquery.CallbackQuery(data=re.compile(b"dl_stat(.*)")))
 async def _(e):
     await stats2(e)
 
