@@ -921,6 +921,7 @@ async def pencode(message):
                     [Button.inline("STATS", data=f"cancel_dl{wah}")],
                 ],
             )
+            await download_task
             if DOWNLOAD_CANCEL:
                 await etch.edit(f"Download of {filename} cancelled!")
                 await xxx.delete()
