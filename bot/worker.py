@@ -17,7 +17,6 @@ import shutil
 import signal
 import time
 from pathlib import Path
-from subprocess import run as bashrun
 
 import psutil
 
@@ -158,6 +157,7 @@ async def upload2(from_user_id, filepath, reply, thum, caption):
             progress_args=(app, "Uploading 👘", reply, u_start),
         )
         return s
+
 
 async def update2(client, message):
     if str(message.from_user.id) in OWNER:
@@ -873,12 +873,14 @@ async def pencode(message):
                 etch = await message.reply("`Downloading File 📂`", quote=True)
                 # etch = await app.send_message(chat_id=message.from_user.id,
                 # text=tex)
-                download_task = asyncio.create_task(app.download_media(
-                    message=message,
-                    file_name=dl,
-                    progress=progress_for_pyrogram,
-                    progress_args=(app, "`Downloading…`", etch, ttt),
-                ))
+                download_task = asyncio.create_task(
+                    app.download_media(
+                        message=message,
+                        file_name=dl,
+                        progress=progress_for_pyrogram,
+                        progress_args=(app, "`Downloading…`", etch, ttt),
+                    )
+                )
             else:
                 sem = message.caption
                 ttx = Path("cap.txt")
@@ -900,16 +902,20 @@ async def pencode(message):
                 # etch = await app.send_message(chat_id=message.from_user.id,
                 # text=tex)
                 etch = await message.reply("`Downloading Video 🎥`", quote=True)
-                download_task = asyncio.create_task(app.download_media(
-                    message=message,
-                    file_name=dl,
-                    progress=progress_for_pyrogram,
-                    progress_args=(app, "`Downloading…`", etch, ttt),
-                ))
+                download_task = asyncio.create_task(
+                    app.download_media(
+                        message=message,
+                        file_name=dl,
+                        progress=progress_for_pyrogram,
+                        progress_args=(app, "`Downloading…`", etch, ttt),
+                    )
+                )
             user = message.from_user.id
             wah = code(dl)
             me = await app.get_users("me")
-            nnn = await bot.send(user, f"`{me.first_name} Download Management (beta)`", 
+            nnn = await bot.send(
+                user,
+                f"`{me.first_name} Download Management (beta)`",
                 buttons=[
                     [Button.inline("📂", data=f"stats2{wah}")],
                     [Button.inline("STATS", data=f"cancel_dl{wah}")],
@@ -975,7 +981,7 @@ async def pencode(message):
         wah = code(hehe)
         user = message.from_user.id
         xxx = await xxx.edit("`Waiting For Encoding To Complete`")
-        #nn = await bot.send_message(
+        # nn = await bot.send_message(
         #    user,
         nn = nnn.edit(
             "`Encoding File(s)…` \n**⏳This Might Take A While⏳**",
