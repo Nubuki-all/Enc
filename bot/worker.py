@@ -730,10 +730,12 @@ async def dl_stat(e):
         wah = e.pattern_match.group(1).decode("UTF-8")
         dl = decode(wah)
         ov = hbs(int(Path(dl).stat().st_size))
-        name = dl.split("/")[0]
+        name = dl.split("/")[1]
         ans = f"Downloading…:\n{name}\n\nCurrent Size:\n{ov}"
         await e.answer(ans, cache_time=0, alert=True)
     except Exception:
+        ers = traceback.format_exc()
+        LOGS.info(ers)
         ans = "Yikes 😬"
         await e.answer(ans, cache_time=0, alert=True)
 
@@ -929,7 +931,10 @@ async def pencode(message):
                     [Button.inline("STATS", data=f"cancel_dl{wah}")],
                 ],
             )
-            await download_task
+            try:
+                await download_task
+            except Exception:
+                pass
             if DOWNLOAD_CANCEL:
                 await etch.edit(f"Download of {filename} cancelled!")
                 await xxx.delete()
