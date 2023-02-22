@@ -392,6 +392,7 @@ async def qclean():
 
 async def cancel_dl(e):
     download_task.cancel()
+    await qclean()
     DOWNLOAD_CANCEL.append(1)
 
 
