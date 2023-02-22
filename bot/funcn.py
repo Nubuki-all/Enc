@@ -392,7 +392,6 @@ async def qclean():
         pass
 
 
-
 async def skip(e):
     wah = e.pattern_match.group(1).decode("UTF-8")
     wh = decode(wah)
