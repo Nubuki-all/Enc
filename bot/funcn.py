@@ -198,6 +198,7 @@ def hbs(size):
 
 No_Flood = {}
 
+
 async def updater():
     try:
         envp = Path(".env")
@@ -213,9 +214,8 @@ async def updater():
         await varssaver(filters, filterp)
         os.execl(sys.executable, sys.executable, "-m", "bot")
     except Exception:
-       ers = traceback.format_exc()
-       LOGS.info(ers)
-
+        ers = traceback.format_exc()
+        LOGS.info(ers)
 
 
 async def varsgetter(files):
