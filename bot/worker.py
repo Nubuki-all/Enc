@@ -848,6 +848,7 @@ async def pencode(message):
         dir = f"downloads/"
         try:
             media_type = str(message.media)
+            global download_task
             if media_type == "MessageMediaType.DOCUMENT":
                 # if hasattr(event.media, "document"):
                 # file = event.media.document
@@ -873,7 +874,6 @@ async def pencode(message):
                 etch = await message.reply("`Downloading File 📂`", quote=True)
                 # etch = await app.send_message(chat_id=message.from_user.id,
                 # text=tex)
-                global download_task
                 download_task = asyncio.create_task(
                     app.download_media(
                         message=message,
@@ -903,7 +903,6 @@ async def pencode(message):
                 # etch = await app.send_message(chat_id=message.from_user.id,
                 # text=tex)
                 etch = await message.reply("`Downloading Video 🎥`", quote=True)
-                global download_task
                 download_task = asyncio.create_task(
                     app.download_media(
                         message=message,
