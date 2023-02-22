@@ -21,11 +21,11 @@ import os
 import subprocess
 import time
 from io import StringIO
+from subprocess import run as bashrun
 
 from pymongo import MongoClient
 from quote import quote
 from random_word import RandomWords
-from subprocess import run as bashrun
 
 from . import *
 from .config import *
