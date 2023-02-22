@@ -909,7 +909,12 @@ async def pencode(message):
             user = message.from_user.id
             wah = code(dl)
             me = await app.get_users("me")
-            nnn = await bot.send(user, f"`{me.first_name} Download Management (beta)`", buttons=[[Button.inline("📂", data=f"stats2{wah}")], [Button.inline("STATS", data=f"cancel_dl{wah}")])])
+            nnn = await bot.send(user, f"`{me.first_name} Download Management (beta)`", 
+                buttons=[
+                    [Button.inline("📂", data=f"stats2{wah}")],
+                    [Button.inline("STATS", data=f"cancel_dl{wah}")],
+                ],
+            )
             if DOWNLOAD_CANCEL:
                 await etch.edit(f"Download of {filename} cancelled!")
                 await xxx.delete()
