@@ -159,6 +159,13 @@ async def upload2(from_user_id, filepath, reply, thum, caption):
         return s
 
 
+async def cancel_dl(e):
+    global download_task
+    download_task.cancel()
+    await qclean()
+    DOWNLOAD_CANCEL.append(1)
+
+
 async def update2(client, message):
     if str(message.from_user.id) in OWNER:
         upt_mess = "Updating…"

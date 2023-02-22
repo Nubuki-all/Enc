@@ -95,7 +95,7 @@ async def _(e):
 
 @bot.on(events.callbackquery.CallbackQuery(data=re.compile(b"dl_stat(.*)")))
 async def _(e):
-    await stats2(e)
+    await dl_stat(e)
 
 
 @bot.on(events.callbackquery.CallbackQuery(data=re.compile(b"cancel_dl(.*)")))

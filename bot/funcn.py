@@ -392,12 +392,6 @@ async def qclean():
         pass
 
 
-async def cancel_dl(e):
-    global download_task
-    download_task.cancel()
-    await qclean()
-    DOWNLOAD_CANCEL.append(1)
-
 
 async def skip(e):
     wah = e.pattern_match.group(1).decode("UTF-8")
