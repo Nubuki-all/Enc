@@ -927,8 +927,14 @@ async def pencode(message):
                 user,
                 f"`{me.first_name} Download Management (beta)`",
                 buttons=[
-                    [Button.inline("📂", data=f"dl_stat{wah}")],
-                    [Button.inline("STATS", data=f"cancel_dl{wah}")],
+                    [Button.inline("Info", data=f"dl_stat{wah}")],
+                    [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
+                ],
+            )
+            op = await op.edit(f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Is Currently Downloading A Video…`",
+                buttons=[
+                    [Button.inline("Info", data=f"dl_stat{wah}")],
+                    [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
                 ],
             )
             try:
@@ -936,10 +942,11 @@ async def pencode(message):
             except Exception:
                 pass
             if DOWNLOAD_CANCEL:
-                await etch.edit(f"Download of {filename} cancelled!")
+                await etch.edit(f"Download of `{filename}` had been cancelled!")
                 await xxx.delete()
                 await nnn.delete()
                 DOWNLOAD_CANCEL.clear()
+                WORKING.clear
                 return
         except Exception:
             WORKING.clear()
