@@ -913,7 +913,7 @@ async def pencode(message):
             user = message.from_user.id
             wah = code(dl)
             me = await app.get_users("me")
-            nnn = await bot.send(
+            nnn = await bot.send_message(
                 user,
                 f"`{me.first_name} Download Management (beta)`",
                 buttons=[
