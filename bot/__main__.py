@@ -93,6 +93,16 @@ async def _(e):
     await skip(e)
 
 
+@bot.on(events.callbackquery.CallbackQuery(data=re.compile(b"stats2(.*)")))
+async def _(e):
+    await stats2(e)
+
+
+@bot.on(events.callbackquery.CallbackQuery(data=re.compile(b"cancel_dl(.*)")))
+async def _(e):
+    await cancel_dl(e)
+
+
 @bot.on(events.callbackquery.CallbackQuery(data=re.compile("ihelp")))
 async def _(e):
     await ihelp(e)

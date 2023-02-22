@@ -29,12 +29,13 @@ from random_word import RandomWords
 from . import *
 from .config import *
 
+DOWNLOAD_CANCEL = []
 GROUPENC = []
 LOCKFILE = []
 VERSION2 = []
-EVENT2 = []
 STARTUP = []
 WORKING = []
+EVENT2 = []
 QUEUE = {}
 OK = {}
 
@@ -43,6 +44,8 @@ UN_FINISHED_PROGRESS_STR = "🤍"
 MAX_MESSAGE_LENGTH = 4096
 
 uptime = dt.now()
+if ALWAYS_DEPLOY_LATEST is True:
+    await updater()
 if THUMB:
     os.system(f"wget {THUMB} -O thumb.jpg")
 if ICON:
@@ -194,6 +197,25 @@ def hbs(size):
 
 
 No_Flood = {}
+
+async def updater():
+    try:
+        envp = Path(".env")
+        ffmpegp = Path("ffmpeg.txt")
+        filterp = Path("filter.txt")
+        envars = await varsgetter(envp)
+        ffmpegs = await varsgetter(ffmpegp)
+        filters = await varsgetter(filterp)
+        await qclean()
+        bashrun(["python3", "update.py"])
+        await varssaver(envars, envp)
+        await varssaver(ffmpegs, ffmpegp)
+        await varssaver(filters, filterp)
+        os.execl(sys.executable, sys.executable, "-m", "bot")
+    except Exception:
+       ers = traceback.format_exc()
+       LOGS.info(ers)
+
 
 
 async def varsgetter(files):
@@ -366,6 +388,11 @@ async def qclean():
                 os.kill(processID, signal.SIGKILL)
     except Exception:
         pass
+
+
+async def cancel_dl(e):
+    download_task.cancel()
+    DOWNLOAD_CANCEL.append(1)
 
 
 async def skip(e):

@@ -35,7 +35,8 @@ try:
     FCHANNEL = config("FCHANNEL", default="")
     FCHANNEL_STAT = config("FCHANNEL_STAT", default="")
     CAP_DECO = config("CAP_DECO", default="◉")
-    ALLOW_ACTION = config("ALLOW_ACTION", default=True, cast=bool)
+    ALLOW_ACTION = config("ALLOW_ACTION", default=True, cast=bool
+    ALWAYS_DEPLOY_LATEST = config("ALWAYS_DEPLOY_LATEST", default=False, cast=bool)
 except Exception as e:
     print("Environment vars Missing")
     print("something went wrong")

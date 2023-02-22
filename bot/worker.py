@@ -159,28 +159,12 @@ async def upload2(from_user_id, filepath, reply, thum, caption):
         )
         return s
 
-
 async def update2(client, message):
     if str(message.from_user.id) in OWNER:
         upt_mess = "Updating…"
         reply = await message.reply(f"`{upt_mess}`")
         await enquoter(upt_mess, reply)
-        try:
-            envp = Path(".env")
-            ffmpegp = Path("ffmpeg.txt")
-            filterp = Path("filter.txt")
-            envars = await varsgetter(envp)
-            ffmpegs = await varsgetter(ffmpegp)
-            filters = await varsgetter(filterp)
-            await qclean()
-            bashrun(["python3", "update.py"])
-            await varssaver(envars, envp)
-            await varssaver(ffmpegs, ffmpegp)
-            await varssaver(filters, filterp)
-            os.execl(sys.executable, sys.executable, "-m", "bot")
-        except Exception:
-            ers = traceback.format_exc()
-            LOGS.info(ers)
+        await updater()
 
 
 async def nuke(event):
@@ -734,6 +718,19 @@ async def pres(e):
         )
 
 
+async def stats2(e):
+    try:
+        wah = e.pattern_match.group(1).decode("UTF-8")
+        dl = decode(wah)
+        ov = hbs(int(Path(dl).stat().st_size))
+        name = dl.split("/")[0]
+        ans = f"Downloading…:\n{name}\n\nCurrent Size:\n{ov}"
+        await e.answer(ans, cache_time=0, alert=True)
+    except Exception:
+        ans = "Yikes 😬"
+        await e.answer(ans, cache_time=0, alert=True)
+
+
 async def stats(e):
     try:
         wah = e.pattern_match.group(1).decode("UTF-8")
@@ -876,12 +873,12 @@ async def pencode(message):
                 etch = await message.reply("`Downloading File 📂`", quote=True)
                 # etch = await app.send_message(chat_id=message.from_user.id,
                 # text=tex)
-                down = await app.download_media(
+                download_task = asyncio.create_task(app.download_media(
                     message=message,
                     file_name=dl,
                     progress=progress_for_pyrogram,
                     progress_args=(app, "`Downloading…`", etch, ttt),
-                )
+                ))
             else:
                 sem = message.caption
                 ttx = Path("cap.txt")
@@ -903,12 +900,22 @@ async def pencode(message):
                 # etch = await app.send_message(chat_id=message.from_user.id,
                 # text=tex)
                 etch = await message.reply("`Downloading Video 🎥`", quote=True)
-                down = await app.download_media(
+                download_task = asyncio.create_task(app.download_media(
                     message=message,
                     file_name=dl,
                     progress=progress_for_pyrogram,
                     progress_args=(app, "`Downloading…`", etch, ttt),
-                )
+                ))
+            user = message.from_user.id
+            wah = code(dl)
+            me = await app.get_users("me")
+            nnn = await bot.send(user, f"`{me.first_name} Download Management (beta)`", buttons=[[Button.inline("📂", data=f"stats2{wah}")], [Button.inline("STATS", data=f"cancel_dl{wah}")])])
+            if DOWNLOAD_CANCEL:
+                await etch.edit(f"Download of {filename} cancelled!")
+                await xxx.delete()
+                await nnn.delete()
+                DOWNLOAD_CANCEL.clear()
+                return
         except Exception:
             WORKING.clear()
             er = traceback.format_exc()
@@ -963,8 +970,9 @@ async def pencode(message):
         wah = code(hehe)
         user = message.from_user.id
         xxx = await xxx.edit("`Waiting For Encoding To Complete`")
-        nn = await bot.send_message(
-            user,
+        #nn = await bot.send_message(
+        #    user,
+        nn = nnn.edit(
             "`Encoding File(s)…` \n**⏳This Might Take A While⏳**",
             buttons=[
                 [Button.inline("📂", data=f"pres{wah}")],
