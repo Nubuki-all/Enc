@@ -718,7 +718,7 @@ async def pres(e):
         )
 
 
-async def stats2(e):
+async def dl_stat(e):
     try:
         wah = e.pattern_match.group(1).decode("UTF-8")
         dl = decode(wah)
@@ -873,6 +873,7 @@ async def pencode(message):
                 etch = await message.reply("`Downloading File 📂`", quote=True)
                 # etch = await app.send_message(chat_id=message.from_user.id,
                 # text=tex)
+                global download_task
                 download_task = asyncio.create_task(
                     app.download_media(
                         message=message,
@@ -902,6 +903,7 @@ async def pencode(message):
                 # etch = await app.send_message(chat_id=message.from_user.id,
                 # text=tex)
                 etch = await message.reply("`Downloading Video 🎥`", quote=True)
+                global download_task
                 download_task = asyncio.create_task(
                     app.download_media(
                         message=message,
@@ -917,7 +919,7 @@ async def pencode(message):
                 user,
                 f"`{me.first_name} Download Management (beta)`",
                 buttons=[
-                    [Button.inline("📂", data=f"stats2{wah}")],
+                    [Button.inline("📂", data=f"dl_stat{wah}")],
                     [Button.inline("STATS", data=f"cancel_dl{wah}")],
                 ],
             )
@@ -984,7 +986,7 @@ async def pencode(message):
         xxx = await xxx.edit("`Waiting For Encoding To Complete`")
         # nn = await bot.send_message(
         #    user,
-        nn = nnn.edit(
+        nn = await nnn.edit(
             "`Encoding File(s)…` \n**⏳This Might Take A While⏳**",
             buttons=[
                 [Button.inline("📂", data=f"pres{wah}")],
