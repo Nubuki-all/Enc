@@ -160,18 +160,26 @@ async def upload2(from_user_id, filepath, reply, thum, caption):
 
 
 async def cancel_dl(e):
-    global download_task
-    download_task.cancel()
-    await qclean()
-    DOWNLOAD_CANCEL.append(1)
+    try:
+        global download_task
+        DOWNLOAD_CANCEL.append(1)
+        download_task.cancel()
+        await qclean()
+    except Exception:
+        ers = traceback.format_exc()
+        LOGS.info(ers)
 
 
 async def update2(client, message):
-    if str(message.from_user.id) in OWNER:
-        upt_mess = "Updating…"
-        reply = await message.reply(f"`{upt_mess}`")
-        await enquoter(upt_mess, reply)
-        await updater()
+    try:
+        if str(message.from_user.id) in OWNER:
+            upt_mess = "Updating…"
+            reply = await message.reply(f"`{upt_mess}`")
+            await enquoter(upt_mess, reply)
+            await updater()
+    except Exception:
+        ers = traceback.format_exc()
+        LOGS.info(ers)
 
 
 async def nuke(event):
@@ -729,9 +737,11 @@ async def dl_stat(e):
     try:
         wah = e.pattern_match.group(1).decode("UTF-8")
         dl = decode(wah)
-        ov = hbs(int(Path(dl).stat().st_size))
+        dls = f"{dl}.temp"
+        ov = hbs(int(Path(dls).stat().st_size))
         name = dl.split("/")[1]
-        ans = f"Downloading…:\n{name}\n\nCurrent Size:\n{ov}"
+        q = await qparse(name)
+        ans = f"📥 Downloading:\n{name}\n\n⭕ Current Size:\n{ov}\n\n\n📌:\n{q}"
         await e.answer(ans, cache_time=0, alert=True)
     except Exception:
         ers = traceback.format_exc()
@@ -931,13 +941,14 @@ async def pencode(message):
                     [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
                 ],
             )
-            op = await op.edit(
-                f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Is Currently Downloading A Video…`",
-                buttons=[
-                    [Button.inline("Info", data=f"dl_stat{wah}")],
-                    [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
-                ],
-            )
+            if LOG_CHANNEL:
+                op = await op.edit(
+                    f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Is Currently Downloading A Video…`",
+                    buttons=[
+                        [Button.inline("Info", data=f"dl_stat{wah}")],
+                        [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
+                    ],
+                )
             try:
                 await download_task
             except Exception:
