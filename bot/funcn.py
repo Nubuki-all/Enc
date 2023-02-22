@@ -45,7 +45,7 @@ MAX_MESSAGE_LENGTH = 4096
 
 uptime = dt.now()
 if ALWAYS_DEPLOY_LATEST is True:
-    await updater()
+    #Do_something
 if THUMB:
     os.system(f"wget {THUMB} -O thumb.jpg")
 if ICON:
