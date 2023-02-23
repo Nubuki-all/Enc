@@ -234,9 +234,13 @@ async def something():
                 # user = int(OWNER.split()[0])
                 file = list(QUEUE.keys())[0]
                 name, user = QUEUE[list(QUEUE.keys())[0]]
-                time.time()
+                try:
+                    message = await app.get_messages(user, int(file))
+                    mssg_r = await message.reply("`Downloading…`")
+                except Exception:
+                    message = ""
+                    mssg_r = ""
                 e = await bot.send_message(user, "`▼ Downloding Queue Files ▼`")
-                message = await app.get_messages(user, int(file))
                 sender = await app.get_users(user)
                 if LOG_CHANNEL:
                     log = int(LOG_CHANNEL)
@@ -247,8 +251,7 @@ async def something():
                 s = dt.now()
                 try:
                     dl = "downloads/" + name
-                    mssg_r = await message.reply("`Downloading…`")
-                    download_task = await download2(dl, message, mssg_r)
+                    download_task = await download2(dl, file, message, mssg_r)
                     wah = code(dl)
                     ee = await e.edit(
                         f"`▼ Downloding Queue Files ▼`",

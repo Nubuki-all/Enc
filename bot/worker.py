@@ -143,23 +143,29 @@ async def clean(event):
     return
 
 
-async def download2(dl, message, e):
+async def download2(dl, file, message, e):
     try:
-        ttt = time.time()
-        media_type = str(message.media)
         global download_task
-        if media_type == "MessageMediaType.DOCUMENT":
-            media_mssg = "Downloading a queued file…"
-        else:
-            media_mssg = "Downloading a queued video…"
-        download_task = asyncio.create_task(
-            app.download_media(
-                message=message,
-                file_name=dl,
-                progress=progress_for_pyrogram,
-                progress_args=(app, media_mssg, e, ttt),
+        if message:
+            ttt = time.time()
+            media_type = str(message.media)
+            if media_type == "MessageMediaType.DOCUMENT":
+                media_mssg = "Downloading a queued file…"
+            else:
+                media_mssg = "Downloading a queued video…"
+            download_task = asyncio.create_task(
+                app.download_media(
+                    message=message,
+                    file_name=dl,
+                    progress=progress_for_pyrogram,
+                    progress_args=(app, media_mssg, e, ttt),
+                )
             )
-        )
+        else:
+            download_task = asyncio.create_task(app.download_media(
+                        message=file,
+                        file_name=dl,
+                    ))
         return download_task
     except Exception:
         ers = traceback.format_exc()
@@ -870,7 +876,10 @@ async def pencode(message):
                         "**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**"
                     )
             user = message.from_user.id
-            QUEUE.update({doc.file_id: [name, user]})
+            if user == message.chat.id and UNLOCK_UNSTABLE:
+                QUEUE.update({doc.id: [name, user]})
+            else:
+                QUEUE.update({doc.file_id: [name, user]})
             await save2db()
             return await xxx.edit(
                 "**Added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
