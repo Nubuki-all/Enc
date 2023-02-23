@@ -254,7 +254,7 @@ async def something():
                     download_task = await download2(dl, file, message, mssg_r)
                     wah = code(dl)
                     ee = await e.edit(
-                        f"`‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `",
+                        f"`🤍                  🤍`",
                         buttons=[
                             [Button.inline("Info", data=f"dl_stat{wah}")],
                             [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
