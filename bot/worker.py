@@ -150,9 +150,9 @@ async def download2(dl, file, message, e):
             ttt = time.time()
             media_type = str(message.media)
             if media_type == "MessageMediaType.DOCUMENT":
-                media_mssg = "Downloading a queued file…"
+                media_mssg = "`Downloading a queued file…`\n"
             else:
-                media_mssg = "Downloading a queued video…"
+                media_mssg = "`Downloading a queued video…`\n"
             download_task = asyncio.create_task(
                 app.download_media(
                     message=message,

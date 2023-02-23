@@ -273,14 +273,16 @@ async def something():
                     except Exception:
                         pass
                     if DOWNLOAD_CANCEL:
-                        await mssg_r.edit(f"Download of `{name}` had been cancelled!")
+                        if message:
+                            await mssg_r.edit(f"Download of `{name}` had been cancelled!")
                         await e.delete()
                         if LOG_CHANNEL:
-                            op.edit(
+                            await op.edit(
                                 f"[{sender.first_name}](tg://user?id={user}) `Cancelled the download.`",
                             )
                         if QUEUE:
                             QUEUE.pop(list(QUEUE.keys())[0])
+                        DOWNLOAD_CANCEL.clear()
                         await save2db()
                         await qclean()
                         continue
