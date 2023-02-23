@@ -30,6 +30,7 @@ from random_word import RandomWords
 from . import *
 from .config import *
 
+UNLOCK_UNSTABLE = []
 DOWNLOAD_CANCEL = []
 GROUPENC = []
 LOCKFILE = []
@@ -45,11 +46,16 @@ UN_FINISHED_PROGRESS_STR = "🤍"
 MAX_MESSAGE_LENGTH = 4096
 
 uptime = dt.now()
+
+if EABF is True:
+    UNLOCK_UNSTABLE.append(1)
+
 if ALWAYS_DEPLOY_LATEST is True:
-    pass
-    # Do_something
+    pass # Do_something?
+
 if THUMB:
     os.system(f"wget {THUMB} -O thumb.jpg")
+
 if ICON:
     os.system(f"wget {ICON} -O icon.png")
 
