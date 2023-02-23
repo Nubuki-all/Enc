@@ -236,7 +236,7 @@ async def something():
                 name, user = QUEUE[list(QUEUE.keys())[0]]
                 try:
                     message = await app.get_messages(user, int(file))
-                    mssg_r = await message.reply("`Downloading…`")
+                    mssg_r = await message.reply("`Downloading…`", quote=True)
                 except Exception:
                     message = ""
                     mssg_r = ""
@@ -254,7 +254,7 @@ async def something():
                     download_task = await download2(dl, file, message, mssg_r)
                     wah = code(dl)
                     ee = await e.edit(
-                        f"`▼ Downloding Queue Files ▼`",
+                        f"`‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `",
                         buttons=[
                             [Button.inline("Info", data=f"dl_stat{wah}")],
                             [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
