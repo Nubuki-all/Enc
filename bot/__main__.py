@@ -253,7 +253,7 @@ async def something():
                     dl = "downloads/" + name
                     download_task = await download2(dl, file, message, mssg_r)
                     wah = code(dl)
-                    dl_info = await parse_dl(name)
+                    dl_info = await parse_dl()
                     ee = await e.edit(
                         f"{enmoji()} `Downloading…`{dl_info}",
                         buttons=[
@@ -263,7 +263,7 @@ async def something():
                     )
                     if LOG_CHANNEL:
                         opp = await op.edit(
-                            f"[{sender.first_name}](tg://user?id={user}) `Currently Downloading A Queued Video…`{dl_info}",
+                            f"[{sender.first_name}](tg://user?id={user}) `Currently Downloading A Queued Video…`{dl}",
                             buttons=[
                                 [Button.inline("Info", data=f"dl_stat{wah}")],
                                 [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
@@ -340,6 +340,8 @@ async def something():
                 dtime = ts(int((es - s).seconds) * 1000)
                 hehe = f"{out};{dl};{list(QUEUE.keys())[0]}"
                 wah = code(hehe)
+                if message:
+                    await mssg_r.edit("`Waiting For Encoding To Complete`")
                 nn = await e.edit(
                     "`Encoding Files…` \n**⏳This Might Take A While⏳**",
                     buttons=[
@@ -418,8 +420,11 @@ async def something():
                     await wak.delete()
                 except Exception:
                     pass
-                tex = "`▲ Uploading ▲`"
-                nnn = await app.send_message(chat_id=e.chat_id, text=tex)
+                if message:
+                    nnn = mssg_r
+                else:
+                    tex = "`▲ Uploading ▲`"
+                    nnn = await app.send_message(chat_id=e.chat_id, text=tex)
                 fname = out.split("/")[1]
                 pcap = await custcap(name, fname)
                 ds = await upload2(e.chat_id, out, nnn, thum, pcap)
