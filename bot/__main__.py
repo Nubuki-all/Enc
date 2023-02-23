@@ -253,7 +253,7 @@ async def something():
                     dl = "downloads/" + name
                     download_task = await download2(dl, file, message, mssg_r)
                     wah = code(dl)
-                    dl_info = await parse_dl()
+                    dl_info = await parse_dl(name)
                     ee = await e.edit(
                         f"{enmoji()} `Downloading…`{dl_info}",
                         buttons=[
@@ -263,7 +263,7 @@ async def something():
                     )
                     if LOG_CHANNEL:
                         opp = await op.edit(
-                            f"[{sender.first_name}](tg://user?id={user}) `Currently Downloading A Queued Video…`{dl}",
+                            f"[{sender.first_name}](tg://user?id={user}) `Currently Downloading A Queued Video…`{dl_info}",
                             buttons=[
                                 [Button.inline("Info", data=f"dl_stat{wah}")],
                                 [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
