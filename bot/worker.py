@@ -27,6 +27,7 @@ from .util import (
     get_readable_file_size,
     get_readable_time,
     parse,
+    parse_dl,
 )
 from .worker import *
 

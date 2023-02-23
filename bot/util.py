@@ -6,7 +6,7 @@ import country_converter as coco
 import requests
 
 from . import *
-from .funcn import VERSION2, WORKING, info
+from .funcn import UNLOCK_UNSTABLE, VERSION2, WORKING, info
 
 SIZE_UNITS = ["B", "KB", "MB", "GB", "TB", "PB"]
 
