@@ -1159,7 +1159,7 @@ async def pencode(message):
                 try:
                     os.remove(dl)
                 except Exception:
-                    await wrror.reply("**Reason:** Download Cancelled!")
+                    await wrror.reply("**Reason:** `Encoding Cancelled!`")
                 await xxx.edit(f"🔺 **Encoding of** `{bb2}` **Failed**")
                 if LOG_CHANNEL:
                     await wak.delete()

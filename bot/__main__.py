@@ -399,7 +399,7 @@ async def something():
                         try:
                             os.remove(dl)
                         except Exception:
-                            await nnn.reply("**Reason:** Encoding Cancelled!")
+                            await nnn.reply("**Reason:** `Encoding Cancelled!`")
                         try:
                             await nn.delete()
                             await wak.delete()

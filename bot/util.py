@@ -76,7 +76,7 @@ async def wfilter():
     wrelease = Path("Releasefilter.txt")
     if wname.is_file():
         with open("Namefilter.txt", "r") as file:
-            wnamer = file.read().strip
+            wnamer = file.read().strip()
             file.close()
     else:
         wnamer = ""
