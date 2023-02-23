@@ -263,7 +263,7 @@ async def something():
                                 [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
                             ],
                         )
-                     try:
+                    try:
                         await download_task
                     except Exception:
                         pass
