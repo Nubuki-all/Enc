@@ -969,7 +969,7 @@ async def pencode(message):
             await app.get_users("me")
             nnn = await bot.send_message(
                 user,
-                f"`‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `",
+                f"`🤍                   🤍`",
                 buttons=[
                     [Button.inline("Info", data=f"dl_stat{wah}")],
                     [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
