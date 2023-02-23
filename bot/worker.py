@@ -772,7 +772,7 @@ async def dl_stat(e):
         ov = hbs(int(Path(dls).stat().st_size))
         name = dl.split("/")[1]
         q = await qparse(name)
-        ans = f"📥 Downloading:\n{name}\n\n⭕ Current Size:\n{ov}\n\n\n📌:\n{q}"
+        ans = f"📥 Downloading:\n{name}\n\n⭕ Current Size:\n{ov}\n\n\n{enmoji()}:\n{q}"
         await e.answer(ans, cache_time=0, alert=True)
     except Exception:
         ers = traceback.format_exc()
@@ -967,9 +967,10 @@ async def pencode(message):
             user = message.from_user.id
             wah = code(dl)
             await app.get_users("me")
+            dl_info = await parse_dl()
             nnn = await bot.send_message(
                 user,
-                f"`🤍                   🤍`",
+                f"{enmoji()} `Downloading…`{dl_info}",
                 buttons=[
                     [Button.inline("Info", data=f"dl_stat{wah}")],
                     [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
@@ -977,7 +978,7 @@ async def pencode(message):
             )
             if LOG_CHANNEL:
                 opp = await op.edit(
-                    f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Is Currently Downloading A Video…`",
+                    f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Is Currently Downloading A Video…`{dl_info}",
                     buttons=[
                         [Button.inline("Info", data=f"dl_stat{wah}")],
                         [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
