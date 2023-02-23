@@ -274,7 +274,9 @@ async def something():
                         pass
                     if DOWNLOAD_CANCEL:
                         if message:
-                            await mssg_r.edit(f"Download of `{name}` had been cancelled!")
+                            await mssg_r.edit(
+                                f"Download of `{name}` had been cancelled!"
+                            )
                         await e.delete()
                         if LOG_CHANNEL:
                             await op.edit(
