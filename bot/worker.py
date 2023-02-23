@@ -162,10 +162,12 @@ async def download2(dl, file, message, e):
                 )
             )
         else:
-            download_task = asyncio.create_task(app.download_media(
-                        message=file,
-                        file_name=dl,
-                    ))
+            download_task = asyncio.create_task(
+                app.download_media(
+                    message=file,
+                    file_name=dl,
+                )
+            )
         return download_task
     except Exception:
         ers = traceback.format_exc()
