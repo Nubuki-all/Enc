@@ -234,7 +234,9 @@ async def something():
                 # user = int(OWNER.split()[0])
                 file = list(QUEUE.keys())[0]
                 name, user = QUEUE[list(QUEUE.keys())[0]]
+                ttt = time.time()
                 e = await bot.send_message(user, "`▼ Downloding Queue Files ▼`")
+                message = await app.get_messages(user, int(file))
                 sender = await app.get_users(user)
                 if LOG_CHANNEL:
                     log = int(LOG_CHANNEL)
@@ -245,14 +247,39 @@ async def something():
                 s = dt.now()
                 try:
                     dl = "downloads/" + name
-                    down = await app.download_media(
-                        message=file,
-                        file_name=dl,
+                    mssg_r = await message.reply("`Downloading…`")
+                    download_task = await download2(dl, message, mssg_r)
+                    wah = code(dl)
+                    ee = await e.edit(f"`▼ Downloding Queue Files ▼`"
+                        buttons=[
+                            [Button.inline("Info", data=f"dl_stat{wah}")],
+                            [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
+                        ],
                     )
+                    if LOG_CHANNEL:
+                        opp = op.edit(f"[{sender.first_name}](tg://user?id={user}) `Currently Downloading A Queued Video…`",
+                            buttons=[
+                                [Button.inline("Info", data=f"dl_stat{wah}")],
+                                [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
+                            ],
+                        )
+                     try:
+                        await download_task
+                    except Exception:
+                        pass
+                    if DOWNLOAD_CANCEL:
+                        await mssg_r.edit(f"Download of `{name}` had been cancelled!")
+                        await e.delete()
+                        if LOG_CHANNEL:
+                            op.edit(f"[{sender.first_name}](tg://user?id={user}) `Cancelled the download.`",)
+                        if QUEUE:
+                            QUEUE.pop(list(QUEUE.keys())[0])
+                        await save2db()
+                        await qclean()
+                        continue
                 except Exception:
                     er = traceback.format_exc()
                     LOGS.info(er)
-                    WORKING.clear()
                     QUEUE.pop(list(QUEUE.keys())[0])
                     await save2db()
                 es = dt.now()
@@ -358,7 +385,7 @@ async def something():
                         try:
                             os.remove(dl)
                         except Exception:
-                            await nnn.reply("**Reason:** Download Cancelled!")
+                            await nnn.reply("**Reason:** Encoding Cancelled!")
                         try:
                             await nn.delete()
                             await wak.delete()
