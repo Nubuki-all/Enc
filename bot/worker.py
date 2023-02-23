@@ -142,6 +142,7 @@ async def clean(event):
             os.kill(processID, signal.SIGKILL)
     return
 
+
 async def download2(dl, message, e):
     try:
         ttt = time.time()
@@ -980,7 +981,9 @@ async def pencode(message):
                 await xxx.delete()
                 await nnn.delete()
                 if LOG_CHANNEL:
-                    await op.edit(f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Cancelled the download`")
+                    await op.edit(
+                        f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Cancelled the download`"
+                    )
                 DOWNLOAD_CANCEL.clear()
                 WORKING.clear()
                 return

@@ -234,7 +234,7 @@ async def something():
                 # user = int(OWNER.split()[0])
                 file = list(QUEUE.keys())[0]
                 name, user = QUEUE[list(QUEUE.keys())[0]]
-                ttt = time.time()
+                time.time()
                 e = await bot.send_message(user, "`▼ Downloding Queue Files ▼`")
                 message = await app.get_messages(user, int(file))
                 sender = await app.get_users(user)
@@ -250,14 +250,16 @@ async def something():
                     mssg_r = await message.reply("`Downloading…`")
                     download_task = await download2(dl, message, mssg_r)
                     wah = code(dl)
-                    ee = await e.edit(f"`▼ Downloding Queue Files ▼`",
+                    ee = await e.edit(
+                        f"`▼ Downloding Queue Files ▼`",
                         buttons=[
                             [Button.inline("Info", data=f"dl_stat{wah}")],
                             [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
                         ],
                     )
                     if LOG_CHANNEL:
-                        opp = op.edit(f"[{sender.first_name}](tg://user?id={user}) `Currently Downloading A Queued Video…`",
+                        opp = op.edit(
+                            f"[{sender.first_name}](tg://user?id={user}) `Currently Downloading A Queued Video…`",
                             buttons=[
                                 [Button.inline("Info", data=f"dl_stat{wah}")],
                                 [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
@@ -271,7 +273,9 @@ async def something():
                         await mssg_r.edit(f"Download of `{name}` had been cancelled!")
                         await e.delete()
                         if LOG_CHANNEL:
-                            op.edit(f"[{sender.first_name}](tg://user?id={user}) `Cancelled the download.`",)
+                            op.edit(
+                                f"[{sender.first_name}](tg://user?id={user}) `Cancelled the download.`",
+                            )
                         if QUEUE:
                             QUEUE.pop(list(QUEUE.keys())[0])
                         await save2db()
