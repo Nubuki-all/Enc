@@ -253,7 +253,7 @@ async def something():
                     dl = "downloads/" + name
                     download_task = await download2(dl, file, message, mssg_r)
                     wah = code(dl)
-                    dl_info = await parse_dl()
+                    dl_info = await parse_dl(name)
                     ee = await e.edit(
                         f"{enmoji()} `Downloading…`{dl_info}",
                         buttons=[
