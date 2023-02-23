@@ -142,6 +142,28 @@ async def clean(event):
             os.kill(processID, signal.SIGKILL)
     return
 
+async def download2(dl, message, e):
+    try:
+        ttt = time.time()
+        media_type = str(message.media)
+        global download_task
+        if media_type == "MessageMediaType.DOCUMENT":
+            media_mssg = "Downloading a queued file…"
+        else:
+            media_mssg = "Downloading a queued video…"
+        download_task = asyncio.create_task(
+            app.download_media(
+                message=message,
+                file_name=dl,
+                progress=progress_for_pyrogram,
+                progress_args=(app, media_mssg, e, ttt),
+            )
+        )
+        return download_task
+    except Exception:
+        ers = traceback.format_exc()
+        LOGS.info(ers)
+
 
 async def upload2(from_user_id, filepath, reply, thum, caption):
     async with bot.action(from_user_id, "file"):
@@ -942,7 +964,7 @@ async def pencode(message):
                 ],
             )
             if LOG_CHANNEL:
-                op = await op.edit(
+                opp = await op.edit(
                     f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Is Currently Downloading A Video…`",
                     buttons=[
                         [Button.inline("Info", data=f"dl_stat{wah}")],
@@ -957,8 +979,11 @@ async def pencode(message):
                 await etch.edit(f"Download of `{filename}` had been cancelled!")
                 await xxx.delete()
                 await nnn.delete()
+                if LOG_CHANNEL:
+                    await op.edit(f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Cancelled the download
+                    `",)
                 DOWNLOAD_CANCEL.clear()
-                WORKING.clear
+                WORKING.clear()
                 return
         except Exception:
             WORKING.clear()
