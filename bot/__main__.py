@@ -257,7 +257,7 @@ async def something():
                     ee = await e.edit(
                         f"{enmoji()} `Downloading…`{dl_info}",
                         buttons=[
-                            [Button.inline("Info", data=f"dl_stat{wah}")],
+                            [Button.inline("ℹ️", data=f"dl_stat{wah}")],
                             [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
                         ],
                     )
@@ -265,7 +265,7 @@ async def something():
                         opp = await op.edit(
                             f"[{sender.first_name}](tg://user?id={user}) `Currently Downloading A Queued Video…`{dl_info}",
                             buttons=[
-                                [Button.inline("Info", data=f"dl_stat{wah}")],
+                                [Button.inline("ℹ️", data=f"dl_stat{wah}")],
                                 [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
                             ],
                         )

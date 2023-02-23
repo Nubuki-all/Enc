@@ -973,7 +973,7 @@ async def pencode(message):
                 user,
                 f"{enmoji()} `Downloading…`{dl_info}",
                 buttons=[
-                    [Button.inline("Info", data=f"dl_stat{wah}")],
+                    [Button.inline("ℹ️", data=f"dl_stat{wah}")],
                     [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
                 ],
             )
@@ -981,7 +981,7 @@ async def pencode(message):
                 opp = await op.edit(
                     f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Is Currently Downloading A Video…`{dl_info}",
                     buttons=[
-                        [Button.inline("Info", data=f"dl_stat{wah}")],
+                        [Button.inline("ℹ️", data=f"dl_stat{wah}")],
                         [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
                     ],
                 )
