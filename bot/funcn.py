@@ -51,7 +51,7 @@ if EABF is True:
     UNLOCK_UNSTABLE.append(1)
 
 if ALWAYS_DEPLOY_LATEST is True:
-    pass # Do_something?
+    pass  # Do_something?
 
 if THUMB:
     os.system(f"wget {THUMB} -O thumb.jpg")
