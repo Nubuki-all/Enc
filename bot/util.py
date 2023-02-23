@@ -42,6 +42,22 @@ def get_readable_time(seconds: int) -> str:
     result += f"{seconds}s"
     return result
 
+async def parse_dl(filename):
+    if UNLOCK_UNSTABLE:
+        try:
+            na = anitopy.parse(name)
+            ne += f"\n\n\n\**MORE Info:** \n"
+        except Exception:
+            na = ""
+            ne = f"\n\n\**Filename:** `{filename}`"
+        if na:
+            for key, value in na.items():
+                ne += f"**{key}:** `{value}`\n"
+            
+    else:
+        ne = "…"
+    return ne
+
 
 async def crc32(filename, chunksize=65536):
     """Compute the CRC-32 checksum of the contents of the given filename"""
@@ -57,7 +73,7 @@ async def wfilter():
     wrelease = Path("Releasefilter.txt")
     if wname.is_file():
         with open("Namefilter.txt", "r") as file:
-            wnamer = file.read().strip()
+            wnamer = file.read().strip
             file.close()
     else:
         wnamer = ""
