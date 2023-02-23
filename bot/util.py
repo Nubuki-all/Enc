@@ -47,13 +47,15 @@ async def parse_dl(filename):
     if UNLOCK_UNSTABLE:
         try:
             na = anitopy.parse(name)
-            ne += f"\n\n\n\\**MORE Info:** \n"
+            ne = f"\n\n\n**MORE Info:**"
         except Exception:
+            ers = traceback.format_exc()
+            LOGS.info(ers)
             na = ""
-            ne = f"\n\n\\**Filename:** `{filename}`"
+            ne = f"\n\n**Filename:** `{filename}`"
         if na:
             for key, value in na.items():
-                ne += f"**{key}:** `{value}`\n"
+                ne += f"\n**{key}:** `{value}`"
 
     else:
         ne = "…"
