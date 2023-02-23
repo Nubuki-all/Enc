@@ -250,7 +250,7 @@ async def something():
                     mssg_r = await message.reply("`Downloading…`")
                     download_task = await download2(dl, message, mssg_r)
                     wah = code(dl)
-                    ee = await e.edit(f"`▼ Downloding Queue Files ▼`"
+                    ee = await e.edit(f"`▼ Downloding Queue Files ▼`",
                         buttons=[
                             [Button.inline("Info", data=f"dl_stat{wah}")],
                             [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
