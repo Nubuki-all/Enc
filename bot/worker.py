@@ -879,7 +879,7 @@ async def pencode(message):
                     )
             user = message.from_user.id
             if user == message.chat.id and UNLOCK_UNSTABLE:
-                QUEUE.update({doc.id: [name, user]})
+                QUEUE.update({message.id: [name, user]})
             else:
                 QUEUE.update({doc.file_id: [name, user]})
             await save2db()
