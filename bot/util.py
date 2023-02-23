@@ -46,7 +46,7 @@ def get_readable_time(seconds: int) -> str:
 async def parse_dl(filename):
     if UNLOCK_UNSTABLE:
         try:
-            na = anitopy.parse(name)
+            na = anitopy.parse(filename)
             ne = f"\n\n\n**MORE Info:**"
         except Exception:
             ers = traceback.format_exc()
