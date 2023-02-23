@@ -966,7 +966,7 @@ async def pencode(message):
                 )
             user = message.from_user.id
             wah = code(dl)
-            me = await app.get_users("me")
+            await app.get_users("me")
             nnn = await bot.send_message(
                 user,
                 f"`‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ `",
