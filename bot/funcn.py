@@ -305,7 +305,7 @@ async def get_leech_file():
     try:
         dt_ = glob.glob("downloads/*")
         data = max(dt_, key=os.path.getctime)
-        dat = data.replace("downloads/", '')
+        dat = data.replace("downloads/", "")
     except Exception:
         dat = ""
         ers = traceback.format_exc()
