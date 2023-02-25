@@ -202,17 +202,18 @@ async def upload2(from_user_id, filepath, reply, thum, caption, message=""):
 
 
 async def cancel_dl(e):
-    LOGS.info(e)
     if (
         str(e.query.user_id) not in OWNER
         and e.query.user_id != DEV
         and str(e.query.user_id) not in str(USER_MAN[0])
     ):
-        ans = "You're Not Allowed to do this!"
+        ans = "You're not allowed to do this!"
         return await e.answer(ans, cache_time=0, alert=False)
     try:
+        ans = "Cancelling downloading please wait…"
+        await e.answer(ans, cache_time=0, alert=False)
         global download_task
-        DOWNLOAD_CANCEL.append(1)
+        DOWNLOAD_CANCEL.append(e.query.user_id)
         try:
             download_task.cancel()
         except Exception:
@@ -1142,12 +1143,13 @@ async def pencode(message):
             except Exception:
                 pass
             if DOWNLOAD_CANCEL:
-                await etch.edit(f"Download of `{filename}` had been cancelled!")
+                canceller = await app.get_users(DOWNLOAD_CANCEL[0])
+                await etch.edit(f"Download of `{filename}` was cancelled by [{canceller.first_name}](tg://user?id={DOWNLOAD_CANCEL[0]}).")
                 await xxx.delete()
                 await nnn.delete()
                 if LOG_CHANNEL:
                     await op.edit(
-                        f"[{message.from_user.first_name}'s](tg://user?id={message.from_user.id}) `download` has been cancelled."
+                        f"[{message.from_user.first_name}'s](tg://user?id={message.from_user.id}) `download` was cancelled by [{canceller.first_name}](tg://user?id={DOWNLOAD_CANCEL[0]})."
                     )
                 DOWNLOAD_CANCEL.clear()
                 WORKING.clear()
