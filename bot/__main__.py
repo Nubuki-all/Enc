@@ -475,7 +475,7 @@ async def something():
                 pcap = await custcap(name, fname)
                 if message:
                     ds = await upload2(e.chat_id, out, nnn, thum, pcap, message)
-                 else:
+                else:
                      ds = await upload2(e.chat_id, out, nnn, thum, pcap)
                 await nnn.delete()
                 if FCHANNEL:
