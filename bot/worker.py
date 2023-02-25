@@ -1147,7 +1147,7 @@ async def pencode(message):
                 await nnn.delete()
                 if LOG_CHANNEL:
                     await op.edit(
-                        f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Cancelled the download`"
+                        f"[{message.from_user.first_name}'s](tg://user?id={message.from_user.id}) `download` has been cancelled."
                     )
                 DOWNLOAD_CANCEL.clear()
                 WORKING.clear()

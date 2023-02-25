@@ -301,6 +301,19 @@ async def channel_log(error):
             LOGS.info(ers)
 
 
+async def get_leech_file():
+    try:
+        dt_ = glob.glob("downloads/*")
+        data = max(dt_, key=os.path.getctime)
+        dat = data.replace("downloads/", '')
+    except Exception:
+        dat = ""
+        ers = traceback.format_exc()
+        LOGS.info(ers)
+        await channel_log(ers)
+    return dat
+
+
 async def get_leech_name(url):
     try:
         os.system(f"aria2c --follow-torrent=false -d temp {url}")

@@ -301,7 +301,7 @@ async def something():
                         uri = file
                     if uri:
                         if mssg_r:
-                            await mssg_r.edit("`Downloading Torrent…`")
+                            await mssg_r.edit("`Downloading Torrent\nPlease wait…`")
                         cmd = f"aria2c --seed-time=0 -d downloads {uri}"
                         process = await asyncio.create_subprocess_shell(
                             cmd,
@@ -318,7 +318,7 @@ async def something():
                                 await e.delete()
                                 if LOG_CHANNEL:
                                     await op.edit(
-                                        f"[{sender.first_name}'s](tg://user?id={user}) `Download has been cancelled.`",
+                                        f"[{sender.first_name}'s](tg://user?id={user}) `download has been cancelled.`",
                                     )
                                 if QUEUE:
                                     QUEUE.pop(list(QUEUE.keys())[0])
@@ -326,6 +326,39 @@ async def something():
                                 await save2db()
                                 await qclean()
                                 continue
+                            else:
+                                if len(stderr) > 4095:
+                                    yo = await app.send_message(user, "Uploading Error logs…")
+                                    out_file = "aria2c_error.txt"
+                                    with open(out_file, "w") as file:
+                                        file.write(str(stderr.decode()))
+                                        wrror = await yo.reply_document(
+                                    document=out_file,
+                                    force_document=True,
+                                    quote=True,
+                                    caption="`ffmpeg error`",
+                                        )
+                                    yo.delete()
+                                    os.remove(out_file)
+                                else:
+                                    wrror = await nn.reply(stderr.decode())
+                                nnn = await wrror.reply(
+                                    f"🔺 **Downloading of** `{name}` **Failed!**"
+                                )
+                                try:
+                                    await nn.delete()
+                                    await wak.delete()
+                                except Exception:
+                                    pass
+                                if QUEUE:
+                                    QUEUE.pop(list(QUEUE.keys())[0])
+                                await save2db()
+                                await qclean()
+                                await channel_log(stderr.decode())
+                                DOWNLOAD_CANCEL.clear()
+                                continue
+                        name = await get_leech_file()
+                        dl = "downloads/" + name
                     try:
                         await download_task
                     except Exception:
@@ -466,6 +499,7 @@ async def something():
                             pass
                         if QUEUE:
                             QUEUE.pop(list(QUEUE.keys())[0])
+                        await channel_log(stderr.decode())
                         await save2db()
                         continue
                 except BaseException:
