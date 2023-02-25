@@ -328,15 +328,17 @@ async def something():
                                 continue
                             else:
                                 if len(stderr) > 4095:
-                                    yo = await app.send_message(user, "Uploading Error logs…")
+                                    yo = await app.send_message(
+                                        user, "Uploading Error logs…"
+                                    )
                                     out_file = "aria2c_error.txt"
                                     with open(out_file, "w") as file:
                                         file.write(str(stderr.decode()))
                                         wrror = await yo.reply_document(
-                                    document=out_file,
-                                    force_document=True,
-                                    quote=True,
-                                    caption="`ffmpeg error`",
+                                            document=out_file,
+                                            force_document=True,
+                                            quote=True,
+                                            caption="`ffmpeg error`",
                                         )
                                     yo.delete()
                                     os.remove(out_file)
