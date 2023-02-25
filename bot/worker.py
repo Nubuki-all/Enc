@@ -906,6 +906,7 @@ async def enleech(event):
                             )
                             temp = temp - 1
                             temp2 = temp2 + 1
+                            await asyncio.sleep(10)
                             continue
                         if not file_name:
                             await event2.reply(
@@ -913,14 +914,16 @@ async def enleech(event):
                             )
                             temp = temp - 1
                             temp2 = temp2 + 1
+                            await asyncio.sleep(5)
                             continue
                         for item in QUEUE.values():
                             if file_name in item:
                                 await event2.reply(
-                                    "**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**"
+                                    "**THIS TORRENT HAS ALREADY BEEN ADDED TO QUEUE**"
                                 )
                                 temp = temp - 1
                                 temp2 = temp2 + 1
+                                await asyncio.sleep(5)
                                 continue
                         if not LOCKFILE:
                             LOCKFILE.append("leechlock")
@@ -930,10 +933,11 @@ async def enleech(event):
                             QUEUE.update({uri: [file_name, event.sender_id]})
                         await save2db()
                         await event2.reply(
-                            "**Added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
+                            "**Torrent added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
                         )
                         temp = temp - 1
                         temp2 = temp2 + 1
+                        await asyncio.sleep(5)
                     if LOCKFILE[0] == "leechlock":
                         LOCKFILE.clear()
                     return

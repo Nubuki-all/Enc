@@ -495,7 +495,7 @@ async def skip(e):
         and e.query.user_id != DEV
         and str(e.query.user_id) not in str(USER_MAN[0])
     ):
-        ans = "You're Not Allowed to do this!"
+        ans = "You're not allowed to do this!"
         return await e.answer(ans, cache_time=0, alert=False)
     wah = e.pattern_match.group(1).decode("UTF-8")
     wh = decode(wah)
