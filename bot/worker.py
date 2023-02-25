@@ -1120,8 +1120,7 @@ async def pencode(message):
             dl_info = await parse_dl(filename)
             nnn = await bot.send_message(
                 user,
-                reply_to=message.id,
-                f"{enmoji()} `Downloading…`{dl_info}",
+                f"{enmoji()} `Downloading…`{dl_info}",  reply_to=message.id,
                 buttons=[
                     [Button.inline("ℹ️", data=f"dl_stat{wah}")],
                     [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
