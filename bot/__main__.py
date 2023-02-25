@@ -264,10 +264,16 @@ async def something():
                 s = dt.now()
                 try:
                     dl = "downloads/" + name
-                    if message.text or is_url(file) is True:
-                        pass
+                    if message:
+                        if message.text:
+                            pass
+                        else:
+                            download_task = await download2(dl, file, message, mssg_r)
                     else:
-                        download_task = await download2(dl, file, message, mssg_r)
+                        if is_url(str(file)) is True:
+                            pass
+                        else:
+                            download_task = await download2(dl, file, message, mssg_r)
                     wah = code(dl)
                     dl_info = await parse_dl(name)
                     ee = await e.edit(
