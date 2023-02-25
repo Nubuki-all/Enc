@@ -846,6 +846,17 @@ async def stats(e):
         )
 
 
+async def enshell(cmd):
+    # Create a subprocess and wait for it to finish
+    process = await asyncio.create_subprocess_shell(
+        cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+    )
+    stdout, stderr = await process.communicate()
+
+    # Return the output of the command and the process object
+    return (process, stdout.decode(), stderr.decode())
+
+
 async def encod(event):
     try:
         EVENT2.clear()
@@ -1123,7 +1134,6 @@ async def pencode(message):
             await app.get_users("me")
             dl_info = await parse_dl(filename)
             nnn = await event.reply(
-                user,
                 f"{enmoji()} `Downloading…`{dl_info}",
                 buttons=[
                     [Button.inline("ℹ️", data=f"dl_stat{wah}")],
@@ -1145,13 +1155,13 @@ async def pencode(message):
             if DOWNLOAD_CANCEL:
                 canceller = await app.get_users(DOWNLOAD_CANCEL[0])
                 await etch.edit(
-                    f"Download of `{filename}` was cancelled by [{canceller.first_name}](tg://user?id={DOWNLOAD_CANCEL[0]})."
+                    f"Download of `{filename}` was cancelled by [{canceller.first_name}.](tg://user?id={DOWNLOAD_CANCEL[0]})"
                 )
                 await xxx.delete()
                 await nnn.delete()
                 if LOG_CHANNEL:
                     await op.edit(
-                        f"[{message.from_user.first_name}'s](tg://user?id={message.from_user.id}) `download` was cancelled by [{canceller.first_name}](tg://user?id={DOWNLOAD_CANCEL[0]})."
+                        f"[{message.from_user.first_name}'s](tg://user?id={message.from_user.id}) `download` was cancelled by [{canceller.first_name}.](tg://user?id={DOWNLOAD_CANCEL[0]})"
                     )
                 DOWNLOAD_CANCEL.clear()
                 WORKING.clear()

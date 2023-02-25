@@ -266,14 +266,25 @@ async def something():
                     dl = "downloads/" + name
                     if message:
                         if message.text:
-                            pass
+                            if " " in message.text:
+                                uri = message.text.split(" ", maxsplit=1)[1]
+                            else:
+                                uri = message.text
                         else:
                             download_task = await download2(dl, file, message, mssg_r)
                     else:
                         if is_url(str(file)) is True:
-                            pass
+                            uri = file
                         else:
                             download_task = await download2(dl, file, message, mssg_r)
+                    if uri:
+                        if mssg_r:
+                            await mssg_r.edit("`Downloading Torrent\nPlease wait…`")
+                        cmd = f"aria2c --seed-time=0 -d downloads {uri}"
+                        leech_task = asyncio.create_task(enshell(cmd))
+                        await asyncio.sleep(3)
+                        name = await get_leech_file()
+                        dl = "downloads/" + name
                     wah = code(dl)
                     dl_info = await parse_dl(name)
                     ee = await e.edit(
@@ -291,35 +302,19 @@ async def something():
                                 [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
                             ],
                         )
-                    if message:
-                        if message.text:
-                            if " " in message.text:
-                                uri = message.text.split(" ", maxsplit=1)[1]
-                            else:
-                                uri = message.text
-                    if is_url(str(file)) is True:
-                        uri = file
                     if uri:
-                        if mssg_r:
-                            await mssg_r.edit("`Downloading Torrent\nPlease wait…`")
-                        cmd = f"aria2c --seed-time=0 -d downloads {uri}"
-                        process = await asyncio.create_subprocess_shell(
-                            cmd,
-                            stdout=asyncio.subprocess.PIPE,
-                            stderr=asyncio.subprocess.PIPE,
-                        )
-                        stdout, stderr = await process.communicate()
+                        process, stdout, stderr = await leech_task
                         if process.returncode != 0:
                             if DOWNLOAD_CANCEL:
                                 canceller = await app.get_users(DOWNLOAD_CANCEL[0])
                                 if message:
                                     await mssg_r.edit(
-                                        f"Download of `{name}` was cancelled! by [{canceller.first_name}](tg://user?id={DOWNLOAD_CANCEL[0]})"
+                                        f"Download of `{name}` was cancelled by [{canceller.first_name}.](tg://user?id={DOWNLOAD_CANCEL[0]})"
                                     )
                                 await e.delete()
                                 if LOG_CHANNEL:
                                     await op.edit(
-                                        f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by [{canceller.first_name}](tg://user?id={DOWNLOAD_CANCEL[0]}).`",
+                                        f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by` [{canceller.first_name}.](tg://user?id={DOWNLOAD_CANCEL[0]})",
                                     )
                                 if QUEUE:
                                     QUEUE.pop(list(QUEUE.keys())[0])
@@ -334,7 +329,7 @@ async def something():
                                     )
                                     out_file = "aria2c_error.txt"
                                     with open(out_file, "w") as file:
-                                        file.write(str(stderr.decode()))
+                                        file.write(str(stderr)
                                         wrror = await yo.reply_document(
                                             document=out_file,
                                             force_document=True,
@@ -344,7 +339,7 @@ async def something():
                                     yo.delete()
                                     os.remove(out_file)
                                 else:
-                                    wrror = await nn.reply(stderr.decode())
+                                    wrror = await nn.reply(stderr)
                                 nnn = await wrror.reply(
                                     f"🔺 **Downloading of** `{name}` **Failed!**"
                                 )
@@ -357,11 +352,9 @@ async def something():
                                     QUEUE.pop(list(QUEUE.keys())[0])
                                 await save2db()
                                 await qclean()
-                                await channel_log(stderr.decode())
+                                await channel_log(stderr)
                                 DOWNLOAD_CANCEL.clear()
                                 continue
-                        name = await get_leech_file()
-                        dl = "downloads/" + name
                     try:
                         await download_task
                     except Exception:
@@ -370,12 +363,12 @@ async def something():
                         canceller = await app.get_users(DOWNLOAD_CANCEL[0])
                         if message:
                             await mssg_r.edit(
-                                f"Download of `{name}` was cancelled by [{canceller.first_name}](tg://user?id={DOWNLOAD_CANCEL[0]})."
+                                f"Download of `{name}` was cancelled by [{canceller.first_name}](tg://user?id={DOWNLOAD_CANCEL[0]})"
                             )
                         await e.delete()
                         if LOG_CHANNEL:
                             await op.edit(
-                                f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by [{canceller.first_name}](tg://user?id={DOWNLOAD_CANCEL[0]}).`",
+                                f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by` [{canceller.first_name}.](tg://user?id={DOWNLOAD_CANCEL[0]})",
                             )
                         if QUEUE:
                             QUEUE.pop(list(QUEUE.keys())[0])
