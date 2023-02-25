@@ -1144,7 +1144,9 @@ async def pencode(message):
                 pass
             if DOWNLOAD_CANCEL:
                 canceller = await app.get_users(DOWNLOAD_CANCEL[0])
-                await etch.edit(f"Download of `{filename}` was cancelled by [{canceller.first_name}](tg://user?id={DOWNLOAD_CANCEL[0]}).")
+                await etch.edit(
+                    f"Download of `{filename}` was cancelled by [{canceller.first_name}](tg://user?id={DOWNLOAD_CANCEL[0]})."
+                )
                 await xxx.delete()
                 await nnn.delete()
                 if LOG_CHANNEL:
