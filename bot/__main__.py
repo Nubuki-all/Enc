@@ -441,7 +441,8 @@ async def something():
                     wah2 = code(hehe)
                 hehe = f"{out};{dl};{list(QUEUE.keys())[0]}"
                 wah = code(hehe)
-                if not uri: wah2 = wah
+                if not uri:
+                    wah2 = wah
                 if message:
                     await mssg_r.edit("`Waiting For Encoding To Complete`")
                 nn = await e.edit(
