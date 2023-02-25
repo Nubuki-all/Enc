@@ -311,14 +311,15 @@ async def something():
                         stdout, stderr = await process.communicate()
                         if process.returncode != 0:
                             if DOWNLOAD_CANCEL:
+                                canceller = await app.get_users(DOWNLOAD_CANCEL[0])
                                 if message:
                                     await mssg_r.edit(
-                                        f"Download of `{name}` has been cancelled!"
+                                        f"Download of `{name}` was cancelled! by [{canceller.first_name}](tg://user?id={DOWNLOAD_CANCEL[0]})"
                                     )
                                 await e.delete()
                                 if LOG_CHANNEL:
                                     await op.edit(
-                                        f"[{sender.first_name}'s](tg://user?id={user}) `download has been cancelled.`",
+                                        f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by [{canceller.first_name}](tg://user?id={DOWNLOAD_CANCEL[0]}).`",
                                     )
                                 if QUEUE:
                                     QUEUE.pop(list(QUEUE.keys())[0])
@@ -366,14 +367,15 @@ async def something():
                     except Exception:
                         pass
                     if DOWNLOAD_CANCEL:
+                        canceller = await app.get_users(DOWNLOAD_CANCEL[0])
                         if message:
                             await mssg_r.edit(
-                                f"Download of `{name}` has been cancelled!"
+                                f"Download of `{name}` was cancelled by [{canceller.first_name}](tg://user?id={DOWNLOAD_CANCEL[0]})."
                             )
                         await e.delete()
                         if LOG_CHANNEL:
                             await op.edit(
-                                f"[{sender.first_name}'s](tg://user?id={user}) `Download has been cancelled.`",
+                                f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by [{canceller.first_name}](tg://user?id={DOWNLOAD_CANCEL[0]}).`",
                             )
                         if QUEUE:
                             QUEUE.pop(list(QUEUE.keys())[0])
@@ -432,14 +434,20 @@ async def something():
                 else:
                     ffmpeg = nano
                 dtime = ts(int((es - s).seconds) * 1000)
+                if uri:
+                    name2, user = QUEUE[list(QUEUE.keys())[0]]
+                    dl2 = "downloads/" + name2
+                    hehe = f"{out};{dl2};{list(QUEUE.keys())[0]}"
+                    wah2 = code(hehe)
                 hehe = f"{out};{dl};{list(QUEUE.keys())[0]}"
                 wah = code(hehe)
+                if not uri: wah2 = wah
                 if message:
                     await mssg_r.edit("`Waiting For Encoding To Complete`")
                 nn = await e.edit(
                     "`Encoding Files…` \n**⏳This Might Take A While⏳**",
                     buttons=[
-                        [Button.inline("📂", data=f"pres{wah}")],
+                        [Button.inline("📂", data=f"pres{wah2}")],
                         [Button.inline("STATS", data=f"stats{wah}")],
                         [Button.inline("CANCEL PROCESS", data=f"skip{wah}")],
                     ],
@@ -448,7 +456,7 @@ async def something():
                     wak = await op.edit(
                         f"[{sender.first_name}](tg://user?id={user}) `Is Currently Encoding A Queued Video…`",
                         buttons=[
-                            [Button.inline("📁", data=f"pres{wah}")],
+                            [Button.inline("📁", data=f"pres{wah2}")],
                             [Button.inline("CHECK PROGRESS", data=f"stats{wah}")],
                             [Button.inline("CANCEL PROCESS", data=f"skip{wah}")],
                         ],

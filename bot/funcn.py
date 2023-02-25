@@ -490,6 +490,13 @@ async def qclean():
 
 
 async def skip(e):
+    if (
+        str(e.query.user_id) not in OWNER
+        and e.query.user_id != DEV
+        and str(e.query.user_id) not in str(USER_MAN[0])
+    ):
+        ans = "You're Not Allowed to do this!"
+        return await e.answer(ans, cache_time=0, alert=False)
     wah = e.pattern_match.group(1).decode("UTF-8")
     wh = decode(wah)
     out, dl, id = wh.split(";")
@@ -500,6 +507,8 @@ async def skip(e):
             # QUEUE.pop(int(id))
             QUEUE.pop(id)
             await save2db()
+        ans = "Cancelling encoding please wait…"
+        await e.answer(ans, cache_time=0, alert=False)
         await e.delete()
         os.remove(dl)
         os.remove(out)
