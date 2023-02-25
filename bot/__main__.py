@@ -121,7 +121,7 @@ async def _(e):
     await eval(e)
 
 
-@bot.on(events.NewMessage(pattern="/l"))
+@bot.on(events.NewMessage(pattern=r"^/l(\s+.+)?$"))
 async def _(e):
     await enleech(e)
 
@@ -131,7 +131,7 @@ async def _(app, message):
     await eval_message_p(app, message)
 
 
-@app.on_message(filters.incoming & filt.command(["update"]))
+@app.on_message(filters.incoming & filters.command(["update"]))
 async def _(app, message):
     await update2(app, message)
 
