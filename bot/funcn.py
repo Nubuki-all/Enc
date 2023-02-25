@@ -54,9 +54,6 @@ uptime = dt.now()
 if EABF is True:
     UNLOCK_UNSTABLE.append(1)
 
-if ALWAYS_DEPLOY_LATEST is True:
-    pass  # Do_something?
-
 if THUMB:
     os.system(f"wget {THUMB} -O thumb.jpg")
 
@@ -255,17 +252,8 @@ No_Flood = {}
 
 async def updater():
     try:
-        envp = Path(".env")
-        ffmpegp = Path("ffmpeg.txt")
-        filterp = Path("filter.txt")
-        envars = await varsgetter(envp)
-        ffmpegs = await varsgetter(ffmpegp)
-        filters = await varsgetter(filterp)
         await qclean()
         bashrun(["python3", "update.py"])
-        await varssaver(envars, envp)
-        await varssaver(ffmpegs, ffmpegp)
-        await varssaver(filters, filterp)
         os.execl(sys.executable, sys.executable, "-m", "bot")
     except Exception:
         ers = traceback.format_exc()

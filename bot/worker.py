@@ -978,7 +978,7 @@ async def enleech(event):
         for item in QUEUE.values():
             if file_name in item:
                 return await event.reply(
-                    "**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**"
+                    "**THIS TORRENT HAS ALREADY BEEN ADDED TO QUEUE**"
                 )
         if UNLOCK_UNSTABLE:
             QUEUE.update({event_id: [file_name, event.sender_id]})
@@ -986,7 +986,7 @@ async def enleech(event):
             QUEUE.update({uri: [file_name, event.sender_id]})
         await save2db()
         return await event.reply(
-            "**Added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
+            "**Torrent added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
         )
     except Exception:
         ers = traceback.format_exc()
