@@ -931,7 +931,7 @@ async def enleech(event):
             return await event.reply("`Torrent is…\neither not a video\nor is a batch torrent which is currently not supported.`")
         for item in QUEUE.values():
             if file_name in item:
-                return await event.reply("**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**"
+                return await event.reply("**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**")
         if UNLOCK_UNSTABLE:
             QUEUE.update({event_id: [file_name, event.sender_id]})
         else:

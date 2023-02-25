@@ -239,7 +239,7 @@ async def something():
                 try:
                     message = await app.get_messages(user, int(file))
                     mssg_r = await message.reply("`Downloading…`", quote=True)
-                    e = await bot.send_message(user, reply_to=message.id "`▼ Downloding Queue Files ▼`")
+                    e = await bot.send_message(user, reply_to=message.id, "`▼ Downloding Queue Files ▼`")
                 except Exception:
                     message = ""
                     mssg_r = ""
