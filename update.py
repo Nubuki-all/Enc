@@ -10,7 +10,7 @@ except Exception:
     print("Environment vars Missing")
     traceback.print_exc()
 
- def varsgetter(files):
+def varsgetter(files):
     evars = ""
     if files.is_file():
         with open(files, "r") as file:
