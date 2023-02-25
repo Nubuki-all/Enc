@@ -204,12 +204,12 @@ async def upload2(from_user_id, filepath, reply, thum, caption, message=""):
 async def cancel_dl(e):
     LOGS.info(e)
     if (
-        str(e.sender_id) not in OWNER
-        and e.sender_id != DEV
-        and str(e.sender_id) not in str(USER_MAN[0])
+        str(e.query.user_id) not in OWNER
+        and e.query.user_id != DEV
+        and str(e.query.user_id) not in str(USER_MAN[0])
     ):
         ans = "You're Not Allowed to do this!"
-        return await e.answer(ans, cache_time=0, alert=True)
+        return await e.answer(ans, cache_time=0, alert=False)
     try:
         global download_task
         DOWNLOAD_CANCEL.append(1)
@@ -1027,8 +1027,6 @@ async def pencode(message):
                         "**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**"
                     )
             user = message.from_user.id
-            USER_MAN.clear()
-            USER_MAN.append(user)
             if user == message.chat.id and UNLOCK_UNSTABLE:
                 QUEUE.update({message.id: [name, user]})
             else:
@@ -1052,6 +1050,8 @@ async def pencode(message):
         dir = f"downloads/"
         try:
             media_type = str(message.media)
+            USER_MAN.clear()
+            USER_MAN.append(user)
             global download_task
             if media_type == "MessageMediaType.DOCUMENT":
                 # if hasattr(event.media, "document"):
