@@ -309,7 +309,7 @@ async def something():
                                 canceller = await app.get_users(DOWNLOAD_CANCEL[0])
                                 if message:
                                     await mssg_r.edit(
-                                        f"Download of `{name}` was cancelled by {canceller.mention(style="md")}"
+                                        f"Download of `{name}` was cancelled by {canceller.mention(style='md')}"
                                     )
                                 await e.delete()
                                 if LOG_CHANNEL:
@@ -363,7 +363,7 @@ async def something():
                         canceller = await app.get_users(DOWNLOAD_CANCEL[0])
                         if message:
                             await mssg_r.edit(
-                                f"Download of `{name}` was cancelled by {canceller.mention(style="md")}"
+                                f"Download of `{name}` was cancelled by {canceller.mention(style='md')}"
                             )
                         await e.delete()
                         if LOG_CHANNEL:

@@ -1159,7 +1159,7 @@ async def pencode(message):
             if DOWNLOAD_CANCEL:
                 canceller = await app.get_users(DOWNLOAD_CANCEL[0])
                 await etch.edit(
-                    f"Download of `{filename}` was cancelled by {canceller.mention(style="md")}."
+                    f"Download of `{filename}` was cancelled by {canceller.mention(style='md')}."
                 )
                 await xxx.delete()
                 await nnn.delete()
