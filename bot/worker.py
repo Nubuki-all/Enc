@@ -1050,8 +1050,6 @@ async def pencode(message):
         dir = f"downloads/"
         try:
             media_type = str(message.media)
-            USER_MAN.clear()
-            USER_MAN.append(user)
             global download_task
             if media_type == "MessageMediaType.DOCUMENT":
                 # if hasattr(event.media, "document"):
@@ -1116,6 +1114,8 @@ async def pencode(message):
                     )
                 )
             user = message.from_user.id
+            USER_MAN.clear()
+            USER_MAN.append(user)
             wah = code(dl)
             await app.get_users("me")
             dl_info = await parse_dl(filename)
