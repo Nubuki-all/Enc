@@ -329,7 +329,7 @@ async def something():
                                     )
                                     out_file = "aria2c_error.txt"
                                     with open(out_file, "w") as file:
-                                        file.write(str(stderr)
+                                        file.write(str(stderr))
                                         wrror = await yo.reply_document(
                                             document=out_file,
                                             force_document=True,
