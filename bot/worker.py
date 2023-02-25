@@ -203,9 +203,9 @@ async def upload2(from_user_id, filepath, reply, thum, caption, message=""):
 
 async def cancel_dl(e):
     if (
-        str(event.query.user) not in OWNER
-        and event.query.user != DEV
-        and str(event.query.user) not in str(USER_MAN[0])
+        str(e.query.user) not in OWNER
+        and e.query.user != DEV
+        and str(e.query.user) not in str(USER_MAN[0])
     ):
         ans = "You're Not Allowed to do this!"
         return await e.answer(ans, cache_time=0, alert=True)
