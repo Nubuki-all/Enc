@@ -9,9 +9,31 @@ try:
 except Exception:
     print("Environment vars Missing")
     traceback.print_exc()
+
+ def varsgetter(files):
+    evars = ""
+    if files.is_file():
+        with open(files, "r") as file:
+            evars = file.read().rstrip()
+            file.close()
+    return evars
+
+
+def varssaver(evars, files):
+    if evars:
+        file = open(files, "w")
+        file.write(str(evars) + "\n")
+        file.close()
+
+ envp = Path(".env")
+ ffmpegp = Path("ffmpeg.txt")
+ filterp = Path("filter.txt")
+ envars = varsgetter(envp)
+ ffmpegs = varsgetter(ffmpegp)
+ filters = varsgetter(filterp)
+ 
 try:
-    if not UPSTREAM_REPO:
-        UPSTREAM_REPO = "https://github.com/Nubuki-all/Tg-coder"
+  if UPSTREAM_REPO:
     if not UPSTREAM_BRANCH:
         UPSTREAM_BRANCH = "main"
     if os.path.exists('.git'):
@@ -26,6 +48,9 @@ try:
                        && git reset --hard origin/{UPSTREAM_BRANCH} -q"], shell=True)
     if update.returncode == 0:
         print('Successfully updated with latest commit from UPSTREAM_REPO')
+        varssaver(envars, envp)
+        varssaver(ffmpegs, ffmpegp)
+        varssaver(filters, filterp)
     else:
         print('Something went wrong while updating,maybe invalid upstream repo?')
 except Exception:
