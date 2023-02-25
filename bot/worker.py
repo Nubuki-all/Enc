@@ -941,7 +941,7 @@ async def enleech(event):
     except Exception:
         ers = traceback.format_exc()
         LOGS.info(ers)
-        iawait channel_log(ers)
+        await channel_log(ers)
         return await event.reply("An Unknown error Occurred.")
 
 
