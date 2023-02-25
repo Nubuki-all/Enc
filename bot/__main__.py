@@ -239,7 +239,9 @@ async def something():
                 try:
                     message = await app.get_messages(user, int(file))
                     mssg_r = await message.reply("`Downloading…`", quote=True)
-                    e = await bot.send_message(user, reply_to=message.id, "`▼ Downloding Queue Files ▼`")
+                    e = await bot.send_message(
+                        user, reply_to=message.id, "`▼ Downloding Queue Files ▼`"
+                    )
                 except Exception:
                     message = ""
                     mssg_r = ""
@@ -278,18 +280,23 @@ async def something():
                     if message.text or is_url(file) is True:
                         if " " in message.text:
                             uri = message.text.split(" ", maxsplit=1)[1]
-                        else: uri = message.text
+                        else:
+                            uri = message.text
                         if mssg_r:
                             await mssg_r.edit("`Downloading Torrent…`")
                         cmd = f"aria2c --seed-time=0 -d downloads {uri}"
                         process = await asyncio.create_subprocess_shell(
-                            cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+                            cmd,
+                            stdout=asyncio.subprocess.PIPE,
+                            stderr=asyncio.subprocess.PIPE,
                         )
                         stdout, stderr = await process.communicate()
                         if process.returncode != 0:
                             if DOWNLOAD_CANCEL:
                                 if message:
-                                    await mssg_r.edit(f"Download of `{name}` has been cancelled!")
+                                    await mssg_r.edit(
+                                        f"Download of `{name}` has been cancelled!"
+                                    )
                                 await e.delete()
                                 if LOG_CHANNEL:
                                     await op.edit(
@@ -448,12 +455,16 @@ async def something():
                     LOGS.info(er)
                     LOGS.info(stderr.decode)
                     await channel_log(er)
-                    await nn.edit("An Unknown error occurred waiting for 30 seconds before trying again. ")
+                    await nn.edit(
+                        "An Unknown error occurred waiting for 30 seconds before trying again. "
+                    )
                     if LOG_CHANNEL:
-                        await wak.edit("An unknown error occurred waiting for 30 seconds before trying again.")
+                        await wak.edit(
+                            "An unknown error occurred waiting for 30 seconds before trying again."
+                        )
                     await asyncio.sleep(30)
                     await qclean()
-                    continue 
+                    continue
                 ees = dt.now()
                 time.time()
                 try:
@@ -476,7 +487,7 @@ async def something():
                 if message:
                     ds = await upload2(e.chat_id, out, nnn, thum, pcap, message)
                 else:
-                     ds = await upload2(e.chat_id, out, nnn, thum, pcap)
+                    ds = await upload2(e.chat_id, out, nnn, thum, pcap)
                 await nnn.delete()
                 if FCHANNEL:
                     chat = int(FCHANNEL)
