@@ -121,6 +121,11 @@ async def _(e):
     await eval(e)
 
 
+@bot.on(events.NewMessage(pattern="/l"))
+async def _(e):
+    await enleech(e)
+
+
 @app.on_message(filters.incoming & filters.command(["peval"]))
 async def _(app, message):
     await eval_message_p(app, message)
