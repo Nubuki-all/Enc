@@ -1000,6 +1000,7 @@ async def pencode(message):
         if message.document:
             if message.document.mime_type not in video_mimetype:
                 return
+        event = await bot.get_messages(message.chat.id, ids=message.id)
         if WORKING or QUEUE or LOCKFILE:
             xxx = await message.reply("`Adding To Queue`", quote=True)
             media_type = str(message.media)
@@ -1026,10 +1027,11 @@ async def pencode(message):
                     return await xxx.edit(
                         "**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**"
                     )
-            user = message.from_user.id
-            if user == message.chat.id and UNLOCK_UNSTABLE:
+            if UNLOCK_UNSTABLE:
+                user = message.chat.id
                 QUEUE.update({message.id: [name, user]})
             else:
+                user = message.from_user.id
                 QUEUE.update({doc.file_id: [name, user]})
             await save2db()
             return await xxx.edit(
@@ -1119,10 +1121,9 @@ async def pencode(message):
             wah = code(dl)
             await app.get_users("me")
             dl_info = await parse_dl(filename)
-            nnn = await bot.send_message(
+            nnn = await event.reply(
                 user,
                 f"{enmoji()} `Downloading…`{dl_info}",
-                reply_to=message.id,
                 buttons=[
                     [Button.inline("ℹ️", data=f"dl_stat{wah}")],
                     [Button.inline("CANCEL", data=f"cancel_dl{wah}")],

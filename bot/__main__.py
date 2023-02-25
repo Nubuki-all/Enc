@@ -131,7 +131,7 @@ async def _(app, message):
     await eval_message_p(app, message)
 
 
-@app.on_message(filters.incoming & filters.command(["update"]))
+@app.on_message(filters.incoming & filt.command(["update"]))
 async def _(app, message):
     await update2(app, message)
 
@@ -239,6 +239,7 @@ async def something():
                 # user = int(OWNER.split()[0])
                 file = list(QUEUE.keys())[0]
                 name, user = QUEUE[list(QUEUE.keys())[0]]
+                uri = ""
                 USER_MAN.clear()
                 USER_MAN.append(user)
                 try:
@@ -284,11 +285,15 @@ async def something():
                                 [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
                             ],
                         )
-                    if message.text or is_url(file) is True:
-                        if " " in message.text:
-                            uri = message.text.split(" ", maxsplit=1)[1]
-                        else:
-                            uri = message.text
+                    if message:
+                        if message.text:
+                            if " " in message.text:
+                                uri = message.text.split(" ", maxsplit=1)[1]
+                            else:
+                                uri = message.text
+                    if  is_url(str(file)) is True:
+                        uri = file
+                    if uri:
                         if mssg_r:
                             await mssg_r.edit("`Downloading Torrent…`")
                         cmd = f"aria2c --seed-time=0 -d downloads {uri}"
@@ -338,7 +343,7 @@ async def something():
                 except Exception:
                     er = traceback.format_exc()
                     LOGS.info(er)
-                    await channel_log(ers)
+                    await channel_log(er)
                     QUEUE.pop(list(QUEUE.keys())[0])
                     await save2db()
                     continue
@@ -542,7 +547,7 @@ async def something():
         except Exception:
             er = traceback.format_exc()
             LOGS.info(er)
-            await channel_log(ers)
+            await channel_log(er)
 
 
 ########### Start ############
