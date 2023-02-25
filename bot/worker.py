@@ -797,7 +797,11 @@ async def dl_stat(e):
     try:
         wah = e.pattern_match.group(1).decode("UTF-8")
         dl = decode(wah)
-        dls = f"{dl}.temp"
+        dl_check = Path(dl)
+        if dl_check.is_file():
+            dls = dl
+        else:
+            dls = f"{dl}.temp"
         ov = hbs(int(Path(dls).stat().st_size))
         name = dl.split("/")[1]
         q = await qparse(name)
@@ -1155,7 +1159,7 @@ async def pencode(message):
             if DOWNLOAD_CANCEL:
                 canceller = await app.get_users(DOWNLOAD_CANCEL[0])
                 await etch.edit(
-                    f"Download of `{filename}` was cancelled by [{canceller.first_name}.](tg://user?id={DOWNLOAD_CANCEL[0]})"
+                    f"Download of `{filename}` was cancelled by {canceller.mention(style="md")}."
                 )
                 await xxx.delete()
                 await nnn.delete()
