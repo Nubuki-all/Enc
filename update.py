@@ -1,5 +1,6 @@
 import os
 from decouple import config
+from pathlib import Path
 from subprocess import run as bashrun
 
 try:
@@ -26,12 +27,12 @@ def varssaver(evars, files):
         file.write(str(evars) + "\n")
         file.close()
 
- envp = Path(".env")
- ffmpegp = Path("ffmpeg.txt")
- filterp = Path("filter.txt")
- envars = varsgetter(envp)
- ffmpegs = varsgetter(ffmpegp)
- filters = varsgetter(filterp)
+envp = Path(".env")
+ffmpegp = Path("ffmpeg.txt")
+filterp = Path("filter.txt")
+envars = varsgetter(envp)
+ffmpegs = varsgetter(ffmpegp)
+filters = varsgetter(filterp)
  
 try:
   if UPSTREAM_REPO:
