@@ -253,6 +253,7 @@ No_Flood = {}
 async def updater():
     try:
         await qclean()
+        await varssaver("0", "update")
         bashrun(["python3", "update.py"])
         os.execl(sys.executable, sys.executable, "-m", "bot")
     except Exception:

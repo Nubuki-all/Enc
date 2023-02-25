@@ -7,6 +7,7 @@ try:
     print("Default var for upstream repo & branch will used if none were given!")
     UPSTREAM_REPO = config("UPSTREAM_REPO", default="")
     UPSTREAM_BRANCH = config("UPSTREAM_BRANCH", default="")
+    ALWAYS_DEPLOY_LATEST = config("ALWAYS_DEPLOY_LATEST", default=False, cast=bool)
 except Exception:
     print("Environment vars Missing")
     traceback.print_exc()
@@ -34,9 +35,12 @@ filterp = Path("filter.txt")
 envars = varsgetter(envp)
 ffmpegs = varsgetter(ffmpegp)
 filters = varsgetter(filterp)
+update_check = Path("update")
 
 try:
-    if UPSTREAM_REPO:
+    if ALWAYS_DEPLOY_LATEST is True or update_check.is_file():
+        if not UPSTREAM_REPO:
+            UPSTREAM_REPO = ""
         if not UPSTREAM_BRANCH:
             UPSTREAM_BRANCH = "main"
         if os.path.exists('.git'):
@@ -51,6 +55,8 @@ try:
                        && git reset --hard origin/{UPSTREAM_BRANCH} -q"], shell=True)
         if update.returncode == 0:
             print('Successfully updated with latest commit from UPSTREAM_REPO')
+            if update_check.is_file():
+                os.remove("update")
             varssaver(envars, envp)
             varssaver(ffmpegs, ffmpegp)
             varssaver(filters, filterp)

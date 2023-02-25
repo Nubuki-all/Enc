@@ -285,7 +285,7 @@ async def something():
                         await asyncio.sleep(3)
                         name = await get_leech_file()
                         for extr in [".torrent", ".aria2"]:
-                            if name.endswith("extr"):
+                            while extr in name:
                                 name = name.replace(extr, "")
                         dl = "downloads/" + name
                     wah = code(dl)
