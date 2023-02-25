@@ -284,6 +284,9 @@ async def something():
                         leech_task = asyncio.create_task(enshell(cmd))
                         await asyncio.sleep(3)
                         name = await get_leech_file()
+                        for extr in [".torrent", ".aria2"]:
+                            if name.endswith("extr"):
+                                name = name.replace(extr, "")
                         dl = "downloads/" + name
                     wah = code(dl)
                     dl_info = await parse_dl(name)
@@ -355,6 +358,8 @@ async def something():
                                 await channel_log(stderr)
                                 DOWNLOAD_CANCEL.clear()
                                 continue
+                        name = await get_leech_file()
+                        dl = "downloads/" + name
                     try:
                         await download_task
                     except Exception:
