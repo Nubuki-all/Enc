@@ -291,7 +291,7 @@ async def something():
                                 uri = message.text.split(" ", maxsplit=1)[1]
                             else:
                                 uri = message.text
-                    if  is_url(str(file)) is True:
+                    if is_url(str(file)) is True:
                         uri = file
                     if uri:
                         if mssg_r:
