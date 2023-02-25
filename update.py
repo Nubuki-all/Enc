@@ -43,7 +43,7 @@ update_check = Path("update")
 try:
     if ALWAYS_DEPLOY_LATEST is True or update_check.is_file():
         if not UPSTREAM_REPO:
-            UPSTREAM_REPO = "https://github.com/Nubuki-all/Tg-coder"
+            UPSTREAM_REPO = "https://github.com/Nubuki-all/Tg-encoder"
         if not UPSTREAM_BRANCH:
             UPSTREAM_BRANCH = "main"
         if os.path.exists('.git'):
