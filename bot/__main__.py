@@ -234,13 +234,16 @@ async def something():
                 # user = int(OWNER.split()[0])
                 file = list(QUEUE.keys())[0]
                 name, user = QUEUE[list(QUEUE.keys())[0]]
+                USER_MAN.clear()
+                USER_MAN.append(user)
                 try:
                     message = await app.get_messages(user, int(file))
                     mssg_r = await message.reply("`Downloading…`", quote=True)
+                    e = await bot.send_message(user, reply_to=message.id "`▼ Downloding Queue Files ▼`")
                 except Exception:
                     message = ""
                     mssg_r = ""
-                e = await bot.send_message(user, "`▼ Downloding Queue Files ▼`")
+                    e = await bot.send_message(user, "`▼ Downloding Queue Files ▼`")
                 sender = await app.get_users(user)
                 if LOG_CHANNEL:
                     log = int(LOG_CHANNEL)
@@ -251,7 +254,10 @@ async def something():
                 s = dt.now()
                 try:
                     dl = "downloads/" + name
-                    download_task = await download2(dl, file, message, mssg_r)
+                    if message.text or is_url(file) is True:
+                        pass
+                    else:
+                        download_task = await download2(dl, file, message, mssg_r)
                     wah = code(dl)
                     dl_info = await parse_dl(name)
                     ee = await e.edit(
@@ -269,6 +275,32 @@ async def something():
                                 [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
                             ],
                         )
+                    if message.text or is_url(file) is True:
+                        if " " message.text:
+                            uri = message.text.split(" ", maxsplit=1)[1]
+                        else: uri = message.text
+                        if mssg_r:
+                            await mssg_r.edit("`Downloading Torrent…`")
+                        cmd = f"aria2c --seed-time=0 -d downloads {uri}"
+                        process = await asyncio.create_subprocess_shell(
+                            cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+                        )
+                        stdout, stderr = await process.communicate()
+                        if process.returncode != 0:
+                            if DOWNLOAD_CANCEL:
+                                if message:
+                                    await mssg_r.edit(f"Download of `{name}` has been cancelled!")
+                                await e.delete()
+                                if LOG_CHANNEL:
+                                    await op.edit(
+                                        f"[{sender.first_name}'s](tg://user?id={user}) `Download has been cancelled.`",
+                                    )
+                                if QUEUE:
+                                    QUEUE.pop(list(QUEUE.keys())[0])
+                                DOWNLOAD_CANCEL.clear()
+                                await save2db()
+                                await qclean()
+                                continue
                     try:
                         await download_task
                     except Exception:
@@ -276,12 +308,12 @@ async def something():
                     if DOWNLOAD_CANCEL:
                         if message:
                             await mssg_r.edit(
-                                f"Download of `{name}` had been cancelled!"
+                                f"Download of `{name}` has been cancelled!"
                             )
                         await e.delete()
                         if LOG_CHANNEL:
                             await op.edit(
-                                f"[{sender.first_name}](tg://user?id={user}) `Cancelled the download.`",
+                                f"[{sender.first_name}'s](tg://user?id={user}) `Download has been cancelled.`",
                             )
                         if QUEUE:
                             QUEUE.pop(list(QUEUE.keys())[0])
@@ -292,8 +324,10 @@ async def something():
                 except Exception:
                     er = traceback.format_exc()
                     LOGS.info(er)
+                    await channel_log(ers)
                     QUEUE.pop(list(QUEUE.keys())[0])
                     await save2db()
+                    continue
                 es = dt.now()
                 kk = dl.split("/")[-1]
                 if "[" in kk and "]" in kk:
@@ -311,7 +345,7 @@ async def something():
                     name = namo
                 bb, bb2 = await parse(name, kk, aa)
                 out = f"{rr}/{bb}"
-                b, d, rlsgrp = await dynamicthumb(name, kk, aa)
+                b, d, c, rlsgrp = await dynamicthumb(name, kk, aa)
                 tbcheck = Path("thumb2.jpg")
                 if tbcheck.is_file():
                     thum = "thumb2.jpg"
@@ -323,11 +357,11 @@ async def something():
                     file.close()
                 try:
                     if "This Episode" in nani:
-                        b = b.replace("'", "")
-                        b = b.replace(":", "\\:")
                         bo = b
                         if d:
                             bo = f"Episode {d} of {b}"
+                        if c:
+                            bo += f" Season {c}"
                         nano = nani.replace(f"This Episode", bo)
                     else:
                         nano = nani
@@ -413,6 +447,13 @@ async def something():
                     er = traceback.format_exc()
                     LOGS.info(er)
                     LOGS.info(stderr.decode)
+                    await channel_log(er)
+                    await nn.edit("An Unknown error occurred waiting for 30 seconds before trying again. ")
+                    if LOG_CHANNEL:
+                        await wak.edit("An unknown error occurred waiting for 30 seconds before trying again.")
+                    await asyncio.sleep(30)
+                    await qclean()
+                    continue 
                 ees = dt.now()
                 time.time()
                 try:
@@ -426,8 +467,16 @@ async def something():
                     tex = "`▲ Uploading ▲`"
                     nnn = await app.send_message(chat_id=e.chat_id, text=tex)
                 fname = out.split("/")[1]
+                tbcheck = Path("thumb2.jpg")
+                if tbcheck.is_file():
+                    thum = "thumb2.jpg"
+                else:
+                    thum = "thumb.jpg"
                 pcap = await custcap(name, fname)
-                ds = await upload2(e.chat_id, out, nnn, thum, pcap)
+                if message:
+                    ds = await upload2(e.chat_id, out, nnn, thum, pcap, message)
+                 else:
+                     ds = await upload2(e.chat_id, out, nnn, thum, pcap)
                 await nnn.delete()
                 if FCHANNEL:
                     chat = int(FCHANNEL)
@@ -475,6 +524,7 @@ async def something():
         except Exception:
             er = traceback.format_exc()
             LOGS.info(er)
+            await channel_log(ers)
 
 
 ########### Start ############
