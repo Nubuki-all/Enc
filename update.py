@@ -7,7 +7,10 @@ try:
     print("Default var for upstream repo & branch will used if none were given!")
     UPSTREAM_REPO = config("UPSTREAM_REPO", default="")
     UPSTREAM_BRANCH = config("UPSTREAM_BRANCH", default="")
-    ALWAYS_DEPLOY_LATEST = config("ALWAYS_DEPLOY_LATEST", default=False, cast=bool)
+    ALWAYS_DEPLOY_LATEST = config(
+        "ALWAYS_DEPLOY_LATEST",
+        default=False,
+        cast=bool)
 except Exception:
     print("Environment vars Missing")
     traceback.print_exc()
