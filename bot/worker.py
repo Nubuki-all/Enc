@@ -202,7 +202,7 @@ async def upload2(from_user_id, filepath, reply, thum, caption, message=""):
 
 
 async def cancel_dl(e):
-    LOG.info(e)
+    LOGS.info(e)
     if (
         str(e.sender_id) not in OWNER
         and e.sender_id != DEV
