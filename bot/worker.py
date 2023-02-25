@@ -202,7 +202,11 @@ async def upload2(from_user_id, filepath, reply, thum, caption, message=""):
 
 
 async def cancel_dl(e):
-    if str(event.query.user) not in OWNER and event.query.user != DEV and str(event.query.user) not in str(USER_MAN[0]):
+    if (
+        str(event.query.user) not in OWNER
+        and event.query.user != DEV
+        and str(event.query.user) not in str(USER_MAN[0])
+    ):
         ans = "You're Not Allowed to do this!"
         return await e.answer(ans, cache_time=0, alert=True)
     try:
@@ -848,6 +852,7 @@ async def encod(event):
         ers = traceback.format_exc()
         LOGS.info(ers)
 
+
 async def enleech(event):
     if str(event.sender_id) not in OWNER and event.sender_id != DEV:
         return
@@ -869,7 +874,9 @@ async def enleech(event):
                         except Exception:
                             ers = traceback.format_exc()
                             LOGS.info(ers)
-                            return await event.reply(f"An error occurred probably due to longer number than uri messages\n\n**Actual Error**\n`{ers}`")
+                            return await event.reply(
+                                f"An error occurred probably due to longer number than uri messages\n\n**Actual Error**\n`{ers}`"
+                            )
                         uri = event2.text
                         if is_url(uri) is True and uri.endswith("torrent"):
                             pass
@@ -877,18 +884,24 @@ async def enleech(event):
                             return await event2.reply("`Invalid torrent link`")
                         file_name = await get_leech_name(uri)
                         if file_name is None:
-                            await event2.reply("`An error occurred probably an issue with aria2.`")
+                            await event2.reply(
+                                "`An error occurred probably an issue with aria2.`"
+                            )
                             temp = temp - 1
                             temp2 = temp2 + 1
                             continue
                         if not file_name:
-                            await event2.reply("`Torrent is…\neither not a video\nor is a batch torrent which is currently not supported.`")
+                            await event2.reply(
+                                "`Torrent is…\neither not a video\nor is a batch torrent which is currently not supported.`"
+                            )
                             temp = temp - 1
                             temp2 = temp2 + 1
                             continue
                         for item in QUEUE.values():
                             if file_name in item:
-                                await event2.reply("**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**")
+                                await event2.reply(
+                                    "**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**"
+                                )
                                 temp = temp - 1
                                 temp2 = temp2 + 1
                                 continue
@@ -899,13 +912,18 @@ async def enleech(event):
                         else:
                             QUEUE.update({uri: [file_name, event.sender_id]})
                         await save2db()
-                        await event2.reply("**Added To Queue ⏰,** \n`Please Wait , Encode will start soon`")
+                        await event2.reply(
+                            "**Added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
+                        )
                         temp = temp - 1
                         temp2 = temp2 + 1
                     if LOCKFILE[0] == "leechlock":
                         LOCKFILE.clear()
                     return
-                else: return await event.reply(f"**Pardon me, but what does*** `'{temp2}'` **mean?\noh and btw whatever you ran has failed.")
+                else:
+                    return await event.reply(
+                        f"**Pardon me, but what does*** `'{temp2}'` **mean?\noh and btw whatever you ran has failed."
+                    )
             else:
                 uri = rep_event.text
                 if is_url(uri) is True and uri.endswith(".torrent"):
@@ -923,28 +941,37 @@ async def enleech(event):
                     event_id = event.id
                 else:
                     return await event.reply("`Invalid torrent link`")
-            else: return await event.reply("`uhm you need to reply to or send command alongside a uri (torrent) link`")
+            else:
+                return await event.reply(
+                    "`uhm you need to reply to or send command alongside a uri (torrent) link`"
+                )
         file_name = await get_leech_name(uri)
         if file_name is None:
-            return await event.reply("`An error occurred probably an issue with aria2.`")
+            return await event.reply(
+                "`An error occurred probably an issue with aria2.`"
+            )
         if not file_name:
-            return await event.reply("`Torrent is…\neither not a video\nor is a batch torrent which is currently not supported.`")
+            return await event.reply(
+                "`Torrent is…\neither not a video\nor is a batch torrent which is currently not supported.`"
+            )
         for item in QUEUE.values():
             if file_name in item:
-                return await event.reply("**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**")
+                return await event.reply(
+                    "**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**"
+                )
         if UNLOCK_UNSTABLE:
             QUEUE.update({event_id: [file_name, event.sender_id]})
         else:
             QUEUE.update({uri: [file_name, event.sender_id]})
         await save2db()
-        return await event.reply("**Added To Queue ⏰,** \n`Please Wait , Encode will start soon`")
+        return await event.reply(
+            "**Added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
+        )
     except Exception:
         ers = traceback.format_exc()
         LOGS.info(ers)
         await channel_log(ers)
         return await event.reply("An Unknown error Occurred.")
-
-
 
 
 async def pencode(message):
@@ -1092,7 +1119,8 @@ async def pencode(message):
             await app.get_users("me")
             dl_info = await parse_dl(filename)
             nnn = await bot.send_message(
-                user, reply_to=message.id,
+                user,
+                reply_to=message.id,
                 f"{enmoji()} `Downloading…`{dl_info}",
                 buttons=[
                     [Button.inline("ℹ️", data=f"dl_stat{wah}")],
@@ -1296,7 +1324,7 @@ async def pencode(message):
             await xxx.edit("`An unknown error occurred.`")
             await nn.delete()
             if LOG_CHANNEL:
-               await wak.delete()
+                await wak.delete()
             return WORKING.clear()
         ees = dt.now()
         ttt = time.time()
@@ -1307,10 +1335,11 @@ async def pencode(message):
             pass
         nnn = await xxx.edit("`▲ Uploading ▲`")
         fname = out.split("/")[1]
-        # Check if Autogenerated thumbnail still exists 
+        # Check if Autogenerated thumbnail still exists
         if tbcheck.is_file():
             thum = "thum2.jpg"
-        else: thum = "thumb.jpg"
+        else:
+            thum = "thumb.jpg"
         pcap = await custcap(name, fname)
         ds = await upload2(message.from_user.id, out, nnn, thum, pcap, message)
         await nnn.delete()

@@ -47,7 +47,7 @@ OK = {}
 FINISHED_PROGRESS_STR = "🧡"
 UN_FINISHED_PROGRESS_STR = "🤍"
 MAX_MESSAGE_LENGTH = 4096
-URL_REGEX = r'^(https?://|ftp://)?(www\.)?[^/\s]+\.[^/\s:]+(:\d+)?(/[^?\s]*)?(\?[^#\s]*)?(#.*)?$'
+URL_REGEX = r"^(https?://|ftp://)?(www\.)?[^/\s]+\.[^/\s:]+(:\d+)?(/[^?\s]*)?(\?[^#\s]*)?(#.*)?$"
 
 uptime = dt.now()
 
@@ -202,10 +202,41 @@ def is_url(url):
     url = re_match(URL_REGEX, url)
     return bool(url)
 
+
 def is_video_file(filename):
-    video_file_extensions = ('.3g2', '.3gp', '.3gp2', '.3gpp', '.avc', '.avd', '.avi', '.evo', '.fli', '.flv', '.flx', '.m4u', '.m4v', '.mkv', '.mov', '.movie', '.mp21', '.mp21', '.mp2v', '.mp4', '.mp4v', '.mpeg', '.mpeg1', '.mpeg4', '.mpf', '.mpg', '.mpg2', '.xvid')
+    video_file_extensions = (
+        ".3g2",
+        ".3gp",
+        ".3gp2",
+        ".3gpp",
+        ".avc",
+        ".avd",
+        ".avi",
+        ".evo",
+        ".fli",
+        ".flv",
+        ".flx",
+        ".m4u",
+        ".m4v",
+        ".mkv",
+        ".mov",
+        ".movie",
+        ".mp21",
+        ".mp21",
+        ".mp2v",
+        ".mp4",
+        ".mp4v",
+        ".mpeg",
+        ".mpeg1",
+        ".mpeg4",
+        ".mpf",
+        ".mpg",
+        ".mpg2",
+        ".xvid",
+    )
     if filename.endswith((video_file_extensions)):
         return True
+
 
 def hbs(size):
     if not size:
@@ -261,7 +292,10 @@ async def channel_log(error):
     if LOG_CHANNEL and UNLOCK_UNSTABLE:
         try:
             log = int(LOG_CHANNEL)
-            await bot.send_message(log, f"**#ERROR\n\n⛱️ Summary of what happened:**\n`{error}`\n\nTo restict error messages to logs set the EABF vars to False. {enmoji()}")
+            await bot.send_message(
+                log,
+                f"**#ERROR\n\n⛱️ Summary of what happened:**\n`{error}`\n\nTo restict error messages to logs set the EABF vars to False. {enmoji()}",
+            )
         except Exception:
             ers = traceback.format_exc()
             LOGS.info(ers)
@@ -272,18 +306,20 @@ async def get_leech_name(url):
         os.system(f"aria2c --follow-torrent=false -d temp {url}")
         dt_ = glob.glob("temp/*")
         data = max(dt_, key=os.path.getctime)
-        dat = data.replace("temp/", '')
+        dat = data.replace("temp/", "")
         filename = dat.split(".torrent", maxsplit=1)[-2]
         if is_video_file(filename) is True:
             pass
-        else: filename = ""
+        else:
+            filename = ""
         os.system("rm -rf temp/*")
     except Exception:
         filename = None
         ers = traceback.format_exc()
         LOGS.info(ers)
     return filename
-    
+
+
 async def enquoter(msg, rply):
     try:
         quotes = await enquotes()
