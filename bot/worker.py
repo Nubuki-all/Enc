@@ -898,6 +898,8 @@ async def enleech(event):
                         if is_url(uri) is True and uri.endswith("torrent"):
                             pass
                         else:
+                            if LOCKFILE:
+                                LOCKFILE.clear()
                             return await event2.reply("`Invalid torrent link`")
                         file_name = await get_leech_name(uri)
                         if file_name is None:
@@ -916,6 +918,7 @@ async def enleech(event):
                             temp2 = temp2 + 1
                             await asyncio.sleep(5)
                             continue
+                        already_in_queue = False
                         for item in QUEUE.values():
                             if file_name in item:
                                 await event2.reply(
@@ -924,7 +927,10 @@ async def enleech(event):
                                 temp = temp - 1
                                 temp2 = temp2 + 1
                                 await asyncio.sleep(5)
-                                continue
+                                already_in_queue = True
+                                break
+                        if already_in_queue:
+                            continue
                         if not LOCKFILE:
                             LOCKFILE.append("leechlock")
                         if UNLOCK_UNSTABLE:
