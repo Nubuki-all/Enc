@@ -945,8 +945,9 @@ async def enleech(event):
                         temp = temp - 1
                         temp2 = temp2 + 1
                         await asyncio.sleep(5)
-                    if LOCKFILE[0] == "leechlock":
-                        LOCKFILE.clear()
+                    if LOCKFILE:
+                        if LOCKFILE[0] == "leechlock":
+                            LOCKFILE.clear()
                     return
                 else:
                     return await event.reply(
