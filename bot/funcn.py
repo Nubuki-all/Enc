@@ -258,6 +258,7 @@ async def updater():
         os.execl(sys.executable, sys.executable, "-m", "bot")
     except Exception:
         ers = traceback.format_exc()
+        await channel_log(ers)
         LOGS.info(ers)
 
 
@@ -318,6 +319,7 @@ async def get_leech_name(url):
     except Exception:
         filename = None
         ers = traceback.format_exc()
+        await channel_log(ers)
         LOGS.info(ers)
     return filename
 
@@ -329,6 +331,7 @@ async def enquoter(msg, rply):
         await asyncio.sleep(5)
     except Exception:
         ers = traceback.format_exc()
+        await channel_log(ers)
         LOGS.info(ers)
 
 
