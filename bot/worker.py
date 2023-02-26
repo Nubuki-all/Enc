@@ -804,8 +804,9 @@ async def dl_stat(e):
             dls = f"{dl}.temp"
         ov = hbs(int(Path(dls).stat().st_size))
         name = dl.split("/")[1]
+        input = (name[:45] + "…") if len(name) > 45 else name
         q = await qparse(name)
-        ans = f"📥 Downloading:\n{name}\n\n⭕ Current Size:\n{ov}\n\n\n{enmoji()}:\n{q}"
+        ans = f"📥 Downloading:\n{input}\n\n⭕ Current Size:\n{ov}\n\n\n{enmoji()}:\n{q}"
         await e.answer(ans, cache_time=0, alert=True)
     except Exception:
         ers = traceback.format_exc()
