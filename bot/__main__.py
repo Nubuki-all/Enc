@@ -514,7 +514,7 @@ async def something():
                 except BaseException:
                     er = traceback.format_exc()
                     LOGS.info(er)
-                    LOGS.info(stderr.decode)
+                    LOGS.info(stderr.decode())
                     await channel_log(er)
                     await nn.edit(
                         "An Unknown error occurred waiting for 30 seconds before trying again. "

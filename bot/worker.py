@@ -1367,7 +1367,7 @@ async def pencode(message):
             er = traceback.format_exc()
             LOGS.info(er)
             await channel_log(er)
-            LOGS.info(stderr.decode)
+            LOGS.info(stderr.decode())
             await qclean()
             await xxx.edit("`An unknown error occurred.`")
             await nn.delete()
