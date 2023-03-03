@@ -143,6 +143,7 @@ async def clean(event):
             os.kill(processID, signal.SIGKILL)
     return
 
+
 async def downloder(event):
     if str(event.sender_id) not in OWNER and event.sender_id != DEV:
         return await event.delete()
@@ -153,8 +154,8 @@ async def downloder(event):
         r = await event.get_reply_message()
         message = await app.get_messages(event.sender_id, int(r.id))
         e = message.reply("`Downloading…`")
-        if not args is None:
-            #wip
+        if args is not None:
+            # wip
             pass
         else:
             pass
@@ -238,8 +239,8 @@ async def uploader(event):
     try:
         args = event.pattern_match.group(1)
         message = await app.get_messages(event.sender_id, int(event.id))
-        if not args is None:
-            #wip
+        if args is not None:
+            # wip
             await event.delete()
             r = message.reply(f"`Uploading {args}…`")
             cap = args.split("/")[-1]
