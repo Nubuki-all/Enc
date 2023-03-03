@@ -116,7 +116,7 @@ async def _(e):
 ########## Direct ###########
 
 
-@bot.on(events.NewMessage(pattern="/eval"))
+@bot.on(events.NewMessage(pattern=r"^/eval(\s+.+)?$"))
 async def _(e):
     await eval(e)
 
@@ -125,6 +125,14 @@ async def _(e):
 async def _(e):
     await enleech(e)
 
+
+@bot.on(events.NewMessage(pattern=r"^/dl(\s+.+)?$"))
+async def _(e):
+    await downloader(e)
+
+@bot.on(events.NewMessage(pattern=r"^/ul(\s+.+)?$"))
+async def _(e):
+    await uploader(e)
 
 @app.on_message(filters.incoming & filters.command(["peval"]))
 async def _(app, message):
@@ -136,7 +144,7 @@ async def _(app, message):
     await update2(app, message)
 
 
-@bot.on(events.NewMessage(pattern="/bash"))
+@bot.on(events.NewMessage(pattern=r"^/bash(\s+.+)?$"))
 async def _(e):
     await bash(e)
 
@@ -146,7 +154,7 @@ async def _(e):
     await status(e)
 
 
-@bot.on(events.NewMessage(pattern="/parse"))
+@bot.on(events.NewMessage(pattern=r"^/parse(\s+.+)?$"))
 async def _(e):
     await discap(e)
 
@@ -156,7 +164,7 @@ async def _(e):
     await version2(e)
 
 
-@bot.on(events.NewMessage(pattern="/filter"))
+@bot.on(events.NewMessage(pattern=r"^/filter(\s+.+)?$"))
 async def _(e):
     await filter(e)
 
@@ -191,7 +199,7 @@ async def _(e):
     await listqueue(e)
 
 
-@bot.on(events.NewMessage(pattern="/lock"))
+@bot.on(events.NewMessage(pattern=r"^/lock(\s+.+)?$"))
 async def _(e):
     await lock(e)
 

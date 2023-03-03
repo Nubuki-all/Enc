@@ -143,6 +143,62 @@ async def clean(event):
             os.kill(processID, signal.SIGKILL)
     return
 
+async def downloder(event):
+    if str(event.sender_id) not in OWNER and event.sender_id != DEV:
+        return await event.delete()
+    if not event.is_reply():
+        return await event.reply("`Reply to a file to download it`")
+    try:
+        args = event.pattern_match.group(1)
+        r = await event.get_reply_message()
+        message = await app.get_messages(event.sender_id, int(r.id))
+        e = message.reply("`Downloading…`")
+        if not args is None:
+            #wip
+            pass
+        else:
+            pass
+        await event.delete()
+        task = await download2(r.file.name, 0, message, e)
+        wah = code(r.file.name)
+        tm = await r.reply(
+            f"{enmoji()} `Downloading…`",
+            buttons=[
+                [Button.inline("ℹ️", data=f"dl_stat{wah}")],
+                [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
+            ],
+        )
+        if LOG_CHANNEL:
+            opp = await op.edit(
+                f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Is Currently Downloading a file…`",
+                buttons=[
+                    [Button.inline("ℹ️", data=f"dl_stat{wah}")],
+                    [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
+                ],
+            )
+        try:
+            await task
+        except Exception:
+            pass
+        if DOWNLOAD_CANCEL:
+            canceller = await app.get_users(DOWNLOAD_CANCEL[0])
+            await e.edit(
+                f"Download of `{filename}` was cancelled by {canceller.mention(style='md')}."
+            )
+            await tm.delete()
+            if LOG_CHANNEL:
+                await op.edit(
+                    f"[{message.from_user.first_name}'s](tg://user?id={message.from_user.id}) `download` was cancelled by [{canceller.first_name}.](tg://user?id={DOWNLOAD_CANCEL[0]})"
+                )
+            DOWNLOAD_CANCEL.clear()
+            return
+        await e.edit(f"`Downloded {r.file.name} successfully`")
+        return await tm.delete()
+    except Exception:
+        ers = traceback.format_exc()
+        await channel_log(ers)
+        LOGS.info(ers)
+
 
 async def download2(dl, file, message, e):
     try:
@@ -151,9 +207,9 @@ async def download2(dl, file, message, e):
             ttt = time.time()
             media_type = str(message.media)
             if media_type == "MessageMediaType.DOCUMENT":
-                media_mssg = "`Downloading a queued file…`\n"
+                media_mssg = "`Downloading a file…`\n"
             else:
-                media_mssg = "`Downloading a queued video…`\n"
+                media_mssg = "`Downloading a video…`\n"
             download_task = asyncio.create_task(
                 app.download_media(
                     message=message,
@@ -170,6 +226,27 @@ async def download2(dl, file, message, e):
                 )
             )
         return download_task
+    except Exception:
+        ers = traceback.format_exc()
+        await channel_log(ers)
+        LOGS.info(ers)
+
+
+async def uploader(event):
+    if str(event.sender_id) not in OWNER and event.sender_id != DEV:
+        return await event.delete()
+    try:
+        args = event.pattern_match.group(1)
+        message = await app.get_messages(event.sender_id, int(event.id))
+        if not args is None:
+            #wip
+            await event.delete()
+            r = message.reply(f"`Uploading {args}…`")
+            cap = args.split("/")[-1]
+            await upload2(event.sender_id, args, r, "thumb.jpg", cap, message)
+            await r.edit(f"`{cap} uploaded successfully.`")
+        else:
+            return await event.reply("Upload what exactly?")
     except Exception:
         ers = traceback.format_exc()
         await channel_log(ers)
