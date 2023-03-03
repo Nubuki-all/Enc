@@ -164,7 +164,7 @@ async def downloader(event):
                 r = args.split(" -r ", maxsplit=1)[-1]
                 r = r.split()[0]
                 loc += f"{r}"
-            if not " -r " in args and not " -d " in args:
+            if " -r " not in args and " -d " not in args:
                 loc = args
         else:
             loc = r.file.name
