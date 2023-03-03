@@ -146,7 +146,7 @@ async def _(app, message):
     await update2(app, message)
 
 
-@bot.on(events.NewMessage(pattern=r"^/bash(\s+.+)?$"))
+@bot.on(events.NewMessage(pattern="/bash"))
 async def _(e):
     await bash(e)
 
@@ -166,7 +166,7 @@ async def _(e):
     await version2(e)
 
 
-@bot.on(events.NewMessage(pattern=r"^/filter(\s+.+)?$"))
+@bot.on(events.NewMessage(pattern="/filter"))
 async def _(e):
     await filter(e)
 

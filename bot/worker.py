@@ -144,7 +144,7 @@ async def clean(event):
     return
 
 
-async def downloder(event):
+async def downloader(event):
     if str(event.sender_id) not in OWNER and event.sender_id != DEV:
         return await event.delete()
     if not event.is_reply():
@@ -155,13 +155,22 @@ async def downloder(event):
         message = await app.get_messages(event.sender_id, int(r.id))
         e = message.reply("`Downloading…`")
         if args is not None:
-            # wip
-            pass
+            loc = ""
+            if " -d " in args:
+                d = args.split(" -d ", maxsplit=1)[-1]
+                d = d.split()[0]
+                loc += f"{d}/"
+            if " -r " in args:
+                r = args.split(" -r ", maxsplit=1)[-1]
+                r = r.split()[0]
+                loc += f"{r}"
+            if not " -r " in args and not " -d " in args:
+                loc = args
         else:
-            pass
+            loc = r.file.name
         await event.delete()
-        task = await download2(r.file.name, 0, message, e)
-        wah = code(r.file.name)
+        task = await download2(loc, 0, message, e)
+        wah = code(loc)
         tm = await r.reply(
             f"{enmoji()} `Downloading…`",
             buttons=[
@@ -170,6 +179,8 @@ async def downloder(event):
             ],
         )
         if LOG_CHANNEL:
+            log = int(LOG_CHANNEL)
+            op = await bot.send_message(log, "……………")
             opp = await op.edit(
                 f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Is Currently Downloading a file…`",
                 buttons=[
@@ -184,7 +195,7 @@ async def downloder(event):
         if DOWNLOAD_CANCEL:
             canceller = await app.get_users(DOWNLOAD_CANCEL[0])
             await e.edit(
-                f"Download of `{filename}` was cancelled by {canceller.mention(style='md')}."
+                f"Download of `{loc}` was cancelled by {canceller.mention(style='md')}."
             )
             await tm.delete()
             if LOG_CHANNEL:
@@ -193,7 +204,7 @@ async def downloder(event):
                 )
             DOWNLOAD_CANCEL.clear()
             return
-        await e.edit(f"`Downloded {r.file.name} successfully`")
+        await e.edit(f"`saved to {loc} successfully`")
         return await tm.delete()
     except Exception:
         ers = traceback.format_exc()
@@ -242,8 +253,8 @@ async def uploader(event):
         if args is not None:
             # wip
             await event.delete()
-            r = message.reply(f"`Uploading {args}…`")
-            cap = args.split("/")[-1]
+            r = await message.reply(f"`Uploading {args}…`")
+            cap = args.split("/")[-1] if "/" in args else args
             await upload2(event.sender_id, args, r, "thumb.jpg", cap, message)
             await r.edit(f"`{cap} uploaded successfully.`")
         else:
