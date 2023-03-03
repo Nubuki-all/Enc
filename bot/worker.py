@@ -147,7 +147,7 @@ async def clean(event):
 async def downloader(event):
     if str(event.sender_id) not in OWNER and event.sender_id != DEV:
         return await event.delete()
-    if not event.is_reply():
+    if not event.is_reply:
         return await event.reply("`Reply to a file to download it`")
     try:
         args = event.pattern_match.group(1)
