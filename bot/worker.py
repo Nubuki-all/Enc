@@ -253,6 +253,7 @@ async def uploader(event):
         if args is not None:
             # wip
             await event.delete()
+            args = args.strip()
             r = await message.reply(f"`Uploading {args}…`")
             cap = args.split("/")[-1] if "/" in args else args
             await upload2(event.sender_id, args, r, "thumb.jpg", cap, message)
