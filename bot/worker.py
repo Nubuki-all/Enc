@@ -169,39 +169,20 @@ async def downloader(event):
         else:
             loc = r.file.name
         await event.delete()
-        task = await download2(loc, 0, message, e)
+        dl_task = await download2(loc, 0, message, e)
         wah = code(loc)
-        tm = await r.reply(
-            f"{enmoji()} `Downloading…`",
-            buttons=[
-                [Button.inline("ℹ️", data=f"dl_stat{wah}")],
-                [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
-            ],
-        )
-        if LOG_CHANNEL:
-            log = int(LOG_CHANNEL)
-            op = await bot.send_message(log, "……………")
-            opp = await op.edit(
-                f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Is Currently Downloading a file…`",
-                buttons=[
-                    [Button.inline("ℹ️", data=f"dl_stat{wah}")],
-                    [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
-                ],
-            )
-        try:
-            await task
-        except Exception:
-            pass
+        tm = await r.reply(f"{enmoji()} `Downloading…`")
+        while dl_task.done() is not True:
+            if DOWNLOAD_CANCEL:
+                dl_task.cancel()
+                continue
+            await asyncio.sleep(3)
         if DOWNLOAD_CANCEL:
             canceller = await app.get_users(DOWNLOAD_CANCEL[0])
             await e.edit(
-                f"Download of `{loc}` was cancelled by {canceller.mention(style='md')}."
+                f"Download of `{loc}` was cancelled."
             )
             await tm.delete()
-            if LOG_CHANNEL:
-                await op.edit(
-                    f"[{message.from_user.first_name}'s](tg://user?id={message.from_user.id}) `download` was cancelled by [{canceller.first_name}.](tg://user?id={DOWNLOAD_CANCEL[0]})"
-                )
             DOWNLOAD_CANCEL.clear()
             return
         await e.edit(f"`saved to {loc} successfully`")
