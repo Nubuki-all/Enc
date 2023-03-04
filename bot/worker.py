@@ -170,7 +170,7 @@ async def downloader(event):
             loc = r.file.name
         await event.delete()
         dl_task = await download2(loc, 0, message, e)
-        wah = code(loc)
+        code(loc)
         tm = await r.reply(f"{enmoji()} `Downloading…`")
         while dl_task.done() is not True:
             if DOWNLOAD_CANCEL:
@@ -178,10 +178,8 @@ async def downloader(event):
                 continue
             await asyncio.sleep(3)
         if DOWNLOAD_CANCEL:
-            canceller = await app.get_users(DOWNLOAD_CANCEL[0])
-            await e.edit(
-                f"Download of `{loc}` was cancelled."
-            )
+            await app.get_users(DOWNLOAD_CANCEL[0])
+            await e.edit(f"Download of `{loc}` was cancelled.")
             await tm.delete()
             DOWNLOAD_CANCEL.clear()
             return
