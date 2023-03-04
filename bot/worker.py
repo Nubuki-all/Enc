@@ -153,7 +153,7 @@ async def downloader(event):
         args = event.pattern_match.group(1)
         r = await event.get_reply_message()
         message = await app.get_messages(event.sender_id, int(r.id))
-        e = message.reply("`Downloading…`")
+        e = await message.reply("`Downloading…`")
         if args is not None:
             loc = ""
             if " -d " in args:
