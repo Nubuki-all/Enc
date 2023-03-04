@@ -153,7 +153,7 @@ async def downloader(event):
         args = event.pattern_match.group(1)
         r = await event.get_reply_message()
         message = await app.get_messages(event.sender_id, int(r.id))
-        e = await message.reply("`Downloading…`")
+        e = await message.reply(f"{enmoji()} `Downloading…`")
         if args is not None:
             loc = ""
             if " -d " in args:
@@ -170,17 +170,13 @@ async def downloader(event):
             loc = r.file.name
         await event.delete()
         dl_task = await download2(loc, 0, message, e)
-        code(loc)
-        tm = await r.reply(f"{enmoji()} `Downloading…`")
         while dl_task.done() is not True:
             if DOWNLOAD_CANCEL:
                 dl_task.cancel()
                 continue
             await asyncio.sleep(3)
         if DOWNLOAD_CANCEL:
-            await app.get_users(DOWNLOAD_CANCEL[0])
             await e.edit(f"Download of `{loc}` was cancelled.")
-            await tm.delete()
             DOWNLOAD_CANCEL.clear()
             return
         await e.edit(f"`saved to {loc} successfully`")
