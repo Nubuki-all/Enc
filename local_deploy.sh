@@ -10,10 +10,11 @@ if grep -qi "fedora" /etc/os-release; then
     # Install the package on Fedora using yum
     echo -e "${GREEN} Fedora Detected!${NC}"
     echo -e "${GREEN}Downloading and installing system dependencies required to run bot…${NC}"
+    sleep 2
     if which sudo >/dev/null; then
-        echo -e "${GREEN}sudo is installed.${NC}"
+        echo -e "${GREEN}sudo is installed\nInstalling other requirements….${NC}"
     else
-        echo -e "${GREEN}sudo is not installed\nInstalling…${NC}"
+        echo -e "${GREEN}sudo is not installed\nInstalling alongside other requirements…${NC}"
         yum -qq -y update && yum -qq -y sudo
     fi
     sleep 2
@@ -24,10 +25,11 @@ elif grep -qi "ubuntu\|debian" /etc/os-release; then
     #remove the '#' from line 4 if you want handbrake-cli support
     echo -e "${GREEN}Apt package manger detected!${NC}"
     echo -e "${GREEN}Downloading and installing system dependencies required to run bot…${NC}"
+    sleep 2
     if which sudo >/dev/null; then
-        echo -e "${GREEN}sudo is installed.${NC}"
+        echo -e "${GREEN}sudo is installed.\nInstalling other requirements…${NC}"
     else
-        echo -e "${GREEN}sudo is not installed\nInstalling…${NC}"
+        echo -e "${GREEN}sudo is not installed\nInstalling alongside other requirements…${NC}"
         apt -y -qq update && apt install sudo
     fi
     sleep 2
