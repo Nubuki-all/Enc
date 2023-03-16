@@ -1,9 +1,9 @@
 {
-    "name": "Encode2tg",
-    "description": "A Normal Telegram Bot Which can Encode/ Generate Samples of videos.",
+    "name": "Tg-encoder",
+    "description": "A telegram bot which encodes videos.",
     "logo": "https://telegra.ph/file/75ee20ec8d8c8bba84f02.jpg",
     "keywords": ["Telegram","python", "Video","Compressor","Encoder"],
-    "repository": "https://github.com/Niffy-the-conqueror/Encode2Tg",
+    "repository": "https://github.com/nubuki-all/tg-encoder",
     "success_url": "https://t.me/Ani_Mine",
     "stack": "container",
     "env": {
@@ -22,16 +22,6 @@
         "OWNER": {
             "description": "Get ur Id Of Telegram nd Paste Here.",
             "value": ""
-        },
-        "THUMBNAIL": {
-            "description": "Put Link of any picture.",
-            "value": "https://telegra.ph//file/6370f098231e0bc94be70.jpg",
-            "required": false
-        },
-        "DBNAME": {
-            "description": "Name Of Database Useful if sharing same database amoung multiple bots.",
-            "value": "",
-            "required": false
         },
         "LOG_CHANNEL": {
             "description": "Input Log Channel Id",

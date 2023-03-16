@@ -4,7 +4,7 @@ country_converter
 python-decouple
 psutil
 tgcrypto
-pyrogram
+pyrogram==2.0.73
 pymongo[srv]
 qbittorrent-api
 random_word

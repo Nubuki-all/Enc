@@ -37,6 +37,7 @@ try:
     CAP_DECO = config("CAP_DECO", default="◉")
     ALLOW_ACTION = config("ALLOW_ACTION", default=True, cast=bool)
     ALWAYS_DEPLOY_LATEST = config("ALWAYS_DEPLOY_LATEST", default=False, cast=bool)
+    DUMP_LEECH = config("DUMP_LEECH", default=True, cast=bool)
     EABF = config("EABF", default=True, cast=bool)
 except Exception as e:
     print("Environment vars Missing")

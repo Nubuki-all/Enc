@@ -116,7 +116,7 @@ async def _(e):
 ########## Direct ###########
 
 
-@bot.on(events.NewMessage(pattern=r"^/eval(\s+.+)?$"))
+@bot.on(events.NewMessage(pattern=r"^/eval([\s\S]*)$"))
 async def _(e):
     await eval(e)
 
@@ -398,6 +398,7 @@ async def something():
                     QUEUE.pop(list(QUEUE.keys())[0])
                     await save2db()
                     continue
+                os.system (f"rm {name + '.torrent'}")
                 es = dt.now()
                 kk = dl.split("/")[-1]
                 if "[" in kk and "]" in kk:
@@ -421,6 +422,8 @@ async def something():
                     thum = "thumb2.jpg"
                 else:
                     thum = "thumb.jpg"
+                if uri and DUMP_LEECH is True:
+                    asyncio.create_task(dumpdl(dl, name, thum, user, message))
                 with open("ffmpeg.txt", "r") as file:
                     # ffmpeg = file.read().rstrip()
                     nani = file.read().rstrip()

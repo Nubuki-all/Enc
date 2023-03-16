@@ -290,6 +290,27 @@ async def channel_log(error):
             ers = traceback.format_exc()
             LOGS.info(ers)
 
+async def dumpdl(dl, name, thum, user, message):
+    try:
+        dmp = "thumb/" + name
+        os.system (f"cp {dl} {dmp}")
+        if message:
+            rr = await message.reply(f"`Dumping {dmp}…`")
+        else:
+            rr = await app.send_message(f"`Dumping {dmp}…`")
+        await asyncio.sleep(2)
+        dp = await upload2(user, dmp, rr, thum, name, message)
+        await rr.edit(f"`Dumped {name} Successfully.`")
+        if LOG_CHANNEL:
+            chat = int(LOG_CHANNEL)
+            await rr.copy(chat_id=chat)
+            await dp.copy(chat_id=chat)
+        os.remove(dmp)
+    except Exception:
+        ers = traceback.format_exc()
+        LOGS.info(ers)
+        await channel_log(ers)
+
 
 async def get_leech_file():
     try:

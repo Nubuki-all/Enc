@@ -150,7 +150,7 @@ async def downloader(event):
     if not event.is_reply:
         return await event.reply("`Reply to a file to download it`")
     try:
-        args = event.pattern_match.group(1)
+        args = event.pattern_match.group(1).strip()
         r = await event.get_reply_message()
         message = await app.get_messages(event.sender_id, int(r.id))
         e = await message.reply(f"{enmoji()} `Downloading…`")
@@ -163,7 +163,9 @@ async def downloader(event):
             if " -r " in args:
                 r = args.split(" -r ", maxsplit=1)[-1]
                 r = r.split()[0]
-                loc += f"{r}"
+                loc += r
+            if " -r " not in args:
+                loc += r.file.name
             if " -r " not in args and " -d " not in args:
                 loc = args
         else:
@@ -223,12 +225,11 @@ async def uploader(event):
     if str(event.sender_id) not in OWNER and event.sender_id != DEV:
         return await event.delete()
     try:
-        args = event.pattern_match.group(1)
+        args = event.pattern_match.group(1).strip()
         message = await app.get_messages(event.sender_id, int(event.id))
         if args is not None:
             # wip
-            await event.delete()
-            args = args.strip()
+            # await event.delete()
             r = await message.reply(f"`Uploading {args}…`")
             cap = args.split("/")[-1] if "/" in args else args
             await upload2(event.sender_id, args, r, "thumb.jpg", cap, message)
@@ -952,16 +953,12 @@ async def enleech(event):
     if str(event.sender_id) not in OWNER and event.sender_id != DEV:
         return
     try:
-        temp = ""
+        args = event.pattern_match.group(1).strip()
         if event.is_reply:
             rep_event = await event.get_reply_message()
-            try:
-                temp = event.text.split(" ", maxsplit=1)[1]
-            except Exception:
-                pass
-            if temp:
-                if temp.isdigit():
-                    temp = int(temp)
+            if args is not None:
+                if args.isdigit():
+                    temp = int(args)
                     temp2 = rep_event.id
                     while temp > 0:
                         event2 = await bot.get_messages(event.chat_id, ids=temp2)
@@ -1029,7 +1026,7 @@ async def enleech(event):
                     return
                 else:
                     return await event.reply(
-                        f"**Pardon me, but what does*** `'{temp2}'` **mean?\noh and btw whatever you ran has failed."
+                        f"**Pardon me, but what does*** `'{temp2}'` **mean?\noh and btw whatever you did has failed."
                     )
             else:
                 uri = rep_event.text
@@ -1038,12 +1035,8 @@ async def enleech(event):
                 else:
                     return await rep_event.reply("`Invalid torrent link`")
         else:
-            try:
-                temp = event.text.split(" ", maxsplit=1)[1]
-                uri = temp
-            except Exception:
-                pass
-            if temp:
+            uri = event.pattern_match.group(1).strip()
+            if uri is not None:
                 if is_url(uri) is True and uri.endswith(".torrent"):
                     event_id = event.id
                 else:
@@ -1071,9 +1064,10 @@ async def enleech(event):
         else:
             QUEUE.update({uri: [file_name, event.sender_id]})
         await save2db()
-        return await event.reply(
-            "**Torrent added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
-        )
+        if WORKING or QUEUE or LOCKFILE:
+            return await event.reply(
+                "**Torrent added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
+            )
     except Exception:
         ers = traceback.format_exc()
         LOGS.info(ers)
