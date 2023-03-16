@@ -300,7 +300,7 @@ async def dumpdl(upload2, dl, name, thum, user, message):
         else:
             rr = await app.send_message(f"`Dumping {name}…`")
         await asyncio.sleep(2)
-        dp = await upload2(user, dmp, rr, thum, name, message)
+        dp = await upload2(user, dmp, rr, thum, f"`{name}`", message)
         await rr.edit(f"`Dumped {name} Successfully.`")
         if LOG_CHANNEL:
             chat = int(LOG_CHANNEL)
