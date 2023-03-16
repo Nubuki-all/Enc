@@ -398,7 +398,7 @@ async def something():
                     QUEUE.pop(list(QUEUE.keys())[0])
                     await save2db()
                     continue
-                os.system (f"rm {name + '.torrent'}")
+                os.system(f"rm {name + '.torrent'}")
                 es = dt.now()
                 kk = dl.split("/")[-1]
                 if "[" in kk and "]" in kk:
