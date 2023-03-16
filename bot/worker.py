@@ -232,7 +232,7 @@ async def uploader(event):
             # await event.delete()
             r = await message.reply(f"`Uploading {args}…`", quote=True)
             cap = args.split("/")[-1] if "/" in args else args
-            await upload2(event.sender_id, args, r, "thumb.jpg", cap, message)
+            await upload2(event.sender_id, args, r, "thumb.jpg", f"`{cap}`", message)
             await r.edit(f"`{cap} uploaded successfully.`")
         else:
             return await event.reply("Upload what exactly?")
