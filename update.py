@@ -48,6 +48,7 @@ try:
             UPSTREAM_BRANCH = "main"
         if os.path.exists('.git'):
             bashrun(["rm", "-rf", ".git"])
+        bashrun(["pip3", "install", "-r", "requirements.txt"])
         update = bashrun([f"git init -q \
                        && git config --global user.email 117080364+Niffy-the-conqueror@users.noreply.github.com \
                        && git config --global user.name Niffy-the-conqueror \
