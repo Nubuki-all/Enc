@@ -291,12 +291,12 @@ async def channel_log(error):
             LOGS.info(ers)
 
 
-async def dumpdl(dl, name, thum, user, message):
+async def dumpdl(upload2, dl, name, thum, user, message):
     try:
         dmp = "thumb/" + name
         os.system(f"cp {dl} {dmp}")
         if message:
-            rr = await message.reply(f"`Dumping {dmp}…`")
+            rr = await message.reply(f"`Dumping {dmp}…`", quote=True)
         else:
             rr = await app.send_message(f"`Dumping {dmp}…`")
         await asyncio.sleep(2)

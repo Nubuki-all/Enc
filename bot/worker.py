@@ -153,7 +153,7 @@ async def downloader(event):
         args = event.pattern_match.group(1).strip()
         r = await event.get_reply_message()
         message = await app.get_messages(event.sender_id, int(r.id))
-        e = await message.reply(f"{enmoji()} `Downloading…`")
+        e = await message.reply(f"{enmoji()} `Downloading…`", quote=True)
         if args is not None:
             loc = ""
             if " -d " in args:
@@ -230,7 +230,7 @@ async def uploader(event):
         if args is not None:
             # wip
             # await event.delete()
-            r = await message.reply(f"`Uploading {args}…`")
+            r = await message.reply(f"`Uploading {args}…`", quote=True)
             cap = args.split("/")[-1] if "/" in args else args
             await upload2(event.sender_id, args, r, "thumb.jpg", cap, message)
             await r.edit(f"`{cap} uploaded successfully.`")
