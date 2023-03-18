@@ -953,10 +953,11 @@ async def enleech(event):
     if str(event.sender_id) not in OWNER and event.sender_id != DEV:
         return
     try:
-        args = event.pattern_match.group(1).strip()
+        args = event.pattern_match.group(1)
         if event.is_reply:
             rep_event = await event.get_reply_message()
             if args is not None:
+                args = event.pattern_match.group(1).strip()
                 if args.isdigit():
                     temp = int(args)
                     temp2 = rep_event.id
