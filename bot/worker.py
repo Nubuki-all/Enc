@@ -210,7 +210,7 @@ async def downloader(event):
     try:
         args = event.pattern_match.group(1)
         r = await event.get_reply_message()
-        message = await app.get_messages(event.sender_id, int(r.id))
+        message = await app.get_messages(event.chat_id, int(r.id))
         e = await message.reply(f"{enmoji()} `Downloading…`", quote=True)
         if args is not None:
             args = event.pattern_match.group(1).strip()
@@ -285,7 +285,7 @@ async def uploader(event):
         return await event.delete()
     try:
         args = event.pattern_match.group(1)
-        message = await app.get_messages(event.sender_id, int(event.id))
+        message = await app.get_messages(event.chat_id, int(event.id))
         if args is not None:
             # wip
             # await event.delete()
