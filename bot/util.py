@@ -269,7 +269,7 @@ async def parse(name, kk, aa):
         codec = await get_codec()
         con = ""
         olif = Path("filter.txt")
-        b = temp_b
+        temp_b = b
         if olif.is_file():
             fil2 = "" if fil2.casefold() == "disable" else fil2
             try:

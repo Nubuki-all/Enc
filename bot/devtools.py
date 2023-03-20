@@ -46,7 +46,7 @@ async def eval(event):
         evaluation = stdout
     else:
         evaluation = "Success"
-    if len(final_output) > 4095:
+    if len(evaluation) > 4000:
         final_output = "EVAL: {} \n\n OUTPUT: \n{} \n".format(cmd, evaluation)
         with io.BytesIO(str.encode(final_output)) as out_file:
             out_file.name = "eval.text"

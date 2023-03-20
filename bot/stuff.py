@@ -171,6 +171,7 @@ async def temp_auth(event):
             return await event.reply(
                 "Either reply to a message sent by the user you want to temporarily add to allowed users or send /auth (user-id)\nExample:\n  /auth 123456"
             )
+    new_id = str(new_id)
     if new_id == sender:
         return await event.reply("Why, oh why did you try to permit yourself?")
     if new_id in OWNER:
