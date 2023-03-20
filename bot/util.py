@@ -87,7 +87,7 @@ async def auto_rename(parsed_name, original_name, refunc):
 
 async def get_codec():
     with open("ffmpeg.txt", "r") as file:
-        file.read().rstrip()
+        ff_code = file.read().rstrip()
         file.close()
     s_check = dict()
     __out = ""
@@ -101,7 +101,7 @@ async def get_codec():
         }
     )
     for key, value in s_check.items():
-        if key in nani:
+        if key in ff_code:
             __out += f"[{value}] "
     return __out
 
