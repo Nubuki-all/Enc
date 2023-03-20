@@ -82,7 +82,7 @@ async def version2(event):
     args = event.pattern_match.group(1)
     if args is not None:
         args = args.strip()
-        if args.casefold() == "off" or args.casefold() = "disable":
+        if args.casefold() == "off" or args.casefold() == "disable":
             if VERSION2:
                 VERSION2.clear()
                 return await event.reply(f"**Removed V{VERSION2[0]} tag Successfully!**")
