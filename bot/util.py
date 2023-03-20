@@ -75,34 +75,42 @@ async def auto_rename(parsed_name, original_name, refunc):
     out_name = ""
     if refunc:
         for ren in refunc.split("\n"):
-            ren  = ren.strip()
+            ren = ren.strip()
             de_name = ren.split("|")[0]
             re_name = ren.split("|")[1]
             if original_name == de_name.strip():
                 out_name = re_name.strip()
     if not out_name:
-       out_name = parsed_name
+        out_name = parsed_name
     return out_name
 
 
 async def get_codec():
     with open("ffmpeg.txt", "r") as file:
-        ff_code = file.read().rstrip()
+        file.read().rstrip()
         file.close()
     s_check = dict()
     __out = ""
-    s_check.update({"480":"480p", "720":"720p", "1080":"1080p", "libx265":"HEVC", "libsvtav1":"AV1"})
+    s_check.update(
+        {
+            "480": "480p",
+            "720": "720p",
+            "1080": "1080p",
+            "libx265": "HEVC",
+            "libsvtav1": "AV1",
+        }
+    )
     for key, value in s_check.items():
         if key in nani:
             __out += f"[{value}] "
     return __out
-    
+
 
 async def wfilter():
     wname = Path("Namefilter.txt")
     wrelease = Path("Releasefilter.txt")
     aure = Path("Auto-rename.txt")
-    
+
     if wname.is_file():
         with open("Namefilter.txt", "r") as file:
             wnamer = file.read().strip()
@@ -328,7 +336,7 @@ async def parse(name, kk, aa):
                 con = f"{json['countryOfOrigin']}"
                 con = await conconvert(con)
                 g = f"{json.get('episodes')}"
-                
+
                 b = string.capwords(b)
                 if len(b) > 33:
                     cb = b[:32] + "…"
@@ -513,7 +521,7 @@ async def custcap(name, fname):
             )
             oi = f"{json['title']['english']}"
             oi = f"{json['title']['romaji']}" if oi == "None" else oi
-            oi   = await auto_rename(oi, temp_oi, aurer)
+            oi = await auto_rename(oi, temp_oi, aurer)
             g = f"{json.get('episodes')}"
         except Exception:
             g = ""

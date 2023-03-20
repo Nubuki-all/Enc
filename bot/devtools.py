@@ -59,7 +59,9 @@ async def eval(event):
             )
             await event.delete()
     else:
-        final_output = "**EVAL**: `{}` \n\n **OUTPUT**: \n`{}` \n".format(cmd, evaluation)
+        final_output = "**EVAL**: `{}` \n\n **OUTPUT**: \n`{}` \n".format(
+            cmd, evaluation
+        )
         await msg.edit(final_output)
 
 

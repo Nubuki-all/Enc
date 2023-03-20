@@ -85,7 +85,9 @@ async def version2(event):
         if args.casefold() == "off" or args.casefold() == "disable":
             if VERSION2:
                 VERSION2.clear()
-                return await event.reply(f"**Removed V{VERSION2[0]} tag Successfully!**")
+                return await event.reply(
+                    f"**Removed V{VERSION2[0]} tag Successfully!**"
+                )
             else:
                 return await event.reply("__No tag found__")
         elif "|" in args:
@@ -98,22 +100,28 @@ async def version2(event):
             else:
                 temp = "2"
                 temp2 = args
-        temp = temp.strip() 
+        temp = temp.strip()
         temp2 = temp2.strip()
         if not temp.isdigit():
-            return await event.reply(f"The first argument '{temp}' is not a digit.\nTo use send /v 2(or number of current re-release)|re-release message\n\nFor example `/v 3|Fixed video glitch`")
+            return await event.reply(
+                f"The first argument '{temp}' is not a digit.\nTo use send /v 2(or number of current re-release)|re-release message\n\nFor example `/v 3|Fixed video glitch`"
+            )
         if temp2.casefold() == "enable" or temp2.casefold() == "on":
             temp2 = "?"
         VERSION2.clear()
         VERSION2.append(temp)
         VERSION2.append(temp2)
-        await event.reply(f"**Added V{temp} tag successfully!\nV{temp} Reason:** `{temp2}`")
+        await event.reply(
+            f"**Added V{temp} tag successfully!\nV{temp} Reason:** `{temp2}`"
+        )
     else:
         if VERSION2:
             VERSION2.clear()
             return await event.reply(f"**Removed V{VERSION2[0]} tag successfully!**")
         else:
-            return await event.reply("__Unfortunately, I can't remove what doesn't exist__")
+            return await event.reply(
+                "__Unfortunately, I can't remove what doesn't exist__"
+            )
 
 
 async def discap(event):
@@ -147,7 +155,7 @@ async def discap(event):
             if dparse.is_file():
                 os.remove(dparse)
                 return await event.reply(
-                "**Successfully Enabled Anilist parsing & Auto-thumbnail**"
+                    "**Successfully Enabled Anilist parsing & Auto-thumbnail**"
                 )
             else:
                 return await event.reply("__Anilist has already been enabled__")
@@ -158,7 +166,7 @@ async def discap(event):
                 file = open(dparse, "w")
                 file.close()
                 return await event.reply(
-                "**Successfully Disabled Anilist Parsing & Auto-thumbnail**"
+                    "**Successfully Disabled Anilist Parsing & Auto-thumbnail**"
                 )
         if args.casefold() == "anilist":
             if dparse.is_file():
@@ -170,7 +178,9 @@ async def discap(event):
             await asyncio.sleep(2)
             return await re.edit(f"What does {args} mean here?")
     else:
-        return await event.reply("`No arguments need to specify a parse mechanism either by caption or anilist along with on or off`\n eg: `/parse caption off`\nTo turn of parse by captions")
+        return await event.reply(
+            "`No arguments need to specify a parse mechanism either by caption or anilist along with on or off`\n eg: `/parse caption off`\nTo turn of parse by captions"
+        )
 
 
 async def clean(event):
@@ -1006,7 +1016,11 @@ async def encod(event):
 
 
 async def enleech(event):
-    if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS and event.sender_id != DEV:
+    if (
+        str(event.sender_id) not in OWNER
+        and str(event.sender_id) not in TEMP_USERS
+        and event.sender_id != DEV
+    ):
         return
     try:
         args = event.pattern_match.group(1)

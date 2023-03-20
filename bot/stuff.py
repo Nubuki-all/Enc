@@ -109,7 +109,8 @@ async def start(event):
             return await event.delete()
     if not msg:
         msg = msg2
-    await event.reply(msg,
+    await event.reply(
+        msg,
         buttons=[
             [Button.inline("HELP", data="ihelp")],
             [
@@ -163,9 +164,13 @@ async def temp_auth(event):
             if args.isdigit():
                 args = new_id
             else:
-                return await event.reply(f"What do you mean by  `{args}` ?\nneed help? send /auth")
+                return await event.reply(
+                    f"What do you mean by  `{args}` ?\nneed help? send /auth"
+                )
         else:
-            return await event.reply("Either reply to a message sent by the user you want to temporarily add to allowed users or send /auth (user-id)\nExample:\n  /auth 123456")
+            return await event.reply(
+                "Either reply to a message sent by the user you want to temporarily add to allowed users or send /auth (user-id)\nExample:\n  /auth 123456"
+            )
     if new_id == sender:
         return await event.reply("Why, oh why did you try to permit yourself?")
     if new_id in OWNER:
@@ -177,4 +182,6 @@ async def temp_auth(event):
     except Exception:
         return await event.reply("`User id invalid.`")
     TEMP_USERS.append(new_id)
-    return await event.reply(f"Added `{new_user.first_name}` to allowed users temporarily {enmoji()}")
+    return await event.reply(
+        f"Added `{new_user.first_name}` to allowed users temporarily {enmoji()}"
+    )
