@@ -1081,7 +1081,7 @@ async def enleech(event):
                         if not LOCKFILE:
                             LOCKFILE.append("leechlock")
                         if UNLOCK_UNSTABLE:
-                            QUEUE.update({event2.id: [file_name, event.sender_id]})
+                            QUEUE.update({event2.id: [file_name, event.chat_id]})
                         else:
                             QUEUE.update({uri: [file_name, event.sender_id]})
                         await save2db()
@@ -1131,7 +1131,7 @@ async def enleech(event):
                     "**THIS TORRENT HAS ALREADY BEEN ADDED TO QUEUE**"
                 )
         if UNLOCK_UNSTABLE:
-            QUEUE.update({event_id: [file_name, event.sender_id]})
+            QUEUE.update({event_id: [file_name, event.chat_id]})
         else:
             QUEUE.update({uri: [file_name, event.sender_id]})
         await save2db()
