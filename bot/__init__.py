@@ -51,6 +51,12 @@ botStartTime = time.time()
 
 LOG_FILE_NAME = "Logs.txt"
 
+if "|" in RELEASER:
+    release_name = RELEASER.split("|")[0]
+    release_name_b = RELEASER.split("|")[1]
+else:
+    release_name = RELEASER
+    release_name_b = RELEASER
 
 if os.path.exists(LOG_FILE_NAME):
     with open(LOG_FILE_NAME, "r+") as f_d:
@@ -130,14 +136,15 @@ def enquip():
     quip = (
         "awake and ready to serve you, young master!",
         "Up!",
-        "ready to encode from dusk till Dawn.",
+        "ready to encode from dusk till dawn.",
         "ready and awaiting orders, Sir! Yes Sir!",
         "feeling lucky+",
         "(technically) a noble bot.",
-        "the... Core of the Tsia Dungeon!",
+        "the... Core!",
         "stunned, yet not surprised, by your kind gesture.",
-        "the eldest sister.",
+        "the highest bot.",
         "the Archduke’s daughter, Maiodore in disguise.",
+        "Ready!",
     )
     y = random.choice(quip)
     return y
@@ -151,9 +158,11 @@ def enquip2():
         "done, Sir! Yes Sir!",
         "dismayed\nHow could you do this to me",
         "still (technically) a noble bot.\nand would remain one even in death.",
-        "or has evolved to become the grim reaper.",
+        "the grim reaper.",
+        ".....................................................",
         "dismayed, yet not seeking vengeance, by your gesture\n'though alas this is where I meet my end.'",
         "…\n\n Screw this!\n It's those servers they're ev---. [dies]",
+        "done.",
         "[Terminated].",
     )
     y = random.choice(quip)
@@ -163,7 +172,10 @@ def enquip2():
 async def startup():
     try:
         for i in OWNER.split():
-            await bot.send_message(int(i), f"**I'm {enquip()} {enmoji()}**")
+            try:
+                await bot.send_message(int(i), f"**I'm {enquip()} {enmoji()}**")
+            except Exception:
+                pass
         if LOG_CHANNEL:
             me = await app.get_users("me")
             await bot.send_message(

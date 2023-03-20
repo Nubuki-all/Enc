@@ -32,6 +32,7 @@ from random_word import RandomWords
 from . import *
 from .config import *
 
+DOCKER_DEPLOYMENT = []
 UNLOCK_UNSTABLE = []
 DOWNLOAD_CANCEL = []
 USER_MAN = []
@@ -57,8 +58,9 @@ if EABF is True:
 if THUMB:
     os.system(f"wget {THUMB} -O thumb.jpg")
 
-if ICON:
-    os.system(f"wget {ICON} -O icon.png")
+if DL_STUFF:
+    for link in DL_STUFF.split(","):
+        os.system(f"wget {link.strip()}")
 
 ffmpegfile = Path("ffmpeg.txt")
 if ffmpegfile.is_file():
@@ -77,6 +79,13 @@ if not os.path.isdir("temp/"):
 if not os.path.isdir("thumb/"):
     os.mkdir("thumb/")
 
+
+if os.path.isdir("/tgenc"):
+    DOCKER_DEPLOYMENT.append(1)
+
+if TEMP_USERS:
+    TEMP_USERS = TEMP_USERS.split()
+        
 if DATABASE_URL:
     cluster = MongoClient(DATABASE_URL)
     db = cluster[DBNAME]

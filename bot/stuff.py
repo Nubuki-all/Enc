@@ -89,14 +89,27 @@ async def status(event):
 
 
 async def start(event):
-    if str(event.sender_id) not in OWNER:
+    sender = str(event.sender_id)
+    currentTime = get_readable_time(time.time() - botStartTime)
+    msg = ""
+    msg1 = f"Hi `{event.sender.first_name}`\n"
+    msg2 = f"{msg1}I've been alive for `{currentTime}` and i'm ready to encode videos 😗"
+    msg3 = f"{msg2}\nand by the way you're a temporary user"
+    priv = await app.get_users(OWNER.split()[0])
+    msg4 = f"{msg1}You're not allowed access to this bot\nAsk [{priv.first_name}](tg://user?id={OWNER.split()[0]}) (nicely) to grant you access."
+    if sender not in OWNER:
+        if sender not in TEMP_USERS:
+            msg = msg4
+        else:
+            msg = msg3
         if event.is_private:
             yo = await event.reply("Nice try!")
             await asyncio.sleep(3)
             await yo.delete()
             return await event.delete()
-    await event.reply(
-        f"Hi `{event.sender.first_name}`\nThis is a bot that encodes Videos.\nOhh And It's For Personal Use Only! 😗",
+    if not msg:
+        msg = msg2
+    await event.reply(msg,
         buttons=[
             [Button.inline("HELP", data="ihelp")],
             [
@@ -110,7 +123,7 @@ async def start(event):
 
 async def help(event):
     await event.reply(
-        "**👘 An Encode bot**\n\n+This Bot Encode Videos With your custom ffmpeg or handbrake-cli settings.\n+Easy to Use (Depends)\n-Due to your custom Settings & hosting server bot may or may not take time to encode.\n\n\nJust Forward a Video…/videos"
+        "**👘 An Encode bot**\n\n+This Bot Encode Videos With your custom ffmpeg or handbrake-cli settings.\n+Easy to Use (Depends)\n-Due to your custom Settings & hosting server bot may or may not take time to encode.\n\n\nJust Forward a Video or videos"
     )
 
 
@@ -133,3 +146,35 @@ async def beck(event):
             [Button.url("Maintainer ✌️", url="t.me/itsjust_r")],
         ],
     )
+
+
+async def temp_auth(event):
+    sender = str(event.sender_id)
+    error = "Failed!,\nCan't temporarily add to allowed users"
+    if sender not in OWNER:
+        return event.reply("Nope")
+    if event.is_reply:
+        rep_event = await event.get_reply_message()
+        new_id = rep_event.sender_id
+    else:
+        args = event.pattern_match.group(1)
+        if args is not None:
+            args = args.strip()
+            if args.isdigit():
+                args = new_id
+            else:
+                return await event.reply(f"What do you mean by  `{args}` ?\nneed help? send /auth")
+        else:
+            return await event.reply("Either reply to a message sent by the user you want to temporarily add to allowed users or send /auth (user-id)\nExample:\n  /auth 123456")
+    if new_id == sender:
+        return await event.reply("Why, oh why did you try to permit yourself?")
+    if new_id in OWNER:
+        return await event.reply(f"{error} because user is already a privileged user")
+    if new_id in TEMP_USERS:
+        return await event.reply(f"{error} because user is already added")
+    try:
+        new_user = await app.get_users(new_id)
+    except Exception:
+        return await event.reply("`User id invalid.`")
+    TEMP_USERS.append(new_id)
+    return await event.reply(f"Added `{new_user.first_name}` to allowed users temporarily {enmoji()}")

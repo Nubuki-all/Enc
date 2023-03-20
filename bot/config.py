@@ -27,13 +27,17 @@ try:
     )
     THUMB = config("THUMBNAIL", default="")
     ENCODER = config("ENCODER", default="")
-    ICON = config("ICON", default="")
-    # https://te.legra.ph/file/462b5a002f80bdf8a1ec1.png
+    DL_STUFF = config("DL_STUFF", default="")
     LOG_CHANNEL = config("LOG_CHANNEL", default="")
     DBNAME = config("DBNAME", default=str(BOT_TOKEN.split(":", 1)[0]))
     DATABASE_URL = config("DATABASE_URL", default="")
+    
     FCHANNEL = config("FCHANNEL", default="")
+    
     FCHANNEL_STAT = config("FCHANNEL_STAT", default="")
+    
+    C_LINK = config("C_LINK", default="@ANi_MiNE")
+    RELEASER = config("RELEASER", default="AM|ANi_MiNE")
     CAP_DECO = config("CAP_DECO", default="◉")
     ALLOW_ACTION = config("ALLOW_ACTION", default=True, cast=bool)
     ALWAYS_DEPLOY_LATEST = config("ALWAYS_DEPLOY_LATEST", default=False, cast=bool)

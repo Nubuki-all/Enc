@@ -71,9 +71,38 @@ async def crc32(filename, chunksize=65536):
         return "%X" % (checksum & 0xFFFFFFFF)
 
 
+async def auto_rename(parsed_name, original_name, refunc):
+    out_name = ""
+    if refunc:
+        for ren in refunc.split("\n"):
+            ren  = ren.strip()
+            de_name = ren.split("|")[0]
+            re_name = ren.split("|")[1]
+            if original_name == de_name.strip():
+                out_name = re_name.strip()
+    if not out_name:
+       out_name = parsed_name
+    return out_name
+
+
+async def get_codec():
+    with open("ffmpeg.txt", "r") as file:
+        ff_code = file.read().rstrip()
+        file.close()
+    s_check = dict()
+    __out = ""
+    s_check.update({"480":"480p", "720":"720p", "1080":"1080p", "libx265":"HEVC", "libsvtav1":"AV1"})
+    for key, value in s_check.items():
+        if key in nani:
+            __out += f"[{value}] "
+    return __out
+    
+
 async def wfilter():
     wname = Path("Namefilter.txt")
     wrelease = Path("Releasefilter.txt")
+    aure = Path("Auto-rename.txt")
+    
     if wname.is_file():
         with open("Namefilter.txt", "r") as file:
             wnamer = file.read().strip()
@@ -86,7 +115,13 @@ async def wfilter():
             file.close()
     else:
         wreleaser = ""
-    return wnamer, wreleaser
+    if aure.is_file():
+        with open("Auto-rename.txt", "r") as file:
+            aurer = file.read().strip()
+            file.close()
+    else:
+        aurer = ""
+    return wnamer, wreleaser, aurer
 
 
 url = "https://graphql.anilist.co"
@@ -222,14 +257,13 @@ async def parse(name, kk, aa):
         b, d, c, e, fil2, fil3, s, st = await parser(name)
         if b is None:
             raise Exception("Parsing Failed")
-        cb2 = "[ANi-MiNE]"
-        wnamer, wreleaser = await wfilter()
-        with open("ffmpeg.txt", "r") as file:
-            nani = file.read().rstrip()
-            file.close()
+        wnamer, wreleaser, aurer = await wfilter()
+        codec = await get_codec()
         con = ""
         olif = Path("filter.txt")
+        b = temp_b
         if olif.is_file():
+            fil2 = "" if fil2.casefold() == "disable" else fil2
             try:
                 ttx = Path("parse.txt")
                 if ttx.is_file():
@@ -244,14 +278,15 @@ async def parse(name, kk, aa):
                 )
                 b = f"{json['title']['english']}"
                 b = f"{json['title']['romaji']}" if b == "None" else b
-                if fil2.casefold() == "auto":
-                    fil2 = f"{json['countryOfOrigin']}"
-                    fil2 = await conconvert(fil2)
-                fil2 = "" if fil2.casefold() == "disable" else fil2
+                b = await auto_rename(b, temp_b, aurer)
+                if fil2:
+                    if fil2.casefold() == "auto":
+                        fil2 = f"{json['countryOfOrigin']}"
+                        fil2 = await conconvert(fil2)
             except Exception:
                 ers = traceback.format_exc()
                 LOGS.info(ers)
-                fil2 = "" if fil2 == "Disable" else fil2
+                fil2 = "" if fil2.casefold() == "auto" else fil2
             b = string.capwords(b)
             if len(b) > 33:
                 cb = b[:32] + "…"
@@ -259,20 +294,20 @@ async def parse(name, kk, aa):
             else:
                 cb = b
             bb = ""
-            bb += "[A-M]"
+            bb += release_name
             bb += f" {cb}"
             if c:
                 bb += f" S{c}"
             if d:
                 bb += f" - {d}"
             if VERSION2:
-                bb += "v2"
+                bb += f"v{VERSION2[0]}"
             if fil2:
                 bb += f" [{fil2}]"
             bb2 = bb.replace(cb, b)
-            bb2 = bb2.replace("[A-M]", cb2)
-            if "1080" in nani:
-                bb2 += " | [1080p]"
+            bb2 = bb2.replace(release_name, release_name_b)
+            if codec:
+                bb2 += f" {codec}"
             bb += ".mkv"
         else:
             try:
@@ -289,9 +324,11 @@ async def parse(name, kk, aa):
                 )
                 b = f"{json['title']['english']}"
                 b = f"{json['title']['romaji']}" if b == "None" else b
+                b = await auto_rename(b, temp_b, aurer)
                 con = f"{json['countryOfOrigin']}"
                 con = await conconvert(con)
                 g = f"{json.get('episodes')}"
+                
                 b = string.capwords(b)
                 if len(b) > 33:
                     cb = b[:32] + "…"
@@ -333,27 +370,27 @@ async def parse(name, kk, aa):
                 col = ""
                 cb = b
             bb = ""
-            bb += "[A-M]"
+            bb += release_name
             bb += f" {cb}"
             if c:
                 bb += f" S{c}"
             if d:
                 bb += f" - {d}"
             if VERSION2:
-                bb += "v2"
+                bb += f"v{VERSION2[0]}"
             if g == d:
                 bb += " [END]"
             if col:
                 bb += f" [{col}]"
             bb2 = bb.replace(cb, b)
-            bb2 = bb2.replace("[A-M]", cb2)
-            if "1080" in nani:
-                bb2 += " | [1080p]"
+            bb2 = bb2.replace(release_name, release_name_b)
+            if codec:
+                bb2 += f" {codec}"
             bb += ".mkv"
     except Exception:
         ers = traceback.format_exc()
         LOGS.info(ers)
-        bb = kk.replace(f".{aa}", " @Ani_Mine.mkv")
+        bb = kk.replace(f".{aa}", f" {C_LINK}")
         bb2 = bb
     if "/" in bb:
         bb = bb.replace("/", " ")
@@ -422,10 +459,9 @@ async def custcap(name, fname):
         if oi is None:
             raise Exception("Parsing Failed")
         cdp = CAP_DECO
-        with open("ffmpeg.txt", "r") as file:
-            nani = file.read().rstrip()
-            file.close()
-        wnamer, wreleaser = await wfilter()
+        temp_oi = oi
+        wnamer, wreleaser, aurer = await wfilter()
+        codec = await get_codec()
         try:
             fil3t = ""
             if wreleaser:
@@ -477,6 +513,7 @@ async def custcap(name, fname):
             )
             oi = f"{json['title']['english']}"
             oi = f"{json['title']['romaji']}" if oi == "None" else oi
+            oi   = await auto_rename(oi, temp_oi, aurer)
             g = f"{json.get('episodes')}"
         except Exception:
             g = ""
@@ -493,7 +530,7 @@ async def custcap(name, fname):
         if VERSION2:
             caption += " (v2)"
         if VERSION2 and WORKING:
-            caption += f"\n**{cdp} (V2) Reason:** `{VERSION2[0]}`"
+            caption += f"\n**{cdp} (V{VERSION2[0]}) Reason:** `{VERSION2[1]}`"
         if z:
             caption += "\n"
         if y:
@@ -510,8 +547,8 @@ async def custcap(name, fname):
             caption += "\n"
         if st:
             caption += f"**{cdp} Episode Title:** `{st}`\n"
-        if "1080" in nani:
-            caption += f"**🌟:** `[1080p] [AV1]`\n"
+        if codec:
+            caption += f"**🌟:** `{codec}`\n"
         if ENCODER:
             encr = ENCODER.replace("@", "")
             caption += f"**{cdp} Encoder:** `{encr}`\n"
@@ -522,5 +559,5 @@ async def custcap(name, fname):
         LOGS.info(ers)
         om = fname.split(".")[0]
         ot = om.split("@")[0]
-        caption = f"**{ot}**\n**🔗 @Ani_Mine**"
+        caption = f"**{ot}**\n**🔗 {C_LINK}**"
     return caption

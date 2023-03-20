@@ -79,50 +79,98 @@ async def on_termination():
 async def version2(event):
     if str(event.sender_id) not in OWNER:
         return await event.delete()
-    temp = ""
-    try:
-        temp = event.text.split(" ", maxsplit=1)[1]
-    except Exception:
-        pass
-    if temp:
+    args = event.pattern_match.group(1)
+    if args is not None:
+        args = args.strip()
+        if args.casefold() == "off" or args.casefold() = "disable":
+            if VERSION2:
+                VERSION2.clear()
+                return await event.reply(f"**Removed V{VERSION2[0]} tag Successfully!**")
+            else:
+                return await event.reply("__No tag found__")
+        elif "|" in args:
+            temp = args.split("|", maxsplit=1)[0]
+            temp2 = args.split("|", maxsplit=1)[1]
+        else:
+            if args.isdigit():
+                temp = args
+                temp2 = "?"
+            else:
+                temp = "2"
+                temp2 = args
+        temp = temp.strip() 
+        temp2 = temp2.strip()
+        if not temp.isdigit():
+            return await event.reply(f"The first argument '{temp}' is not a digit.\nTo use send /v 2(or number of current re-release)|re-release message\n\nFor example `/v 3|Fixed video glitch`")
+        if temp2.casefold() == "enable" or temp2.casefold() == "on":
+            temp2 = "?"
         VERSION2.clear()
         VERSION2.append(temp)
-        await event.reply(f"**Added V2 Tag Successfully!\nV2 Reason:** `{temp}`")
+        VERSION2.append(temp2)
+        await event.reply(f"**Added V{temp} tag successfully!\nV{temp} Reason:** `{temp2}`")
     else:
-        VERSION2.clear()
-        await event.reply("**Removed V2 Tag Successfully!**")
+        if VERSION2:
+            VERSION2.clear()
+            return await event.reply(f"**Removed V{VERSION2[0]} tag successfully!**")
+        else:
+            return await event.reply("__Unfortunately, I can't remove what doesn't exist__")
 
 
 async def discap(event):
     if str(event.sender_id) not in OWNER:
         return await event.delete()
-    temp = ""
-    try:
-        temp = event.text.split(" ", maxsplit=1)[1]
-    except Exception:
-        pass
-    if temp.casefold() == "caption":
-        ttx = Path("cap.txt")
-        if ttx.is_file():
-            os.remove(ttx)
-            await event.reply("**Successfully Enabled Parse By Caption**")
-        else:
-            file = open(ttx, "w")
-            file.close()
-            await event.reply("**Successfully Disabled Parse By Caption**")
-    else:
-        ttx = Path("parse.txt")
-        if ttx.is_file():
-            os.remove(ttx)
-            await event.reply(
+    args = event.pattern_match.group(1)
+    dcap = Path("cap.txt")
+    dparse = Path("parse.txt")
+    if args is not None:
+        args = args.strip()
+        if args.casefold() == "caption":
+            if dcap.is_file():
+                return await event.reply("Parse by caption is disabled.")
+            else:
+                return await event.reply("Parse by caption is enabled.")
+        if args.casefold() == "caption on" or args.casefold() == "caption enable":
+            if dcap.is_file():
+                os.remove(dcap)
+                return await event.reply("**Successfully Enabled Parse By Caption**")
+            else:
+                return await event.reply("__Parse by caption is already enabled__")
+        if args.casefold() == "caption off" or args.casefold() == "caption disable":
+            if dcap.is_file():
+                return await event.reply("__Parse by caption is already disabled__")
+            else:
+                file = open(dcap, "w")
+                file.close()
+                return await event.reply("**Successfully Disabled Parse By Caption**")
+
+        if args.casefold() == "anilist on" or args.casefold() == "anilist enable":
+            if dparse.is_file():
+                os.remove(dparse)
+                return await event.reply(
                 "**Successfully Enabled Anilist parsing & Auto-thumbnail**"
-            )
-        else:
-            file = open(ttx, "w")
-            file.close()
-            await event.reply(
+                )
+            else:
+                return await event.reply("__Anilist has already been enabled__")
+        if args.casefold() == "anilist off" or args.casefold() == "anilist disable":
+            if dparse.is_file():
+                return await event.reply("__Anilist is already disabled__")
+            else:
+                file = open(dparse, "w")
+                file.close()
+                return await event.reply(
                 "**Successfully Disabled Anilist Parsing & Auto-thumbnail**"
-            )
+                )
+        if args.casefold() == "anilist":
+            if dparse.is_file():
+                return await event.reply("__Anilist disabled.__")
+            else:
+                return await event.reply("__Anilist enabled.__")
+        if args:
+            re = await event.reply("🤔")
+            await asyncio.sleep(2)
+            return await re.edit(f"What does {args} mean here?")
+    else:
+        return await event.reply("`No arguments need to specify a parse mechanism either by caption or anilist along with on or off`\n eg: `/parse caption off`\nTo turn of parse by captions")
 
 
 async def clean(event):
@@ -150,11 +198,12 @@ async def downloader(event):
     if not event.is_reply:
         return await event.reply("`Reply to a file to download it`")
     try:
-        args = event.pattern_match.group(1).strip()
+        args = event.pattern_match.group(1)
         r = await event.get_reply_message()
         message = await app.get_messages(event.sender_id, int(r.id))
         e = await message.reply(f"{enmoji()} `Downloading…`", quote=True)
         if args is not None:
+            args = event.pattern_match.group(1).strip()
             loc = ""
             if " -d " in args:
                 d = args.split(" -d ", maxsplit=1)[-1]
@@ -225,11 +274,12 @@ async def uploader(event):
     if str(event.sender_id) not in OWNER and event.sender_id != DEV:
         return await event.delete()
     try:
-        args = event.pattern_match.group(1).strip()
+        args = event.pattern_match.group(1)
         message = await app.get_messages(event.sender_id, int(event.id))
         if args is not None:
             # wip
             # await event.delete()
+            args = event.pattern_match.group(1).strip()
             r = await message.reply(f"`Uploading {args}…`", quote=True)
             cap = args.split("/")[-1] if "/" in args else args
             await upload2(event.sender_id, args, r, "thumb.jpg", f"`{cap}`", message)
@@ -292,6 +342,8 @@ async def cancel_dl(e):
             if processName == "aria2c":
                 os.kill(processID, signal.SIGKILL)
         await qclean()
+        ans = "Download cancelled. Reporting…"
+        await e.answer(ans, cache_time=0, alert=False)
     except Exception:
         ers = traceback.format_exc()
         await channel_log(ers)
@@ -315,6 +367,8 @@ async def nuke(event):
     if str(event.sender_id) not in OWNER:
         return await event.delete()
     try:
+        if not DOCKER_DEPLOYMENT:
+            return await event.reply("`Not allowed on local deployment`")
         rst = await event.reply("`Trying To Nuke ☣️`")
         await asyncio.sleep(1)
         await rst.edit("`☢️ Nuking Please Wait…`")
@@ -430,6 +484,8 @@ async def encodestat():
                 i = i + 1
                 if i > 5:
                     xr = len(QUEUE) - i
+                    if xr == 0:
+                        break
                     x += f"__+{xr} more…__\n"
                     break
             if len(QUEUE) == 1 and not WORKING:
@@ -547,7 +603,7 @@ async def check(event):
     with open("ffmpeg.txt", "r") as file:
         ffmpeg = file.read().rstrip()
         file.close()
-    await event.reply(f"**Current FFMPEG Code Is**\n\n`{ffmpeg}`")
+    await event.reply(f"**Current ffmpeg Code Is**\n\n`{ffmpeg}`")
 
 
 async def allowgroupenc(event):
@@ -950,7 +1006,7 @@ async def encod(event):
 
 
 async def enleech(event):
-    if str(event.sender_id) not in OWNER and event.sender_id != DEV:
+    if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS and event.sender_id != DEV:
         return
     try:
         args = event.pattern_match.group(1)
@@ -1065,7 +1121,7 @@ async def enleech(event):
         else:
             QUEUE.update({uri: [file_name, event.sender_id]})
         await save2db()
-        if WORKING or QUEUE or LOCKFILE:
+        if WORKING or len(QUEUE) > 1 or LOCKFILE:
             return await event.reply(
                 "**Torrent added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
             )

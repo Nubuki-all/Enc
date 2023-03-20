@@ -126,14 +126,19 @@ async def _(e):
     await enleech(e)
 
 
-@bot.on(events.NewMessage(pattern=r"^/dl(\s+.+)?$"))
+@bot.on(events.NewMessage(pattern=r"^!dl(\s+.+)?$"))
 async def _(e):
     await downloader(e)
 
 
-@bot.on(events.NewMessage(pattern=r"^/ul(\s+.+)?$"))
+@bot.on(events.NewMessage(pattern=r"^!ul(\s+.+)?$"))
 async def _(e):
     await uploader(e)
+
+
+@bot.on(events.NewMessage(pattern=r"^/permit(\s+.+)?$"))
+async def _(e):
+    await temp_auth(e)
 
 
 @app.on_message(filters.incoming & filters.command(["peval"]))
@@ -161,7 +166,7 @@ async def _(e):
     await discap(e)
 
 
-@bot.on(events.NewMessage(pattern="/fix"))
+@bot.on(events.NewMessage(pattern=r"^/v(\s+.+)?$"))
 async def _(e):
     await version2(e)
 
