@@ -452,7 +452,9 @@ async def something():
                 else:
                     thum = "thumb.jpg"
                 if uri and DUMP_LEECH is True:
-                    asyncio.create_task(dumpdl(upload2, dl, name, thum, e.chat_id, message))
+                    asyncio.create_task(
+                        dumpdl(upload2, dl, name, thum, e.chat_id, message)
+                    )
                 with open("ffmpeg.txt", "r") as file:
                     # ffmpeg = file.read().rstrip()
                     nani = file.read().rstrip()
