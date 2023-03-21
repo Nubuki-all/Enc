@@ -57,7 +57,7 @@ if "|" in RELEASER:
 else:
     release_name = RELEASER
     release_name_b = RELEASER
-    
+
 release_name = f"[{release_name.strip()}]"
 release_name_b = f"[{release_name_b.strip()}]"
 
