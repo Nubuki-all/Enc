@@ -255,8 +255,6 @@ async def something():
                 file = list(QUEUE.keys())[0]
                 name, user = QUEUE[list(QUEUE.keys())[0]]
                 uri = ""
-                USER_MAN.clear()
-                USER_MAN.append(user)
                 try:
                     message = await app.get_messages(user, int(file))
                     mssg_r = await message.reply("`Downloading…`", quote=True)
@@ -271,6 +269,8 @@ async def something():
                     e = await bot.send_message(user, "`▼ Downloding Queue Files ▼`")
                 if message:
                     user = message.from_user.id
+                USER_MAN.clear()
+                USER_MAN.append(user)
                 sender = await app.get_users(user)
                 if LOG_CHANNEL:
                     log = int(LOG_CHANNEL)
@@ -295,6 +295,7 @@ async def something():
                         else:
                             download_task = await download2(dl, file, message, mssg_r)
                     if uri:
+                        uri_name = name
                         if mssg_r:
                             await mssg_r.edit("`Downloading Torrent\nPlease wait…`")
                         cmd = f"aria2c --seed-time=0 -d downloads {uri}"
@@ -426,7 +427,7 @@ async def something():
                     QUEUE.pop(list(QUEUE.keys())[0])
                     await save2db()
                     continue
-                os.system(f"rm {name + '.torrent'}")
+                os.system(f"rm {uri_name + '.torrent'}")
                 es = dt.now()
                 kk = dl.split("/")[-1]
                 if "[" in kk and "]" in kk:
@@ -451,7 +452,7 @@ async def something():
                 else:
                     thum = "thumb.jpg"
                 if uri and DUMP_LEECH is True:
-                    asyncio.create_task(dumpdl(upload2, dl, name, thum, user, message))
+                    asyncio.create_task(dumpdl(upload2, dl, name, thum, e.chat_id, message))
                 with open("ffmpeg.txt", "r") as file:
                     # ffmpeg = file.read().rstrip()
                     nani = file.read().rstrip()
@@ -474,7 +475,7 @@ async def something():
                     ffmpeg = nano
                 dtime = ts(int((es - s).seconds) * 1000)
                 if uri:
-                    name2, user = QUEUE[list(QUEUE.keys())[0]]
+                    name2, user2 = QUEUE[list(QUEUE.keys())[0]]
                     dl2 = "downloads/" + name2
                     hehe = f"{out};{dl2};{list(QUEUE.keys())[0]}"
                     wah2 = code(hehe)
@@ -503,7 +504,7 @@ async def something():
                     )
                 cmd = ffmpeg.format(dl, out)
                 if ALLOW_ACTION is True:
-                    async with bot.action(user, "game"):
+                    async with bot.action(e.chat_id, "game"):
                         process = await asyncio.create_subprocess_shell(
                             cmd,
                             stdout=asyncio.subprocess.PIPE,
