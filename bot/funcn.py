@@ -291,13 +291,15 @@ async def channel_log(error):
     if LOG_CHANNEL and UNLOCK_UNSTABLE:
         try:
             log = int(LOG_CHANNEL)
-            await bot.send_message(
+            msg = await bot.send_message(
                 log,
                 f"**#ERROR\n\n⛱️ Summary of what happened:**\n`{error}`\n\nTo restict error messages to logs set the EABF vars to False. {enmoji()}",
             )
         except Exception:
             ers = traceback.format_exc()
             LOGS.info(ers)
+            msg = ""
+        return msg
 
 
 async def dumpdl(upload2, dl, name, thum, user, message):

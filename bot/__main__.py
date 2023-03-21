@@ -269,6 +269,8 @@ async def something():
                     message = ""
                     mssg_r = ""
                     e = await bot.send_message(user, "`▼ Downloding Queue Files ▼`")
+                if message:
+                    user = message.from_user.id
                 sender = await app.get_users(user)
                 if LOG_CHANNEL:
                     log = int(LOG_CHANNEL)
@@ -341,36 +343,49 @@ async def something():
                                 await qclean()
                                 continue
                             else:
-                                if len(stderr) > 4095:
+                              try:
+                                error_msg = f"🔺 **Downloading of** `{name}` **Failed!**"
+                                if len(stderr + stdout) > 4095:
                                     yo = await app.send_message(
-                                        user, "Uploading Error logs…"
+                                        e.chat_id, "Uploading Error logs…"
                                     )
+                                    opp = await channel_log(error_msg)
                                     out_file = "aria2c_error.txt"
                                     with open(out_file, "w") as file:
-                                        file.write(str(stderr))
+                                        file.write(f"{str(stderr)}\n{str(stdout)}")
                                         wrror = await yo.reply_document(
                                             document=out_file,
                                             force_document=True,
                                             quote=True,
-                                            caption="`ffmpeg error`",
+                                            caption="`aria2c error`",
                                         )
+                                    
+                                    if LOG_CHANNEL:
+                                        chat = int(LOG_CHANNEL)
+                                        await wrror.copy(chat_id=chat)
                                     yo.delete()
                                     os.remove(out_file)
                                 else:
-                                    wrror = await nn.reply(stderr)
-                                nnn = await wrror.reply(
-                                    f"🔺 **Downloading of** `{name}` **Failed!**"
-                                )
+                                    if message:
+                                        wrror = await mssg_r.reply(f"{stderr}\n{stdout}")
+                                    else:
+                                        wrror = await app.send_message(int(LOG_CHANNEL), f"{stderr}\n{stdout}")
+                                nnn = await wrror.reply(error_msg)
+                                opp = await channel_log(f"{error_msg}\n{stderr}\n{stdout}")
                                 try:
-                                    await nn.delete()
-                                    await wak.delete()
+                                    await e.delete()
+                                    await op.delete()
                                 except Exception:
                                     pass
-                                if QUEUE:
-                                    QUEUE.pop(list(QUEUE.keys())[0])
-                                await save2db()
+                              except Exception:
+                                  pass
+                                retry_msg = "Retrying after 10 seconds"
+                                await wrror.reply(retry_msg)
+                                if Log_channel and opp:
+                                    await opp.reply(retry_msg)
+                                await asyncio.sleep(10)
                                 await qclean()
-                                await channel_log(stderr)
+                                await channel_log(stderr + stdout)
                                 DOWNLOAD_CANCEL.clear()
                                 continue
                         name = await get_leech_file()
@@ -498,9 +513,9 @@ async def something():
                 try:
                     if process.returncode != 0:
                         if len(stderr) > 4095:
-                            yo = await app.send_message(user, "Uploading Error logs…")
+                            yo = await app.send_message(e.chat_id, "Uploading Error logs…")
                             out_file = "ffmpeg_error.txt"
-                            with open("ffmpeg_error.txt", "w") as file:
+                            with open(out_file, "w") as file:
                                 file.write(str(stderr.decode()))
                                 wrror = await yo.reply_document(
                                     document=out_file,
