@@ -378,16 +378,16 @@ async def something():
                                 except Exception:
                                     pass
                               except Exception:
-                                  pass
-                                retry_msg = "Retrying after 10 seconds"
-                                await wrror.reply(retry_msg)
-                                if Log_channel and opp:
-                                  await opp.reply(retry_msg)
-                                await asyncio.sleep(10)
-                                await qclean()
-                                await channel_log(stderr + stdout)
-                                DOWNLOAD_CANCEL.clear()
-                                continue
+                                pass
+                              retry_msg = "Retrying after 10 seconds"
+                              await wrror.reply(retry_msg)
+                              if Log_channel and opp:
+                                await opp.reply(retry_msg)
+                              await asyncio.sleep(10)
+                              await qclean()
+                              await channel_log(stderr + stdout)
+                              DOWNLOAD_CANCEL.clear()
+                              continue
                         name = await get_leech_file()
                         dl = "downloads/" + name
                     try:
