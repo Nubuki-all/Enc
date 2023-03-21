@@ -37,7 +37,7 @@ try:
     FCHANNEL_STAT = config("FCHANNEL_STAT", default="")
 
     C_LINK = config("C_LINK", default="@ANi_MiNE")
-    RELEASER = config("RELEASER", default="AM|ANi_MiNE")
+    RELEASER = config("RELEASER", default="A-M|ANi-MiNE")
     CAP_DECO = config("CAP_DECO", default="◉")
     ALLOW_ACTION = config("ALLOW_ACTION", default=True, cast=bool)
     ALWAYS_DEPLOY_LATEST = config("ALWAYS_DEPLOY_LATEST", default=False, cast=bool)
