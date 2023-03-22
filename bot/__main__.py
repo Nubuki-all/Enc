@@ -216,7 +216,7 @@ async def _(e):
     await listqueuep(e)
 
 
-@bot.on(events.NewMessage(pattern="r/^groupenc(\\s+.+)?$"))
+@bot.on(events.NewMessage(pattern=r"/^groupenc(\s+.+)?$"))
 async def _(e):
     await allowgroupenc(e)
 
