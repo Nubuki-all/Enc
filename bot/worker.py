@@ -840,10 +840,7 @@ async def clearqueue(event):
                     i = 1
                 while i < len(QUEUE):
                     y, user = QUEUE[list(QUEUE.keys())[i]]
-                    if (
-                        str(event.sender_id) not in OWNER
-                        and event.sender_id != user
-                    ):
+                    if str(event.sender_id) not in OWNER and event.sender_id != user:
                         i = i + 1
                     else:
                         QUEUE.pop(list(QUEUE.keys())[i])
@@ -874,7 +871,9 @@ async def thumb(event):
     if not event.photo:
         return
     if not event.is_private and not GROUPENC:
-        rply = await event.reply("`Ignoring…`\nTurn on encoding videos in groups with `/groupenc on` to enable setting thumbnails in groups.\n__This message shall self-destruct in 10 seconds.__")
+        rply = await event.reply(
+            "`Ignoring…`\nTurn on encoding videos in groups with `/groupenc on` to enable setting thumbnails in groups.\n__This message shall self-destruct in 10 seconds.__"
+        )
         await asyncio.sleep(10)
         await rply.delete()
     os.system("rm thumb.jpg")

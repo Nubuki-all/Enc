@@ -318,7 +318,7 @@ async def cache_dl():
         else:
             if is_url(str(file)) is True:
                 return
-        download_task = await download2(dl, file)
+        await download2(dl, file)
         CACHE_QUEUE.append(1)
     except Exception:
         er = traceback.format_exc()
@@ -341,10 +341,12 @@ async def get_cached(dl, sender, user, e, op):
                 await e.edit(f"`Waiting for download to complete {enmoji()}…`")
                 if op:
                     await asyncio.sleep(3)
-                    await op.edit(f"`Waiting for` [{sender.first_name}'s](tg://user?id={user}) `download to complete {enmoji()}…`")
+                    await op.edit(
+                        f"`Waiting for` [{sender.first_name}'s](tg://user?id={user}) `download to complete {enmoji()}…`"
+                    )
                 await asyncio.sleep(10)
         if not dl_check.is_file():
-            raise("Getting cached file failed\nfile might have been deleted.")
+            raise ("Getting cached file failed\nfile might have been deleted.")
         return True
     except Exception:
         er = traceback.format_exc()
@@ -440,8 +442,10 @@ async def enquotes():
             pass
     return output
 
+
 class already_dl(Exception):
     pass
+
 
 async def progress_for_pyrogram(current, total, bot, ud_type, message, start):
     now = time.time()

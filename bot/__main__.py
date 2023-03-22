@@ -216,7 +216,7 @@ async def _(e):
     await listqueuep(e)
 
 
-@bot.on(events.NewMessage(pattern="r/^groupenc(\s+.+)?$"))
+@bot.on(events.NewMessage(pattern="r/^groupenc(\\s+.+)?$"))
 async def _(e):
     await allowgroupenc(e)
 
@@ -289,14 +289,14 @@ async def something():
                                 uri = message.text
                         else:
                             if CACHE_QUEUE:
-                                raise(already_dl)
+                                raise (already_dl)
                             download_task = await download2(dl, file, message, mssg_r)
                     else:
                         if is_url(str(file)) is True:
                             uri = file
                         else:
                             if CACHE_QUEUE:
-                                raise(already_dl)
+                                raise (already_dl)
                             download_task = await download2(dl, file, message, mssg_r)
                     if uri:
                         uri_name = name
