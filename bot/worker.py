@@ -1166,7 +1166,7 @@ async def pencode(message):
                 if act_inputer not in OWNER and act_inputer not in TEMP_USERS:
                     return await message.delete()
                 else:
-                    if not GROUPENC::
+                    if not GROUPENC:
                         yo = await message.reply(
                             "**Pm me with files to encode instead\nOR\nSend** `/groupenc on` **to turn on group encoding!**\n__This message shall self destruct in 10 seconds__"
                         )
