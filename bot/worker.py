@@ -875,7 +875,7 @@ async def thumb(event):
             "`Ignoring…`\nTurn on encoding videos in groups with `/groupenc on` to enable setting thumbnails in groups.\n__This message shall self-destruct in 10 seconds.__"
         )
         await asyncio.sleep(10)
-        await rply.delete()
+        return await rply.delete()
     os.system("rm thumb.jpg")
     await event.client.download_media(event.media, file="thumb.jpg")
     await event.reply("**Thumbnail Saved Successfully.**")
