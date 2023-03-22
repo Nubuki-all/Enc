@@ -294,20 +294,23 @@ async def uploader(event):
             if not file.is_file() and not os.path.isdir(file):
                 return await event.reply("__File or folder not found__")
             if os.path.isdir(file):
-                files = glob.glob(f"{args}/*")
-                if files:
+                for path, subdirs, files in os.walk(file):
+                    if not files:
+                        return await event.reply(f"`📁 folder is empty.`")
+                    files.sort()
                     i = len(files)
                     t = 1
-                    for file in files:
-                        cap = file.split("/")[-1]
+                    for name in files:
+                        file = os.path.join(path, name)
+                        cap = file.split("/", maxsplit=1)[-1]
                         r = await message.reply(
-                            f"`Uploading {cap} from {args} ({t}/{i})…`", quote=True
+                            f"`Uploading {cap} from 📁 {args} ({t}/{i})…`", quote=True
                         )
                         await asyncio.sleep(2)
                         await upload2(
-                            event.chat_id, file, r, "thumb.jpg", f"`{cap}`", message
+                            event.chat_id, file, r, "thumb.jpg", f"`{name}`", message
                         )
-                        await r.edit(f"`{cap} uploaded successfully.`")
+                        await r.edit(f"`{name} uploaded successfully.`")
                         t = t + 1
             else:
                 r = await message.reply(f"`Uploading {args}…`", quote=True)
