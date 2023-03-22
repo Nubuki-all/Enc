@@ -248,7 +248,7 @@ async def downloader(event):
         LOGS.info(ers)
 
 
-async def download2(dl, file, message, e):
+async def download2(dl, file, message="", e=""):
     try:
         global download_task
         if message:
@@ -619,20 +619,26 @@ async def check(event):
 async def allowgroupenc(event):
     if str(event.sender_id) not in OWNER:
         return await event.delete()
-    if GROUPENC:
-        GROUPENC.clear()
-        yo = await event.reply("**Turned off Successfully**")
-        await asyncio.sleep(10)
-        await yo.delete()
-        await event.delete()
+    args = event.pattern_match.group(1)
+    if args is not none:
+        args = args.strip()
+        if args.casefold() == "off" or args.casefold() == "disable":
+            if not GROUPENC:
+                return await event.reply("**Already turned off**")
+            GROUPENC.clear()
+            await event.reply("**Turned off Successfully**")
+        if args.casefold() == "on" or args.casefold() == "enable":
+            if GROUPENC:
+                return await event.reply("**Already turned on**")
+            GROUPENC.append(1)
+            yo = await event.reply(
+                "**Group Encoding Turned on Successfully**\n__Persists till bot reboots!__"
+            )
     else:
-        GROUPENC.append(1)
-        yo = await event.reply(
-            "**Group Encoding Turned on Successfully**\n__Persists till bot reboots!__"
-        )
-        await asyncio.sleep(10)
-        await yo.delete()
-        await event.delete()
+        if GROUPENC:
+            return await event.reply("`Encoding in group is enabled.`")
+        else:
+            return await event.reply("`Encoding in group is disabled.`")
 
 
 async def getthumb(event):
@@ -803,14 +809,11 @@ async def clearqueue(event):
     async with bot.action(event.sender_id, "typing"):
         if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
             return await event.delete()
-        temp = ""
-        try:
-            temp = event.text.split(" ", maxsplit=1)[1]
-        except Exception:
-            pass
-        if temp:
+        args = event.pattern_match.group(1)
+        if args is not None:
+            args = args.strip()
             try:
-                temp = int(temp)
+                temp = int(args)
                 try:
                     q, user = QUEUE[list(QUEUE.keys())[temp]]
                     if str(event.sender_id) not in OWNER and event.sender_id != user:
@@ -839,7 +842,7 @@ async def clearqueue(event):
                     y, user = QUEUE[list(QUEUE.keys())[i]]
                     if (
                         str(event.sender_id) not in OWNER
-                        and str(event.sender_id) not in TEMP_USERS
+                        and event.sender_id != user
                     ):
                         i = i + 1
                     else:
@@ -850,6 +853,7 @@ async def clearqueue(event):
                 ers = traceback.format_exc()
                 xx = "⚠️"
                 x = " __An Error occurred check /logs for more info__"
+                await channel_log(ers)
                 LOGS.info(ers)
             if x:
                 x = f"{xx}{x}"
@@ -869,6 +873,10 @@ async def thumb(event):
         return
     if not event.photo:
         return
+    if not event.is_private and not GROUPENC:
+        rply = await event.reply("`Ignoring…`\nTurn on encoding videos in groups with `/groupenc on` to enable setting thumbnails in groups.\n__This message shall self-destruct in 10 seconds.__")
+        await asyncio.sleep(10)
+        await rply.delete()
     os.system("rm thumb.jpg")
     await event.client.download_media(event.media, file="thumb.jpg")
     await event.reply("**Thumbnail Saved Successfully.**")
@@ -1158,13 +1166,11 @@ async def pencode(message):
                 if act_inputer not in OWNER and act_inputer not in TEMP_USERS:
                     return await message.delete()
                 else:
-                    if GROUPENC:
-                        pass
-                    else:
+                    if not GROUPENC::
                         yo = await message.reply(
-                            "#Warning\n\n**Pm me with files to encode instead\nOR\nclick /groupenc to turn on group encoding!**"
+                            "**Pm me with files to encode instead\nOR\nSend** `/groupenc on` **to turn on group encoding!**\n__This message shall self destruct in 10 seconds__"
                         )
-                        await asyncio.sleep(5)
+                        await asyncio.sleep(10)
                         await yo.delete()
                         return
             except BaseException:

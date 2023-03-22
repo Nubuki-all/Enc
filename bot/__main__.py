@@ -70,7 +70,7 @@ async def _(e):
     await getthumb(e)
 
 
-@bot.on(events.NewMessage(pattern="/clear"))
+@bot.on(events.NewMessage(pattern=r"^/clear(\s+.+)?$"))
 async def _(e):
     await clearqueue(e)
 
@@ -216,7 +216,7 @@ async def _(e):
     await listqueuep(e)
 
 
-@bot.on(events.NewMessage(pattern="/groupenc"))
+@bot.on(events.NewMessage(pattern="r/^groupenc(\s+.+)?$"))
 async def _(e):
     await allowgroupenc(e)
 
@@ -288,11 +288,15 @@ async def something():
                             else:
                                 uri = message.text
                         else:
+                            if CACHE_QUEUE:
+                                raise(already_dl)
                             download_task = await download2(dl, file, message, mssg_r)
                     else:
                         if is_url(str(file)) is True:
                             uri = file
                         else:
+                            if CACHE_QUEUE:
+                                raise(already_dl)
                             download_task = await download2(dl, file, message, mssg_r)
                     if uri:
                         uri_name = name
@@ -390,7 +394,7 @@ async def something():
                                     pass
                                 retry_msg = "Retrying after 10 seconds"
                                 await wrror.reply(retry_msg)
-                                if Log_channel and opp:
+                                if LOG_CHANNEL and opp:
                                     await opp.reply(retry_msg)
                                 await asyncio.sleep(10)
                                 await qclean()
@@ -419,6 +423,12 @@ async def something():
                         DOWNLOAD_CANCEL.clear()
                         await save2db()
                         await qclean()
+                        continue
+                except already_dl:
+                    if not op:
+                        op = ""
+                    rslt = await get_cached(dl, sender, user, e, op)
+                    if rslt is False:
                         continue
                 except Exception:
                     er = traceback.format_exc()
@@ -455,6 +465,8 @@ async def something():
                     asyncio.create_task(
                         dumpdl(upload2, dl, name, thum, e.chat_id, message)
                     )
+                if len(QUEUE) > 1 and CACHE_DL is True:
+                    await cache_dl
                 with open("ffmpeg.txt", "r") as file:
                     # ffmpeg = file.read().rstrip()
                     nani = file.read().rstrip()

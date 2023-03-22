@@ -35,6 +35,7 @@ from .config import *
 DOCKER_DEPLOYMENT = []
 UNLOCK_UNSTABLE = []
 DOWNLOAD_CANCEL = []
+CACHE_QUEUE = []
 USER_MAN = []
 GROUPENC = []
 LOCKFILE = []
@@ -302,6 +303,60 @@ async def channel_log(error):
         return msg
 
 
+async def cache_dl():
+    try:
+        name, user = QUEUE[list(QUEUE.keys())[1]]
+        dl = "downloads/" + name
+        file = list(QUEUE.keys())[1]
+        try:
+            msg = await app.get_messages(user, int(file))
+        except Exception:
+            msg = ""
+        if msg:
+            if msg.text:
+                return
+        else:
+            if is_url(str(file)) is True:
+                return
+        download_task = await download2(dl, file)
+        CACHE_QUEUE.append(1)
+    except Exception:
+        er = traceback.format_exc()
+        LOGS.info(er)
+        await channel_log(er)
+        CACHE_QUEUE.clear()
+
+
+async def get_cached(dl, sender, user, e, op):
+    try:
+        dl_check = Path(dl)
+        dl_check2 = Path(dl + ".temp")
+        if dl_check.is_file():
+            await e.edit("`Using cached download…`")
+            if op:
+                await op.edit("`Using cached download…`")
+            await asyncio.sleep(3)
+        if dl_check2.is_file():
+            while dl_check2.is_file():
+                await e.edit(f"`Waiting for download to complete {enmoji()}…`")
+                if op:
+                    await asyncio.sleep(3)
+                    await op.edit(f"`Waiting for` [{sender.first_name}'s](tg://user?id={user}) `download to complete {enmoji()}…`")
+                await asyncio.sleep(10)
+        if not dl_check.is_file():
+            raise("Getting cached file failed\nfile might have been deleted.")
+        return True
+    except Exception:
+        er = traceback.format_exc()
+        LOGS.info(er)
+        await channel_log(er)
+        await e.edit("`Using cached download failed\nRe-downloading…`")
+        if op:
+            await op.edit("`Using cached download failed\nRe-downloading…`")
+        CACHE_QUEUE.clear()
+        return False
+
+
 async def dumpdl(upload2, dl, name, thum, user, message):
     try:
         dmp = "thumb/" + name
@@ -385,6 +440,8 @@ async def enquotes():
             pass
     return output
 
+class already_dl(Exception):
+    pass
 
 async def progress_for_pyrogram(current, total, bot, ud_type, message, start):
     now = time.time()

@@ -31,17 +31,15 @@ try:
     LOG_CHANNEL = config("LOG_CHANNEL", default="")
     DBNAME = config("DBNAME", default=str(BOT_TOKEN.split(":", 1)[0]))
     DATABASE_URL = config("DATABASE_URL", default="")
-
     FCHANNEL = config("FCHANNEL", default="")
-
     FCHANNEL_STAT = config("FCHANNEL_STAT", default="")
-
     C_LINK = config("C_LINK", default="@ANi_MiNE")
     RELEASER = config("RELEASER", default="A-M|ANi-MiNE")
     CAP_DECO = config("CAP_DECO", default="◉")
-    ALLOW_ACTION = config("ALLOW_ACTION", default=True, cast=bool)
     ALWAYS_DEPLOY_LATEST = config("ALWAYS_DEPLOY_LATEST", default=False, cast=bool)
+    ALLOW_ACTION = config("ALLOW_ACTION", default=True, cast=bool
     DUMP_LEECH = config("DUMP_LEECH", default=True, cast=bool)
+    CACHE_DL = config("CACHE_DL", default=False, cast=bool)
     EABF = config("EABF", default=True, cast=bool)
 except Exception as e:
     print("Environment vars Missing")
