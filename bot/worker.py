@@ -290,10 +290,26 @@ async def uploader(event):
             # wip
             # await event.delete()
             args = event.pattern_match.group(1).strip()
-            r = await message.reply(f"`Uploading {args}…`", quote=True)
-            cap = args.split("/")[-1] if "/" in args else args
-            await upload2(event.sender_id, args, r, "thumb.jpg", f"`{cap}`", message)
-            await r.edit(f"`{cap} uploaded successfully.`")
+            file = Path(args)
+            if not file.is_file() and not os.path.isdir(file):
+                return await event.reply("__File or folder not found__")
+            if os.path.isdir(file):
+                files = glob.glob(f"{args}/*")
+                if files:
+                    i = len(files)
+                    t = 1
+                    for file in files:
+                        cap = file.split("/")[-1]
+                        r = await message.reply(f"`Uploading {cap} from {args} ({t}/{i})…`", quote=True)
+                        await asyncio.sleep(2)
+                        await upload2(event.chat_id, file, r, "thumb.jpg", f"`{cap}`", message)
+                        await r.edit(f"`{cap} uploaded successfully.`")
+                        t = t + 1
+            else:
+                r = await message.reply(f"`Uploading {args}…`", quote=True)
+                cap = args.split("/")[-1] if "/" in args else args
+                await upload2(event.sender_id, args, r, "thumb.jpg", f"`{cap}`", message)
+                await r.edit(f"`{cap} uploaded successfully.`")
         else:
             return await event.reply("Upload what exactly?")
     except Exception:

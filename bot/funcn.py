@@ -363,13 +363,17 @@ async def dumpdl(upload2, dl, name, thum, user, message):
     try:
         dmp = "thumb/" + name
         os.system(f"cp '{dl}' '{dmp}'")
+        _dmp = Path(dmp)
         if message:
             rr = await message.reply(f"`Dumping {name}…`", quote=True)
         else:
             rr = await app.send_message(f"`Dumping {name}…`")
         await asyncio.sleep(2)
-        dp = await upload2(user, dmp, rr, thum, f"`{name}`", message)
-        await rr.edit(f"`Dumped {name} Successfully.`")
+        if int(_dmp.stat().st_size) > 2126000000:
+            dp = await rr.reply("**File too large to dump, Aborting…**")
+        else:
+            dp = await upload2(user, dmp, rr, thum, f"`{name}`", message)
+            await rr.edit(f"`Dumped {name} Successfully.`")
         if LOG_CHANNEL:
             chat = int(LOG_CHANNEL)
             await rr.copy(chat_id=chat)
