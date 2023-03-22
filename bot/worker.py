@@ -304,9 +304,9 @@ async def uploader(event):
                         file = os.path.join(path, name)
                         cap = file.split("/", maxsplit=1)[-1]
                         r = await message.reply(
-                            f"`Uploading {cap} from 📁 {args} ({t}/{i})…`", quote=True
+                            f"`Uploading {name} from 📁 {path} ({t}/{i})…`", quote=True
                         )
-                        await asyncio.sleep(2)
+                        await asyncio.sleep(10)
                         await upload2(
                             event.chat_id, file, r, "thumb.jpg", f"`{name}`", message
                         )

@@ -255,6 +255,7 @@ async def something():
                 file = list(QUEUE.keys())[0]
                 name, user = QUEUE[list(QUEUE.keys())[0]]
                 uri = ""
+                uri_name = ""
                 try:
                     message = await app.get_messages(user, int(file))
                     mssg_r = await message.reply("`Downloading…`", quote=True)
@@ -437,7 +438,8 @@ async def something():
                     QUEUE.pop(list(QUEUE.keys())[0])
                     await save2db()
                     continue
-                os.system(f"rm {uri_name + '.torrent'}")
+                if uri_name:
+                    os.system(f"rm {uri_name + '.torrent'}")
                 es = dt.now()
                 kk = dl.split("/")[-1]
                 if "[" in kk and "]" in kk:
