@@ -319,9 +319,7 @@ async def uploader(event):
             else:
                 r = await message.reply(f"`Uploading {args}…`", quote=True)
                 cap = args.split("/")[-1] if "/" in args else args
-                await upload2(
-                    event.chat_id, args, r, "thumb.jpg", f"`{cap}`", message
-                )
+                await upload2(event.chat_id, args, r, "thumb.jpg", f"`{cap}`", message)
                 await r.edit(f"`{cap} uploaded successfully.`")
         else:
             return await event.reply("Upload what exactly?")
@@ -438,7 +436,7 @@ async def restart(event):
 
 async def listqueue(event):
     if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
-        return 
+        return
     if not QUEUE:
         yo = await event.reply("Nothing In Queue")
         await asyncio.sleep(30)

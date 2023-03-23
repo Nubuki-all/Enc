@@ -342,7 +342,7 @@ async def get_queue():
             x += f"\n**{enmoji()} Tip: To remove an item from queue use** /clear <queue number>"
         else:
             x = "**Nothing Here** 🐱"
-    
+
     except Exception:
         er = traceback.format_exc()
         LOGS.info(er)
