@@ -435,8 +435,9 @@ async def restart(event):
 
 
 async def listqueue(event):
-    if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
-        return
+    if event.sender_id is not None:
+        if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
+            return
     if not QUEUE:
         yo = await event.reply("Nothing In Queue")
         await asyncio.sleep(30)
@@ -1241,10 +1242,10 @@ async def pencode(message):
                 user = message.from_user.id
                 QUEUE.update({doc.file_id: [name, user]})
             await save2db()
-            msg = await xxx.edit(
+            await xxx.edit(
                 "**Added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
             )
-            await listqueue(msg)
+            return await listqueue(event)
         WORKING.append(1)
         xxx = await message.reply(
             "`Download Pending…` \n**(Waiting For Connection)**", quote=True
