@@ -320,7 +320,7 @@ async def uploader(event):
                 r = await message.reply(f"`Uploading {args}…`", quote=True)
                 cap = args.split("/")[-1] if "/" in args else args
                 await upload2(
-                    event.sender_id, args, r, "thumb.jpg", f"`{cap}`", message
+                    event.chat_id, args, r, "thumb.jpg", f"`{cap}`", message
                 )
                 await r.edit(f"`{cap} uploaded successfully.`")
         else:
@@ -438,61 +438,60 @@ async def restart(event):
 
 async def listqueue(event):
     if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
-        return await event.delete()
+        return 
     if not QUEUE:
         yo = await event.reply("Nothing In Queue")
-        await asyncio.sleep(3)
-        await yo.delete()
-        return await event.delete()
-    try:
-        if WORKING:
-            i = 0
-        else:
-            i = 1
-        x = ""
-        while i < len(QUEUE):
-            y, yy = QUEUE[list(QUEUE.keys())[i]]
-            ss = await app.get_users(yy)
-            x += f"{i}. {y} ({ss.first_name})\n"
-            i = i + 1
-        if x:
-            x += "\n**To remove an item from queue use** /clear <queue number>"
-        else:
-            x += "**Nothing Here** 🐱"
-    except Exception:
-        x = "No Pending Item in Queue 😒"
-    yo = await event.reply(x)
-    await asyncio.sleep(10)
-    await event.delete()
-    await yo.delete()
+        await asyncio.sleep(30)
+        return await yo.delete()
+    event2 = await event.reply("`Listing queue pls wait…`")
+    await queue_status(event2)
+    await asyncio.sleep(2)
+
+    while True:
+        try:
+            msg = await get_queue()
+            await event2.edit(msg)
+            if not msg.endswith(">"):
+                break
+            await asyncio.sleep(60)
+        except errors.rpcerrorlist.MessageNotModifiedError:
+            time.sleep(30)
+            continue
+        except errors.FloodWaitError as e:
+            time.sleep(e.seconds)
+            continue
+        except Exception:
+            break
 
 
 async def listqueuep(event):
-    async with bot.action(event.sender_id, "typing"):
+    async with bot.action(event.chat_id, "typing"):
         if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
             return await event.delete()
         if not QUEUE:
             yo = await event.reply("Nothing In Queue")
             await asyncio.sleep(3)
             await yo.delete()
-            return await event.delete()
+            return await event.delete
         try:
             if WORKING:
                 i = 0
             else:
                 i = 1
-            x = ""
+            rply = ""
             while i < len(QUEUE):
-                y, yy = QUEUE[list(QUEUE.keys())[i]]
-                y = await qparse(y)
-                x += f"{i}. {y}\n"
+                file_name, chat_id = QUEUE[list(QUEUE.keys())[i]]
+                file_name = await qparse(file_name)
+                x += f"{i}. {file_name}\n"
                 i = i + 1
-            if x:
-                x += "\n**Queue based on auto-generated filename if you you want the actual queue use the command** /queue "
+            if rply:
+                rply += "\n**Queue based on auto-generated filename if you you want the actual queue use the command** /queue "
             else:
-                x += "wow, such emptiness 😶"
+                rply = "wow, such emptiness 😶"
         except Exception:
-            x = "No Pending Item in Queue 😒"
+            er = traceback.format_exc()
+            LOGS.info(er)
+            await channel_log(er)
         yo = await event.reply(x)
         await asyncio.sleep(10)
         await event.delete()
@@ -1121,11 +1120,12 @@ async def enleech(event):
                         else:
                             QUEUE.update({uri: [file_name, event.sender_id]})
                         await save2db()
-                        await event2.reply(
+                        msg = await event2.reply(
                             "**Torrent added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
                         )
                         temp = temp - 1
                         temp2 = temp2 + 1
+                        await listqueue(msg)
                         await asyncio.sleep(5)
                     if LOCKFILE:
                         if LOCKFILE[0] == "leechlock":
@@ -1172,9 +1172,10 @@ async def enleech(event):
             QUEUE.update({uri: [file_name, event.sender_id]})
         await save2db()
         if WORKING or len(QUEUE) > 1 or LOCKFILE:
-            return await event.reply(
+            msg = await event.reply(
                 "**Torrent added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
             )
+            return await listqueue(msg)
     except Exception:
         ers = traceback.format_exc()
         LOGS.info(ers)
@@ -1242,9 +1243,10 @@ async def pencode(message):
                 user = message.from_user.id
                 QUEUE.update({doc.file_id: [name, user]})
             await save2db()
-            return await xxx.edit(
+            msg = await xxx.edit(
                 "**Added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
             )
+            await listqueue(msg)
         WORKING.append(1)
         xxx = await message.reply(
             "`Download Pending…` \n**(Waiting For Connection)**", quote=True

@@ -35,6 +35,7 @@ from .config import *
 DOCKER_DEPLOYMENT = []
 UNLOCK_UNSTABLE = []
 DOWNLOAD_CANCEL = []
+QUEUE_STATUS = []
 CACHE_QUEUE = []
 USER_MAN = []
 GROUPENC = []
@@ -301,6 +302,53 @@ async def channel_log(error):
             LOGS.info(ers)
             msg = ""
         return msg
+
+
+async def queue_status(event):
+    try:
+        if QUEUE_STATUS:
+            for q_id in QUEUE_STATUS:
+                _chat_id, _msg_id = q_id.split()
+                if event.chat_id == int(_chat_id):
+                    msg = await app.get_messages(int(_chat_id), int(_msg_id))
+                    return await msg.delete()
+            QUEUE_STATUS.append(event.chat_id + " " + event.id)
+        else:
+            QUEUE_STATUS.append(event.chat_id + " " + event.id)
+    except Exception:
+        er = traceback.format_exc()
+        LOGS.info(er)
+        await channel_log()
+
+
+async def get_queue():
+    try:
+        if WORKING:
+            i = 0
+        else:
+            i = 1
+        x = ""
+        while i < len(QUEUE):
+            file_name, _id = QUEUE[list(QUEUE.keys())[i]]
+            file_id = list(QUEUE.keys())[i]
+            if "-100" in str(_id):
+                msg = await app.get_messages(_id, int(file_id))
+                user = msg.from_user
+            else:
+                user = await app.get_users(_id)
+            x += f"{i}. {file_name} ({user.first_name})\n"
+            i = i + 1
+        if x:
+            x += f"\n**{enmoji()} Tip: To remove an item from queue use** /clear <queue number>"
+        else:
+            x = "**Nothing Here** 🐱"
+    
+    except Exception:
+        er = traceback.format_exc()
+        LOGS.info(er)
+        await channel_log(er)
+        x = "__An error occurred.__"
+    return x
 
 
 async def cache_dl():
