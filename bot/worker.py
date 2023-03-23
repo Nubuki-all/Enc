@@ -312,8 +312,10 @@ async def uploader(event):
                         )
                         await r.edit(f"`{name} uploaded successfully.`")
                         t = t + 1
-                    await ul.reply(f"All files in {path} has been uploaded successfully {enmoji()}.")
-                    
+                    await ul.reply(
+                        f"All files in {path} has been uploaded successfully {enmoji()}."
+                    )
+
             else:
                 r = await message.reply(f"`Uploading {args}…`", quote=True)
                 cap = args.split("/")[-1] if "/" in args else args
