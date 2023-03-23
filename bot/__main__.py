@@ -468,7 +468,7 @@ async def something():
                         dumpdl(upload2, dl, name, thum, e.chat_id, message)
                     )
                 if len(QUEUE) > 1 and CACHE_DL is True:
-                    await cache_dl
+                    await cache_dl()
                 with open("ffmpeg.txt", "r") as file:
                     # ffmpeg = file.read().rstrip()
                     nani = file.read().rstrip()

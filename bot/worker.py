@@ -296,7 +296,7 @@ async def uploader(event):
             if os.path.isdir(file):
                 for path, subdirs, files in os.walk(file):
                     if not files:
-                        return await event.reply(f"`📁 folder is empty.`")
+                        return await event.reply(f"`📁 {path} is empty.`")
                     files.sort()
                     i = len(files)
                     t = 1
@@ -307,11 +307,13 @@ async def uploader(event):
                             f"`Uploading {name} from 📁 {path} ({t}/{i})…`", quote=True
                         )
                         await asyncio.sleep(10)
-                        await upload2(
+                        ul = await upload2(
                             event.chat_id, file, r, "thumb.jpg", f"`{name}`", message
                         )
                         await r.edit(f"`{name} uploaded successfully.`")
                         t = t + 1
+                    await ul.reply(f"All files in {path} has been uploaded successfully {enmoji()}.")
+                    
             else:
                 r = await message.reply(f"`Uploading {args}…`", quote=True)
                 cap = args.split("/")[-1] if "/" in args else args
@@ -1386,6 +1388,8 @@ async def pencode(message):
             thum = "thumb2.jpg"
         else:
             thum = "thumb.jpg"
+        if QUEUE and CACHE_DL is True:
+            await cache_dl()
         with open("ffmpeg.txt", "r") as file:
             nani = file.read().rstrip()
             # ffmpeg = file.read().rstrip()
