@@ -312,13 +312,13 @@ async def queue_status(event):
                 if event.chat_id == int(_chat_id):
                     msg = await app.get_messages(int(_chat_id), int(_msg_id))
                     return await msg.delete()
-            QUEUE_STATUS.append(event.chat_id + " " + event.id)
+            QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
         else:
-            QUEUE_STATUS.append(event.chat_id + " " + event.id)
+            QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
     except Exception:
         er = traceback.format_exc()
         LOGS.info(er)
-        await channel_log()
+        await channel_log(er)
 
 
 async def get_queue():
