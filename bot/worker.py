@@ -1247,7 +1247,8 @@ async def pencode(message):
             await xxx.edit(
                 "**Added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
             )
-            return await listqueue(event)
+            asyncio.create_task(listqueue(event))
+            return
         WORKING.append(1)
         xxx = await message.reply(
             "`Download Pending…` \n**(Waiting For Connection)**", quote=True
