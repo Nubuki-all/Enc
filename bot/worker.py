@@ -451,6 +451,8 @@ async def listqueue(event):
             msg = await get_queue()
             await event2.edit(msg)
             if not msg.endswith(">"):
+                await asyncio.sleep(5)
+                await event2.delete()
                 break
             await asyncio.sleep(60)
         except errors.rpcerrorlist.MessageNotModifiedError:
