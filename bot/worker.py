@@ -435,9 +435,8 @@ async def restart(event):
 
 
 async def listqueue(event):
-    if event.sender_id is not None:
-        if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
-            return
+    if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
+        return
     if not QUEUE:
         yo = await event.reply("Nothing In Queue")
         await asyncio.sleep(30)
@@ -1126,7 +1125,7 @@ async def enleech(event):
                         )
                         temp = temp - 1
                         temp2 = temp2 + 1
-                        await listqueue(msg)
+                        # await listqueue(msg)
                         await asyncio.sleep(5)
                     if LOCKFILE:
                         if LOCKFILE[0] == "leechlock":
@@ -1176,7 +1175,7 @@ async def enleech(event):
             msg = await event.reply(
                 "**Torrent added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
             )
-            return await listqueue(msg)
+        # return await listqueue(msg)
     except Exception:
         ers = traceback.format_exc()
         LOGS.info(ers)
@@ -1247,7 +1246,7 @@ async def pencode(message):
             await xxx.edit(
                 "**Added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
             )
-            asyncio.create_task(listqueue(event))
+            #asyncio.create_task(listqueue(event))
             return
         WORKING.append(1)
         xxx = await message.reply(

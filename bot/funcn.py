@@ -42,7 +42,6 @@ GROUPENC = []
 LOCKFILE = []
 VERSION2 = []
 STARTUP = []
-SL_FUNC = []
 WORKING = []
 EVENT2 = []
 QUEUE = {}
