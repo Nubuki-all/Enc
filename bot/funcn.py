@@ -369,7 +369,7 @@ async def get_cached(dl, sender, user, e, op):
             false_prog = "..."
             while dl_check2.is_file():
                 try:
-                    false_prog = "..." if len(false_prog) > 10 else false_prog
+                    false_prog = "..." if len(false_prog) > 20 else false_prog
                     await e.edit(prog_msg + false_prog)
                     if op:
                         await asyncio.sleep(3)
