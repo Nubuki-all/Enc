@@ -435,7 +435,7 @@ async def restart(event):
 
 
 async def listqueue(event):
-    if event.sender_id not None and str(event.sender_id) != str(BOT_TOKEN.split(":")[0]):
+    if event.sender_id not None and event.sender_id != int(BOT_TOKEN.split(":")[0]):
         if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
             return
     if not QUEUE:
