@@ -24,6 +24,7 @@ from .funcn import *
 from .util import (
     custcap,
     dynamicthumb,
+    get_codec,
     get_readable_file_size,
     get_readable_time,
     parse,
@@ -568,7 +569,9 @@ async def encodestat():
             y = await qparse(y)
             x = f"**Currently Encoding:** `{y}`\n\n**QUEUE:**\n──────\n`Nothing Here.`"
         me = await app.get_users("me")
+        codec = await get_codec()
         x += f"\n\nYours truly,\n  {enmoji()} `{me.first_name}`"
+        x += f"\n    == {codec} =="
         return x
 
 
