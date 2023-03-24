@@ -355,30 +355,6 @@ async def get_queue():
     return x
 
 
-async def cache_dl():
-    try:
-        name, user = QUEUE[list(QUEUE.keys())[1]]
-        dl = "downloads/" + name
-        file = list(QUEUE.keys())[1]
-        try:
-            msg = await app.get_messages(user, int(file))
-        except Exception:
-            msg = ""
-        if msg:
-            if msg.text:
-                return
-        else:
-            if is_url(str(file)) is True:
-                return
-        await download2(dl, file)
-        CACHE_QUEUE.append(1)
-    except Exception:
-        er = traceback.format_exc()
-        LOGS.info(er)
-        await channel_log(er)
-        CACHE_QUEUE.clear()
-
-
 async def get_cached(dl, sender, user, e, op):
     try:
         dl_check = Path(dl)
