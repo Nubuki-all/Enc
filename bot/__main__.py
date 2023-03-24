@@ -426,7 +426,7 @@ async def something():
                         await qclean()
                         continue
                 except already_dl:
-                    if not op:
+                    if not LOG_CHANNEL:
                         op = ""
                     rslt = await get_cached(dl, sender, user, e, op)
                     if rslt is False:
