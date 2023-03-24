@@ -371,7 +371,7 @@ async def get_cached(dl, sender, user, e, op):
                     if op:
                         await asyncio.sleep(3)
                         await op.edit(
-                        f"`Waiting for` [{sender.first_name}'s](tg://user?id={user}) `download to complete {enmoji()}…`"
+                            f"`Waiting for` [{sender.first_name}'s](tg://user?id={user}) `download to complete {enmoji()}…`"
                         )
                     await asyncio.sleep(15)
                 except errors.rpcerrorlist.MessageNotModifiedError:
@@ -381,7 +381,7 @@ async def get_cached(dl, sender, user, e, op):
                     await asyncio.sleep(e.seconds)
                     continue
         if not dl_check.is_file():
-            raise Exception ("Getting cached file failed\nfile might have been deleted.")
+            raise Exception("Getting cached file failed\nfile might have been deleted.")
         return True
     except Exception:
         er = traceback.format_exc()
