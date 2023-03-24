@@ -311,7 +311,11 @@ async def queue_status(event):
                 _chat_id, _msg_id = q_id.split()
                 if event.chat_id == int(_chat_id):
                     msg = await app.get_messages(int(_chat_id), int(_msg_id))
-                    return await msg.delete()
+                    try:
+                        await msg.delete()
+                    except Exception:
+                        pass
+                    QUEUE_STATUS.remove(q_id)
             QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
         else:
             QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
