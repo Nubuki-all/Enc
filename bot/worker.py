@@ -442,6 +442,7 @@ async def listqueue(event):
         yo = await event.reply("Nothing In Queue")
         await asyncio.sleep(30)
         return await yo.delete()
+    time.sleep(3)
     event2 = await event.reply("`Listing queue pls wait…`")
     await queue_status(event2)
     await asyncio.sleep(2)
