@@ -1150,7 +1150,7 @@ async def enleech(event):
                         )
                         temp = temp - 1
                         temp2 = temp2 + 1
-                        await listqueue(msg)
+                        asyncio.create_task(listqueue(msg))
                         await asyncio.sleep(5)
                     if LOCKFILE:
                         if LOCKFILE[0] == "leechlock":
@@ -1200,7 +1200,7 @@ async def enleech(event):
             msg = await event.reply(
                 "**Torrent added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
             )
-        return await listqueue(msg)
+        return asyncio.create_task(listqueue(msg))
     except Exception:
         ers = traceback.format_exc()
         LOGS.info(ers)
