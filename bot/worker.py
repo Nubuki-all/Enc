@@ -436,9 +436,13 @@ async def restart(event):
 
 async def cache_dl():
     try:
-        name, user = QUEUE[list(QUEUE.keys())[1]]
+        if WORKING:
+            i = 0
+        else:
+            i = 1
+        name, user = QUEUE[list(QUEUE.keys())[i]]
         dl = "downloads/" + name
-        file = list(QUEUE.keys())[1]
+        file = list(QUEUE.keys())[i]
         try:
             msg = await app.get_messages(user, int(file))
         except Exception:
@@ -446,6 +450,11 @@ async def cache_dl():
         if msg:
             if msg.text:
                 return
+            media_type = str(msg.media)
+            if media_type == "MessageMediaType.VIDEO":
+                file = msg.video.file_id
+            else:
+                file = msg.document.file_id
         else:
             if is_url(str(file)) is True:
                 return

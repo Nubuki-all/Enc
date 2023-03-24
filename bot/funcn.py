@@ -374,7 +374,7 @@ async def get_cached(dl, sender, user, e, op):
                     )
                 await asyncio.sleep(10)
         if not dl_check.is_file():
-            raise ("Getting cached file failed\nfile might have been deleted.")
+            raise Exception("Getting cached file failed\nfile might have been deleted.")
         return True
     except Exception:
         er = traceback.format_exc()
