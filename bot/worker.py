@@ -442,7 +442,7 @@ async def listqueue(event):
         yo = await event.reply("Nothing In Queue")
         await asyncio.sleep(30)
         return await yo.delete()
-    time.sleep(3)
+    await asyncio.sleep(int(SL_FUNC[0]))
     event2 = await event.reply("`Listing queue pls wait…`")
     await queue_status(event2)
     await asyncio.sleep(2)
@@ -1248,6 +1248,12 @@ async def pencode(message):
             await xxx.edit(
                 "**Added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
             )
+            if not SL_FUNC:
+                SL_FUNC.append(3)
+            else:
+                temp = SL_FUNC[1]
+                SL_FUNC.clear()
+                SL_FUNC.append(int(temp) + 3)
             asyncio.create_task(listqueue(event))
             return
         WORKING.append(1)

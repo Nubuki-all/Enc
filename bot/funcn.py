@@ -42,6 +42,7 @@ GROUPENC = []
 LOCKFILE = []
 VERSION2 = []
 STARTUP = []
+SL_FUNC = []
 WORKING = []
 EVENT2 = []
 QUEUE = {}
@@ -317,6 +318,7 @@ async def queue_status(event):
                         pass
                     QUEUE_STATUS.remove(q_id)
             QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
+            SL_FUNC.clear()
         else:
             QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
     except Exception:
