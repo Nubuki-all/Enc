@@ -454,10 +454,10 @@ async def listqueue(event):
                 break
             await asyncio.sleep(60)
         except errors.rpcerrorlist.MessageNotModifiedError:
-            time.sleep(30)
+            await asyncio.sleep(30)
             continue
         except errors.FloodWaitError as e:
-            time.sleep(e.seconds)
+            await asyncio.sleep(e.seconds)
             continue
         except Exception:
             break
