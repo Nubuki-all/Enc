@@ -365,14 +365,18 @@ async def get_cached(dl, sender, user, e, op):
                 await op.edit("`Using cached download…`")
             await asyncio.sleep(3)
         if dl_check2.is_file():
+            prog_msg = f"{enmoji()} `Waiting for download to complete`"
+            false_prog = "..."
             while dl_check2.is_file():
                 try:
-                    await e.edit(f"`Waiting for download to complete {enmoji()}…`")
+                    false_prog = "..." if len(false_prog) > 10 else false_prog
+                    await e.edit(prog_msg + false_prog)
                     if op:
                         await asyncio.sleep(3)
                         await op.edit(
-                            f"`Waiting for` [{sender.first_name}'s](tg://user?id={user}) `download to complete {enmoji()}…`"
+                            f"{enmoji()} `Waiting for` [{sender.first_name}'s](tg://user?id={user}) `download to complete…`"
                         )
+                    false_prog += "."
                     await asyncio.sleep(15)
                 except errors.rpcerrorlist.MessageNotModifiedError:
                     await asyncio.sleep(15)
