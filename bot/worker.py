@@ -1226,7 +1226,9 @@ async def enleech(event):
             msg = await event.reply(
                 "**Torrent added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
             )
-        return asyncio.create_task(listqueue(msg))
+            return asyncio.create_task(listqueue(msg))
+        else:
+            return asyncio.create_task(listqueue(event))
     except Exception:
         ers = traceback.format_exc()
         LOGS.info(ers)
