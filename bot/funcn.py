@@ -88,6 +88,19 @@ if os.path.isdir("/tgenc"):
 if TEMP_USERS:
     TEMP_USERS = TEMP_USERS.split()
 
+def load_db(_db, file):
+    queries = _db.find({})
+    for query in queries:
+        que = query["queue"]
+        que = que[0]
+        io = StringIO(que)
+        pre = json.load(io)
+        if len(pre) > 5:
+            file = open(file, "w")
+            file.write(str(pre) + "\n")
+            file.close()
+
+
 if DATABASE_URL:
     cluster = MongoClient(DATABASE_URL)
     db = cluster[DBNAME]
@@ -124,19 +137,6 @@ else:
     filterz = ""
     namedb = ""
     tusers = ""
-
-
-def load_db(_db, file):
-    queries = _db.find({})
-    for query in queries:
-        que = query["queue"]
-        que = que[0]
-        io = StringIO(que)
-        pre = json.load(io)
-        if len(pre) > 5:
-            file = open(file, "w")
-            file.write(str(pre) + "\n")
-            file.close()
 
 
 video_mimetype = [
