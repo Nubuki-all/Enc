@@ -78,7 +78,7 @@ async def auto_rename(parsed_name, original_name, refunc):
             ren = ren.strip()
             de_name = ren.split("|")[0].strip()
             re_name = ren.split("|")[1].strip()
-            if original_name.capwords() == de_name.capwords():
+            if original_name.casefold() == de_name.casefold():
                 out_name = re_name
     if not out_name:
         out_name = parsed_name
@@ -346,27 +346,38 @@ async def parse(name, kk, aa):
                 col = ""
                 if wreleaser:
                     for item in wreleaser.split("\n"):
-                        if item.split("|")[0] in e:
-                            if item.split("|")[1] != "Disable":
+                        if item.split("|")[0].casefold() in e.casefold():
+                            if item.split("|")[1].casefold() != "disable":
                                 wcol = item.split("|")[1]
-                                break
                             else:
                                 wcol = ""
+                            break
                         else:
                             wcol = ""
+                else:
+                    wcol = ""
                 if wnamer:
+                    col = ""
                     for item in wnamer.split("\n"):
-                        if item.split("|")[0] in name:
-                            if item.split("|")[1] != "Disable":
-                                col = item.split("|")[1]
-                                break
-                            else:
-                                col = ""
+                        if item.startswith("^"):
+                            if not item.split("|")[0] in name:
+                                continue
                         else:
-                            if wcol:
-                                col = wcol
-                            else:
-                                col = ""
+                            if not item.split("|")[0].casefold() in name.casefold():
+                                continue
+                        if item.split("|")[1].casefold() != "disable":
+                            col = item.split("|")[1]
+                        else:
+                            col = ""
+                        break
+                    if not col and not wcol:
+                        col = ""
+                    elif wcol:
+                        col = wcol
+                else:
+                    col = ""
+                    col = wcol if wcol else col
+
                 if col:
                     pass
                 else:
@@ -482,19 +493,30 @@ async def custcap(name, fname):
                             wfil3t = ""
                     else:
                         wfil3t = ""
+            else:
+                wfil3t = ""
             if wnamer:
+                fil3t = ""
                 for item in wnamer.split("\n"):
-                    if item.split("|")[0].casefold() in name.casefold() :
-                        if item.split("|")[2].casefold() != "disable":
-                            fil3t = item.split("|")[2]
-                            break
-                        else:
-                            fil3t = ""
+                    if item.startswith("^"):
+                        if not item.split("|")[0] in name:
+                            continue
+                     else:
+                         if not item.split("|")[0].casefold() in name.casefold():
+                             continue
+                    if item.split("|")[2].casefold() != "disable":
+                        fil3t = item.split("|")[2]
                     else:
-                        if wfil3t:
-                            fil3t = wfil3t
-                        else:
-                            fil3t = ""
+                        fil3t = ""
+                    break
+                if not fil3t and not wfil3t:
+                    fil3t = ""
+                elif wfil3t:
+                    fil3t = wfil3t
+            else:
+                fil3t = ""
+                fil3t = wfil3t if wfil3t else fil3t
+
             if fil3t:
                 pass
             else:
