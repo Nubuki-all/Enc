@@ -517,17 +517,18 @@ async def listqueuep(event):
             while i < len(QUEUE):
                 file_name, chat_id = QUEUE[list(QUEUE.keys())[i]]
                 file_name = await qparse(file_name)
-                x += f"{i}. {file_name}\n"
+                rply += f"{i}. {file_name}\n"
                 i = i + 1
             if rply:
                 rply += "\n**Queue based on auto-generated filename if you you want the actual queue use the command** /queue "
             else:
                 rply = "wow, such emptiness 😶"
         except Exception:
+            rply = "__An error occurred.__"
             er = traceback.format_exc()
             LOGS.info(er)
             await channel_log(er)
-        yo = await event.reply(x)
+        yo = await event.reply(rply)
         await asyncio.sleep(10)
         await event.delete()
         await yo.delete()
