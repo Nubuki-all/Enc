@@ -520,7 +520,7 @@ async def listqueuep(event):
                 rply += f"{i}. {file_name}\n"
                 i = i + 1
             if rply:
-                rply += "\n**Queue based on auto-generated filename if you you want the actual queue use the command** /queue "
+                rply += "\n**Queue based on auto-generated filename if you you want the actual queue use the command** /queue"
             else:
                 rply = "wow, such emptiness 😶"
         except Exception:
@@ -882,6 +882,10 @@ async def clearqueue(event):
                 temp = int(args)
                 try:
                     q, user = QUEUE[list(QUEUE.keys())[temp]]
+                    if "-100" in str(user):
+                        file_id = list(QUEUE.keys())[temp]
+                        msg = await app.get_messages(user, int(file_id))
+                        user = msg.from_user.id
                     if str(event.sender_id) not in OWNER and event.sender_id != user:
                         return await event.reply(
                             "You didn't add this to queue so you can't remove it!"
@@ -906,6 +910,10 @@ async def clearqueue(event):
                     i = 1
                 while i < len(QUEUE):
                     y, user = QUEUE[list(QUEUE.keys())[i]]
+                    if "-100" in str(user):
+                        file_id = list(QUEUE.keys())[i]
+                        msg = await app.get_messages(user, int(file_id))
+                        user = msg.from_user.id
                     if str(event.sender_id) not in OWNER and event.sender_id != user:
                         i = i + 1
                     else:
