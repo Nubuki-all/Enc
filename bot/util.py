@@ -76,10 +76,10 @@ async def auto_rename(parsed_name, original_name, refunc):
     if refunc:
         for ren in refunc.split("\n"):
             ren = ren.strip()
-            de_name = ren.split("|")[0]
-            re_name = ren.split("|")[1]
-            if original_name == de_name.strip():
-                out_name = re_name.strip()
+            de_name = ren.split("|")[0].strip()
+            re_name = ren.split("|")[1].strip()
+            if original_name.capwords() == de_name.capwords():
+                out_name = re_name
     if not out_name:
         out_name = parsed_name
     return out_name
@@ -346,9 +346,9 @@ async def parse(name, kk, aa):
                 col = ""
                 if wreleaser:
                     for item in wreleaser.split("\n"):
-                        if item.split(":")[0] in e:
-                            if item.split(":")[1] != "Disable":
-                                wcol = item.split(":")[1]
+                        if item.split("|")[0] in e:
+                            if item.split("|")[1] != "Disable":
+                                wcol = item.split("|")[1]
                                 break
                             else:
                                 wcol = ""
@@ -356,9 +356,9 @@ async def parse(name, kk, aa):
                             wcol = ""
                 if wnamer:
                     for item in wnamer.split("\n"):
-                        if item.split(":")[0] in name:
-                            if item.split(":")[1] != "Disable":
-                                col = item.split(":")[1]
+                        if item.split("|")[0] in name:
+                            if item.split("|")[1] != "Disable":
+                                col = item.split("|")[1]
                                 break
                             else:
                                 col = ""
@@ -474,9 +474,9 @@ async def custcap(name, fname):
             fil3t = ""
             if wreleaser:
                 for item in wreleaser.split("\n"):
-                    if item.split(":")[0] in e:
-                        if item.split(":")[2] != "Disable":
-                            wfil3t = item.split(":")[2]
+                    if item.split("|")[0].casefold() in e.casefold():
+                        if item.split("|")[2].casefold() != "disable":
+                            wfil3t = item.split("|")[2]
                             break
                         else:
                             wfil3t = ""
@@ -484,9 +484,9 @@ async def custcap(name, fname):
                         wfil3t = ""
             if wnamer:
                 for item in wnamer.split("\n"):
-                    if item.split(":")[0] in name:
-                        if item.split(":")[2] != "Disable":
-                            fil3t = item.split(":")[2]
+                    if item.split("|")[0].casefold() in name.casefold() :
+                        if item.split("|")[2].casefold() != "disable":
+                            fil3t = item.split("|")[2]
                             break
                         else:
                             fil3t = ""

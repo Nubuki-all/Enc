@@ -307,6 +307,9 @@ async def uploader(event):
                         r = await message.reply(
                             f"`Uploading {name} from 📁 {path} ({t}/{i})…`", quote=True
                         )
+                        if int(Path(file.stat().st_size) > 2126000000:
+                            await r.edit(f"Uploading of `{name}` failed because file was larger than 2GB")
+                            continue
                         await asyncio.sleep(10)
                         ul = await upload2(
                             event.chat_id, file, r, "thumb.jpg", f"`{name}`", message
