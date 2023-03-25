@@ -669,7 +669,7 @@ async def del_auto_rename(event):
         if temp.isdigit():
             temp = int(temp)
             dat = r_file.split("\n")
-            if temp > len(del):
+            if temp > len(dat):
                 return await event.reply("__Not found check /vname and pass appropriate number__")
             r_file = r_file.replace(dat[temp] + "\n", "")
         else:
