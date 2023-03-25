@@ -177,7 +177,9 @@ async def temp_unauth(event):
     if new_id in OWNER:
         return await event.reply(f"{error} because user is already a privileged user")
     if new_id not in TEMP_USERS:
-        return await event.reply(f"{error} because user is not in the temporary allowed user list")
+        return await event.reply(
+            f"{error} because user is not in the temporary allowed user list"
+        )
     try:
         new_user = await app.get_users(new_id)
         new_user = new_user.first_name

@@ -125,6 +125,7 @@ else:
     namedb = ""
     tusers = ""
 
+
 def load_db(_db, file):
     queries = _db.find({})
     for query in queries:
