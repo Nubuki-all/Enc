@@ -94,39 +94,48 @@ if DATABASE_URL:
     queue = db["queue"]
     ffmpegdb = db["code"]
     filterz = db["filter"]
+    namedb = db["autoname"]
+    tusers = db["tempusers"]
     queries = queue.find({})
     for query in queries:
         que = str(query["queue"])
         io = StringIO(que)
         pre = json.load(io)
         QUEUE.update(pre)
-    queries = ffmpegdb.find({})
+    queries = tusers.find({})
     for query in queries:
         que = query["queue"]
         que = que[0]
         io = StringIO(que)
         pre = json.load(io)
-        if len(pre) < 5:
-            pass
-        else:
-            file = open("ffmpeg.txt", "w")
-            file.write(str(pre) + "\n")
-            file.close()
-    queries = filterz.find({})
-    for query in queries:
-        que = query["queue"]
-        que = que[0]
-        io = StringIO(que)
-        pre = json.load(io)
-        if len(pre) < 5:
-            pass
-        else:
-            file = open("filter.txt", "w")
-            file.write(str(pre) + "\n")
-            file.close()
+
+        if len(pre) > 5:
+            for i in pre.split():
+                if str(i) in TEMP_USERS:
+                    continue
+                TEMP_USERS.append(i)
+
+    load_db(ffmpegdb, "ffmpeg.txt")
+    load_db(filterz, "filter.txt")
+    load_db(namedb, "Auto-rename.txt")
+
 else:
     ffmpegdb = ""
     filterz = ""
+    namedb = ""
+    tusers = ""
+
+def load_db(_db, file):
+    queries = _db.find({})
+    for query in queries:
+        que = query["queue"]
+        que = que[0]
+        io = StringIO(que)
+        pre = json.load(io)
+        if len(pre) > 5:
+            file = open(file, "w")
+            file.write(str(pre) + "\n")
+            file.close()
 
 
 video_mimetype = [
@@ -209,6 +218,14 @@ def ts(milliseconds: int) -> str:
 def is_url(url):
     url = re_match(URL_REGEX, url)
     return bool(url)
+
+
+def list_to_str(lst):
+    string = ""
+    for i in lst:
+        string += str(i) + " "
+
+    return string
 
 
 def is_video_file(filename):

@@ -286,7 +286,6 @@ async def parse(name, kk, aa):
                 )
                 b = f"{json['title']['english']}"
                 b = f"{json['title']['romaji']}" if b == "None" else b
-                b = await auto_rename(b, temp_b, aurer)
                 if fil2:
                     if fil2.casefold() == "auto":
                         fil2 = f"{json['countryOfOrigin']}"
@@ -301,6 +300,8 @@ async def parse(name, kk, aa):
                 cb = cb.split(":")[0]
             else:
                 cb = b
+            cb = await auto_rename(cb, temp_b, aurer)
+
             bb = ""
             bb += release_name
             bb += f" {cb}"
@@ -332,17 +333,11 @@ async def parse(name, kk, aa):
                 )
                 b = f"{json['title']['english']}"
                 b = f"{json['title']['romaji']}" if b == "None" else b
-                b = await auto_rename(b, temp_b, aurer)
                 con = f"{json['countryOfOrigin']}"
                 con = await conconvert(con)
                 g = f"{json.get('episodes')}"
 
                 b = string.capwords(b)
-                if len(b) > 33:
-                    cb = b[:32] + "…"
-                    cb = cb.split(":")[0]
-                else:
-                    cb = b
                 col = ""
                 if wreleaser:
                     for item in wreleaser.split("\n"):
@@ -387,7 +382,14 @@ async def parse(name, kk, aa):
                 LOGS.info(ers)
                 g = ""
                 col = ""
+
+            if len(b) > 33:
+                cb = b[:32] + "…"
+                cb = cb.split(":")[0]
+            else:
                 cb = b
+            cb = await auto_rename(cb, temp_b, aurer)
+
             bb = ""
             bb += release_name
             bb += f" {cb}"
@@ -543,11 +545,11 @@ async def custcap(name, fname):
             )
             oi = f"{json['title']['english']}"
             oi = f"{json['title']['romaji']}" if oi == "None" else oi
-            oi = await auto_rename(oi, temp_oi, aurer)
             g = f"{json.get('episodes')}"
         except Exception:
             g = ""
         oi = string.capwords(oi)
+        oi = await auto_rename(oi, temp_oi, aurer)
         out = f"encode/{fname}"
         crc32s = await crc32(out)
         try:

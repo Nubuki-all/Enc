@@ -149,9 +149,50 @@ async def beck(event):
     )
 
 
+async def temp_unauth(event):
+    sender = str(event.sender_id)
+    error = "Failed!,\nCan't remove from temporarily allowed users"
+    if sender not in OWNER:
+        return event.reply("Nope")
+    if event.is_reply:
+        rep_event = await event.get_reply_message()
+        new_id = rep_event.sender_id
+    else:
+        args = event.pattern_match.group(1)
+        if args is not None:
+            args = args.strip()
+            if args.isdigit():
+                args = new_id
+            else:
+                return await event.reply(
+                    f"What do you mean by  `{args}` ?\nneed help? send /unauth"
+                )
+        else:
+            return await event.reply(
+                "Either reply to a message sent by the user you want to remove from temporarily allowed users or send /unauth (user-id)\nExample:\n  /unauth 123456"
+            )
+    new_id = str(new_id)
+    if new_id == sender:
+        return await event.reply("Why, oh why did you try to unpermit yourself?")
+    if new_id in OWNER:
+        return await event.reply(f"{error} because user is already a privileged user")
+    if new_id not in TEMP_USERS:
+        return await event.reply(f"{error} because user is not in the temporary allowed user list")
+    try:
+        new_user = await app.get_users(new_id)
+        new_user = new_user.first_name
+    except Exception:
+        new_user = new_id
+    TEMP_USERS.remove(new_id)
+    await save2db2(tusers, list_to_str(TEMP_USERS))
+    return await event.reply(
+        f"Removed `{new_user}` from temporarily allowed users {enmoji()}"
+    )
+
+
 async def temp_auth(event):
     sender = str(event.sender_id)
-    error = "Failed!,\nCan't temporarily add to allowed users"
+    error = "Failed!,\nCan't add to temporarily allowed users"
     if sender not in OWNER:
         return event.reply("Nope")
     if event.is_reply:
@@ -169,7 +210,7 @@ async def temp_auth(event):
                 )
         else:
             return await event.reply(
-                "Either reply to a message sent by the user you want to temporarily add to allowed users or send /auth (user-id)\nExample:\n  /auth 123456"
+                "Either reply to a message sent by the user you want to add to temporarily allowed users or send /auth (user-id)\nExample:\n  /auth 123456"
             )
     new_id = str(new_id)
     if new_id == sender:
@@ -183,6 +224,7 @@ async def temp_auth(event):
     except Exception:
         return await event.reply("`User id invalid.`")
     TEMP_USERS.append(new_id)
+    await save2db2(tusers, list_to_str(TEMP_USERS))
     return await event.reply(
-        f"Added `{new_user.first_name}` to allowed users temporarily {enmoji()}"
+        f"Added `{new_user.first_name}` to temporarily allowed users {enmoji()}"
     )

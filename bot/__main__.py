@@ -141,6 +141,11 @@ async def _(e):
     await temp_auth(e)
 
 
+@bot.on(events.NewMessage(pattern=r"^/unpermit(\s+.+)?$"))
+async def _(e):
+    await temp_unauth(e)
+
+
 @app.on_message(filters.incoming & filters.command(["peval"]))
 async def _(app, message):
     await eval_message_p(app, message)
@@ -184,6 +189,21 @@ async def _(e):
 @bot.on(events.NewMessage(pattern="/delfilter"))
 async def _(e):
     await rmfilter(e)
+
+
+@bot.on(events.NewMessage(pattern=r"^/name(\s+.+)?$"))
+async def _(e):
+    await auto_rename(e)
+
+
+@bot.on(events.NewMessage(pattern=r"^/vname(\s+.+)?$"))
+async def _(e):
+    await v_auto_rename(e)
+
+
+@bot.on(events.NewMessage(pattern=r"^/delname(\s+.+)?$"))
+async def _(e):
+    await del_auto_rename(e)
 
 
 @bot.on(events.NewMessage(pattern="/reset"))

@@ -650,6 +650,88 @@ async def reffmpeg(event):
         await channel_log(ers)
         LOGS.info(ers)
 
+async def del_auto_rename(event):
+    text_file = "Auto-remame.txt"
+    fail_msg = f"failed\n**Try:**\n/delname `(Add_name_to_check_for|Add_name_to_replace_with)`"
+    if str(event.sender_id) not in OWNER:
+        return await event.delete()
+    try:
+        args = args = event.pattern_match.group(1)
+        if args is None:
+            return await event.reply(fail_msg)
+        temp = args.strip()
+        if not "|" in temp:
+            if not temp.isdigit():
+                return await event.reply(fail_msg)
+        file = open(text_file, "r")
+        r_file = file.read().strip()
+        file.close
+        if temp.isdigit():
+            temp = int(temp)
+            dat = r_file.split("\n")
+            if temp > len(del):
+                return await event.reply("__Not found check /vname and pass appropriate number__")
+            r_file = r_file.replace(dat[temp] + "\n", "")
+        else:
+            for dat in r_file.split("\n"):
+                done = None
+                if dat.strip == temp:
+                    r_file = r_file.replace(dat + "\n", "")
+                    done = 1
+                break
+            if done is None:
+                return await event.reply("__Not found check__ /vname")
+        file = open(text_file, "w")
+        file.write(str(r_file))
+        file.close()
+        await save2db2(namedb, r_file)
+        if temp.isdigit():
+            return await event.reply(f"`Removed {dat[temp]} Successfully.`")
+        return await event.reply(f"**Removed Check for: **`{temp.split("|")[0]}`\n**Replace with: ** `{temp.split("|")[1]}`")
+    except Exception:
+        await event.reply("Error Occurred")
+        ers = traceback.format_exc()
+        await channel_log(ers)
+        LOGS.info(ers)
+
+async def v_auto_rename(event):
+    if str(event.sender_id) not in OWNER and event.sender_id != DEV:
+        return await event.delete()
+    rply = ""
+    i = 0
+    with open("Auto-rename.txt", "r") as file:
+        r_file = file.read().rstrip()
+        file.close()
+        for dat in r_file.split("\n"):
+            rply += f"{i}. {dat}\n"
+            i = i + 1
+    await event.reply(f"**Here you go:**\n\n`{rply}`")
+
+async def auto_rename(event):
+    text_file = "Auto-remame.txt"
+    fail_msg = f"failed\n**Try:**\n/name `(Add_name_to_check_for|Add_name_to_replace_with)`"
+    if str(event.sender_id) not in OWNER:
+        return await event.delete()
+    try:
+        args = args = event.pattern_match.group(1)
+        if args is None:
+            return await event.reply(fail_msg)
+        temp = args.strip()
+        if not "|" in temp:
+            return await event.reply(fail_msg)
+        file = open(text_file, "a")
+        file.write(str(temp) + "\n")
+        file.close()
+        file = open(text_file, "r")
+        r_file = file.read().strip()
+        await save2db2(namedb, r_file)
+        await event.reply(f"**Check for: **`{temp.split("|")[0]}`\n**Replace with: ** `{temp.split("|")[1]}`")
+    except Exception:
+        await event.reply("Error Occurred")
+        ers = traceback.format_exc()
+        await channel_log(ers)
+        LOGS.info(ers)
+
 
 async def change(event):
     if str(event.sender_id) not in OWNER:
