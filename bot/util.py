@@ -501,9 +501,9 @@ async def custcap(name, fname):
                     if item.startswith("^"):
                         if not item.split("|")[0] in name:
                             continue
-                     else:
-                         if not item.split("|")[0].casefold() in name.casefold():
-                             continue
+                    else:
+                        if not item.split("|")[0].casefold() in name.casefold():
+                            continue
                     if item.split("|")[2].casefold() != "disable":
                         fil3t = item.split("|")[2]
                     else:
