@@ -692,10 +692,9 @@ async def del_auto_rename(event):
         await save2db2(namedb, r_file)
         if temp.isdigit():
             return await event.reply(f"`Removed {dat[temp]} Successfully.`")
+        rslt = temp.split("|")
         return await event.reply(
-            f"**Removed Check for: **`{temp.split("
-            | ")[0]}`\n**Replace with: ** `{temp.split("
-            | ")[1]}`"
+            f"**Removed check for: **`{rslt[0]}`\n**Replace with: ** `{result[1]}`"
         )
     except Exception:
         await event.reply("Error Occurred")
@@ -738,10 +737,9 @@ async def auto_rename(event):
         file = open(text_file, "r")
         r_file = file.read().strip()
         await save2db2(namedb, r_file)
+        rslt = temp.split("|")
         await event.reply(
-            f"**Check for: **`{temp.split("
-            | ")[0]}`\n**Replace with: ** `{temp.split("
-            | ")[1]}`"
+            f"**Check for: **`{rslt[0]}`\n**Replace with: ** `{rslt[1]}`"
         )
     except Exception:
         await event.reply("Error Occurred")
