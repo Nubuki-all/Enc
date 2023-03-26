@@ -222,10 +222,10 @@ def is_url(url):
     return bool(url)
 
 
-def list_to_str(lst):
+def list_to_str(lst, e=" "):
     string = ""
     for i in lst:
-        string += str(i) + " "
+        string += str(i) + e
 
     return string
 

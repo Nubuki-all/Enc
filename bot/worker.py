@@ -676,21 +676,22 @@ async def del_auto_rename(event):
                 return await event.reply(
                     "__Not found check /vname and pass appropriate number__"
                 )
-            r_file = r_file.replace(dat[temp] + "\n", "")
+            dat.pop(temp)
+            r_file = list_to_str(dat, "\n")
         else:
-            for dat in r_file.split("\n"):
-                done = None
-                if dat.strip == temp:
-                    r_file = r_file.replace(dat + "\n", "")
-                    done = 1
-                break
-            if done is None:
+            ans = ""
+            if temp not in r_file.split("\n"):
                 return await event.reply("__Not found check__ /vname")
+            for dat in r_file.split("\n"):
+                if not dat.strip == temp:
+                    ans = ans + dat + "\n"
+            r_file = ans
+
         file = open(text_file, "w")
         file.write(str(r_file))
         file.close()
         await save2db2(namedb, r_file)
-        if temp.isdigit():
+        if isinstance(temp, int):
             return await event.reply(f"`Removed {dat[temp]} Successfully.`")
         rslt = temp.split("|")
         return await event.reply(
@@ -731,7 +732,13 @@ async def auto_rename(event):
         temp = args.strip()
         if "|" not in temp:
             return await event.reply(fail_msg)
+        file = open(text_file, "r")
+        r_file = file.read().strip()
+        file.close()
         rslt = temp.split("|")
+        for __check in r_file.split("\n"):
+            if __check.split("|")[0].casefold() == rslt[0].casefold():
+                return await event.reply("__Already added.__")
         file = open(text_file, "a")
         file.write(str(temp) + "\n")
         file.close()
