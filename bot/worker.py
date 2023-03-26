@@ -676,6 +676,7 @@ async def del_auto_rename(event):
                 return await event.reply(
                     "__Not found check /vname and pass appropriate number__"
                 )
+            rslt = dat[temp]
             dat.pop(temp)
             r_file = list_to_str(dat, "\n")
         else:
@@ -692,7 +693,7 @@ async def del_auto_rename(event):
         file.close()
         await save2db2(namedb, r_file)
         if isinstance(temp, int):
-            return await event.reply(f"`Removed {dat[temp]} Successfully.`")
+            return await event.reply(f"`Removed {rslt} Successfully.`")
         rslt = temp.split("|")
         return await event.reply(
             f"**Removed check for: **`{rslt[0]}`\n**Replace with: ** `{result[1]}`"
