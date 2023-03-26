@@ -738,9 +738,7 @@ async def auto_rename(event):
         r_file = file.read().strip()
         await save2db2(namedb, r_file)
         rslt = temp.split("|")
-        await event.reply(
-            f"**Check for: **`{rslt[0]}`\n**Replace with: ** `{rslt[1]}`"
-        )
+        await event.reply(f"**Check for: **`{rslt[0]}`\n**Replace with: ** `{rslt[1]}`")
     except Exception:
         await event.reply("Error Occurred")
         ers = traceback.format_exc()
