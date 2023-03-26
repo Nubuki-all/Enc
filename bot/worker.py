@@ -652,7 +652,7 @@ async def reffmpeg(event):
 
 
 async def del_auto_rename(event):
-    text_file = "Auto-remame.txt"
+    text_file = "Auto-rename.txt"
     fail_msg = (
         f"failed\n**Try:**\n/delname `(Add_name_to_check_for|Add_name_to_replace_with)`"
     )
@@ -718,7 +718,7 @@ async def v_auto_rename(event):
 
 
 async def auto_rename(event):
-    text_file = "Auto-remame.txt"
+    text_file = "Auto-rename.txt"
     fail_msg = (
         f"failed\n**Try:**\n/name `(Add_name_to_check_for|Add_name_to_replace_with)`"
     )
@@ -731,13 +731,14 @@ async def auto_rename(event):
         temp = args.strip()
         if "|" not in temp:
             return await event.reply(fail_msg)
+        rslt = temp.split("|")
         file = open(text_file, "a")
         file.write(str(temp) + "\n")
         file.close()
         file = open(text_file, "r")
         r_file = file.read().strip()
+        file.close()
         await save2db2(namedb, r_file)
-        rslt = temp.split("|")
         await event.reply(f"**Check for: **`{rslt[0]}`\n**Replace with: ** `{rslt[1]}`")
     except Exception:
         await event.reply("Error Occurred")
