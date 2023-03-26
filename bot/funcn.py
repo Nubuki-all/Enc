@@ -88,6 +88,7 @@ if os.path.isdir("/tgenc"):
 if TEMP_USERS:
     TEMP_USERS = TEMP_USERS.split()
 
+
 def load_db(_db, file):
     queries = _db.find({})
     for query in queries:
