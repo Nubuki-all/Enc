@@ -443,7 +443,6 @@ async def dumpdl(upload2, dl, name, thum, user, message):
         await channel_log(ers)
 
 
-
 async def fake_progress(leech_task, message):
     r_file = ""
     while leech_task.done() is not True:
@@ -477,7 +476,7 @@ async def fake_progress(leech_task, message):
             continue
         except pyro_errors.BadRequest:
             await asyncio.sleep(10)
-            continue 
+            continue
         except Exception:
             ers = traceback.format_exc()
             LOGS.info(ers)

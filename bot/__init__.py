@@ -40,7 +40,8 @@ from pathlib import Path
 import aiohttp
 import psutil
 from html_telegraph_poster import TelegraphPoster
-from pyrogram import Client, errors as pyro_errors
+from pyrogram import Client
+from pyrogram import errors as pyro_errors
 from telethon import Button, TelegramClient, errors, events, functions, types
 from telethon.sessions import StringSession
 from telethon.utils import pack_bot_file_id

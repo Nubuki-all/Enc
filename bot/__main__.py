@@ -405,9 +405,7 @@ async def something():
                                         else:
                                             wrror = await app.send_message(stdout2)
                                     nnn = await wrror.reply(error_msg)
-                                    opp = await channel_log(
-                                        f"{error_msg}\n{stdout2}"
-                                    )
+                                    opp = await channel_log(f"{error_msg}\n{stdout2}")
                                     try:
                                         await e.delete()
                                         await op.delete()
