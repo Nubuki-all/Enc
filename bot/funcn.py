@@ -447,9 +447,9 @@ async def fake_progress(leech_task, message):
     r_file = ""
     while leech_task.done() is not True:
         try:
-            file = Path("leech_log")
-            if files.is_file():
-                with open(files, "r") as file:
+            __file = Path("leech_log")
+            if __file.is_file():
+                with open(__file, "r") as file:
                     r_file = file.read().rstrip()
                     file.close()
                 l_file = r_file.split("\n")
