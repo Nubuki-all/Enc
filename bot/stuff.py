@@ -162,7 +162,7 @@ async def temp_unauth(event):
         if args is not None:
             args = args.strip()
             if args.isdigit():
-                args = new_id
+                new_id = args
             else:
                 return await event.reply(
                     f"What do you mean by  `{args}` ?\nneed help? send /unauth"
@@ -205,7 +205,7 @@ async def temp_auth(event):
         if args is not None:
             args = args.strip()
             if args.isdigit():
-                args = new_id
+                new_id = args
             else:
                 return await event.reply(
                     f"What do you mean by  `{args}` ?\nneed help? send /auth"
