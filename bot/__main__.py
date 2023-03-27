@@ -349,6 +349,12 @@ async def something():
                             ],
                         )
                     if uri:
+                        if mssg_r:
+                            stdout2 = await fake_progress(leech_task, mssg_r)
+                        else:
+                            with open("leech_log", "r") as file:
+                                stdout2 = file.read().strip()
+                                file.close()
                         process, stdout, stderr = await leech_task
                         if process.returncode != 0:
                             if DOWNLOAD_CANCEL:
@@ -373,14 +379,14 @@ async def something():
                                     error_msg = (
                                         f"🔺 **Downloading of** `{name}` **Failed!**"
                                     )
-                                    if len(stderr + stdout) > 4095:
+                                    if len(stdout2) > 4095:
                                         yo = await app.send_message(
                                             e.chat_id, "Uploading Error logs…"
                                         )
                                         opp = await channel_log(error_msg)
                                         out_file = "aria2c_error.txt"
                                         with open(out_file, "w") as file:
-                                            file.write(f"{str(stderr)}\n{str(stdout)}")
+                                            file.write(str(stdout2))
                                             wrror = await yo.reply_document(
                                                 document=out_file,
                                                 force_document=True,
@@ -395,16 +401,12 @@ async def something():
                                         os.remove(out_file)
                                     else:
                                         if message:
-                                            wrror = await mssg_r.reply(
-                                                f"{stderr}\n{stdout}"
-                                            )
+                                            wrror = await mssg_r.reply(stdout2)
                                         else:
-                                            wrror = await app.send_message(
-                                                int(LOG_CHANNEL), f"{stderr}\n{stdout}"
-                                            )
+                                            wrror = await app.send_message(stdout2)
                                     nnn = await wrror.reply(error_msg)
                                     opp = await channel_log(
-                                        f"{error_msg}\n{stderr}\n{stdout}"
+                                        f"{error_msg}\n{stdout2}"
                                     )
                                     try:
                                         await e.delete()
@@ -419,7 +421,6 @@ async def something():
                                     await opp.reply(retry_msg)
                                 await asyncio.sleep(10)
                                 await qclean()
-                                await channel_log(stderr + stdout)
                                 DOWNLOAD_CANCEL.clear()
                                 continue
                         name = await get_leech_file()

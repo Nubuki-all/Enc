@@ -443,6 +443,50 @@ async def dumpdl(upload2, dl, name, thum, user, message):
         await channel_log(ers)
 
 
+
+async def fake_progress(leech_task, message):
+    r_file = ""
+    while leech_task.done() is not True:
+        try:
+            file = Path("leech_log")
+            if files.is_file():
+                with open(files, "r") as file:
+                    r_file = file.read().rstrip()
+                    file.close()
+                l_file = r_file.split("\n")
+                if len(l_file) is < 1:
+                    await asyncio.sleep(4)
+                    continue
+                elif len(l_file) is < 5:
+                    i = -1
+                else:
+                    i = -5
+                f_prog1 = "**Download Progress:**\n\n"
+                f_prog2 = ""
+                while i < 0:
+                    f_prog2 += f"`{l_file[i]}`\n"
+                    i = i + 1
+                f_prog = f_prog1 + f_prog2
+             else:
+                 f_prog = f"Well that ain't right {enmoji2()}"
+            await message.edit(f_prog)
+            await asyncio.sleep(15)
+        except pyro_errors.FloodWait as e:
+            await asyncio.sleep(e.value)
+            continue
+        except pyro_errors.BadRequest:
+            await asyncio.sleep(10)
+            continue 
+        except Exception:
+            ers = traceback.format_exc()
+            LOGS.info(ers)
+            await channel_log(ers)
+    if r_file:
+        return r_file
+    else:
+        return "`What have you done?`"
+
+
 async def get_leech_file():
     try:
         dt_ = glob.glob("downloads/*")

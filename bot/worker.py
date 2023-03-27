@@ -795,7 +795,7 @@ async def allowgroupenc(event):
     if str(event.sender_id) not in OWNER:
         return await event.delete()
     args = event.pattern_match.group(1)
-    if args is not none:
+    if args is not None:
         args = args.strip()
         if args.casefold() == "off" or args.casefold() == "disable":
             if not GROUPENC:
