@@ -466,9 +466,10 @@ async def fake_progress(leech_task, message):
                 while i < 0:
                     f_prog2 += f"`{l_file[i]}`\n"
                     i = i + 1
+                f_prog2 = "`Loading please wait…`" if not f_prog2 else f_prog2
                 f_prog = f_prog1 + f_prog2
-             else:
-                 f_prog = f"Well that ain't right {enmoji2()}"
+            else:
+                f_prog = f"Well that ain't right {enmoji2()}"
             await message.edit(f_prog)
             await asyncio.sleep(15)
         except pyro_errors.FloodWait as e:
