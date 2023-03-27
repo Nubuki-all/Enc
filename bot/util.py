@@ -355,7 +355,7 @@ async def parse(name, kk, aa):
                     col = ""
                     for item in wnamer.split("\n"):
                         if item.startswith("^"):
-                            if not item.split("|")[0] in name:
+                            if not item.split("|")[0].lstrip("^") in name:
                                 continue
                         else:
                             if not item.split("|")[0].casefold() in name.casefold():
@@ -501,7 +501,7 @@ async def custcap(name, fname):
                 fil3t = ""
                 for item in wnamer.split("\n"):
                     if item.startswith("^"):
-                        if not item.split("|")[0] in name:
+                        if not item.split("|")[0].lstrip("^") in name:
                             continue
                     else:
                         if not item.split("|")[0].casefold() in name.casefold():

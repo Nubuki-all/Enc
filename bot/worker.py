@@ -693,7 +693,7 @@ async def del_auto_rename(event):
         file.close()
         await save2db2(namedb, r_file)
         if isinstance(temp, int):
-            return await event.reply(f"`Removed {rslt} Successfully.`")
+            return await event.reply(f"`Removed {rslt} successfully.`")
         rslt = temp.split("|")
         return await event.reply(
             f"**Removed check for: **`{rslt[0]}`\n**Replace with: ** `{result[1]}`"
