@@ -454,10 +454,10 @@ async def fake_progress(leech_task, message):
                     r_file = file.read().rstrip()
                     file.close()
                 l_file = r_file.split("\n")
-                if len(l_file) is < 1:
+                if len(l_file) < 1:
                     await asyncio.sleep(4)
                     continue
-                elif len(l_file) is < 5:
+                elif len(l_file) < 5:
                     i = -1
                 else:
                     i = -5
