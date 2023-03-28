@@ -1366,7 +1366,6 @@ async def pencode(message):
         if message.document:
             if message.document.mime_type not in video_mimetype:
                 return
-        event = await bot.get_messages(message.chat.id, ids=message.id)
         if WORKING or QUEUE or LOCKFILE:
             xxx = await message.reply("`Adding To Queue`", quote=True)
             media_type = str(message.media)
@@ -1415,6 +1414,7 @@ async def pencode(message):
                 log,
                 f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Is Currently Downloading A Video…`",
             )
+        event = await bot.get_messages(message.chat.id, ids=message.id)
         s = dt.now()
         ttt = time.time()
         dir = f"downloads/"
