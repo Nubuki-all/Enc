@@ -323,9 +323,7 @@ async def something():
                         uri_name = name
                         if mssg_r:
                             await mssg_r.edit("`Downloading Torrent\nPlease wait…`")
-                        cmd = (
-                            f"aria2c --seed-time=0 -d downloads {uri} | sed -E 's/\x1B\[[0-9;]{1,}[A-Za-z]+|#\S+\s*//g' > leech_log 2>&1"
-                        )
+                        cmd = f"aria2c --seed-time=0 -d downloads {uri} | sed -E 's/\x1B\\[[0-9;]{1,}[A-Za-z]+|#\\S+\\s*//g' > leech_log 2>&1"
                         leech_task = asyncio.create_task(enshell(cmd))
                         await asyncio.sleep(3)
                         name = await get_leech_file()
