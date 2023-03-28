@@ -481,6 +481,7 @@ async def fake_progress(leech_task, message):
             ers = traceback.format_exc()
             LOGS.info(ers)
             await channel_log(ers)
+            break
     if r_file:
         return r_file
     else:
