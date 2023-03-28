@@ -490,7 +490,7 @@ async def fake_progress(leech_task, message):
             with open(__file, "r") as file:
                 r_file = file.read().rstrip()
                 file.close()
-             return r_file
+            return r_file
         else:
             return "`What have you done?`"
 
