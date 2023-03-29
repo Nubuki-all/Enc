@@ -555,7 +555,10 @@ async def encodestat():
                 i = 1
                 y, yy = QUEUE[list(QUEUE.keys())[0]]
                 y = await qparse(y)
-                x = f"🟢. `{y}`\n\n    **CURRRENT ITEMS ON QUEUE:**\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                e = "🟢"
+                if LOCKFILE:
+                    e = "⏸️"
+                x = f"{e} `{y}`\n\n    **CURRRENT ITEMS ON QUEUE:**\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
             while i < len(QUEUE):
                 y, yy = QUEUE[list(QUEUE.keys())[i]]
                 y = await qparse(y)
@@ -571,9 +574,7 @@ async def encodestat():
                 loc = await enquotes()
                 x += f"Nothing Here; While you wait:\n\n{loc}"
         except Exception:
-            y, yy = QUEUE[list(QUEUE.keys())[0]]
-            y = await qparse(y)
-            x = f"**Currently Encoding:** `{y}`\n\n**QUEUE:**\n──────\n`Nothing Here.`"
+            pass
         me = await app.get_users("me")
         codec = await get_codec()
         x += f"\n\nYours truly,\n  {enmoji()} `{me.first_name}`"
@@ -714,9 +715,9 @@ async def v_auto_rename(event):
         r_file = file.read().rstrip()
         file.close()
         for dat in r_file.split("\n"):
-            rply += f"{i}. {dat}\n"
+            rply += f"{i}. `{dat}`\n"
             i = i + 1
-    await event.reply(f"**Here you go:**\n\n`{rply}`")
+    await event.reply(f"**Here you go:**\n\n{rply}")
 
 
 async def auto_rename(event):
