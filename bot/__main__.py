@@ -294,8 +294,12 @@ async def something():
                         user = message.from_user.id
                     except Exception:
                         pass
-                if "-100" in str(user):
-                    user = 777000
+                if message:
+                    s_user = 777000
+                else:
+                    s_user = OWNER.split()[0]
+                if str(user).startswith("-100"):
+                    user = s_user
                 USER_MAN.clear()
                 USER_MAN.append(user)
                 sender = await app.get_users(user)
