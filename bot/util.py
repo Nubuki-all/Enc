@@ -103,7 +103,7 @@ async def get_codec():
     for key, value in s_check.items():
         if key in ff_code:
             __out += f"[{value}] "
-    return __out
+    return __out.strip()
 
 
 async def wfilter():
