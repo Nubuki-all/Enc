@@ -290,7 +290,10 @@ async def something():
                     mssg_r = ""
                     e = await bot.send_message(user, "`▼ Downloding Queue Files ▼`")
                 if message:
-                    user = message.from_user.id
+                    try:
+                        user = message.from_user.id
+                    except Exception:
+                        pass
                 if "-100" in str(user):
                     user = 777000
                 USER_MAN.clear()
