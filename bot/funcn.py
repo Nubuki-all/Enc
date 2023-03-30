@@ -354,13 +354,19 @@ async def get_queue():
         while i < len(QUEUE):
             file_name, _id = QUEUE[list(QUEUE.keys())[i]]
             file_id = list(QUEUE.keys())[i]
-            if "-100" in str(_id):
+            if str(_id).startswith("-100"):
                 msg = await app.get_messages(_id, int(file_id))
                 user = msg.from_user
+                if str(msg.from_user.id).startswith("-100"):
+                    if UNLOCK_UNSTABLE:
+                        user = await app.get_users(777000)
+                    else:
+                        user = await app.get_users(OWNER.split()[0])
             else:
                 user = await app.get_users(_id)
             x += f"{i}. {file_name} ({user.first_name})\n"
             i = i + 1
+
         if x:
             x += f"\n**{enmoji()} Tip: To remove an item from queue use** /clear <queue number>"
         else:
