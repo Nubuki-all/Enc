@@ -121,7 +121,7 @@ async def _(e):
     await eval(e)
 
 
-@bot.on(events.NewMessage(pattern=r"^/l(\s+.+)?$"))
+@bot.on(events.NewMessage(pattern=r"^/(l|leech)(\s+.+)?$"))
 async def _(e):
     await enleech(e)
 
