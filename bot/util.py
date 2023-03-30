@@ -589,7 +589,7 @@ async def custcap(name, fname):
         if codec:
             caption += f"**🌟:** `{codec}`"
             if adi:
-                caption += f" {adi}"
+                caption += f" `[{adi}]`"
             caption += "\n"
         if ENCODER:
             encr = ENCODER.replace("@", "")

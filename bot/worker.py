@@ -1298,8 +1298,9 @@ async def enleech(event):
                 else:
                     return await rep_event.reply("`Invalid torrent link`")
         else:
-            uri = event.pattern_match.group(1).strip()
+            uri = event.pattern_match.group(1)
             if uri is not None:
+                uri = uri.strip()
                 if is_url(uri) is True and uri.endswith(".torrent"):
                     event_id = event.id
                 else:
