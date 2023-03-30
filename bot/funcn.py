@@ -357,7 +357,7 @@ async def get_queue():
             if str(_id).startswith("-100"):
                 msg = await app.get_messages(_id, int(file_id))
                 user = msg.from_user
-                if str(msg.from_user.id).startswith("-100"):
+                if user is None:
                     if UNLOCK_UNSTABLE:
                         user = await app.get_users(777000)
                     else:
