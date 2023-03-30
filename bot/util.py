@@ -249,7 +249,7 @@ async def parser(name):
             st = "" if "MULTi" in st else st
         except Exception:
             st = ""
-        return na,b, d, c, e, fil2, fil3, s, st
+        return na, b, d, c, e, fil2, fil3, s, st
     except Exception:
         pass
 
