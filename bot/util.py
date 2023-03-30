@@ -231,6 +231,8 @@ async def parser(name):
         try:
             c = na["anime_season"]
             c = c.lstrip("0") if int(c) > 1 else c
+            if str(c) == "01" or str(c) == "1":
+                c = ""
         except Exception:
             c = ""
         try:
