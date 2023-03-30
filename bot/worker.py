@@ -87,9 +87,7 @@ async def version2(event):
             if VERSION2:
                 tag = VERSION2[0]
                 VERSION2.clear()
-                return await event.reply(
-                    f"**Removed V{tag} tag Successfully!**"
-                )
+                return await event.reply(f"**Removed V{tag} tag Successfully!**")
             else:
                 return await event.reply("__No tag found__")
         elif "|" in args:
@@ -118,7 +116,9 @@ async def version2(event):
         )
     else:
         if VERSION2:
-            return await event.reply(f"**Current Tag: V{VERSION2[0]}\nReason:** `{VERSION2[1]}`")
+            return await event.reply(
+                f"**Current Tag: V{VERSION2[0]}\nReason:** `{VERSION2[1]}`"
+            )
         else:
             return await event.reply(
                 "__Unfortunately, I can't view what doesn't exist__"
