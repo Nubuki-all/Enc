@@ -249,7 +249,7 @@ async def parser(name):
             st = "" if "MULTi" in st else st
         except Exception:
             st = ""
-        return b, d, c, e, fil2, fil3, s, st
+        return na,b, d, c, e, fil2, fil3, s, st
     except Exception:
         pass
 
@@ -264,7 +264,7 @@ async def conconvert(iso2_codes):
 
 async def parse(name, kk, aa):
     try:
-        b, d, c, e, fil2, fil3, s, st = await parser(name)
+        ani, b, d, c, e, fil2, fil3, s, st = await parser(name)
         if b is None:
             raise Exception("Parsing Failed")
         wnamer, wreleaser, aurer = await wfilter()
@@ -422,7 +422,7 @@ async def parse(name, kk, aa):
 
 async def dynamicthumb(name, kk, aa):
     try:
-        b, d, c, e, fil2, fil3, s, st = await parser(name)
+        ani, b, d, c, e, fil2, fil3, s, st = await parser(name)
         try:
             ttx = Path("parse.txt")
             if ttx.is_file():
@@ -478,7 +478,7 @@ async def dynamicthumb(name, kk, aa):
 
 async def custcap(name, fname):
     try:
-        oi, z, y, e, fil2, fil3, s, st = await parser(name)
+        ani, oi, z, y, e, fil2, fil3, s, st = await parser(name)
         if oi is None:
             raise Exception("Parsing Failed")
         cdp = CAP_DECO
@@ -530,6 +530,10 @@ async def custcap(name, fname):
                     fil3t = "English Subtitle"
         except Exception:
             pass
+        try:
+            adi = ani["source"]
+        except Exception:
+            adi = ""
         olif = Path("filter.txt")
         if olif.is_file():
             pass
@@ -561,10 +565,11 @@ async def custcap(name, fname):
         caption = f"**{cdp} Title:** `{oi}`\n"
         if z:
             caption += f"**{cdp} Episode:** `{z}`"
+            if VERSION2:
+                caption += f" (v{VERSION2[0]})"
         if VERSION2:
-            caption += " (v2)"
-        if VERSION2 and WORKING:
-            caption += f"\n**{cdp} (V{VERSION2[0]}) Reason:** `{VERSION2[1]}`"
+            if not z or WORKING:
+                caption += f"\n**{cdp} (V{VERSION2[0]}) Reason:** `{VERSION2[1]}`"
         if z:
             caption += "\n"
         if y:
@@ -582,7 +587,10 @@ async def custcap(name, fname):
         if st:
             caption += f"**{cdp} Episode Title:** `{st}`\n"
         if codec:
-            caption += f"**🌟:** `{codec}`\n"
+            caption += f"**🌟:** `{codec}`"
+            if adi:
+                caption += f" {adi}"
+            caption += "\n"
         if ENCODER:
             encr = ENCODER.replace("@", "")
             caption += f"**{cdp} Encoder:** `{encr}`\n"
