@@ -291,6 +291,8 @@ async def something():
                     e = await bot.send_message(user, "`▼ Downloding Queue Files ▼`")
                 if message:
                     user = message.from_user.id
+                if "-100" in str(user):
+                    user = 777000
                 USER_MAN.clear()
                 USER_MAN.append(user)
                 sender = await app.get_users(user)
@@ -325,7 +327,7 @@ async def something():
                         if mssg_r:
                             await mssg_r.edit("`Downloading Torrent\nPlease wait…`")
                         cmd = (
-                            f"aria2c --seed-time=0 -d downloads {uri} > leech_log 2>&1"
+                            f"aria2c --seed-time=0 -d downloads '{uri}' > leech_log 2>&1"
                         )
                         leech_task = asyncio.create_task(enshell(cmd))
                         await asyncio.sleep(3)

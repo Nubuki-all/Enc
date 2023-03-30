@@ -510,7 +510,7 @@ async def get_leech_file():
 
 async def get_leech_name(url):
     try:
-        os.system(f"aria2c --follow-torrent=false -d temp {url}")
+        os.system(f"aria2c --follow-torrent=false -d temp '{url}'")
         dt_ = glob.glob("temp/*")
         data = max(dt_, key=os.path.getctime)
         dat = data.replace("temp/", "")
