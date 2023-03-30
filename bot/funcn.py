@@ -50,7 +50,7 @@ OK = {}
 FINISHED_PROGRESS_STR = "🧡"
 UN_FINISHED_PROGRESS_STR = "🤍"
 MAX_MESSAGE_LENGTH = 4096
-URL_REGEX = r"^(https?://|ftp://)?(www\.)?[^/\s]+\.[^/\s:]+(:\d+)?(/[^?\s]*)?(\?[^#\s]*)?(#.*)?$"
+URL_REGEX = r"^(https?://|ftp://)?(www\.)?[^/\s]+\.[^/\s:]+(:\d+)?(/[^?\s]*[\s\S]*)?(\?[^#\s]*[\s\S]*)?(#.*)?$"
 
 uptime = dt.now()
 
