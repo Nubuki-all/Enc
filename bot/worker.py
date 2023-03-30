@@ -995,7 +995,10 @@ async def clearqueue(event):
                     if "-100" in str(user):
                         file_id = list(QUEUE.keys())[temp]
                         msg = await app.get_messages(user, int(file_id))
-                        user = msg.from_user.id
+                        if msg.from_user is None:
+                            user = 0
+                        else:
+                            user = msg.from_user.id
                     if str(event.sender_id) not in OWNER and event.sender_id != user:
                         return await event.reply(
                             "You didn't add this to queue so you can't remove it!"
@@ -1023,7 +1026,10 @@ async def clearqueue(event):
                     if "-100" in str(user):
                         file_id = list(QUEUE.keys())[i]
                         msg = await app.get_messages(user, int(file_id))
-                        user = msg.from_user.id
+                        if msg.from_user is None:
+                            user = 0
+                        else:
+                            user = msg.from_user.id
                     if str(event.sender_id) not in OWNER and event.sender_id != user:
                         i = i + 1
                     else:
