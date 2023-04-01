@@ -70,7 +70,7 @@ async def _(e):
     await getthumb(e)
 
 
-@bot.on(events.NewMessage(pattern=r"^/clear(\s+.+)?$"))
+@bot.on(events.NewMessage(pattern='/clear($|\s.*)'))
 async def _(e):
     await clearqueue(e)
 

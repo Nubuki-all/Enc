@@ -88,7 +88,7 @@ except Exception:
 try:
     bot = TelegramClient(None, APP_ID, API_HASH)
     app = Client(
-        "Encoder", api_id=APP_ID, api_hash=API_HASH, bot_token=BOT_TOKEN, workers=1
+        "Encoder", api_id=APP_ID, api_hash=API_HASH, bot_token=BOT_TOKEN, workers=WORKERS
     )
 except Exception as e:
     LOGS.info("Environment vars are missing! Kindly recheck.")

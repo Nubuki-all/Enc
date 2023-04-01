@@ -21,6 +21,7 @@ try:
     DEV = 1322549723
     OWNER = config("OWNER")
     TEMP_USERS = config("TEMP_USERS", default="123456")
+    WORKERS = config("WORKERS", default=2, cast=int)
     FFMPEG = config(
         "FFMPEG",
         default='ffmpeg -i "{}" -preset ultrafast -c:v libx265 -crf 27 -map 0:v -c:a aac -map 0:a -c:s copy -map 0:s? "{}"',
