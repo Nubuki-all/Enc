@@ -564,7 +564,9 @@ async def custcap(name, fname):
             g = ""
         oi = string.capwords(oi)
         oi = await auto_rename(oi, temp_oi, aurer)
-        out = f"encode/{fname}"
+        out = Path("encode/" + fname)
+        if not out.is_file():
+            out = Path("thumb/" + fname)
         crc32s = await crc32(out)
         try:
             a2 = await info(out, e)
