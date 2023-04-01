@@ -268,11 +268,13 @@ async def conconvert(iso2_codes):
     return iso3_codes
 
 
-async def parse(name, kk, aa):
+async def parse(name, kk="", aa=".mkv"):
     try:
         ani, b, d, c, e, fil2, fil3, s, st = await parser(name)
         if b is None:
             raise Exception("Parsing Failed")
+        if not kk:
+            kk = name
         wnamer, wreleaser, aurer = await wfilter()
         codec = await get_codec()
         con = ""
