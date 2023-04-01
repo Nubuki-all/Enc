@@ -627,6 +627,7 @@ async def something():
                 else:
                     tex = "`▲ Uploading ▲`"
                     nnn = await app.send_message(chat_id=e.chat_id, text=tex)
+                await enpause(nnn)
                 fname = out.split("/")[1]
                 tbcheck = Path("thumb2.jpg")
                 if tbcheck.is_file():

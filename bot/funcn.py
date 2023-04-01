@@ -449,6 +449,24 @@ async def dumpdl(upload2, dl, name, thum, user, message):
         await channel_log(ers)
 
 
+async def await enpause(message):
+    pause_msg = " `Bot has been paused to continue, unlock bot using the /lock command`"
+    while LOCKFILE:
+        try:
+            await message.edit(enmoji() + pause_msg)
+            await asyn.sleep(10)
+        except pyro_errors.FloodWait as e:
+            await asyncio.sleep(e.value)
+            continue
+        except pyro_errors.BadRequest:
+            await asyncio.sleep(10)
+            continue
+        except Exception:
+            ers = traceback.format_exc()
+            LOGS.info(ers)
+            await channel_log(ers)
+
+
 async def fake_progress(leech_task, message):
     r_file = ""
     while leech_task.done() is not True:
