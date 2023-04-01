@@ -137,7 +137,7 @@ async def _(e):
     await uploader(e)
 
 
-@bot.on(events.NewMessage(pattern=r"^!ul(\s+.+)?$"))
+@bot.on(events.NewMessage(pattern=r"^!rename(\s+.+)?$"))
 async def _(e):
     await en_rename(e)
 
