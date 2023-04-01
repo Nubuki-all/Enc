@@ -486,7 +486,7 @@ async def something():
                     name = namo
                 bb, bb2 = await parse(name, kk, aa)
                 out = f"{rr}/{bb}"
-                b, d, c, rlsgrp = await dynamicthumb(name, kk, aa)
+                b, d, c, rlsgrp = await dynamicthumb(name)
                 tbcheck = Path("thumb2.jpg")
                 if tbcheck.is_file():
                     thum = "thumb2.jpg"

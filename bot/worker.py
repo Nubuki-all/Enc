@@ -216,18 +216,25 @@ async def downloader(event):
         if args is not None:
             args = event.pattern_match.group(1).strip()
             loc = ""
-            if " -d " in args:
-                d = args.split(" -d ", maxsplit=1)[-1]
-                d = d.split()[0]
-                loc += f"{d}/"
-            if " -r " in args:
-                r = args.split(" -r ", maxsplit=1)[-1]
-                r = r.split()[0]
-                loc += r
-            if " -r " not in args:
+            i = 0
+            if len(args.split()) > 1:
+                for x in args.split():
+                    try:
+                        if "-d" == x:
+                            if loc:
+                                loc = args.split()[i + 1] + "/" + loc
+                            else:
+                                loc += args.split()[i + 1] + "/"
+
+                        if "-r" == x:
+                            loc += args.split()[i + 1]
+                        i = i +1
+                    except Exception:
+                        pass
+            else:
+            if loc.endswith("/"):
                 loc += r.file.name
-            if " -r " not in args and " -d " not in args:
-                loc = args
+
         else:
             loc = r.file.name
         await event.delete()
@@ -243,6 +250,55 @@ async def downloader(event):
             return
         await e.edit(f"`saved to {loc} successfully`")
         return await tm.delete()
+    except Exception:
+        ers = traceback.format_exc()
+        await channel_log(ers)
+        LOGS.info(ers)
+
+
+async def en_rename(event):
+    if str(event.sender_id) not in OWNER and event.sender_id != DEV:
+        return await event.delete()
+    if not event.is_reply:
+        return await event.reply("`Reply to a file to rename it`")
+    try:
+        args = event.pattern_match.group(1)
+        r = await event.get_reply_message()
+        message = await app.get_messages(event.chat_id, int(r.id))
+        if args is None:
+            loc = r.file.name
+        else:
+            loc = args.strip()
+            root, ext = os.path.splitext(loc)
+            if not ext:
+                loc = root + ".mkv"
+        __out, __out1 = await parse(loc)
+        loc = "thumb/" + __out
+        e = await message.reply(f"{enmoji()} `Downloading to {loc}…`", quote=True)
+        dl_task = await download2(loc, 0, message, e)
+        while dl_task.done() is not True:
+            if DOWNLOAD_CANCEL:
+                dl_task.cancel()
+                continue
+            await asyncio.sleep(3)
+        if DOWNLOAD_CANCEL:
+            await e.edit(f"Download of `{__out}` was cancelled.")
+            DOWNLOAD_CANCEL.clear()
+            return
+        await e.edit(f"Download of {loc} completed")
+        await asyncio.sleep(3)
+        await e.edit("__Uploading…__")
+        thum = Path("thumb3.jpg")
+        b, d, c, rlsgrp = await dynamicthumb(name, thum)
+        if thum.is_file():
+            pass
+        else:
+            thum = "thumb.jpg"
+        cap = await custcap(loc, loc)
+        await upload2(event.chat_id, loc, e, thum, cap, message)
+        await e.edit(f"`{__out} uploaded successfully.`")
+        os.system("rm thumb3.jpg")
+        os.remove(loc)
     except Exception:
         ers = traceback.format_exc()
         await channel_log(ers)
@@ -1552,7 +1608,7 @@ async def pencode(message):
         # if "'" in bb:
         # bb = bb.replace("'", "")
         out = f"{rr}/{bb}"
-        b, d, c, rlsgrp = await dynamicthumb(name, kk, aa)
+        b, d, c, rlsgrp = await dynamicthumb(name)
         tbcheck = Path("thumb2.jpg")
         if tbcheck.is_file():
             thum = "thumb2.jpg"
@@ -1724,7 +1780,7 @@ async def pencode(message):
         else:
             thum = "thumb.jpg"
         pcap = await custcap(name, fname)
-        ds = await upload2(message.from_user.id, out, nnn, thum, pcap, message)
+        ds = await upload2(message.chat.id, out, nnn, thum, pcap, message)
         await nnn.delete()
         if FCHANNEL:
             chat = int(FCHANNEL)

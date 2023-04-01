@@ -413,14 +413,14 @@ async def parse(name, kk, aa):
     except Exception:
         ers = traceback.format_exc()
         LOGS.info(ers)
-        bb = kk.replace(f".{aa}", f" {C_LINK}")
+        bb = kk.replace(f".{aa}", f" {C_LINK}.{aa}")
         bb2 = bb
     if "/" in bb:
         bb = bb.replace("/", " ")
     return bb, bb2
 
 
-async def dynamicthumb(name, kk, aa):
+async def dynamicthumb(name, thum="thumb2.jpg"):
     try:
         ani, b, d, c, e, fil2, fil3, s, st = await parser(name)
         try:
@@ -453,7 +453,7 @@ async def dynamicthumb(name, kk, aa):
                 .get("Media")
             )
             mog = f"{json.get('coverImage')['extraLarge']}"
-            os.system(f"wget {mog} -O thumb2.jpg")
+            os.system(f"wget {mog} -O {thum}")
         except Exception:
             try:
                 ttx = Path("parse.txt")
