@@ -449,7 +449,7 @@ async def dumpdl(upload2, dl, name, thum, user, message):
         await channel_log(ers)
 
 
-async def await enpause(message):
+async def enpause(message):
     pause_msg = " `Bot has been paused to continue, unlock bot using the /lock command`"
     while LOCKFILE:
         try:
