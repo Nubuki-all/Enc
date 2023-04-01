@@ -290,12 +290,12 @@ async def en_rename(event):
         await asyncio.sleep(3)
         await e.edit("__Uploading…__")
         thum = Path("thumb3.jpg")
-        b, d, c, rlsgrp = await dynamicthumb(name, thum)
+        b, d, c, rlsgrp = await dynamicthumb(__out, thum)
         if thum.is_file():
             pass
         else:
             thum = "thumb.jpg"
-        cap = await custcap(loc, loc)
+        cap = await custcap(__out, loc)
         await upload2(event.chat_id, loc, e, thum, cap, message)
         await e.edit(f"`{__out} uploaded successfully.`")
         os.system("rm thumb3.jpg")
