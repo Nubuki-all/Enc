@@ -295,7 +295,7 @@ async def en_rename(event):
             pass
         else:
             thum = "thumb.jpg"
-        cap = await custcap(__out, loc)
+        cap = await custcap(__out, __out)
         await upload2(event.chat_id, loc, e, thum, cap, message)
         await e.edit(f"`{__out} uploaded successfully.`")
         os.system("rm thumb3.jpg")
