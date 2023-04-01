@@ -228,7 +228,7 @@ async def downloader(event):
 
                         if "-r" == x:
                             loc += args.split()[i + 1]
-                        i = i +1
+                        i = i + 1
                     except Exception:
                         pass
             else:
