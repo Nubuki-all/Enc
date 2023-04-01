@@ -232,6 +232,7 @@ async def downloader(event):
                     except Exception:
                         pass
             else:
+                loc = args
             if loc.endswith("/"):
                 loc += r.file.name
 

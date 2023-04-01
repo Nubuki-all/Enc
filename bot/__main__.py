@@ -137,6 +137,11 @@ async def _(e):
     await uploader(e)
 
 
+@bot.on(events.NewMessage(pattern=r"^!ul(\s+.+)?$"))
+async def _(e):
+    await en_rename(e)
+
+
 @bot.on(events.NewMessage(pattern=r"^/permit(\s+.+)?$"))
 async def _(e):
     await temp_auth(e)
