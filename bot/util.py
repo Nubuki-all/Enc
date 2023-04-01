@@ -249,6 +249,12 @@ async def parser(name):
             st = "" if "MULTi" in st else st
         except Exception:
             st = ""
+        try:
+            yr = na["anime_year"]
+            if b:
+                b = b + " " + yr
+        except Exception:
+            pass
         return na, b, d, c, e, fil2, fil3, s, st
     except Exception:
         pass
