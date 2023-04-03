@@ -494,6 +494,7 @@ async def custcap(name, fname):
         wnamer, wreleaser, aurer = await wfilter()
         codec = await get_codec()
         try:
+            wfil3t = ""
             fil3t = ""
             if wreleaser:
                 for item in wreleaser.split("\n"):
@@ -502,13 +503,9 @@ async def custcap(name, fname):
                             wfil3t = item.split("|")[2]
                             break
                         else:
-                            wfil3t = ""
-                    else:
-                        wfil3t = ""
-            else:
-                wfil3t = ""
+                            break
+
             if wnamer:
-                fil3t = ""
                 for item in wnamer.split("\n"):
                     if item.startswith("^"):
                         if not item.split("|")[0].lstrip("^") in name:
@@ -517,20 +514,16 @@ async def custcap(name, fname):
                         if not item.split("|")[0].casefold() in name.casefold():
                             continue
                     if item.split("|")[2].casefold() != "disable":
-                        fil3t = item.split("|")[2]
-                    else:
-                        fil3t = ""
-                    break
-                if not fil3t and not wfil3t:
-                    fil3t = ""
-                elif wfil3t:
+                        fil3t += item.split("|")[2] + " "
+                    if item.startswith("^"):
+                        break
+                if not fil3t and wfil3t:
                     fil3t = wfil3t
             else:
-                fil3t = ""
                 fil3t = wfil3t if wfil3t else fil3t
 
             if fil3t:
-                pass
+                fil3t = fil3t.strip()
             else:
                 if s:
                     fil3t = s
