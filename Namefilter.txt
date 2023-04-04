@@ -1,4 +1,5 @@
 ^MULTi|MULTi|(Multi-Audio) (Multi-Subs)
 B-Global|Disable|(Multi-Subs) (B-Global)
+Donghua|Disable|(Donghua)
 DUAL|Dual|(Dual-Audio)
 Multi|Disable|(Multi-Subs)
