@@ -71,7 +71,7 @@ async def crc32(filename, chunksize=65536):
         return "%X" % (checksum & 0xFFFFFFFF)
 
 
-async def auto_rename(parsed_name, original_name, refunc):
+async def auto_rename(parsed_name, original_name, refunc, caption=False):
     out_name = ""
     if refunc:
         for ren in refunc.split("\n"):
@@ -80,6 +80,12 @@ async def auto_rename(parsed_name, original_name, refunc):
             re_name = ren.split("|")[1].strip()
             if original_name.casefold() == de_name.casefold():
                 out_name = re_name
+            if caption and len(ren.split("|")) > 2:
+                cap_name = ren.split("|")[2].strip()
+                if str(cap_name)  == "0":
+                    out_name = parsed_name
+                else:
+                    out_name = cap_name
     if not out_name:
         out_name = parsed_name
     return out_name
@@ -556,7 +562,7 @@ async def custcap(name, fname):
         except Exception:
             g = ""
         oi = string.capwords(oi)
-        oi = await auto_rename(oi, temp_oi, aurer)
+        oi = await auto_rename(oi, temp_oi, aurer, caption=True)
         out = Path("encode/" + fname)
         if not out.is_file():
             out = Path("thumb/" + fname)
