@@ -273,6 +273,7 @@ async def en_rename(event):
             root, ext = os.path.splitext(loc)
             if not ext:
                 loc = root + ".mkv"
+        __loc = loc
         __out, __out1 = await parse(loc)
         loc = "thumb/" + __out
         e = await message.reply(f"{enmoji()} `Downloading to {loc}…`", quote=True)
@@ -290,12 +291,12 @@ async def en_rename(event):
         await asyncio.sleep(3)
         await e.edit("__Uploading…__")
         thum = Path("thumb3.jpg")
-        b, d, c, rlsgrp = await dynamicthumb(__out, thum)
+        b, d, c, rlsgrp = await dynamicthumb(__loc, thum)
         if thum.is_file():
             pass
         else:
             thum = "thumb.jpg"
-        cap = await custcap(__out, __out)
+        cap = await custcap(__loc, __loc)
         await upload2(event.chat_id, loc, e, thum, cap, message)
         await e.edit(f"`{__out} uploaded successfully.`")
         os.system("rm thumb3.jpg")
