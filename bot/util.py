@@ -82,7 +82,7 @@ async def auto_rename(parsed_name, original_name, refunc, caption=False):
                 out_name = re_name
             if caption and len(ren.split("|")) > 2:
                 cap_name = ren.split("|")[2].strip()
-                if str(cap_name)  == "0":
+                if str(cap_name) == "0":
                     out_name = parsed_name
                 else:
                     out_name = cap_name
