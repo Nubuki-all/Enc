@@ -276,6 +276,16 @@ async def en_rename(event):
         __loc = loc
         __out, __out1 = await parse(loc)
         loc = "thumb/" + __out
+        if R_QUEUE:
+            R_QUEUE.append(str(event.id) + ":" + str(event.chat_id))
+            q = await message.reply("`Added to queue!`")
+            while R_QUEUE:
+                await asyncio.sleep(20)
+                if str(R_QUEUE[0]) == (str(event.id) + ":" + str(event.chat_id)):
+                    await q.delete()
+                    break
+        else:
+            R_QUEUE.append(str(event.id) + ":" + str(event.chat_id))
         e = await message.reply(f"{enmoji()} `Downloading to {loc}…`", quote=True)
         dl_task = await download2(loc, 0, message, e)
         while dl_task.done() is not True:
@@ -301,7 +311,10 @@ async def en_rename(event):
         await e.edit(f"`{__out} uploaded successfully.`")
         os.system("rm thumb3.jpg")
         os.remove(loc)
+        R_QUEUE.pop(0)
     except Exception:
+        if R_QUEUE:
+            R_QUEUE.pop(0)
         ers = traceback.format_exc()
         await channel_log(ers)
         LOGS.info(ers)
@@ -731,7 +744,7 @@ async def del_auto_rename(event):
         if temp.isdigit():
             temp = int(temp)
             dat = r_file.split("\n")
-            if temp > len(dat):
+            if (temp + 1) > len(dat):
                 return await event.reply(
                     "__Not found check /vname and pass appropriate number__"
                 )
@@ -755,7 +768,7 @@ async def del_auto_rename(event):
             return await event.reply(f"`Removed {rslt} successfully.`")
         rslt = temp.split("|")
         return await event.reply(
-            f"**Removed check for: **`{rslt[0]}`\n**Replace with: ** `{result[1]}`"
+            f"**Removed check for: **`{rslt[0]}`\n**Replace with: ** `{rslt[1]}`"
         )
     except Exception:
         await event.reply("Error Occurred")
