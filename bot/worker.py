@@ -400,12 +400,7 @@ async def en_mux(event):
                 out_file = "ffmpeg_error.txt"
                 with open(out_file, "w") as file:
                     file.write(str(er)
-                    wrror = await message.reply_document(
-                        document=out_file,
-                        force_document=True,
-                        quote=True,
-                        caption="`ffmpeg error`",
-                    )
+                    wrror = await message.reply_document(document=out_file, force_document=True, quote=True, caption="`ffmpeg error`")
                 os.remove(out_file)
             else:
                 wrror = await message.reply(er, quote=True)
