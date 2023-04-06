@@ -320,6 +320,119 @@ async def en_rename(event):
         LOGS.info(ers)
 
 
+async def en_mux(event):
+    if str(event.sender_id) not in OWNER and event.sender_id != DEV:
+        return await event.delete()
+    if not event.is_reply:
+        return await event.reply("`Reply to a file to rename it`")
+    try:
+        args = event.pattern_match.group(1)
+        r = await event.get_reply_message()
+        message = await app.get_messages(event.chat_id, int(r.id))
+        if message.document:
+            if message.document.mime_type not in video_mimetype:
+                return
+        if args is None:
+            return await event.reply("__the muxing parameters is required as arguments__")
+        else:
+            media_type = str(message.media)
+            if media_type == "MessageMediaType.VIDEO":
+                doc = message.video
+            else:
+                doc = message.document
+            sem = message.caption
+            ttt = Path("cap.txt")
+            if sem and "\n" in sem:
+                sem = ""
+            if sem and not ttt.is_file():
+                name = sem
+            else:
+                name = doc.file_name
+            if not name:
+                name = "video_" + dt.now().isoformat("_", "seconds") + ".mp4"
+            root, ext = os.path.splitext(name)
+            if not ext:
+                ext = ".mkv"
+                name = root + ext
+        __loc = name
+        dl = "thumb/" + name
+        __out, __out1 = await parse(name)
+        loc = "thumb/" + __out
+        if R_QUEUE:
+            R_QUEUE.append(str(event.id) + ":" + str(event.chat_id))
+            q = await message.reply("`Added to queue!`")
+            while R_QUEUE:
+                await asyncio.sleep(20)
+                if str(R_QUEUE[0]) == (str(event.id) + ":" + str(event.chat_id)):
+                    await q.delete()
+                    break
+        else:
+            R_QUEUE.append(str(event.id) + ":" + str(event.chat_id))
+        e = await message.reply(f"{enmoji()} `Downloading to {dl}…`", quote=True)
+        dl_task = await download2(dl, 0, message, e)
+        while dl_task.done() is not True:
+            if DOWNLOAD_CANCEL:
+                dl_task.cancel()
+                continue
+            await asyncio.sleep(3)
+        if DOWNLOAD_CANCEL:
+            await e.edit(f"Download of `{__loc}` was cancelled.")
+            DOWNLOAD_CANCEL.clear()
+            return
+        await e.edit(f"Download of `{__loc}` completed")
+        await asyncio.sleep(3)
+        await e.edit("`Muxing using provided parameters`")
+        cmd = f'ffmpeg -i "{dl}" {args} "{loc}"'
+        if ALLOW_ACTION is True:
+            async with bot.action(message.from_user.id, "game"):
+                process = await asyncio.create_subprocess_shell(
+                    cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+                )
+                stdout, stderr = await process.communicate()
+        else:
+            process = await asyncio.create_subprocess_shell(
+                cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+            )
+            stdout, stderr = await process.communicate()
+        er = stderr.decode()
+        if process.returncode != 0:
+            if len(stderr) > 4095:
+                out_file = "ffmpeg_error.txt"
+                with open(out_file, "w") as file:
+                    file.write(str(er)
+                    wrror = await message.reply_document(
+                        document=out_file,
+                        force_document=True,
+                        quote=True,
+                        caption="`ffmpeg error`",
+                    )
+                os.remove(out_file)
+            else:
+                wrror = await message.reply(er, quote=True)
+            raise Exception("Encoding Failed!")
+        await e.edit("__Uploading…__")
+        thum = Path("thumb3.jpg")
+        b, d, c, rlsgrp = await dynamicthumb(__loc, thum)
+        if thum.is_file():
+            pass
+        else:
+            thum = "thumb.jpg"
+        cap = await custcap(__loc, __out)
+        await upload2(event.chat_id, loc, e, thum, cap, message)
+        await e.edit(f"`{__out} uploaded successfully.`")
+        os.system("rm thumb3.jpg")
+        os.remove(dl)
+        os.remove(loc)
+        R_QUEUE.pop(0)
+    except Exception:
+        if R_QUEUE:
+            R_QUEUE.pop(0)
+        os.system(f"rm -rf {dl} {loc}")
+        ers = traceback.format_exc()
+        await channel_log(ers)
+        LOGS.info(ers)
+
+
 async def download2(dl, file, message="", e=""):
     try:
         global download_task

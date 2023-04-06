@@ -142,6 +142,11 @@ async def _(e):
     await en_rename(e)
 
 
+@bot.on(events.NewMessage(pattern=r"^!mux(\s+.+)?$"))
+async def _(e):
+    await en_mux(e)
+
+
 @bot.on(events.NewMessage(pattern=r"^/permit(\s+.+)?$"))
 async def _(e):
     await temp_auth(e)
