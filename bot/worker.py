@@ -334,7 +334,7 @@ async def en_mux(event):
                 return
         if args is None:
             return await event.reply(
-                "__the muxing parameters is required as arguments__"
+                "__ffmpeg muxing parameters are required as arguments__"
             )
         else:
             media_type = str(message.media)
@@ -384,7 +384,7 @@ async def en_mux(event):
         await e.edit(f"Download of `{__loc}` completed")
         await asyncio.sleep(3)
         await e.edit("`Muxing using provided parameters`")
-        cmd = f'ffmpeg -i "{dl}" {args} "{loc}"'
+        cmd = f'ffmpeg -i "{dl}" {args} "{loc}" -y'
         if ALLOW_ACTION is True:
             async with bot.action(message.from_user.id, "game"):
                 process = await asyncio.create_subprocess_shell(
