@@ -333,7 +333,9 @@ async def en_mux(event):
             if message.document.mime_type not in video_mimetype:
                 return
         if args is None:
-            return await event.reply("__the muxing parameters is required as arguments__")
+            return await event.reply(
+                "__the muxing parameters is required as arguments__"
+            )
         else:
             media_type = str(message.media)
             if media_type == "MessageMediaType.VIDEO":
@@ -385,10 +387,14 @@ async def en_mux(event):
         cmd = f'ffmpeg -i "{dl}" {args} "{loc}"'
         if ALLOW_ACTION is True:
             async with bot.action(message.from_user.id, "game"):
-                process = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+                process = await asyncio.create_subprocess_shell(
+                    cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+                )
                 stdout, stderr = await process.communicate()
         else:
-            process = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+            process = await asyncio.create_subprocess_shell(
+                cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+            )
             stdout, stderr = await process.communicate()
         er = stderr.decode()
         if process.returncode != 0:
@@ -396,7 +402,12 @@ async def en_mux(event):
                 out_file = "ffmpeg_error.txt"
                 with open(out_file, "w") as file:
                     file.write(str(er))
-                    wrror = await message.reply_document(document=out_file, force_document=True, quote=True, caption="`ffmpeg error`")
+                    wrror = await message.reply_document(
+                        document=out_file,
+                        force_document=True,
+                        quote=True,
+                        caption="`ffmpeg error`",
+                    )
                 os.remove(out_file)
             else:
                 wrror = await message.reply(er, quote=True)
