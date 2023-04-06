@@ -287,19 +287,20 @@ async def en_rename(event):
         else:
             R_QUEUE.append(str(event.id) + ":" + str(event.chat_id))
         e = await message.reply(f"{enmoji()} `Downloading to {loc}…`", quote=True)
+        await asyncio.sleep(5)
         dl_task = await download2(loc, 0, message, e)
         while dl_task.done() is not True:
             if DOWNLOAD_CANCEL:
                 dl_task.cancel()
                 continue
-            await asyncio.sleep(3)
+            await asyncio.sleep(5)
         if DOWNLOAD_CANCEL:
+            os.system(f"rm {loc}")
             await e.edit(f"Download of `{__out}` was cancelled.")
             DOWNLOAD_CANCEL.clear()
             return
         await e.edit(f"Download of {loc} completed")
-        await asyncio.sleep(3)
-        await e.edit("__Uploading…__")
+        await asyncio.sleep(5)
         thum = Path("thumb3.jpg")
         b, d, c, rlsgrp = await dynamicthumb(__loc, thum)
         if thum.is_file():
@@ -371,13 +372,15 @@ async def en_mux(event):
         else:
             R_QUEUE.append(str(event.id) + ":" + str(event.chat_id))
         e = await message.reply(f"{enmoji()} `Downloading to {dl}…`", quote=True)
+        await asyncio.sleep(5)
         dl_task = await download2(dl, 0, message, e)
         while dl_task.done() is not True:
             if DOWNLOAD_CANCEL:
                 dl_task.cancel()
                 continue
-            await asyncio.sleep(3)
+            await asyncio.sleep(5)
         if DOWNLOAD_CANCEL:
+            os.system(f"rm {dl}")
             await e.edit(f"Download of `{__loc}` was cancelled.")
             DOWNLOAD_CANCEL.clear()
             return
@@ -415,7 +418,6 @@ async def en_mux(event):
             else:
                 wrror = await message.reply(er, quote=True)
             raise Exception("Encoding Failed!")
-        await e.edit("__Uploading…__")
         thum = Path("thumb3.jpg")
         b, d, c, rlsgrp = await dynamicthumb(__loc, thum)
         if thum.is_file():
@@ -423,6 +425,7 @@ async def en_mux(event):
         else:
             thum = "thumb.jpg"
         cap = await custcap(__loc, __out)
+        await asyncio.sleep(5)
         await upload2(event.chat_id, loc, e, thum, cap, message)
         await e.edit(f"`{__out} uploaded successfully.`")
         os.system("rm thumb3.jpg")
