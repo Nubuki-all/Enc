@@ -80,6 +80,8 @@ async def auto_rename(parsed_name, original_name, refunc, caption=False):
             re_name = ren.split("|")[1].strip()
             if original_name.casefold() == de_name.casefold():
                 out_name = re_name
+            else:
+                continue
             if caption and len(ren.split("|")) > 2:
                 cap_name = ren.split("|")[2].strip()
                 if str(cap_name) == "0":
