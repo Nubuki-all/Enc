@@ -2,7 +2,7 @@ from .funcn import *
 
 
 class uploader:
-    def __init__(self,bot, app):
+    def __init__(self, bot, app):
         self.bot = bot
         self.app = app
         self.is_cancelled = False
