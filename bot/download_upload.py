@@ -8,7 +8,7 @@ class uploader:
         self.bot = bot
         self.app = app
         self.is_cancelled = False
-        app.add_handler(CallbackQueryHandler(self.button_callback))
+        self.handler = app.add_handler(CallbackQueryHandler(self.button_callback))
 
     def __str__(self, bot):
         return "#wip"
@@ -45,6 +45,7 @@ class uploader:
                             u_start,
                         ),
                     )
+            self.app.remove_handler(*self.handler)
             return s
         except Exception:
             ers = traceback.format_exc()
