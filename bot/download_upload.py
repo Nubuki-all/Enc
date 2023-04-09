@@ -59,7 +59,7 @@ class uploader:
             await asyncio.sleep(10)
             upload2 = uploader(self.bot, self.app, self.sender)
             await upload2.start(event.chat_id, loc, e, thum, cap, message)
-            
+
         except Exception:
             self.app.remove_handler(*self.handler)
             ers = traceback.format_exc()
