@@ -51,7 +51,7 @@ class uploader:
     async def progress_for_pyrogram(self, current, total, app, ud_type, message, start):
         now = time.time()
         diff = now - start
-        #debug
+        # debug
         LOGS.info(self.is_cancelled)
         if self.is_cancelled:
             app.stop_transmission()
