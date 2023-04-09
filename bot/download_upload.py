@@ -48,13 +48,14 @@ class uploader:
             await channel_log(ers)
             LOGS.info(ers)
 
-    async def progress_for_pyrogram(self, current, total, bot, ud_type, message, start):
+    async def progress_for_pyrogram(self, current, total, app, ud_type, message, start):
         now = time.time()
         diff = now - start
+        #debug
+        LOGS.info(self.is_cancelled)
         if self.is_cancelled:
-            bot.stop_transmission()
+            app.stop_transmission()
             await message.edit_text("`Uploading Cancelled.`")
-            return
         if round(diff % 10.00) == 0 or current == total:
             percentage = current * 100 / total
             status = "downloads" + "/status.json"
@@ -62,7 +63,7 @@ class uploader:
                 with open(status, "r+") as f:
                     statusMsg = json.load(f)
                     if not statusMsg["running"]:
-                        bot.stop_transmission()
+                        app.stop_transmission()
             speed = current / diff
             time_to_completion = time_formatter(int((total - current) / speed))
 
@@ -111,4 +112,6 @@ class uploader:
         # debug
         LOGS.info("function is called?")
         if callback_query.data == "cancel_upload":
+            LOGS.info("data matches")
             self.is_cancelled = True
+            LOGS.info("is set to cancelled")
