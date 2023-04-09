@@ -1,11 +1,12 @@
 from .funcn import *
 
+
 class uploader:
     def __init__(self):
         self.is_cancelled = False
 
     def __str__(self):
-        return("#wip")
+        return "#wip"
 
     async def start(self, from_user_id, filepath, reply, thum, caption, message=""):
         try:
@@ -32,7 +33,12 @@ class uploader:
                         thumb=thum,
                         caption=caption,
                         progress=self.progress_for_pyrogram,
-                        progress_args=(app, "Uploading 👘", reply, u_start,),
+                        progress_args=(
+                            app,
+                            "Uploading 👘",
+                            reply,
+                            u_start,
+                        ),
                     )
             return s
         except Exception:
