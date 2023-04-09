@@ -1,12 +1,12 @@
 from .funcn import *
-
+from pyrogram.handlers import MessageHandler
 
 class uploader:
     def __init__(self, bot, app):
         self.bot = bot
         self.app = app
         self.is_cancelled = False
-        self.app.on_callback_query(self.button_callback)
+        app.add_handler(CallbackQueryHandler(self.button_callback))
 
     def __str__(self, bot):
         return "#wip"
