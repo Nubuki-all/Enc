@@ -58,7 +58,6 @@ class uploader:
         LOGS.info(self.is_cancelled)
         if self.is_cancelled:
             app.stop_transmission()
-            await message.edit_text("`Uploading Cancelled.`")
         if round(diff % 10.00) == 0 or current == total:
             percentage = current * 100 / total
             status = "downloads" + "/status.json"

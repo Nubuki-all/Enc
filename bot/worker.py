@@ -311,7 +311,10 @@ async def en_rename(event):
         cap = await custcap(__loc, __out)
         upload2 = Upload2(bot, app)
         await upload2.start(event.chat_id, loc, e, thum, cap, message)
-        await e.edit(f"`{__out} uploaded successfully.`")
+        if not upload2.is_cancelled:
+            await e.edit(f"`{__out} uploaded successfully.`")
+        else:
+            await e.edit(f"`Upload of {__out} cancelled.`")
         os.system("rm thumb3.jpg")
         os.remove(loc)
         R_QUEUE.pop(0)
