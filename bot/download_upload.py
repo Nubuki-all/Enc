@@ -1,14 +1,16 @@
 from pyrogram.handlers import CallbackQueryHandler
+from pyrogram.filters import regex
 
 from .funcn import *
 
 
 class uploader:
-    def __init__(self, bot, app):
+    def __init__(self, bot, app, sender):
         self.bot = bot
         self.app = app
+        self.sender = int(sender)
         self.is_cancelled = False
-        self.handler = app.add_handler(CallbackQueryHandler(self.button_callback))
+        self.handler = app.add_handler(CallbackQueryHandler(self.upload_button_callback, filters=regex("^cancel_upload")))
 
     def __str__(self, bot):
         return "#wip"
@@ -55,8 +57,6 @@ class uploader:
     async def progress_for_pyrogram(self, current, total, app, ud_type, message, start):
         now = time.time()
         diff = now - start
-        # debug
-        LOGS.info(self.is_cancelled)
         if self.is_cancelled:
             app.stop_transmission()
         if round(diff % 10.00) == 0 or current == total:
@@ -110,11 +110,10 @@ class uploader:
             except BaseException:
                 pass
 
-    # @app.on_callback_query()
-    async def button_callback(self, client, callback_query):
-        # debug
-        LOGS.info("function is called?")
-        if callback_query.data == "cancel_upload":
-            LOGS.info("data matches")
-            self.is_cancelled = True
-            LOGS.info(f"is set to cancelled: {self.is_cancelled}")
+    async def upload_button_callback(self, client, callback_query):
+        # if callback_query.data == "cancel_upload":
+        if str(callback_query.from_user.id) not in OWNER and callback_query.from_user.id != self.sender:
+            return await callback_query.answer("You're not allowed to do this!", show_alert=False)
+        self.is_cancelled = True
+        await callback_query.answer("Cancelling upload please wait…", show_alert=True)
+

@@ -309,7 +309,7 @@ async def en_rename(event):
         else:
             thum = "thumb.jpg"
         cap = await custcap(__loc, __out)
-        upload2 = Upload2(bot, app)
+        upload2 = Upload2(bot, app, event.sender_id)
         await upload2.start(event.chat_id, loc, e, thum, cap, message)
         if not upload2.is_cancelled:
             await e.edit(f"`{__out} uploaded successfully.`")
