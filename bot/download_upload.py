@@ -1,5 +1,5 @@
 from .funcn import *
-
+from pyrogram.handlers import CallbackQueryHandler
 
 class uploader:
     def __init__(self, bot, app):
