@@ -670,7 +670,7 @@ async def cache_dl():
 async def listqueue(event):
     if event.sender_id is not None and event.sender_id != int(BOT_TOKEN.split(":")[0]):
         if event.is_channel:
-            return 
+            return
         if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
             return
     if not QUEUE:
