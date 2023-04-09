@@ -20,7 +20,7 @@ from pathlib import Path
 
 import psutil
 
-from .download_upload import uploader
+from .download_upload import uploader as Upload2
 from .funcn import *
 from .util import (
     custcap,
@@ -309,7 +309,7 @@ async def en_rename(event):
         else:
             thum = "thumb.jpg"
         cap = await custcap(__loc, __out)
-        upload2 = uploader()
+        upload2 = Upload2()
         await upload2.start(event.chat_id, loc, e, thum, cap, message)
         await e.edit(f"`{__out} uploaded successfully.`")
         os.system("rm thumb3.jpg")
