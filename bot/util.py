@@ -291,79 +291,77 @@ async def parse(name, kk="", aa=".mkv"):
         olif = Path("filter.txt")
         temp_b = b
         try:
-                ttx = Path("parse.txt")
-                if ttx.is_file():
-                    raise Exception("Parsing Turned off")
-                variables = {"search": b, "type": "ANIME"}
-                json = (
-                    requests.post(
-                        url, json={"query": anime_query, "variables": variables}
-                    )
-                    .json()["data"]
-                    .get("Media")
-                )
-                b = f"{json['title']['english']}"
-                b = f"{json['title']['romaji']}" if b == "None" else b
-                con = f"{json['countryOfOrigin']}"
-                con = await conconvert(con)
-                g = f"{json.get('episodes')}"
+            ttx = Path("parse.txt")
+            if ttx.is_file():
+                raise Exception("Parsing Turned off")
+            variables = {"search": b, "type": "ANIME"}
+            json = (
+                requests.post(url, json={"query": anime_query, "variables": variables})
+                .json()["data"]
+                .get("Media")
+            )
+            b = f"{json['title']['english']}"
+            b = f"{json['title']['romaji']}" if b == "None" else b
+            con = f"{json['countryOfOrigin']}"
+            con = await conconvert(con)
+            g = f"{json.get('episodes')}"
 
-                b = string.capwords(b)
-                col = ""
-                if wreleaser:
-                    for item in wreleaser.split("\n"):
-                        if item.split("|")[0].casefold() in e.casefold():
-                            if item.split("|")[1].casefold() != "disable":
-                                wcol = item.split("|")[1]
-                            else:
-                                wcol = ""
-                            break
+            b = string.capwords(b)
+            col = ""
+            if wreleaser:
+                for item in wreleaser.split("\n"):
+                    if item.split("|")[0].casefold() in e.casefold():
+                        if item.split("|")[1].casefold() != "disable":
+                            wcol = item.split("|")[1]
                         else:
                             wcol = ""
-                else:
-                    wcol = ""
-                if wnamer:
-                    col = ""
-                    for item in wnamer.split("\n"):
-                        if item.startswith("^"):
-                            if not item.split("|")[0].lstrip("^") in name:
-                                continue
-                        else:
-                            if not item.split("|")[0].casefold() in name.casefold():
-                                continue
-                        if item.split("|")[1].casefold() != "disable":
-                            col = item.split("|")[1]
-                        else:
-                            col = ""
                         break
-                    if not col and not wcol:
-                        col = ""
-                    elif wcol:
-                        col = wcol
-                else:
-                    col = ""
-                    col = wcol if wcol else col
-
-                if col:
-                    pass
-                else:
-                    col = con
-        except Exception:
-                ers = traceback.format_exc()
-                LOGS.info(ers)
-                g = ""
+                    else:
+                        wcol = ""
+            else:
+                wcol = ""
+            if wnamer:
                 col = ""
-        if olif.is_file() and fil2.casefold() != "auto":
-                col = fil2
-                col = "" if fil2.casefold() == "disable" else col
-        else:
+                for item in wnamer.split("\n"):
+                    if item.startswith("^"):
+                        if not item.split("|")[0].lstrip("^") in name:
+                            continue
+                    else:
+                        if not item.split("|")[0].casefold() in name.casefold():
+                            continue
+                    if item.split("|")[1].casefold() != "disable":
+                        col = item.split("|")[1]
+                    else:
+                        col = ""
+                    break
+                if not col and not wcol:
+                    col = ""
+                elif wcol:
+                    col = wcol
+            else:
+                col = ""
+                col = wcol if wcol else col
+
+            if col:
                 pass
-        if len(b) > 33:
-                cb = b[:32] + "…"
-                cb = cb.split(":")[0]
+            else:
+                col = con
+        except Exception:
+            ers = traceback.format_exc()
+            LOGS.info(ers)
+            g = ""
+            col = ""
+        if olif.is_file() and fil2.casefold() != "auto":
+            col = fil2
+            col = "" if fil2.casefold() == "disable" else col
         else:
-                cb = b
-           
+            pass
+        if len(b) > 33:
+            cb = b[:32] + "…"
+            cb = cb.split(":")[0]
+        else:
+            cb = b
+
         cb = await auto_rename(cb, temp_b, aurer)
 
         bb = ""
