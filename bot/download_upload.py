@@ -6,6 +6,7 @@ class uploader:
         self.bot = bot
         self.app = app
         self.is_cancelled = False
+        self.app.on_callback_query(self.button_callback)
 
     def __str__(self, bot):
         return "#wip"
@@ -107,11 +108,11 @@ class uploader:
             except BaseException:
                 pass
 
-    @app.on_callback_query()
+    #@app.on_callback_query()
     async def button_callback(self, callback_query):
         # debug
         LOGS.info("function is called?")
         if callback_query.data == "cancel_upload":
             LOGS.info("data matches")
             self.is_cancelled = True
-            LOGS.info("is set to cancelled")
+            LOGS.info(f"is set to cancelled: {self.is_cancelled}")
