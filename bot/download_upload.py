@@ -1,4 +1,5 @@
 import uuid
+
 from pyrogram.filters import regex
 from pyrogram.handlers import CallbackQueryHandler
 
@@ -14,7 +15,7 @@ class uploader:
         self.is_cancelled = False
         self.handler = app.add_handler(
             CallbackQueryHandler(
-                self.upload_button_callback, filters=regex("^"+self.callback_data)
+                self.upload_button_callback, filters=regex("^" + self.callback_data)
             )
         )
 
