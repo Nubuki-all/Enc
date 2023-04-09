@@ -105,9 +105,10 @@ class uploader:
                     )
             except BaseException:
                 pass
+
     @app.on_callback_query()
     async def button_callback(self, callback_query):
-        #debug
+        # debug
         LOGS.info("function is called?")
         if callback_query.data == "cancel_upload":
             self.is_cancelled = True
