@@ -314,7 +314,7 @@ async def en_rename(event):
         if not upload2.is_cancelled:
             await e.edit(f"`{__out} uploaded successfully.`")
         else:
-            await e.edit(f"`Upload of {__out} cancelled.`")
+            await e.edit(f"`Upload of {__out} was cancelled.`")
         os.system("rm thumb3.jpg")
         os.remove(loc)
         R_QUEUE.pop(0)

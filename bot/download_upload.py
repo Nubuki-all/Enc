@@ -1,3 +1,4 @@
+import uuid
 from pyrogram.filters import regex
 from pyrogram.handlers import CallbackQueryHandler
 
@@ -5,14 +6,15 @@ from .funcn import *
 
 
 class uploader:
-    def __init__(self, bot, app, sender):
+    def __init__(self, bot, app, sender=123456):
         self.bot = bot
         self.app = app
         self.sender = int(sender)
+        self.callback_data = "cancel_upload" + uuid.uuid4()
         self.is_cancelled = False
         self.handler = app.add_handler(
             CallbackQueryHandler(
-                self.upload_button_callback, filters=regex("^cancel_upload")
+                self.upload_button_callback, filters=regex("^"+self.callback_data)
             )
         )
 
@@ -65,6 +67,7 @@ class uploader:
             ers = traceback.format_exc()
             await channel_log(ers)
             LOGS.info(ers)
+            return None
 
     async def progress_for_pyrogram(self, current, total, app, ud_type, message, start):
         now = time.time()
@@ -105,7 +108,7 @@ class uploader:
             try:
                 # Create a "Cancel" button
                 cancel_button = InlineKeyboardButton(
-                    text="Cancel", callback_data="cancel_upload"
+                    text="Cancel", callback_data=self.callback_data
                 )
                 # Attach the button to the message with an inline keyboard
                 reply_markup = InlineKeyboardMarkup([[cancel_button]])
@@ -132,4 +135,4 @@ class uploader:
                 "You're not allowed to do this!", show_alert=False
             )
         self.is_cancelled = True
-        await callback_query.answer("Cancelling upload please wait…", show_alert=True)
+        await callback_query.answer("Cancelling upload please wait…", show_alert=False)
