@@ -669,6 +669,8 @@ async def cache_dl():
 
 async def listqueue(event):
     if event.sender_id is not None and event.sender_id != int(BOT_TOKEN.split(":")[0]):
+        if event.is_channel:
+            return 
         if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
             return
     if not QUEUE:
@@ -1477,7 +1479,7 @@ async def enleech(event):
                             QUEUE.update({uri: [file_name, event.sender_id]})
                         await save2db()
                         msg = await event2.reply(
-                            "**Torrent added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
+                            f"**Torrent added To Queue ⏰, POS:{len(QUEUE)}** \n`Please Wait , Encode will start soon`"
                         )
                         temp = temp - 1
                         temp2 = temp2 + 1
@@ -1530,7 +1532,7 @@ async def enleech(event):
         await save2db()
         if WORKING or len(QUEUE) > 1 or LOCKFILE:
             msg = await event.reply(
-                "**Torrent added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
+                f"**Torrent added To Queue ⏰, POS:{len(QUEUE)}** \n`Please Wait , Encode will start soon`"
             )
             return asyncio.create_task(listqueue(msg))
         else:
@@ -1602,7 +1604,7 @@ async def pencode(message):
                 QUEUE.update({doc.file_id: [name, user]})
             await save2db()
             await xxx.edit(
-                "**Added To Queue ⏰,** \n`Please Wait , Encode will start soon`"
+                f"**Added To Queue ⏰, POS:{len(QUEUE)}** \n`Please Wait , Encode will start soon`"
             )
             # asyncio.create_task(listqueue(event))
             return
