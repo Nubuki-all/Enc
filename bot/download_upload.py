@@ -108,7 +108,7 @@ class uploader:
             except BaseException:
                 pass
 
-    #@app.on_callback_query()
+    # @app.on_callback_query()
     async def button_callback(self, callback_query):
         # debug
         LOGS.info("function is called?")
