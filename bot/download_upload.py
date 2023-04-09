@@ -53,7 +53,15 @@ class uploader:
                     )
             self.app.remove_handler(*self.handler)
             return s
+        except pyro_errors.BadRequest:
+            await reply.edit(f"`Failed {enmoji2()}\nRetrying…`")
+            self.app.remove_handler(*self.handler)
+            await asyncio.sleep(10)
+            upload2 = uploader(self.bot, self.app, self.sender)
+            await upload2.start(event.chat_id, loc, e, thum, cap, message)
+            
         except Exception:
+            self.app.remove_handler(*self.handler)
             ers = traceback.format_exc()
             await channel_log(ers)
             LOGS.info(ers)
