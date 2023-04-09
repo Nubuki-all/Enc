@@ -290,56 +290,7 @@ async def parse(name, kk="", aa=".mkv"):
         con = ""
         olif = Path("filter.txt")
         temp_b = b
-        if olif.is_file():
-            fil2 = "" if fil2.casefold() == "disable" else fil2
-            try:
-                ttx = Path("parse.txt")
-                if ttx.is_file():
-                    raise Exception("Parsing turned off")
-                variables = {"search": b, "type": "ANIME"}
-                json = (
-                    requests.post(
-                        url, json={"query": anime_query, "variables": variables}
-                    )
-                    .json()["data"]
-                    .get("Media")
-                )
-                b = f"{json['title']['english']}"
-                b = f"{json['title']['romaji']}" if b == "None" else b
-                if fil2:
-                    if fil2.casefold() == "auto":
-                        fil2 = f"{json['countryOfOrigin']}"
-                        fil2 = await conconvert(fil2)
-            except Exception:
-                ers = traceback.format_exc()
-                LOGS.info(ers)
-                fil2 = "" if fil2.casefold() == "auto" else fil2
-            b = string.capwords(b)
-            if len(b) > 33:
-                cb = b[:32] + "…"
-                cb = cb.split(":")[0]
-            else:
-                cb = b
-            cb = await auto_rename(cb, temp_b, aurer)
-
-            bb = ""
-            bb += release_name
-            bb += f" {cb}"
-            if c:
-                bb += f" S{c}"
-            if d:
-                bb += f" - {d}"
-            if VERSION2:
-                bb += f"v{VERSION2[0]}"
-            if fil2:
-                bb += f" [{fil2}]"
-            bb2 = bb.replace(cb, b)
-            bb2 = bb2.replace(release_name, release_name_b)
-            if codec:
-                bb2 += f" {codec}"
-            bb += ".mkv"
-        else:
-            try:
+        try:
                 ttx = Path("parse.txt")
                 if ttx.is_file():
                     raise Exception("Parsing Turned off")
@@ -397,37 +348,42 @@ async def parse(name, kk="", aa=".mkv"):
                     pass
                 else:
                     col = con
-            except Exception:
+        except Exception:
                 ers = traceback.format_exc()
                 LOGS.info(ers)
                 g = ""
                 col = ""
-
-            if len(b) > 33:
+        if olif.is_file() and fil2.casefold() != "auto":
+                col = fil2
+                col = "" if fil2.casefold() == "disable" else col
+        else:
+                pass
+        if len(b) > 33:
                 cb = b[:32] + "…"
                 cb = cb.split(":")[0]
-            else:
+        else:
                 cb = b
-            cb = await auto_rename(cb, temp_b, aurer)
+           
+        cb = await auto_rename(cb, temp_b, aurer)
 
-            bb = ""
-            bb += release_name
-            bb += f" {cb}"
-            if c:
-                bb += f" S{c}"
-            if d:
-                bb += f" - {d}"
-            if VERSION2:
-                bb += f"v{VERSION2[0]}"
-            if g == d:
-                bb += " [END]"
-            if col:
-                bb += f" [{col}]"
+        bb = ""
+        bb += release_name
+        bb += f" {cb}"
+        if c:
+            bb += f" S{c}"
+        if d:
+            bb += f" - {d}"
+        if VERSION2:
+            bb += f"v{VERSION2[0]}"
+        if g == d and not c:
+            bb += " [END]"
+        if col:
+            bb += f" [{col}]"
             bb2 = bb.replace(cb, b)
             bb2 = bb2.replace(release_name, release_name_b)
-            if codec:
-                bb2 += f" {codec}"
-            bb += ".mkv"
+        if codec:
+            bb2 += f" {codec}"
+        bb += ".mkv"
     except Exception:
         ers = traceback.format_exc()
         LOGS.info(ers)
@@ -546,7 +502,7 @@ async def custcap(name, fname):
         except Exception:
             adi = ""
         olif = Path("filter.txt")
-        if olif.is_file():
+        if olif.is_file() and fil3.casefold() != "auto":
             pass
         else:
             fil3 = fil3t
