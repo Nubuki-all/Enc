@@ -11,7 +11,7 @@ class uploader:
         self.bot = bot
         self.app = app
         self.sender = int(sender)
-        self.callback_data = "cancel_upload" + uuid.uuid4()
+        self.callback_data = "cancel_upload" + str(uuid.uuid4())
         self.is_cancelled = False
         self.handler = app.add_handler(
             CallbackQueryHandler(
