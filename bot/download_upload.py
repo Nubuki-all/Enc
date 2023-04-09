@@ -2,10 +2,12 @@ from .funcn import *
 
 
 class uploader:
-    def __init__(self):
+    def __init__(self,bot, app):
+        self.bot = bot
+        self.app = app
         self.is_cancelled = False
 
-    def __str__(self):
+    def __str__(self, bot):
         return "#wip"
 
     async def start(self, from_user_id, filepath, reply, thum, caption, message=""):
@@ -13,7 +15,7 @@ class uploader:
             thum = Path(thum)
             if not thum.is_file():
                 thum = None
-            async with bot.action(from_user_id, "file"):
+            async with self.bot.action(from_user_id, "file"):
                 await reply.edit("🔺Uploading🔺")
                 u_start = time.time()
                 if UNLOCK_UNSTABLE and message:
@@ -23,10 +25,10 @@ class uploader:
                         thumb=thum,
                         caption=caption,
                         progress=self.progress_for_pyrogram,
-                        progress_args=(app, "Uploading 👘", reply, u_start),
+                        progress_args=(self.app, "Uploading 👘", reply, u_start),
                     )
                 else:
-                    s = await app.send_document(
+                    s = await self.app.send_document(
                         document=filepath,
                         chat_id=from_user_id,
                         force_document=True,
@@ -34,7 +36,7 @@ class uploader:
                         caption=caption,
                         progress=self.progress_for_pyrogram,
                         progress_args=(
-                            app,
+                            self.app,
                             "Uploading 👘",
                             reply,
                             u_start,
@@ -104,6 +106,6 @@ class uploader:
             except BaseException:
                 pass
 
-    async def button_callback(self, app, callback_query):
+    async def button_callback(self, self.app, callback_query):
         if callback_query.data == "cancel_upload":
             self.is_cancelled = True
