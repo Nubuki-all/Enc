@@ -147,7 +147,7 @@ class uploader:
 
 
 class downloader:
-    def __init__(self, bot, app, sender=123456, lc="", uri=False):
+    def __init__(self, sender=123456, lc="", uri=False):
         self.bot = bot
         self.app = app
         self.sender = int(sender)
@@ -193,8 +193,7 @@ class downloader:
                     media_mssg = "`Downloading a file…`\n"
                 else:
                     media_mssg = "`Downloading a video…`\n"
-                download_task = asyncio.create_task(
-                    self.app.download_media(
+                download_task = await app.download_media(
                         message=message,
                         file_name=dl,
                         progress=self.progress_for_pyrogram,
