@@ -29,7 +29,6 @@ from .util import (
     get_readable_file_size,
     get_readable_time,
     parse,
-    parse_dl,
 )
 from .worker import *
 
@@ -1636,9 +1635,7 @@ async def pencode(message):
             name = root + ext
         for item in QUEUE.values():
             if name in item:
-                return await xxx.edit(
-                    "**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**"
-                )
+                return await xxx.edit("**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**")
         if UNLOCK_UNSTABLE:
             user = message.chat.id
             QUEUE.update({message.id: [name, user]})
@@ -1657,4 +1654,3 @@ async def pencode(message):
         LOGS.info(ers)
         await channel_log(ers)
         await qclean()
-
