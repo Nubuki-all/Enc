@@ -193,7 +193,8 @@ class downloader:
                     media_mssg = "`Downloading a file…`\n"
                 else:
                     media_mssg = "`Downloading a video…`\n"
-                download_task = await app.download_media(
+                download_task = asyncio.create_task(
+                    app.download_media(
                         message=message,
                         file_name=dl,
                         progress=self.progress_for_pyrogram,
