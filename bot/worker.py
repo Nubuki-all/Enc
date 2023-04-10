@@ -1579,6 +1579,16 @@ async def enleech(event):
         return await event.reply("An Unknown error Occurred.")
 
 
+async def download_helper(user, op, dl, message, etch):
+    try:
+        download = downloader(user, op)
+        await download.start(dl, 0, message, etch)
+        return download
+    except Exception:
+        ers = traceback.format_exc()
+        LOGS.info(ers)
+        await channel_log(ers)
+
 async def pencode(message):
     try:
         inputer = str(message.chat.id)
@@ -1702,8 +1712,7 @@ async def pencode(message):
 
             await xxx.edit("`Waiting For Download To Complete`")
             etch = await message.reply("`Downloading File 📂`", quote=True)
-            download = downloader(user, op)
-            await download.start(dl, 0, message, etch)
+            download = await download_helper(user, op, dl, message, etch)
             if download.is_cancelled:
                 reply = f"Download of `{filename}` was cancelled"
                 if download.canceller != user:
