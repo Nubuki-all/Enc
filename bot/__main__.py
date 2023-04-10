@@ -319,6 +319,8 @@ async def something():
                         log,
                         f"[{sender.first_name}](tg://user?id={user}) `Currently Downloading A Queued Video…`",
                     )
+                else:
+                    op = None
                 s = dt.now()
                 try:
                     dl = "downloads/" + name
@@ -331,14 +333,16 @@ async def something():
                         else:
                             if CACHE_QUEUE:
                                 raise (already_dl)
-                            download_task = await download2(dl, file, message, mssg_r)
+                            download = downloader(bot, app, user, op)
+                            download_task = await download.start(dl, file, message, mssg_r)
                     else:
                         if is_url(str(file)) is True:
                             uri = file
                         else:
                             if CACHE_QUEUE:
                                 raise (already_dl)
-                            download_task = await download2(dl, file, message, mssg_r)
+                            download = downloader(bot, app, user, op)
+                            download_task = await download.start(dl, file, message, mssg_r)
                     if uri:
                         uri_name = name
                         if mssg_r:
@@ -353,21 +357,38 @@ async def something():
                         dl = "downloads/" + name
                     wah = code(dl)
                     dl_info = await parse_dl(name)
-                    ee = await e.edit(
-                        f"{enmoji()} `Downloading…`{dl_info}",
-                        buttons=[
-                            [Button.inline("ℹ️", data=f"dl_stat{wah}")],
-                            [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
-                        ],
-                    )
-                    if LOG_CHANNEL:
-                        opp = await op.edit(
-                            f"[{sender.first_name}](tg://user?id={user}) `Currently Downloading A Queued Video…`{dl_info}",
+                    if not uri:
+                        ee = await e.edit(
+                            f"{enmoji()} `Download Information.`{dl_info}",
+                            buttons=[
+                                [Button.inline("ℹ️", data=f"dl_stat{wah}")],
+                               # [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
+                            ],
+                        )
+                        if LOG_CHANNEL:
+                            opp = await op.edit(
+                                f"[{sender.first_name}](tg://user?id={user}) `Download Information.`{dl_info}",
+                                buttons=[
+                                    [Button.inline("ℹ️", data=f"dl_stat{wah}")],
+                                  # [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
+                                ],
+                            )
+                    else:
+                        ee = await e.edit(
+                            f"{enmoji()} `Download Information.`{dl_info}",
                             buttons=[
                                 [Button.inline("ℹ️", data=f"dl_stat{wah}")],
                                 [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
                             ],
                         )
+                        if LOG_CHANNEL:
+                            opp = await op.edit(
+                                f"[{sender.first_name}](tg://user?id={user}) `Download Information.`{dl_info}",
+                                buttons=[
+                                    [Button.inline("ℹ️", data=f"dl_stat{wah}")],
+                                    [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
+                                ],
+                            )
                     if uri:
                         if mssg_r:
                             stdout2 = await fake_progress(leech_task, mssg_r)
@@ -443,12 +464,10 @@ async def something():
                                 continue
                         name = await get_leech_file()
                         dl = "downloads/" + name
-                    try:
-                        await download_task
-                    except Exception:
+                    while download_task.done() is not True:
                         pass
-                    if DOWNLOAD_CANCEL:
-                        canceller = await app.get_users(DOWNLOAD_CANCEL[0])
+                    if download.is_cancelled:
+                        canceller = await app.get_users(download.canceller)
                         if message:
                             await mssg_r.edit(
                                 f"Download of `{name}` was cancelled by {canceller.mention(style='md')}"
@@ -456,7 +475,7 @@ async def something():
                         await e.delete()
                         if LOG_CHANNEL:
                             await op.edit(
-                                f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by` [{canceller.first_name}.](tg://user?id={DOWNLOAD_CANCEL[0]})",
+                                f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by` [{canceller.first_name}.](tg://user?id={download.canceller})",
                             )
                         if QUEUE:
                             QUEUE.pop(list(QUEUE.keys())[0])
@@ -644,16 +663,16 @@ async def something():
                 else:
                     thum = "thumb.jpg"
                 pcap = await custcap(name, fname)
-                upload2 = Upload2(bot, app, user)
-                ds = await upload2.start(e.chat_id, out, nnn, thum, pcap, message)
-                if upload2.is_cancelled:
+                upload = uploader(bot, app, user)
+                ds = await upload.start(e.chat_id, out, nnn, thum, pcap, message)
+                if upload.is_cancelled:
                     await xxx.edit(f"`Upload of {out} was cancelled.`")
                     if LOG_CHANNEL:
                         log = int(LOG_CHANNEL)
-                    canceller = await app.get_users(upload2.canceller)
+                    canceller = await app.get_users(upload.canceller)
                     await bot.send_message(
                         log,
-                        f"[{canceller.first_name}](tg://user?id={upload2.canceller})`Cancelled` [{sender.first_name}'s](tg://user?id={user}) upload.",
+                        f"[{canceller.first_name}](tg://user?id={upload.canceller})`Cancelled` [{sender.first_name}'s](tg://user?id={user}) upload.",
                     )
                     QUEUE.pop(list(QUEUE.keys())[0])
                     await save2db()

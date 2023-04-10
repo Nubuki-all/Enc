@@ -20,7 +20,7 @@ from pathlib import Path
 
 import psutil
 
-from .download_upload import uploader as Upload2
+from .download_upload import uploader, downloader
 from .funcn import *
 from .util import (
     custcap,
@@ -289,16 +289,13 @@ async def en_rename(event):
             R_QUEUE.append(str(event.id) + ":" + str(event.chat_id))
         e = await message.reply(f"{enmoji()} `Downloading to {loc}…`", quote=True)
         await asyncio.sleep(5)
-        dl_task = await download2(loc, 0, message, e)
+        download = downloader(bot, app)
+        dl_task = await download.start(loc, 0, message, e)
         while dl_task.done() is not True:
-            if DOWNLOAD_CANCEL:
-                dl_task.cancel()
-                continue
-            await asyncio.sleep(5)
-        if DOWNLOAD_CANCEL:
-            os.system(f"rm {loc}")
+            pass
+        if download.is_cancelled:
+            os.system(f"rm '{loc}'")
             await e.edit(f"Download of `{__out}` was cancelled.")
-            DOWNLOAD_CANCEL.clear()
             return
         await e.edit(f"Download of {loc} completed")
         await asyncio.sleep(5)
@@ -309,9 +306,9 @@ async def en_rename(event):
         else:
             thum = "thumb.jpg"
         cap = await custcap(__loc, __out)
-        upload2 = Upload2(bot, app, event.sender_id)
-        await upload2.start(event.chat_id, loc, e, thum, cap, message)
-        if not upload2.is_cancelled:
+        upload = uploader(bot, app, event.sender_id)
+        await upload.start(event.chat_id, loc, e, thum, cap, message)
+        if not upload.is_cancelled:
             await e.edit(f"`{__out} uploaded successfully.`")
         else:
             await e.edit(f"`Upload of {__out} was cancelled.`")
@@ -431,9 +428,9 @@ async def en_mux(event):
             thum = "thumb.jpg"
         cap = await custcap(__loc, __out)
         await asyncio.sleep(5)
-        upload2 = Upload2(bot, app, event.sender_id)
-        await upload2.start(event.chat_id, loc, e, thum, cap, message)
-        if not upload2.is_cancelled:
+        upload = uploader(bot, app, event.sender_id)
+        await upload.start(event.chat_id, loc, e, thum, cap, message)
+        if not upload.is_cancelled:
             await e.edit(f"`{__out} uploaded successfully.`")
         else:
             await e.edit(f"`Upload of {__out} was cancelled.`")
@@ -463,10 +460,10 @@ async def dumpdl(dl, name, thum, user, message):
         if int(_dmp.stat().st_size) > 2126000000:
             dp = await rr.reply("**File too large to dump, Aborting…**")
         else:
-            upload2 = Upload2(bot, app)
-            dp = await upload2.start(user, dmp, rr, thum, f"`{name}`", message)
+            upload = uploader(bot, app)
+            dp = await upload.start(user, dmp, rr, thum, f"`{name}`", message)
 
-            if not upload2.is_cancelled:
+            if not upload.is_cancelled:
                 await rr.edit(f"`{name} Dumped successfully.`")
             else:
                 await rr.edit(f"`Dumping of {name} was cancelled.`")
@@ -545,10 +542,14 @@ async def uploader(event):
                             )
                             continue
                         await asyncio.sleep(10)
-                        ul = await upload2(
+                        upload = uploader(bot, app)
+                        ul = await upload(
                             event.chat_id, file, r, "thumb.jpg", f"`{name}`", message
                         )
-                        await r.edit(f"`{name} uploaded successfully.`")
+                        if not upload.is_cancelled:
+                            await r.edit(f"`{name} uploaded successfully.`")
+                        else:
+                            await r.edit(f"Uploading of `{name}` cancelled.")
                         t = t + 1
                     await ul.reply(
                         f"All files in {path} has been uploaded successfully {enmoji()}."
@@ -557,8 +558,12 @@ async def uploader(event):
             else:
                 r = await message.reply(f"`Uploading {args}…`", quote=True)
                 cap = args.split("/")[-1] if "/" in args else args
-                await upload2(event.chat_id, args, r, "thumb.jpg", f"`{cap}`", message)
-                await r.edit(f"`{cap} uploaded successfully.`")
+                upload = uploader(bot, app)
+                await upload(event.chat_id, args, r, "thumb.jpg", f"`{cap}`", message)
+                if not upload.is_cancelled:
+                    await r.edit(f"`{cap} uploaded successfully.`")
+                else:
+                    await r.edit(f"Uploading of {cap} has been cancelled.")
         else:
             return await event.reply("Upload what exactly?")
     except Exception:
@@ -1957,16 +1962,16 @@ async def pencode(message):
         else:
             thum = "thumb.jpg"
         pcap = await custcap(name, fname)
-        upload2 = Upload2(bot, app, event.sender_id)
-        ds = await upload2.start(message.chat.id, out, nnn, thum, pcap, message)
-        if upload2.is_cancelled:
+        upload = uploader(bot, app, event.sender_id)
+        ds = await upload.start(message.chat.id, out, nnn, thum, pcap, message)
+        if upload.is_cancelled:
             await xxx.edit(f"`Upload of {__out} was cancelled.`")
             if LOG_CHANNEL:
                 log = int(LOG_CHANNEL)
-                canceller = await app.get_users(upload2.canceller)
+                canceller = await app.get_users(upload.canceller)
                 await bot.send_message(
                     log,
-                    f"[{canceller.first_name}](tg://user?id={upload2.canceller})`Cancelled` [{message.from_user.first_name}'s'](tg://user?id={message.from_user.id}) upload.",
+                    f"[{canceller.first_name}](tg://user?id={upload.canceller})`Cancelled` [{message.from_user.first_name}'s'](tg://user?id={message.from_user.id}) upload.",
                 )
             raise Exception("Upload cancelled!")
         await xxx.delete()
