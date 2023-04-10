@@ -637,6 +637,7 @@ async def something():
                 else:
                     tex = "`▲ Uploading ▲`"
                     nnn = await app.send_message(chat_id=e.chat_id, text=tex)
+                await asyncio.sleep(3)
                 await enpause(nnn)
                 fname = out.split("/")[1]
                 tbcheck = Path("thumb2.jpg")
@@ -645,10 +646,22 @@ async def something():
                 else:
                     thum = "thumb.jpg"
                 pcap = await custcap(name, fname)
-                if message:
-                    ds = await upload2(e.chat_id, out, nnn, thum, pcap, message)
-                else:
-                    ds = await upload2(e.chat_id, out, nnn, thum, pcap)
+                upload2 = Upload2(bot, app, user)
+                ds = await upload2.start(e.chat_id, out, nnn, thum, pcap, message)
+                if upload2.is_cancelled:
+                    await xxx.edit(f"`Upload of {__out} was cancelled.`")
+                    if LOG_CHANNEL:
+                        log = int(LOG_CHANNEL)
+                    canceller = await app.get_users(upload2.canceller)
+                    await bot.send_message(
+                          log,
+                          f"[{canceller.first_name}](tg://user?id={upload2.canceller})`Cancelled` [{sender.first_name}'s'](tg://user?id={user}) upload.")
+                    QUEUE.pop(list(QUEUE.keys())[0])
+                    await save2db()
+                    os.system("rm -rf thumb2.jpg")
+                    os.remove(dl)
+                    os.remove(out)
+                    continue
                 await nnn.delete()
                 if FCHANNEL:
                     chat = int(FCHANNEL)

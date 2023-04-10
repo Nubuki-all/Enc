@@ -13,6 +13,7 @@ class uploader:
         self.sender = int(sender)
         self.callback_data = "cancel_upload" + str(uuid.uuid4())
         self.is_cancelled = False
+        self.canceller = None
         self.handler = app.add_handler(
             CallbackQueryHandler(
                 self.upload_button_callback, filters=regex("^" + self.callback_data)
@@ -37,7 +38,7 @@ class uploader:
                         thumb=thum,
                         caption=caption,
                         progress=self.progress_for_pyrogram,
-                        progress_args=(self.app, "Uploading 👘", reply, u_start),
+                        progress_args=(self.app, f"{CAP_DECO} Uploading {filepath}", reply, u_start),
                     )
                 else:
                     s = await self.app.send_document(
@@ -136,4 +137,5 @@ class uploader:
                 "You're not allowed to do this!", show_alert=False
             )
         self.is_cancelled = True
+        self.canceller = callback_query.from_user.id
         await callback_query.answer("Cancelling upload please wait…", show_alert=False)
