@@ -459,20 +459,23 @@ async def something():
                             )
                         download = downloader(user, op)
                         await download.start(dl, file, message, mssg_r)
-                        if message:
-                            await mssg_r.edit(
-                                f"Download of `{name}` was cancelled by {download.canceller.mention(style='md')}"
-                            )
-                        await e.delete()
-                        if op:
-                            await op.edit(
-                                f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by` [{download.canceller.first_name}.](tg://user?id={download.canceller.id})"
-                            )
-                        if QUEUE:
-                            QUEUE.pop(list(QUEUE.keys())[0])
-                        await save2db()
-                        await qclean()
-                        continue
+                        if download.is_cancelled:
+                            if message:
+                                reply = f"Download of `{name}` was cancelled"
+                                if download.canceller != user:
+                                    reply += f" by {download.canceller.mention(style='md')}"
+                                reply += "!"
+                                await mssg_r.edit(reply)
+                            await e.delete()
+                            if op:
+                                await op.edit(
+                                    f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by` [{download.canceller.first_name}.](tg://user?id={download.canceller.id})"
+                                )
+                            if QUEUE:
+                                QUEUE.pop(list(QUEUE.keys())[0])
+                            await save2db()
+                            await qclean()
+                            continue
                 except already_dl:
                     rslt = await get_cached(dl, sender, user, e, op)
                     if rslt is False:

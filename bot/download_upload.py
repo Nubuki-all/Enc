@@ -203,7 +203,8 @@ class downloader:
             if ld:
                 await ld.delete()
             try:
-                os.remove(dl)
+                if self.is_cancelled:
+                    os.remove(dl)
             except Exception:
                 pass
             app.remove_handler(*self.handler)
@@ -280,15 +281,20 @@ class downloader:
                 pass
 
     async def download_button_callback(self, client, callback_query):
-        if (
-            str(callback_query.from_user.id) not in OWNER
-            and callback_query.from_user.id != self.sender
-        ):
-            return await callback_query.answer(
-                "You're not allowed to do this!", show_alert=False
-            )
-        self.is_cancelled = True
-        self.canceller = await app.get_users(callback_query.from_user.id)
-        await callback_query.answer(
+        try:
+            if (
+                str(callback_query.from_user.id) not in OWNER
+                and callback_query.from_user.id != self.sender
+            ):
+                return await callback_query.answer(
+                    "You're not allowed to do this!", show_alert=False
+                )
+            self.is_cancelled = True
+            self.canceller = await app.get_users(callback_query.from_user.id)
+            await callback_query.answer(
             "Cancelling download please wait…", show_alert=False
-        )
+            )
+        except Exception:
+            ers = traceback.format_exc()
+            await channel_log(ers)
+            LOGS.info(ers)

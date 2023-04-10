@@ -1715,7 +1715,7 @@ async def pencode(message):
                 if op:
                     await asyncio.sleep(3)
                     await op.edit(
-                        f"[{message.from_user.first_name}'s](tg://user?id={message.from_user.id}) `download` was cancelled by [{download.canceller.first_name}.](tg://user?id={DOWNLOAD_CANCEL[0]})"
+                        f"[{message.from_user.first_name}'s](tg://user?id={message.from_user.id}) `download` was cancelled by [{download.canceller.first_name}.](tg://user?id={download.canceller.id})"
                     )
                 WORKING.clear()
                 return
