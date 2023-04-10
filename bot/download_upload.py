@@ -165,7 +165,7 @@ class downloader:
     def __str__(self, bot):
         return "#wip"
 
-    async def log_download():
+    async def log_download(self):
         if self.lc:
             try:
                 cancel_button = InlineKeyboardButton(
