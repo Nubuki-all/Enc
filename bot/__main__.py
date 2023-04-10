@@ -468,9 +468,8 @@ async def something():
                                 continue
                         name = await get_leech_file()
                         dl = "downloads/" + name
-                    while download_task.done() is not True:
-                        pass
-                    if download.is_cancelled:
+                    cork = False
+                    if cork:
                         canceller = await app.get_users(download.canceller)
                         if message:
                             await mssg_r.edit(
