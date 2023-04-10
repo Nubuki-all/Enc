@@ -503,9 +503,7 @@ async def something():
                 else:
                     thum = "thumb.jpg"
                 if uri and DUMP_LEECH is True:
-                    asyncio.create_task(
-                        dumpdl(dl, name, thum, e.chat_id, message)
-                    )
+                    asyncio.create_task(dumpdl(dl, name, thum, e.chat_id, message))
                 if len(QUEUE) > 1 and CACHE_DL is True:
                     await cache_dl()
                 with open("ffmpeg.txt", "r") as file:
