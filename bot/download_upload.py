@@ -194,15 +194,15 @@ class downloader:
                 else:
                     media_mssg = "`Downloading a video…`\n"
                 download_task = await self.app.download_media(
-                        message=message,
-                        file_name=dl,
-                        progress=self.progress_for_pyrogram,
-                        progress_args=(self.app, media_mssg, e, ttt),
+                    message=message,
+                    file_name=dl,
+                    progress=self.progress_for_pyrogram,
+                    progress_args=(self.app, media_mssg, e, ttt),
                 )
             else:
                 download_task = await self.app.download_media(
-                        message=file,
-                        file_name=dl,
+                    message=file,
+                    file_name=dl,
                 )
             if ld:
                 await ld.delete()
