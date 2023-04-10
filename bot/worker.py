@@ -465,7 +465,7 @@ async def dumpdl(upload2, dl, name, thum, user, message):
         else:
             upload2 = Upload2(bot, app)
             dp = await upload2.start(user, dmp, rr, thum, f"`{name}`", message)
-            
+
             if not upload2.is_cancelled:
                 await rr.edit(f"`{name} Dumped successfully.`")
             else:
@@ -1965,8 +1965,9 @@ async def pencode(message):
                 log = int(LOG_CHANNEL)
                 canceller = await app.get_users(upload2.canceller)
                 await bot.send_message(
-                        log,
-                        f"[{canceller.first_name}](tg://user?id={upload2.canceller})`Cancelled` [{message.from_user.first_name}'s'](tg://user?id={message.from_user.id}) upload.")
+                    log,
+                    f"[{canceller.first_name}](tg://user?id={upload2.canceller})`Cancelled` [{message.from_user.first_name}'s'](tg://user?id={message.from_user.id}) upload.",
+                )
             raise Exception("Upload cancelled!")
         await xxx.delete()
         if FCHANNEL:

@@ -464,7 +464,7 @@ async def fake_progress(leech_task, message):
                 while i < 0:
                     f_prog2 += f"`{l_file[i]}`\n"
                     f_prog2 = f_prog2.replace("[ [1;32mNOTICE [0m]", f"{enmoji} INFO:")
-                    f_prog2 = re.sub(r'#\w+\s*', '', f_prog2)
+                    f_prog2 = re.sub(r"#\w+\s*", "", f_prog2)
                     i = i + 1
                 f_prog2 = "`Loading please wait…`" if not f_prog2 else f_prog2
                 f_prog = f_prog1 + f_prog2

@@ -38,7 +38,12 @@ class uploader:
                         thumb=thum,
                         caption=caption,
                         progress=self.progress_for_pyrogram,
-                        progress_args=(self.app, f"{CAP_DECO} Uploading {filepath}", reply, u_start),
+                        progress_args=(
+                            self.app,
+                            f"{CAP_DECO} Uploading {filepath}",
+                            reply,
+                            u_start,
+                        ),
                     )
                 else:
                     s = await self.app.send_document(
