@@ -168,10 +168,15 @@ class downloader:
     async def log_download():
         if self.lc:
             try:
-                cancel_button = InlineKeyboardButton(text=f"{enmoji()} CANCEL DOWNLOAD", callback_data=self.callback_data)
+                cancel_button = InlineKeyboardButton(
+                    text=f"{enmoji()} CANCEL DOWNLOAD", callback_data=self.callback_data
+                )
                 reply_markup = InlineKeyboardMarkup([[cancel_button]])
                 message = await app.get_messages(self.lc.chat_id, self.lc.id)
-                log = await message.reply(f"`Currently downloading a file sent by` {message.from_user.mention(style='md')}", reply_markup=reply_markup)
+                log = await message.reply(
+                    f"`Currently downloading a file sent by` {message.from_user.mention(style='md')}",
+                    reply_markup=reply_markup,
+                )
                 return log
             except Exception:
                 ers = traceback.format_exc()
@@ -188,17 +193,21 @@ class downloader:
                     media_mssg = "`Downloading a file…`\n"
                 else:
                     media_mssg = "`Downloading a video…`\n"
-                download_task = asyncio.create_task(app.download_media(
-                    message=message,
-                    file_name=dl,
-                    progress=self.progress_for_pyrogram,
-                    progress_args=(self.app, media_mssg, e, ttt),
-                ))
+                download_task = asyncio.create_task(
+                    app.download_media(
+                        message=message,
+                        file_name=dl,
+                        progress=self.progress_for_pyrogram,
+                        progress_args=(self.app, media_mssg, e, ttt),
+                    )
+                )
             else:
-                download_task = asyncio.create_task(app.download_media(
-                    message=file,
-                    file_name=dl,
-                ))
+                download_task = asyncio.create_task(
+                    app.download_media(
+                        message=file,
+                        file_name=dl,
+                    )
+                )
             if ld:
                 await ld.delete()
             self.app.remove_handler(*self.handler)
@@ -285,4 +294,6 @@ class downloader:
             )
         self.is_cancelled = True
         self.canceller = callback_query.from_user.id
-        await callback_query.answer("Cancelling download please wait…", show_alert=False)
+        await callback_query.answer(
+            "Cancelling download please wait…", show_alert=False
+        )

@@ -20,7 +20,7 @@ from pathlib import Path
 
 import psutil
 
-from .download_upload import uploader, downloader
+from .download_upload import downloader, uploader
 from .funcn import *
 from .util import (
     custcap,
