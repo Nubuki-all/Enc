@@ -7,7 +7,7 @@ from .funcn import *
 
 
 class uploader:
-    def __init__(self, bot, app, sender=123456):
+    def __init__(self, sender=123456):
         self.bot = bot
         self.app = app
         self.sender = int(sender)
@@ -147,7 +147,7 @@ class uploader:
 
 
 class downloader:
-    def __init__(self, bot, app, sender=123456, lc="", uri=False):
+    def __init__(self, sender=123456, lc="", uri=False):
         self.bot = bot
         self.app = app
         self.sender = int(sender)

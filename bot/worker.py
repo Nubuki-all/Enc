@@ -204,7 +204,7 @@ async def clean(event):
     return
 
 
-async def downloader(event):
+async def en_download(event):
     if str(event.sender_id) not in OWNER and event.sender_id != DEV:
         return await event.delete()
     if not event.is_reply:
@@ -289,7 +289,7 @@ async def en_rename(event):
             R_QUEUE.append(str(event.id) + ":" + str(event.chat_id))
         e = await message.reply(f"{enmoji()} `Downloading to {loc}…`", quote=True)
         await asyncio.sleep(5)
-        download = downloader(bot, app)
+        download = downloader(b)
         dl_task = await download.start(loc, 0, message, e)
         while dl_task.done() is not True:
             pass
@@ -306,7 +306,7 @@ async def en_rename(event):
         else:
             thum = "thumb.jpg"
         cap = await custcap(__loc, __out)
-        upload = uploader(bot, app, event.sender_id)
+        upload = uploader(event.sender_id)
         await upload.start(event.chat_id, loc, e, thum, cap, message)
         if not upload.is_cancelled:
             await e.edit(f"`{__out} uploaded successfully.`")
@@ -510,7 +510,7 @@ async def download2(dl, file, message="", e=""):
         LOGS.info(ers)
 
 
-async def uploader(event):
+async def en_upload(event):
     if str(event.sender_id) not in OWNER and event.sender_id != DEV:
         return await event.delete()
     try:

@@ -129,12 +129,12 @@ async def _(e):
 
 @bot.on(events.NewMessage(pattern=r"^!dl(\s+.+)?$"))
 async def _(e):
-    await downloader(e)
+    await en_download(e)
 
 
 @bot.on(events.NewMessage(pattern=r"^!ul(\s+.+)?$"))
 async def _(e):
-    await uploader(e)
+    await en_upload(e)
 
 
 @bot.on(events.NewMessage(pattern=r"^!rename(\s+.+)?$"))
