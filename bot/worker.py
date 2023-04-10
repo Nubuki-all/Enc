@@ -290,7 +290,8 @@ async def en_rename(event):
         e = await message.reply(f"{enmoji()} `Downloading to {loc}…`", quote=True)
         await asyncio.sleep(5)
         download = downloader(bot, app)
-        dl_task = await download.start(loc, 0, message, e)
+        #dl_task = await download.start(loc, 0, message, e)
+        dl_task = await download.start(loc, message.document.file_id)
         while dl_task.done() is not True:
             pass
         if download.is_cancelled:
