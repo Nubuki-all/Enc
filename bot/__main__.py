@@ -647,13 +647,13 @@ async def something():
                 upload2 = Upload2(bot, app, user)
                 ds = await upload2.start(e.chat_id, out, nnn, thum, pcap, message)
                 if upload2.is_cancelled:
-                    await xxx.edit(f"`Upload of {__out} was cancelled.`")
+                    await xxx.edit(f"`Upload of {out} was cancelled.`")
                     if LOG_CHANNEL:
                         log = int(LOG_CHANNEL)
                     canceller = await app.get_users(upload2.canceller)
                     await bot.send_message(
                         log,
-                        f"[{canceller.first_name}](tg://user?id={upload2.canceller})`Cancelled` [{sender.first_name}'s'](tg://user?id={user}) upload.",
+                        f"[{canceller.first_name}](tg://user?id={upload2.canceller})`Cancelled` [{sender.first_name}'s](tg://user?id={user}) upload.",
                     )
                     QUEUE.pop(list(QUEUE.keys())[0])
                     await save2db()
