@@ -1925,7 +1925,7 @@ async def pencode(message):
         else:
             thum = "thumb.jpg"
         pcap = await custcap(name, fname)
-        upload = uploader(bot, app, event.sender_id)
+        upload = uploader(event.sender_id)
         ds = await upload.start(message.chat.id, out, nnn, thum, pcap, message)
         if upload.is_cancelled:
             await xxx.edit(f"`Upload of {__out} was cancelled.`")
