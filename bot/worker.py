@@ -1607,6 +1607,8 @@ async def pencode(message):
                 return
         if QUEUE or LOCKFILE:
             xxx = await message.reply("`Adding To Queue`", quote=True)
+        if not LOCKFILE:
+            LOCKFILE.append("queue")
         media_type = str(message.media)
         if media_type == "MessageMediaType.VIDEO":
             doc = message.video
@@ -1636,10 +1638,12 @@ async def pencode(message):
             user = message.from_user.id
             QUEUE.update({doc.file_id: [name, user]})
         await save2db()
-        if len(QUEUE) > 1 or LOCKFILE:
+        if len(QUEUE) > 1 or LOCKFILE[0] != "queue":
             await xxx.edit(
                 f"**Added To Queue ⏰, POS:** `{len(QUEUE)}` \n`Please Wait , Encode will start soon`"
             )
+        if LOCKFILE[0] == "queue":
+            LOCKFILE.clear()
             return
 
     except BaseException:
