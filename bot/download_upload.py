@@ -40,7 +40,7 @@ class uploader:
                         progress=self.progress_for_pyrogram,
                         progress_args=(
                             self.app,
-                            f"{CAP_DECO} Uploading '{filepath}'…",
+                            f"**{CAP_DECO} Uploading:** `{filepath}…`\n\n",
                             reply,
                             u_start,
                         ),
@@ -115,7 +115,7 @@ class uploader:
             try:
                 # Create a "Cancel" button
                 cancel_button = InlineKeyboardButton(
-                    text="Cancel", callback_data=self.callback_data
+                    text=f"{enmoji()} Cancel", callback_data=self.callback_data
                 )
                 # Attach the button to the message with an inline keyboard
                 reply_markup = InlineKeyboardMarkup([[cancel_button]])
