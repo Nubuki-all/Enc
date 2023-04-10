@@ -450,6 +450,37 @@ async def en_mux(event):
         LOGS.info(ers)
 
 
+async def dumpdl(upload2, dl, name, thum, user, message):
+    try:
+        dmp = "thumb/" + name
+        os.system(f"cp '{dl}' '{dmp}'")
+        _dmp = Path(dmp)
+        if message:
+            rr = await message.reply(f"`Dumping {name}…`", quote=True)
+        else:
+            rr = await app.send_message(f"`Dumping {name}…`")
+        await asyncio.sleep(2)
+        if int(_dmp.stat().st_size) > 2126000000:
+            dp = await rr.reply("**File too large to dump, Aborting…**")
+        else:
+            upload2 = Upload2(bot, app)
+            dp = await upload2.start(user, dmp, rr, thum, f"`{name}`", message)
+            
+            if not upload2.is_cancelled:
+                await rr.edit(f"`{name} Dumped successfully.`")
+            else:
+                await rr.edit(f"`Dumping of {name} was cancelled.`")
+        if LOG_CHANNEL:
+            chat = int(LOG_CHANNEL)
+            await rr.copy(chat_id=chat)
+            await dp.copy(chat_id=chat)
+        os.remove(dmp)
+    except Exception:
+        ers = traceback.format_exc()
+        LOGS.info(ers)
+        await channel_log(ers)
+
+
 async def download2(dl, file, message="", e=""):
     try:
         global download_task

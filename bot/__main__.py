@@ -478,7 +478,7 @@ async def something():
                     await save2db()
                     continue
                 if uri_name:
-                    os.system(f"rm {uri_name + '.torrent'}")
+                    os.system(f"rm '{uri_name + '.torrent'}'")
                 es = dt.now()
                 kk = dl.split("/")[-1]
                 if "[" in kk and "]" in kk:

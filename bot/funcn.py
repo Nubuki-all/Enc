@@ -424,32 +424,6 @@ async def get_cached(dl, sender, user, e, op):
         return False
 
 
-async def dumpdl(upload2, dl, name, thum, user, message):
-    try:
-        dmp = "thumb/" + name
-        os.system(f"cp '{dl}' '{dmp}'")
-        _dmp = Path(dmp)
-        if message:
-            rr = await message.reply(f"`Dumping {name}…`", quote=True)
-        else:
-            rr = await app.send_message(f"`Dumping {name}…`")
-        await asyncio.sleep(2)
-        if int(_dmp.stat().st_size) > 2126000000:
-            dp = await rr.reply("**File too large to dump, Aborting…**")
-        else:
-            dp = await upload2(user, dmp, rr, thum, f"`{name}`", message)
-            await rr.edit(f"`Dumped {name} Successfully.`")
-        if LOG_CHANNEL:
-            chat = int(LOG_CHANNEL)
-            await rr.copy(chat_id=chat)
-            await dp.copy(chat_id=chat)
-        os.remove(dmp)
-    except Exception:
-        ers = traceback.format_exc()
-        LOGS.info(ers)
-        await channel_log(ers)
-
-
 async def enpause(message):
     pause_msg = " `Bot has been paused to continue, unlock bot using the /lock command`"
     while LOCKFILE:
@@ -489,6 +463,8 @@ async def fake_progress(leech_task, message):
                 f_prog2 = ""
                 while i < 0:
                     f_prog2 += f"`{l_file[i]}`\n"
+                    f_prog2 = f_prog2.replace("[ [1;32mNOTICE [0m]", f"{enmoji} INFO:")
+                    f_prog2 = re.sub(r'#\w+\s*', '', f_prog2)
                     i = i + 1
                 f_prog2 = "`Loading please wait…`" if not f_prog2 else f_prog2
                 f_prog = f_prog1 + f_prog2
