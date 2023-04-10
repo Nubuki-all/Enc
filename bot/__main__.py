@@ -280,8 +280,8 @@ async def something():
         await statuschecker()
         try:
             while LOCKFILE:
-                await asyncio.sleep(2)
-            if not WORKING and QUEUE:
+                await asyncio.sleep(10)
+            if QUEUE:
                 # user = int(OWNER.split()[0])
                 file = list(QUEUE.keys())[0]
                 name, user = QUEUE[list(QUEUE.keys())[0]]
@@ -462,7 +462,7 @@ async def something():
                         if download.is_cancelled:
                             if message:
                                 reply = f"Download of `{name}` was cancelled"
-                                if download.canceller != user:
+                                if download.canceller.id != user:
                                     reply += (
                                         f" by {download.canceller.mention(style='md')}"
                                     )

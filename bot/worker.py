@@ -1562,7 +1562,7 @@ async def enleech(event):
         else:
             QUEUE.update({uri: [file_name, event.sender_id]})
         await save2db()
-        if WORKING or len(QUEUE) > 1 or LOCKFILE:
+        if len(QUEUE) > 1 or LOCKFILE:
             msg = await event.reply(
                 f"**Torrent added To Queue ⏰, POS:** `{len(QUEUE)}`\n`Please Wait , Encode will start soon`"
             )
@@ -1613,374 +1613,48 @@ async def pencode(message):
         if message.document:
             if message.document.mime_type not in video_mimetype:
                 return
-        if WORKING or QUEUE or LOCKFILE:
+        if QUEUE or LOCKFILE:
             xxx = await message.reply("`Adding To Queue`", quote=True)
-            media_type = str(message.media)
-            if media_type == "MessageMediaType.VIDEO":
-                doc = message.video
-            else:
-                doc = message.document
-            sem = message.caption
-            ttt = Path("cap.txt")
-            if sem and "\n" in sem:
-                sem = ""
-            if sem and not ttt.is_file():
-                name = sem
-            else:
-                name = doc.file_name
-            if not name:
-                name = "video_" + dt.now().isoformat("_", "seconds") + ".mp4"
-            root, ext = os.path.splitext(name)
-            if not ext:
-                ext = ".mkv"
-                name = root + ext
-            for item in QUEUE.values():
-                if name in item:
-                    return await xxx.edit(
-                        "**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**"
-                    )
-            if UNLOCK_UNSTABLE:
-                user = message.chat.id
-                QUEUE.update({message.id: [name, user]})
-            else:
-                user = message.from_user.id
-                QUEUE.update({doc.file_id: [name, user]})
-            await save2db()
+        media_type = str(message.media)
+        if media_type == "MessageMediaType.VIDEO":
+            doc = message.video
+        else:
+            doc = message.document
+        sem = message.caption
+        ttt = Path("cap.txt")
+        if sem and "\n" in sem:
+            sem = ""
+        if sem and not ttt.is_file():
+            name = sem
+        else:
+            name = doc.file_name
+        if not name:
+            name = "video_" + dt.now().isoformat("_", "seconds") + ".mp4"
+        root, ext = os.path.splitext(name)
+        if not ext:
+            ext = ".mkv"
+            name = root + ext
+        for item in QUEUE.values():
+            if name in item:
+                return await xxx.edit(
+                    "**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**"
+                )
+        if UNLOCK_UNSTABLE:
+            user = message.chat.id
+            QUEUE.update({message.id: [name, user]})
+        else:
+            user = message.from_user.id
+            QUEUE.update({doc.file_id: [name, user]})
+        await save2db()
+        if len(QUEUE) > 1 or LOCKFILE:
             await xxx.edit(
                 f"**Added To Queue ⏰, POS:** `{len(QUEUE)}` \n`Please Wait , Encode will start soon`"
             )
-            # asyncio.create_task(listqueue(event))
             return
-        WORKING.append(1)
-        xxx = await message.reply(
-            "`Download Pending…` \n**(Waiting For Connection)**", quote=True
-        )
-        if LOG_CHANNEL:
-            log = int(LOG_CHANNEL)
-            op = await bot.send_message(
-                log,
-                f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Is Currently Downloading A Video…`",
-            )
-        else:
-            op = None
-        event = await bot.get_messages(message.chat.id, ids=message.id)
-        s = dt.now()
-        ttt = time.time()
-        dir = f"downloads/"
-        try:
-            media_type = str(message.media)
-            if media_type == "MessageMediaType.VIDEO":
-                doc = message.video
-            else:
-                doc = message.document
-            sem = message.caption
-            ttx = Path("cap.txt")
-            sen = doc.file_name
-            if sem and "\n" in sem:
-                sem = ""
-            if sem and not ttx.is_file():
-                filename = sem
-            else:
-                filename = sen
-            if not filename:
-                filename = "video_" + dt.now().isoformat("_", "seconds") + ".mp4"
-            root, ext = os.path.splitext(filename)
-            if not ext:
-                ext = ".mkv"
-                filename = root + ext
-            dl = dir + filename
 
-            user = message.from_user.id
-            USER_MAN.clear()
-            USER_MAN.append(user)
-
-            wah = code(dl)
-            await app.get_users("me")
-            dl_info = await parse_dl(filename)
-            nnn = await event.reply(
-                f"{enmoji()}{dl_info}",
-                buttons=[
-                    [Button.inline("ℹ️", data=f"dl_stat{wah}")],
-                ],
-            )
-            if op:
-                opp = await op.edit(
-                    f"{dl_info}",
-                    buttons=[
-                        [Button.inline("ℹ️", data=f"dl_stat{wah}")],
-                    ],
-                )
-
-            await xxx.edit("`Waiting For Download To Complete`")
-            etch = await message.reply("`Downloading File 📂`", quote=True)
-            download_task = asyncio.create_task(
-                download_helper(user, op, dl, message, etch)
-            )
-            download = await download_task
-            if download.is_cancelled:
-                reply = f"Download of `{filename}` was cancelled"
-                if download.canceller != user:
-                    reply += f" by {download.canceller.mention(style='md')}"
-                reply += "!"
-                await xxx.edit(reply)
-                await etch.delete()
-                await nnn.delete()
-                if op:
-                    await asyncio.sleep(3)
-                    await op.edit(
-                        f"[{message.from_user.first_name}'s](tg://user?id={message.from_user.id}) `download` was cancelled by [{download.canceller.first_name}.](tg://user?id={download.canceller.id})"
-                    )
-                WORKING.clear()
-                return
-        except Exception:
-            WORKING.clear()
-            er = traceback.format_exc()
-            await channel_log(er)
-            LOGS.info(er)
-            return os.remove(dl)
-        await etch.delete()
-        es = dt.now()
-        kk = dl.split("/")[-1]
-        aa = kk.split(".")[-1]
-        rr = f"encode"
-        namo = dl.split("/")[1]
-        if "v2" in namo:
-            name = namo.replace("v2", "")
-        else:
-            name = namo
-        bb1 = await parse(name, kk, aa)
-        bb = bb1[0]
-        bb2 = bb1[1]
-        # if "'" in bb:
-        # bb = bb.replace("'", "")
-        out = f"{rr}/{bb}"
-        b, d, c, rlsgrp = await dynamicthumb(name)
-        tbcheck = Path("thumb2.jpg")
-        if tbcheck.is_file():
-            thum = "thumb2.jpg"
-        else:
-            thum = "thumb.jpg"
-        if QUEUE and CACHE_DL is True:
-            await cache_dl()
-        with open("ffmpeg.txt", "r") as file:
-            nani = file.read().rstrip()
-            # ffmpeg = file.read().rstrip()
-            file.close()
-        try:
-            if "This Episode" in nani:
-                bo = b
-                if d:
-                    bo = f"Episode {d} of {b}"
-                if c:
-                    bo += f" Season {c}"
-                nano = nani.replace(f"This Episode", bo)
-            else:
-                nano = nani
-        except Exception:
-            nano = nani
-        if "Fileinfo" in nano:
-            # bb = bb.replace("'", "")
-            ffmpeg = nano.replace(f"Fileinfo", bb2)
-        else:
-            ffmpeg = nano
-        dtime = ts(int((es - s).seconds) * 1000)
-        e = xxx
-        hehe = f"{out};{dl};0"
-        wah = code(hehe)
-        user = message.from_user.id
-        xxx = await xxx.edit("`Waiting For Encoding To Complete`")
-        # nn = await bot.send_message(
-        #    user,
-        nn = await nnn.edit(
-            "`Encoding File(s)…` \n**⏳This Might Take A While⏳**",
-            buttons=[
-                [Button.inline("📂", data=f"pres{wah}")],
-                [Button.inline("STATS", data=f"stats{wah}")],
-                [Button.inline("CANCEL PROCESS", data=f"skip{wah}")],
-            ],
-        )
-        try:
-            qb = b.replace(" ", "_")
-            for xob in [
-                "\\",
-                "",
-                "*",
-                "{",
-                "}",
-                "[",
-                "]",
-                "(",
-                ")",
-                ">",
-                "#",
-                "+",
-                "-",
-                ".",
-                "!",
-                "$",
-                "/",
-                ":",
-            ]:
-                if xob in qb:
-                    qb = qb.replace(xob, "")
-        except NameError:
-            ob = bb.split("@")[0]
-            qb = ob.replace(" ", "_")
-            for xob in [
-                "\\",
-                "",
-                "*",
-                "{",
-                "}",
-                "[",
-                "]",
-                "(",
-                ")",
-                ">",
-                "#",
-                "+",
-                "-",
-                ".",
-                "!",
-                "$",
-                "/",
-                ":",
-            ]:
-                if xob in qb:
-                    qb = qb.replace(xob, "")
-        if LOG_CHANNEL:
-            log = int(LOG_CHANNEL)
-            oro = await bot.send_message(
-                log,
-                f"Encoding Of #{qb} Started By [{message.from_user.first_name}](tg://user?id={message.from_user.id})",
-            )
-            wak = await op.edit(
-                f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Is Currently Encoding A Video…`",
-                buttons=[
-                    [Button.inline("ℹ️", data=f"pres{wah}")],
-                    [Button.inline("CHECK PROGRESS", data=f"stats{wah}")],
-                    [Button.inline("CANCEL PROCESS", data=f"skip{wah}")],
-                ],
-            )
-        cmd = ffmpeg.format(dl, out)
-        if ALLOW_ACTION is True:
-            async with bot.action(message.from_user.id, "game"):
-                process = await asyncio.create_subprocess_shell(
-                    cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-                )
-                stdout, stderr = await process.communicate()
-        else:
-            process = await asyncio.create_subprocess_shell(
-                cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-            )
-            stdout, stderr = await process.communicate()
-        er = stderr.decode()
-        try:
-            if process.returncode != 0:
-                if len(stderr) > 4095:
-                    out_file = "ffmpeg_error.txt"
-                    with open("ffmpeg_error.txt", "w") as file:
-                        file.write(str(stderr.decode()))
-                        wrror = await message.reply_document(
-                            document=out_file,
-                            force_document=True,
-                            quote=True,
-                            caption="`ffmpeg error`",
-                        )
-                    os.remove(out_file)
-                else:
-                    wrror = await message.reply(stderr.decode(), quote=True)
-                WORKING.clear()
-                try:
-                    os.remove(dl)
-                except Exception:
-                    await wrror.reply("**Reason:** `Encoding Cancelled!`")
-                await xxx.edit(f"🔺 **Encoding of** `{bb2}` **Failed**")
-                if LOG_CHANNEL:
-                    await wak.delete()
-                return await nn.delete()
-        except BaseException:
-            er = traceback.format_exc()
-            LOGS.info(er)
-            await channel_log(er)
-            LOGS.info(stderr.decode())
-            await qclean()
-            await xxx.edit("`An unknown error occurred.`")
-            await nn.delete()
-            if LOG_CHANNEL:
-                await wak.delete()
-            return WORKING.clear()
-        ees = dt.now()
-        ttt = time.time()
-        try:
-            await nn.delete()
-            await wak.delete()
-        except Exception:
-            pass
-        await enpause(xxx)
-        fname = out.split("/")[1]
-        # Check if Autogenerated thumbnail still exists
-        if tbcheck.is_file():
-            thum = "thumb2.jpg"
-        else:
-            thum = "thumb.jpg"
-        pcap = await custcap(name, fname)
-        upload = uploader(event.sender_id)
-        ds = await upload.start(message.chat.id, out, xxx, thum, pcap, message)
-        if upload.is_cancelled:
-            await xxx.edit(f"`Upload of {__out} was cancelled.`")
-            if LOG_CHANNEL:
-                log = int(LOG_CHANNEL)
-                canceller = await app.get_users(upload.canceller)
-                await bot.send_message(
-                    log,
-                    f"[{canceller.first_name}](tg://user?id={upload.canceller})`Cancelled` [{message.from_user.first_name}'s'](tg://user?id={message.from_user.id}) upload.",
-                )
-            raise Exception("Upload cancelled!")
-        await xxx.delete()
-        if FCHANNEL:
-            chat = int(FCHANNEL)
-            await ds.copy(chat_id=chat)
-        if LOG_CHANNEL:
-            chat = int(LOG_CHANNEL)
-            await ds.copy(chat_id=chat)
-        org = int(Path(dl).stat().st_size)
-        com = int(Path(out).stat().st_size)
-        pe = 100 - ((com / org) * 100)
-        per = str(f"{pe:.2f}") + "%"
-        eees = dt.now()
-        x = dtime
-        xx = ts(int((ees - es).seconds) * 1000)
-        xxx = ts(int((eees - ees).seconds) * 1000)
-        try:
-            a1 = await info(dl, e)
-            text = ""
-            if rlsgrp:
-                text += f"**Source:** `[{rlsgrp}]`"
-            text += f"\n\nMediainfo: **[(Source)]({a1})**"
-            dp = await ds.reply(
-                text,
-                disable_web_page_preview=True,
-                quote=True,
-            )
-            if LOG_CHANNEL:
-                await dp.copy(chat_id=chat)
-        except Exception:
-            pass
-        dk = await ds.reply(
-            f"**Encode Stats:**\n\nOriginal Size : {hbs(org)}\nEncoded Size : {hbs(com)}\nEncoded Percentage : {per}\n\nDownloaded in {x}\nEncoded in {xx}\nUploaded in {xxx}",
-            disable_web_page_preview=True,
-            quote=True,
-        )
-        if LOG_CHANNEL:
-            await dk.copy(chat_id=chat)
-        os.system("rm -rf thumb2.jpg")
-        os.remove(dl)
-        os.remove(out)
-        WORKING.clear()
     except BaseException:
         ers = traceback.format_exc()
         LOGS.info(ers)
         await channel_log(ers)
         await qclean()
-        WORKING.clear()
+
