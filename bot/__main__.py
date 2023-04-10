@@ -667,7 +667,7 @@ async def something():
                 else:
                     thum = "thumb.jpg"
                 pcap = await custcap(name, fname)
-                upload = uploader(bot, app, user)
+                upload = uploader(user)
                 ds = await upload.start(e.chat_id, out, nnn, thum, pcap, message)
                 if upload.is_cancelled:
                     await xxx.edit(f"`Upload of {out} was cancelled.`")
