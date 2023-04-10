@@ -40,7 +40,7 @@ class uploader:
                         progress=self.progress_for_pyrogram,
                         progress_args=(
                             self.app,
-                            f"{CAP_DECO} Uploading {filepath}",
+                            f"{CAP_DECO} Uploading '{filepath}'…",
                             reply,
                             u_start,
                         ),
