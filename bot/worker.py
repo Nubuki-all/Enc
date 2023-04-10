@@ -291,8 +291,6 @@ async def en_rename(event):
         await asyncio.sleep(5)
         download = downloader()
         dl_task = await download.start(loc, 0, message, e)
-        while dl_task.done() is not True:
-            pass
         if download.is_cancelled:
             os.system(f"rm '{loc}'")
             await e.edit(f"Download of `{__out}` was cancelled.")
@@ -460,7 +458,7 @@ async def dumpdl(dl, name, thum, user, message):
         if int(_dmp.stat().st_size) > 2126000000:
             dp = await rr.reply("**File too large to dump, Aborting…**")
         else:
-            upload = uploader(bot, app)
+            upload = uploader()
             dp = await upload.start(user, dmp, rr, thum, f"`{name}`", message)
 
             if not upload.is_cancelled:
