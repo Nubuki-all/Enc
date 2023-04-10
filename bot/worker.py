@@ -450,7 +450,7 @@ async def en_mux(event):
         LOGS.info(ers)
 
 
-async def dumpdl(upload2, dl, name, thum, user, message):
+async def dumpdl(dl, name, thum, user, message):
     try:
         dmp = "thumb/" + name
         os.system(f"cp '{dl}' '{dmp}'")

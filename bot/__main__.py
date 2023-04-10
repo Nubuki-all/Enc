@@ -504,7 +504,7 @@ async def something():
                     thum = "thumb.jpg"
                 if uri and DUMP_LEECH is True:
                     asyncio.create_task(
-                        dumpdl(upload2, dl, name, thum, e.chat_id, message)
+                        dumpdl(dl, name, thum, e.chat_id, message)
                     )
                 if len(QUEUE) > 1 and CACHE_DL is True:
                     await cache_dl()
