@@ -183,7 +183,7 @@ class downloader:
                 await channel_log(ers)
                 LOGS.info(ers)
 
-    async def start(dl, file, message="", e=""):
+    async def start(self, dl, file, message="", e=""):
         try:
             ld = await self.log_download()
             if message:
