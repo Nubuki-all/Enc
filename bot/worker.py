@@ -1713,7 +1713,9 @@ async def pencode(message):
 
             await xxx.edit("`Waiting For Download To Complete`")
             etch = await message.reply("`Downloading File 📂`", quote=True)
-            download_task = asyncio.create_task(download_helper(user, op, dl, message, etch))
+            download_task = asyncio.create_task(
+                download_helper(user, op, dl, message, etch)
+            )
             download = await download_task
             if download.is_cancelled:
                 reply = f"Download of `{filename}` was cancelled"
