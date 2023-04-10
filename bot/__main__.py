@@ -298,7 +298,9 @@ async def something():
                 except Exception:
                     message = None
                     mssg_r = None
-                    e = await bot.send_message(user, "`▼ Downloading next file in queue ▼`")
+                    e = await bot.send_message(
+                        user, "`▼ Downloading next file in queue ▼`"
+                    )
                 if message:
                     try:
                         user = message.from_user.id
@@ -456,7 +458,7 @@ async def something():
                                 ],
                             )
                         download = downloader(user, op)
-                        download_task = await download.start(dl, file, message, mssg_r)
+                        await download.start(dl, file, message, mssg_r)
                         if message:
                             await mssg_r.edit(
                                 f"Download of `{name}` was cancelled by {download.canceller.mention(style='md')}"
@@ -464,7 +466,8 @@ async def something():
                         await e.delete()
                         if op:
                             await op.edit(
-                                f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by` [{download.canceller.first_name}.](tg://user?id={download.canceller.id})")
+                                f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by` [{download.canceller.first_name}.](tg://user?id={download.canceller.id})"
+                            )
                         if QUEUE:
                             QUEUE.pop(list(QUEUE.keys())[0])
                         await save2db()

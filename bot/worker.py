@@ -241,9 +241,11 @@ async def en_download(event):
             loc = r.file.name
         await event.delete()
         download = downloader()
-        dl_task = await download.start(loc, 0, message, e)
+        await download.start(loc, 0, message, e)
         if download.is_cancelled:
-            return await e.edit(f"Download of `{loc}` was cancelled by {download.canceller.first_name}")
+            return await e.edit(
+                f"Download of `{loc}` was cancelled by {download.canceller.first_name}"
+            )
         await e.edit(f"`saved to {loc} successfully`")
     except Exception:
         ers = traceback.format_exc()
@@ -285,7 +287,7 @@ async def en_rename(event):
         download = downloader()
         await download.start(loc, 0, message, e)
         if download.is_cancelled:
-            #os.system(f"rm '{loc}'")
+            # os.system(f"rm '{loc}'")
             await e.edit(f"Download of `{__out}` was cancelled.")
             return R_QUEUE.pop(0)
         await e.edit(f"Download of {loc} completed")
@@ -367,9 +369,9 @@ async def en_mux(event):
         e = await message.reply(f"{enmoji()} `Downloading to {dl}…`", quote=True)
         await asyncio.sleep(5)
         download = downloader()
-        dl_task = await download.start(dl, 0, message, e)
+        await download.start(dl, 0, message, e)
         if download.is_cancelled:
-            #os.system(f"rm {dl}")
+            # os.system(f"rm {dl}")
             await e.edit(f"Download of `{__loc}` was cancelled.")
             return R_QUEUE.pop(0)
         args = args.strip()
@@ -456,7 +458,7 @@ async def dumpdl(dl, name, thum, user, message):
         if LOG_CHANNEL:
             chat = int(LOG_CHANNEL)
             await rr.copy(chat_id=chat)
-            if not dp is None:
+            if dp is not None:
                 await dp.copy(chat_id=chat)
         os.remove(dmp)
     except Exception:
@@ -1649,7 +1651,7 @@ async def pencode(message):
                 f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Is Currently Downloading A Video…`",
             )
         else:
-             op = None
+            op = None
         event = await bot.get_messages(message.chat.id, ids=message.id)
         s = dt.now()
         ttt = time.time()
@@ -1677,11 +1679,9 @@ async def pencode(message):
                 filename = root + ext
             dl = dir + filename
 
-
             user = message.from_user.id
             USER_MAN.clear()
             USER_MAN.append(user)
-
 
             wah = code(dl)
             await app.get_users("me")
@@ -1699,7 +1699,6 @@ async def pencode(message):
                         [Button.inline("ℹ️", data=f"dl_stat{wah}")],
                     ],
                 )
-
 
             await xxx.edit("`Waiting For Download To Complete`")
             etch = await message.reply("`Downloading File 📂`", quote=True)
