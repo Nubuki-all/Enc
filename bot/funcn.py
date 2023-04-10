@@ -410,6 +410,7 @@ async def get_cached(dl, sender, user, e, op):
                 except errors.FloodWaitError as e:
                     await asyncio.sleep(e.seconds)
                     continue
+        CACHE_QUEUE.clear()
         if not dl_check.is_file():
             raise Exception("Getting cached file failed\nfile might have been deleted.")
         return True
