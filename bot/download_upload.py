@@ -158,7 +158,7 @@ class downloader:
         self.lc = lc
         self.handler = app.add_handler(
             CallbackQueryHandler(
-                self.upload_button_callback, filters=regex("^" + self.callback_data)
+                self.download_button_callback, filters=regex("^" + self.callback_data)
             )
         )
 
@@ -284,7 +284,6 @@ class downloader:
                 pass
 
     async def download_button_callback(self, client, callback_query):
-        # if callback_query.data == "cancel_upload":
         if (
             str(callback_query.from_user.id) not in OWNER
             and callback_query.from_user.id != self.sender
