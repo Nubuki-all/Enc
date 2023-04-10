@@ -285,20 +285,20 @@ async def something():
                 # user = int(OWNER.split()[0])
                 file = list(QUEUE.keys())[0]
                 name, user = QUEUE[list(QUEUE.keys())[0]]
-                uri = ""
+                uri = None
                 uri_name = ""
                 try:
                     message = await app.get_messages(user, int(file))
-                    mssg_r = await message.reply("`Downloading…`", quote=True)
                     e = await bot.send_message(
                         user,
-                        "`▼ Downloding Queue Files ▼`",
+                        "`▼ Preparing to download next file in queue ▼`",
                         reply_to=message.id,
                     )
+                    mssg_r = await message.reply("`Downloading…`", quote=True)
                 except Exception:
-                    message = ""
-                    mssg_r = ""
-                    e = await bot.send_message(user, "`▼ Downloding Queue Files ▼`")
+                    message = None
+                    mssg_r = None
+                    e = await bot.send_message(user, "`▼ Downloading next file in queue ▼`")
                 if message:
                     try:
                         user = message.from_user.id
@@ -330,23 +330,10 @@ async def something():
                                 uri = message.text.split(" ", maxsplit=1)[1]
                             else:
                                 uri = message.text
-                        else:
-                            if CACHE_QUEUE:
-                                raise (already_dl)
-                            download = downloader(bot, app, user, op)
-                            download_task = await download.start(
-                                dl, file, message, mssg_r
-                            )
+
                     else:
                         if is_url(str(file)) is True:
                             uri = file
-                        else:
-                            if CACHE_QUEUE:
-                                raise (already_dl)
-                            download = downloader(bot, app, user, op)
-                            download_task = await download.start(
-                                dl, file, message, mssg_r
-                            )
                     if uri:
                         uri_name = name
                         if mssg_r:
@@ -359,25 +346,8 @@ async def something():
                             while extr in name:
                                 name = name.replace(extr, "")
                         dl = "downloads/" + name
-                    wah = code(dl)
-                    dl_info = await parse_dl(name)
-                    if not uri:
-                        ee = await e.edit(
-                            f"{enmoji()} `Download Information.`{dl_info}",
-                            buttons=[
-                                [Button.inline("ℹ️", data=f"dl_stat{wah}")],
-                                # [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
-                            ],
-                        )
-                        if LOG_CHANNEL:
-                            opp = await op.edit(
-                                f"[{sender.first_name}](tg://user?id={user}) `Download Information.`{dl_info}",
-                                buttons=[
-                                    [Button.inline("ℹ️", data=f"dl_stat{wah}")],
-                                    # [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
-                                ],
-                            )
-                    else:
+                        wah = code(dl)
+                        dl_info = await parse_dl(name)
                         ee = await e.edit(
                             f"{enmoji()} `Download Information.`{dl_info}",
                             buttons=[
@@ -385,7 +355,7 @@ async def something():
                                 [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
                             ],
                         )
-                        if LOG_CHANNEL:
+                        if op:
                             opp = await op.edit(
                                 f"[{sender.first_name}](tg://user?id={user}) `Download Information.`{dl_info}",
                                 buttons=[
@@ -393,7 +363,6 @@ async def something():
                                     [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
                                 ],
                             )
-                    if uri:
                         if mssg_r:
                             stdout2 = await fake_progress(leech_task, mssg_r)
                         else:
@@ -460,35 +429,48 @@ async def something():
                                     pass
                                 retry_msg = "Retrying after 10 seconds"
                                 await wrror.reply(retry_msg)
-                                if LOG_CHANNEL and opp:
-                                    await opp.reply(retry_msg)
+                                if op:
+                                    await op.reply(retry_msg)
                                 await asyncio.sleep(10)
                                 await qclean()
                                 DOWNLOAD_CANCEL.clear()
                                 continue
                         name = await get_leech_file()
                         dl = "downloads/" + name
-                    cork = False
-                    if cork:
-                        canceller = await app.get_users(download.canceller)
+                    else:
+                        if CACHE_QUEUE:
+                            raise (already_dl)
+                        wah = code(dl)
+                        dl_info = await parse_dl(name)
+                        ee = await e.edit(
+                            f"{enmoji()} {dl_info}",
+                            buttons=[
+                                [Button.inline("ℹ️", data=f"dl_stat{wah}")],
+                            ],
+                        )
+                        if op:
+                            opp = await op.edit(
+                                f"[{sender.first_name}](tg://user?id={user}) `Download Information.`{dl_info}",
+                                buttons=[
+                                    [Button.inline("ℹ️", data=f"dl_stat{wah}")],
+                                ],
+                            )
+                        download = downloader(user, op)
+                        download_task = await download.start(dl, file, message, mssg_r)
                         if message:
                             await mssg_r.edit(
-                                f"Download of `{name}` was cancelled by {canceller.mention(style='md')}"
+                                f"Download of `{name}` was cancelled by {download.canceller.mention(style='md')}"
                             )
                         await e.delete()
-                        if LOG_CHANNEL:
+                        if op:
                             await op.edit(
-                                f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by` [{canceller.first_name}.](tg://user?id={download.canceller})",
-                            )
+                                f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by` [{download.canceller.first_name}.](tg://user?id={download.canceller.id})")
                         if QUEUE:
                             QUEUE.pop(list(QUEUE.keys())[0])
-                        DOWNLOAD_CANCEL.clear()
                         await save2db()
                         await qclean()
                         continue
                 except already_dl:
-                    if not LOG_CHANNEL:
-                        op = ""
                     rslt = await get_cached(dl, sender, user, e, op)
                     if rslt is False:
                         continue

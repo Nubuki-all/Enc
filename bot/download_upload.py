@@ -8,8 +8,6 @@ from .funcn import *
 
 class uploader:
     def __init__(self, sender=123456):
-        self.bot = bot
-        self.app = app
         self.sender = int(sender)
         self.callback_data = "cancel_upload" + str(uuid.uuid4())
         self.is_cancelled = False
@@ -20,7 +18,7 @@ class uploader:
             )
         )
 
-    def __str__(self, bot):
+    def __str__(self):
         return "#wip"
 
     async def start(self, from_user_id, filepath, reply, thum, caption, message=""):
@@ -28,7 +26,7 @@ class uploader:
             thum = Path(thum)
             if not thum.is_file():
                 thum = None
-            async with self.bot.action(from_user_id, "file"):
+            async with bot.action(from_user_id, "file"):
                 await reply.edit("🔺Uploading🔺")
                 u_start = time.time()
                 if UNLOCK_UNSTABLE and message:
@@ -40,13 +38,13 @@ class uploader:
                         progress=self.progress_for_pyrogram,
                         progress_args=(
                             self.app,
-                            f"**{CAP_DECO} Uploading:** `{filepath}…`\n\n",
+                            f"**{CAP_DECO} Uploading:** `{filepath}…`\n",
                             reply,
                             u_start,
                         ),
                     )
                 else:
-                    s = await self.app.send_document(
+                    s = await app.send_document(
                         document=filepath,
                         chat_id=from_user_id,
                         force_document=True,
@@ -54,23 +52,23 @@ class uploader:
                         caption=caption,
                         progress=self.progress_for_pyrogram,
                         progress_args=(
-                            self.app,
+                            app,
                             "Uploading 👘",
                             reply,
                             u_start,
                         ),
                     )
-            self.app.remove_handler(*self.handler)
+            app.remove_handler(*self.handler)
             return s
         except pyro_errors.BadRequest:
             await reply.edit(f"`Failed {enmoji2()}\nRetrying…`")
-            self.app.remove_handler(*self.handler)
+            app.remove_handler(*self.handler)
             await asyncio.sleep(10)
-            upload = uploader(self.bot, self.app, self.sender)
+            upload = uploader(self.sender)
             await upload.start(event.chat_id, loc, e, thum, cap, message)
 
         except Exception:
-            self.app.remove_handler(*self.handler)
+            app.remove_handler(*self.handler)
             ers = traceback.format_exc()
             await channel_log(ers)
             LOGS.info(ers)
@@ -147,9 +145,7 @@ class uploader:
 
 
 class downloader:
-    def __init__(self, sender=123456, lc="", uri=False):
-        self.bot = bot
-        self.app = app
+    def __init__(self, sender=123456, lc=None, uri=False):
         self.sender = int(sender)
         self.callback_data = "cancel_download" + str(uuid.uuid4())
         self.is_cancelled = False
@@ -162,7 +158,7 @@ class downloader:
             )
         )
 
-    def __str__(self, bot):
+    def __str__(self):
         return "#wip"
 
     async def log_download(self):
@@ -193,31 +189,35 @@ class downloader:
                     media_mssg = "`Downloading a file…`\n"
                 else:
                     media_mssg = "`Downloading a video…`\n"
-                download_task = await self.app.download_media(
+                download_task = await app.download_media(
                     message=message,
                     file_name=dl,
                     progress=self.progress_for_pyrogram,
-                    progress_args=(self.app, media_mssg, e, ttt),
+                    progress_args=(app, media_mssg, e, ttt),
                 )
             else:
-                download_task = await self.app.download_media(
+                download_task = await app.download_media(
                     message=file,
                     file_name=dl,
                 )
             if ld:
                 await ld.delete()
-            self.app.remove_handler(*self.handler)
+            try:
+                os.remove(dl)
+            except Exception:
+                pass
+            app.remove_handler(*self.handler)
             return download_task
 
         except pyro_errors.BadRequest:
             await reply.edit(f"`Failed {enmoji2()}\nRetrying…`")
-            self.app.remove_handler(*self.handler)
+            app.remove_handler(*self.handler)
             await asyncio.sleep(10)
-            download = downloader(self.bot, self.app, self.sender)
+            download = downloader(self.sender)
             await download.start(dl, file, message, e)
 
         except Exception:
-            self.app.remove_handler(*self.handler)
+            app.remove_handler(*self.handler)
             ers = traceback.format_exc()
             await channel_log(ers)
             LOGS.info(ers)
@@ -288,7 +288,7 @@ class downloader:
                 "You're not allowed to do this!", show_alert=False
             )
         self.is_cancelled = True
-        self.canceller = callback_query.from_user.id
+        self.canceller = await app.get_users(callback_query.from_user.id)
         await callback_query.answer(
             "Cancelling download please wait…", show_alert=False
         )

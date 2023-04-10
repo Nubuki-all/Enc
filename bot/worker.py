@@ -240,18 +240,11 @@ async def en_download(event):
         else:
             loc = r.file.name
         await event.delete()
-        dl_task = await download2(loc, 0, message, e)
-        while dl_task.done() is not True:
-            if DOWNLOAD_CANCEL:
-                dl_task.cancel()
-                continue
-            await asyncio.sleep(3)
-        if DOWNLOAD_CANCEL:
-            await e.edit(f"Download of `{loc}` was cancelled.")
-            DOWNLOAD_CANCEL.clear()
-            return
+        download = downloader()
+        dl_task = await download.start(loc, 0, message, e)
+        if download.is_cancelled:
+            return await e.edit(f"Download of `{loc}` was cancelled by {download.canceller.first_name}")
         await e.edit(f"`saved to {loc} successfully`")
-        return await tm.delete()
     except Exception:
         ers = traceback.format_exc()
         await channel_log(ers)
@@ -292,9 +285,9 @@ async def en_rename(event):
         download = downloader()
         await download.start(loc, 0, message, e)
         if download.is_cancelled:
-            os.system(f"rm '{loc}'")
+            #os.system(f"rm '{loc}'")
             await e.edit(f"Download of `{__out}` was cancelled.")
-            return
+            return R_QUEUE.pop(0)
         await e.edit(f"Download of {loc} completed")
         await asyncio.sleep(5)
         thum = Path("thumb3.jpg")
@@ -373,17 +366,12 @@ async def en_mux(event):
             R_QUEUE.append(str(event.id) + ":" + str(event.chat_id))
         e = await message.reply(f"{enmoji()} `Downloading to {dl}…`", quote=True)
         await asyncio.sleep(5)
-        dl_task = await download2(dl, 0, message, e)
-        while dl_task.done() is not True:
-            if DOWNLOAD_CANCEL:
-                dl_task.cancel()
-                continue
-            await asyncio.sleep(5)
-        if DOWNLOAD_CANCEL:
-            os.system(f"rm {dl}")
+        download = downloader()
+        dl_task = await download.start(dl, 0, message, e)
+        if download.is_cancelled:
+            #os.system(f"rm {dl}")
             await e.edit(f"Download of `{__loc}` was cancelled.")
-            DOWNLOAD_CANCEL.clear()
-            return
+            return R_QUEUE.pop(0)
         args = args.strip()
         if "Fileinfo" in args:
             args = args.replace("Fileinfo", __out1)
@@ -426,7 +414,7 @@ async def en_mux(event):
             thum = "thumb.jpg"
         cap = await custcap(__loc, __out)
         await asyncio.sleep(5)
-        upload = uploader(bot, app, event.sender_id)
+        upload = uploader(event.sender_id)
         await upload.start(event.chat_id, loc, e, thum, cap, message)
         if not upload.is_cancelled:
             await e.edit(f"`{__out} uploaded successfully.`")
@@ -468,7 +456,8 @@ async def dumpdl(dl, name, thum, user, message):
         if LOG_CHANNEL:
             chat = int(LOG_CHANNEL)
             await rr.copy(chat_id=chat)
-            await dp.copy(chat_id=chat)
+            if not dp is None:
+                await dp.copy(chat_id=chat)
         os.remove(dmp)
     except Exception:
         ers = traceback.format_exc()
@@ -540,7 +529,7 @@ async def en_upload(event):
                             )
                             continue
                         await asyncio.sleep(10)
-                        upload = uploader(bot, app)
+                        upload = uploader()
                         ul = await upload(
                             event.chat_id, file, r, "thumb.jpg", f"`{name}`", message
                         )
@@ -556,7 +545,7 @@ async def en_upload(event):
             else:
                 r = await message.reply(f"`Uploading {args}…`", quote=True)
                 cap = args.split("/")[-1] if "/" in args else args
-                upload = uploader(bot, app)
+                upload = uploader()
                 await upload(event.chat_id, args, r, "thumb.jpg", f"`{cap}`", message)
                 if not upload.is_cancelled:
                     await r.edit(f"`{cap} uploaded successfully.`")
@@ -1659,112 +1648,76 @@ async def pencode(message):
                 log,
                 f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Is Currently Downloading A Video…`",
             )
+         else:
+             op = None
         event = await bot.get_messages(message.chat.id, ids=message.id)
         s = dt.now()
         ttt = time.time()
         dir = f"downloads/"
         try:
             media_type = str(message.media)
-            global download_task
-            if media_type == "MessageMediaType.DOCUMENT":
-                # if hasattr(event.media, "document"):
-                # file = event.media.document
-                # sem = event.message.message
-                sem = message.caption
-                ttx = Path("cap.txt")
-                sen = message.document.file_name
-                if sem and "\n" in sem:
-                    sem = ""
-                if sem and not ttx.is_file():
-                    filename = sem
-                else:
-                    filename = sen
-                if not filename:
-                    filename = "video_" + dt.now().isoformat("_", "seconds") + ".mp4"
-                root, ext = os.path.splitext(filename)
-                if not ext:
-                    ext = ".mkv"
-                    filename = root + ext
-                dl = dir + filename
-                xxx = await xxx.edit("`Waiting For Download To Complete`")
-                # tex = "`Downloading File 📶`"
-                etch = await message.reply("`Downloading File 📂`", quote=True)
-                # etch = await app.send_message(chat_id=message.from_user.id,
-                # text=tex)
-                download_task = asyncio.create_task(
-                    app.download_media(
-                        message=message,
-                        file_name=dl,
-                        progress=progress_for_pyrogram,
-                        progress_args=(app, "`Downloading…`", etch, ttt),
-                    )
-                )
+            if media_type == "MessageMediaType.VIDEO":
+                doc = message.video
             else:
-                sem = message.caption
-                ttx = Path("cap.txt")
-                if sem and "\n" in sem:
-                    sem = ""
-                if sem and not ttx.is_file():
-                    filename = sem
-                else:
-                    filename = message.video.file_name
-                if not filename:
-                    filename = "video_" + dt.now().isoformat("_", "seconds") + ".mp4"
-                root, ext = os.path.splitext(filename)
-                if not ext:
-                    ext = ".mkv"
-                    filename = root + ext
-                dl = dir + filename
-                xxx = await xxx.edit("`Waiting For Media To Finish Downloading…`")
-                # tex = "`Downloading Video 🎥`"
-                # etch = await app.send_message(chat_id=message.from_user.id,
-                # text=tex)
-                etch = await message.reply("`Downloading Video 🎥`", quote=True)
-                download_task = asyncio.create_task(
-                    app.download_media(
-                        message=message,
-                        file_name=dl,
-                        progress=progress_for_pyrogram,
-                        progress_args=(app, "`Downloading…`", etch, ttt),
-                    )
-                )
+                doc = message.document
+            sem = message.caption
+            ttx = Path("cap.txt")
+            sen = doc.file_name
+            if sem and "\n" in sem:
+                sem = ""
+            if sem and not ttx.is_file():
+                filename = sem
+            else:
+                filename = sen
+            if not filename:
+                filename = "video_" + dt.now().isoformat("_", "seconds") + ".mp4"
+            root, ext = os.path.splitext(filename)
+            if not ext:
+                ext = ".mkv"
+                filename = root + ext
+            dl = dir + filename
+
+
             user = message.from_user.id
             USER_MAN.clear()
             USER_MAN.append(user)
+
+
             wah = code(dl)
             await app.get_users("me")
             dl_info = await parse_dl(filename)
             nnn = await event.reply(
-                f"{enmoji()} `Downloading…`{dl_info}",
+                f"{enmoji()}{dl_info}",
                 buttons=[
                     [Button.inline("ℹ️", data=f"dl_stat{wah}")],
-                    [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
                 ],
             )
-            if LOG_CHANNEL:
+            if op:
                 opp = await op.edit(
-                    f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) `Is Currently Downloading A Video…`{dl_info}",
+                    f"{dl_info}",
                     buttons=[
                         [Button.inline("ℹ️", data=f"dl_stat{wah}")],
-                        [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
                     ],
                 )
-            try:
-                await download_task
-            except Exception:
-                pass
-            if DOWNLOAD_CANCEL:
-                canceller = await app.get_users(DOWNLOAD_CANCEL[0])
-                await etch.edit(
-                    f"Download of `{filename}` was cancelled by {canceller.mention(style='md')}."
-                )
-                await xxx.delete()
+
+
+            await xxx.edit("`Waiting For Download To Complete`")
+            etch = await message.reply("`Downloading File 📂`", quote=True)
+            download = downloader(user, op)
+            await download.start(dl, 0, message, etch)
+            if download.is_cancelled:
+                reply = f"Download of `{filename}` was cancelled"
+                if download.canceller != user:
+                    reply += f" by {download.canceller.mention(style='md')}"
+                reply += "!"
+                await xxx.edit(reply)
+                await etch.delete()
                 await nnn.delete()
-                if LOG_CHANNEL:
+                if op:
+                    await asyncio.sleep(3)
                     await op.edit(
-                        f"[{message.from_user.first_name}'s](tg://user?id={message.from_user.id}) `download` was cancelled by [{canceller.first_name}.](tg://user?id={DOWNLOAD_CANCEL[0]})"
+                        f"[{message.from_user.first_name}'s](tg://user?id={message.from_user.id}) `download` was cancelled by [{download.canceller.first_name}.](tg://user?id={DOWNLOAD_CANCEL[0]})"
                     )
-                DOWNLOAD_CANCEL.clear()
                 WORKING.clear()
                 return
         except Exception:
