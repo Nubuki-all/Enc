@@ -282,6 +282,7 @@ class downloader:
 
     async def download_button_callback(self, client, callback_query):
         try:
+            LOGS.info("Triggered!")
             if (
                 str(callback_query.from_user.id) not in OWNER
                 and callback_query.from_user.id != self.sender
