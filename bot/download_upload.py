@@ -292,7 +292,7 @@ class downloader:
             self.is_cancelled = True
             self.canceller = await app.get_users(callback_query.from_user.id)
             await callback_query.answer(
-            "Cancelling download please wait…", show_alert=False
+                "Cancelling download please wait…", show_alert=False
             )
         except Exception:
             ers = traceback.format_exc()
