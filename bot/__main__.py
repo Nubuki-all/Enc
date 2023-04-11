@@ -484,6 +484,8 @@ async def something():
                             await save2db()
                             await qclean()
                             continue
+                        if message:
+                            await mssg_f.delete()
                 except already_dl:
                     rslt = await get_cached(dl, sender, user, e, op)
                     if rslt is False:
