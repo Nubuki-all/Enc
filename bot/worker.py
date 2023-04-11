@@ -1570,17 +1570,6 @@ async def enleech(event):
         return await event.reply("An Unknown error Occurred.")
 
 
-async def download_helper(user, op, dl, message, etch):
-    try:
-        download = downloader(user, op)
-        await download.start(dl, 0, message, etch)
-        return download
-    except Exception:
-        ers = traceback.format_exc()
-        LOGS.info(ers)
-        await channel_log(ers)
-
-
 async def pencode(message):
     try:
         inputer = str(message.chat.id)

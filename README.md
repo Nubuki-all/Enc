@@ -46,6 +46,7 @@ eval - Evaluate code
 lock - prevent bot from encoding 
 peval - same as eval but with pyrogram 
 ping - Ping!
+l - pass uri link with a single to dl with aria2c 
 queue - List queue
 encodequeue - List queue (parsed)
 fix - Turn V2 On (With Message) or Off
@@ -56,6 +57,9 @@ filter - Filter & stuff
 vfilter - View filter
 groupenc - Allow Encoding in Group Toggle 
 delfilter - Delete filter
+name - quick filter with anime_title
+vname - get list of name filter
+delname - delete name filter
 status - 🆕 Get bot's status
 showthumb - 🖼️ Show Current Thumbnail
 parse - Toggle Parsing with captions or Anilist
