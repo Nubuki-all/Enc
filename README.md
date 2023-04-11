@@ -46,7 +46,7 @@ eval - Evaluate code
 lock - prevent bot from encoding 
 peval - same as eval but with pyrogram 
 ping - Ping!
-l - pass uri link with a single to dl with aria2c 
+l - pass uri link with a single file to dl with aria2c 
 queue - List queue
 encodequeue - List queue (parsed)
 fix - Turn V2 On (With Message) or Off
