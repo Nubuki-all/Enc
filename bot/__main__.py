@@ -282,6 +282,13 @@ async def something():
             while LOCKFILE:
                 await asyncio.sleep(10)
             if QUEUE:
+                while True:
+                    queue_no = len(QUEUE)
+                    await asyncio.sleep(1)
+                    if len(QUEUE) > queue_no:
+                        await asyncio.sleep(2)
+                    else:
+                        break
                 # user = int(OWNER.split()[0])
                 file = list(QUEUE.keys())[0]
                 name, user = QUEUE[list(QUEUE.keys())[0]]
