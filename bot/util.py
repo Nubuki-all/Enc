@@ -47,7 +47,7 @@ async def parse_dl(filename):
     if UNLOCK_UNSTABLE:
         try:
             na = anitopy.parse(filename)
-            ne = f"\n\n**Additional file information:\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**"
+            ne = f"\n\n**Additional file information:\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**"
         except Exception:
             ers = traceback.format_exc()
             LOGS.info(ers)
