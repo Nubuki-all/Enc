@@ -223,10 +223,11 @@ async def temp_auth(event):
         return await event.reply(f"{error} because user is already added")
     try:
         new_user = await app.get_users(new_id)
+        new_user = new_user.first_name
     except Exception:
-        return await event.reply("`User id invalid.`")
+        new_user = new_id
     TEMP_USERS.append(new_id)
     await save2db2(tusers, list_to_str(TEMP_USERS))
     return await event.reply(
-        f"Added `{new_user.first_name}` to temporarily allowed users {enmoji()}"
+        f"Added `{new_user}` to temporarily allowed users {enmoji()}"
     )

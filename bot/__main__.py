@@ -469,7 +469,7 @@ async def something():
                             )
                         if message:
                             await mssg_r.edit("`Waiting for download to complete.`")
-                        download = downloader(user, op)
+                        download = downloader(sender, op)
                         await download.start(dl, file, message, mssg_f)
                         if download.is_cancelled:
                             if message:

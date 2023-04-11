@@ -146,7 +146,8 @@ class uploader:
 
 class downloader:
     def __init__(self, sender=123456, lc=None, uri=False):
-        self.sender = int(sender)
+        self.sender = sender
+        self.sender_is_id = False
         self.callback_data = "cancel_download" + str(uuid.uuid4())
         self.is_cancelled = False
         self.canceller = None
@@ -157,6 +158,9 @@ class downloader:
                 self.download_button_callback, filters=regex("^" + self.callback_data)
             )
         )
+        if sender.isdigit():
+            self.sender_is_id = True
+            self.sender = int(sender)
 
     def __str__(self):
         return "#wip"
@@ -170,7 +174,7 @@ class downloader:
                 reply_markup = InlineKeyboardMarkup([[cancel_button]])
                 message = await app.get_messages(self.lc.chat_id, self.lc.id)
                 log = await message.reply(
-                    f"`Currently downloading a file sent by` {message.from_user.mention(style='md')}",
+                    f"`Currently downloading a file sent by` {self.sender.mention(style='md')}",
                     reply_markup=reply_markup,
                 )
                 return log
@@ -282,10 +286,13 @@ class downloader:
 
     async def download_button_callback(self, client, callback_query):
         try:
-            LOGS.info("Triggered!")
+            if self.sender_is_id:
+                user = self.sender
+            else:
+                user = self.sender.id
             if (
                 str(callback_query.from_user.id) not in OWNER
-                and callback_query.from_user.id != self.sender
+                and callback_query.from_user.id != user
             ):
                 return await callback_query.answer(
                     "You're not allowed to do this!", show_alert=False
