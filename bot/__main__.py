@@ -494,6 +494,9 @@ async def something():
                         if message:
                             await mssg_f.delete()
                 except already_dl:
+                    if message:
+                        await mssg_f.delete()
+                        await mssg_r.edit("`Waiting for caching to complete.`")
                     rslt = await get_cached(dl, sender, user, e, op)
                     if rslt is False:
                         continue
