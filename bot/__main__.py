@@ -289,12 +289,14 @@ async def something():
                 uri_name = ""
                 try:
                     message = await app.get_messages(user, int(file))
+                    mssg_r = await message.reply("`Download Pending…`", quote=True)
+                    await asyncio.sleep(2)
                     e = await bot.send_message(
                         user,
                         "`▼ Preparing to download next file in queue ▼`",
                         reply_to=message.id,
                     )
-                    mssg_r = await message.reply("`Downloading…`", quote=True)
+                    mssg_f = await message.reply("`Downloading…`", quote=True)
                 except Exception:
                     message = None
                     mssg_r = None
@@ -340,6 +342,7 @@ async def something():
                         uri_name = name
                         if mssg_r:
                             await mssg_r.edit("`Downloading Torrent\nPlease wait…`")
+                            await mssg_f.delete()
                         cmd = f"aria2c --seed-time=0 -d downloads '{uri}' > leech_log 2>&1"
                         leech_task = asyncio.create_task(enshell(cmd))
                         await asyncio.sleep(3)
@@ -457,8 +460,10 @@ async def something():
                                     [Button.inline("ℹ️", data=f"dl_stat{wah}")],
                                 ],
                             )
+                        if message:
+                            await mssg_r.edit("`Waiting for download to complete.`")
                         download = downloader(user, op)
-                        await download.start(dl, file, message, mssg_r)
+                        await download.start(dl, file, message, mssg_f)
                         if download.is_cancelled:
                             if message:
                                 reply = f"Download of `{name}` was cancelled"
@@ -468,6 +473,7 @@ async def something():
                                     )
                                 reply += "!"
                                 await mssg_r.edit(reply)
+                                await mssg_f.delete()
                             await e.delete()
                             if op:
                                 await op.edit(
