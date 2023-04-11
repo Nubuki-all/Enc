@@ -566,8 +566,11 @@ async def something():
                 wah = code(hehe)
                 if not uri:
                     wah2 = wah
-                if message:
-                    await mssg_r.edit("`Waiting For Encoding To Complete`")
+                try:
+                    if message:
+                        await mssg_r.edit("`Waiting For Encoding To Complete`")
+                except Exception:
+                    pass
                 nn = await e.edit(
                     "`Encoding Files…` \n**⏳This Might Take A While⏳**",
                     buttons=[
