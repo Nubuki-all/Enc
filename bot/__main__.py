@@ -608,19 +608,19 @@ async def something():
                 er = stderr.decode()
                 try:
                     if process.returncode != 0:
-                        if len(stderr) > 4095:
+                        if len(er) > 4095:
                             yo = await app.send_message(
                                 e.chat_id, "Uploading Error logs…"
                             )
                             out_file = "ffmpeg_error.txt"
                             with open(out_file, "w") as file:
-                                file.write(str(stderr.decode()))
-                                wrror = await yo.reply_document(
-                                    document=out_file,
-                                    force_document=True,
-                                    quote=True,
-                                    caption="`ffmpeg error`",
-                                )
+                                file.write(er)
+                            wrror = await yo.reply_document(
+                                document=out_file,
+                                force_document=True,
+                                quote=True,
+                                caption="`ffmpeg error`",
+                            )
                             yo.delete()
                             os.remove(out_file)
                         else:
