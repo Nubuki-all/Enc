@@ -79,6 +79,8 @@ if not os.path.isdir("encode/"):
     os.mkdir("encode/")
 if not os.path.isdir("temp/"):
     os.mkdir("temp/")
+if not os.path.isdir("dump/"):
+    os.mkdir("dump/")
 if not os.path.isdir("thumb/"):
     os.mkdir("thumb/")
 
