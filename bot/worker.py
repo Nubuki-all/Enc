@@ -432,23 +432,23 @@ async def dumpdl(dl, name, thum, user, message):
         shutil.copy2(dl, dmp)
         _dmp = Path(dmp)
         if message:
-            rr = await message.reply(f"`Dumping {name}…`", quote=True)
+            reply = await message.reply(f"`Dumping {name}…`", quote=True)
         else:
-            rr = await app.send_message(f"`Dumping {name}…`")
+            reply = await app.send_message(f"`Dumping {name}…`")
         await asyncio.sleep(2)
         if int(_dmp.stat().st_size) > 2126000000:
-            dp = await rr.reply("**File too large to dump, Aborting…**")
+            dp = await reply.reply("**File too large to dump, Aborting…**")
         else:
             upload = uploader()
-            dp = await upload.start(user, dmp, rr, thum, f"`{name}`", message)
+            dp = await upload.start(user, dmp, reply, thum, f"`{name}`", message)
 
             if not upload.is_cancelled:
-                await rr.edit(f"`{name} Dumped successfully.`")
+                f_reply = await reply.edit(f"`{name} Dumped successfully.`")
             else:
-                await rr.edit(f"`Dumping of {name} was cancelled.`")
+                f_reply = await reply.edit(f"`Dumping of {name} was cancelled.`")
         if LOG_CHANNEL:
             chat = int(LOG_CHANNEL)
-            await rr.copy(chat_id=chat)
+            await f_reply.copy(chat_id=chat)
             if dp is not None:
                 await dp.copy(chat_id=chat)
         os.remove(dmp)
