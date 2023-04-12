@@ -499,6 +499,7 @@ async def something():
                         await mssg_r.edit("`Waiting for caching to complete.`")
                     rslt = await get_cached(dl, sender, user, e, op)
                     if rslt is False:
+                        await mssg_r.delete()
                         continue
                 except Exception:
                     er = traceback.format_exc()
