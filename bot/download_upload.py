@@ -61,9 +61,10 @@ class uploader:
             app.remove_handler(*self.handler)
             return s
         except pyro_errors.BadRequest:
-            await reply.edit(f"`Failed {enmoji2()}\nRetrying…`")
+            await reply.edit(f"`Failed {enmoji2()}\nRetrying in 10 seconds…`")
             await asyncio.sleep(10)
-            await self.start(from_user_id, filepath, reply, thum, caption, message)
+            s = await self.start(from_user_id, filepath, reply, thum, caption, message)
+            return s
 
         except Exception:
             app.remove_handler(*self.handler)
@@ -213,9 +214,10 @@ class downloader:
             return download_task
 
         except pyro_errors.BadRequest:
-            await reply.edit(f"`Failed {enmoji2()}\nRetrying…`")
+            await reply.edit(f"`Failed {enmoji2()}\nRetrying in 10 seconds…`")
             await asyncio.sleep(10)
-            await self.start(dl, file, message, e)
+            dl_task = await self.start(dl, file, message, e)
+            return dl_task
 
         except Exception:
             app.remove_handler(*self.handler)
