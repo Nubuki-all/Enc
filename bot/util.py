@@ -300,11 +300,15 @@ async def parse(name, kk="", aa=".mkv"):
                 .json()["data"]
                 .get("Media")
             )
-            b = f"{json['title']['english']}"
-            b = f"{json['title']['romaji']}" if b == "None" else b
-            con = f"{json['countryOfOrigin']}"
-            con = await conconvert(con)
-            g = f"{json.get('episodes')}"
+            try:
+                b = f"{json['title']['english']}"
+                b = f"{json['title']['romaji']}" if b == "None" else b
+                con = f"{json['countryOfOrigin']}"
+                con = await conconvert(con)
+                g = f"{json.get('episodes')}"
+            except Exception:
+                con = ""
+                g = ""
 
             b = string.capwords(b)
             col = ""
@@ -342,15 +346,16 @@ async def parse(name, kk="", aa=".mkv"):
                 col = ""
                 col = wcol if wcol else col
 
-            if col:
-                pass
-            else:
-                col = con
+
         except Exception:
             ers = traceback.format_exc()
             LOGS.info(ers)
-            g = ""
             col = ""
+
+        if col:
+            pass
+        else:
+            col = con
         if olif.is_file() and fil2.casefold() != "auto":
             col = fil2
             col = "" if fil2.casefold() == "disable" else col
@@ -377,8 +382,8 @@ async def parse(name, kk="", aa=".mkv"):
             bb += " [END]"
         if col:
             bb += f" [{col}]"
-            bb2 = bb.replace(cb, b)
-            bb2 = bb2.replace(release_name, release_name_b)
+        bb2 = bb.replace(cb, b)
+        bb2 = bb2.replace(release_name, release_name_b)
         if codec:
             bb2 += f" {codec}"
         bb += ".mkv"
