@@ -346,7 +346,6 @@ async def parse(name, kk="", aa=".mkv"):
                 col = ""
                 col = wcol if wcol else col
 
-
         except Exception:
             ers = traceback.format_exc()
             LOGS.info(ers)
