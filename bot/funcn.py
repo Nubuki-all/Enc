@@ -55,9 +55,10 @@ URL_REGEX = r"^(https?://|ftp://)?(www\.)?[^/\s]+\.[^/\s:]+(:\d+)?(/[^?\s]*[\s\S
 
 uptime = dt.now()
 
-os.system(
-    "curl -sL https://raw.githubusercontent.com/anasty17/mirror-leech-telegram-bot/master/aria.sh|bash"
-)
+#os.system(
+#    "curl -sL https://raw.githubusercontent.com/anasty17/mirror-leech-telegram-bot/master/aria.sh|bash"
+#)
+
 if EABF is True:
     UNLOCK_UNSTABLE.append(1)
 
