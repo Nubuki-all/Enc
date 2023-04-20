@@ -218,9 +218,11 @@ async def en_download(event):
         download = downloader()
         await download.start(loc, 0, message, e)
         if download.is_cancelled:
-            return await e.edit(
-                f"Download of `{loc}` was cancelled by {download.canceller.first_name}"
-            )
+            reply = f"Download of `{loc}` was cancelled"
+            if download.canceller:
+                reply += f" by {download.canceller.first_name}"
+            reply += "!"
+            return await e.edit(reply)
         await e.edit(f"`saved to {loc} successfully`")
     except Exception:
         ers = traceback.format_exc()
@@ -265,7 +267,11 @@ async def en_rename(event):
         await download.start(loc, 0, message, e)
         if download.is_cancelled:
             # os.system(f"rm '{loc}'")
-            await e.edit(f"Download of `{__out}` was cancelled.")
+            reply = f"Download of `{loc}` was cancelled"
+            if download.canceller:
+                reply += f" by {download.canceller.first_name}"
+            reply += "!"
+            await e.edit(reply)
             return R_QUEUE.pop(0)
         await e.edit(f"Download of {loc} completed")
         await asyncio.sleep(5)
@@ -349,7 +355,11 @@ async def en_mux(event):
         await download.start(dl, 0, message, e)
         if download.is_cancelled:
             # os.system(f"rm {dl}")
-            await e.edit(f"Download of `{__loc}` was cancelled.")
+            reply = f"Download of `{loc}` was cancelled"
+            if download.canceller:
+                reply += f" by {download.canceller.first_name}"
+            reply += "!"
+            await e.edit(reply)
             return R_QUEUE.pop(0)
         args = args.strip()
         if "Fileinfo" in args:

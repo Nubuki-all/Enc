@@ -474,10 +474,11 @@ async def something():
                         if download.is_cancelled:
                             if message:
                                 reply = f"Download of `{name}` was cancelled"
-                                if download.canceller.id != user:
-                                    reply += (
-                                        f" by {download.canceller.mention(style='md')}"
-                                    )
+                                if download.canceller:
+                                    if download.canceller.id != user:
+                                        reply += (
+                                            f" by {download.canceller.mention(style='md')}"
+                                        )
                                 reply += "!"
                                 await mssg_r.edit(reply)
                                 await mssg_f.delete()
