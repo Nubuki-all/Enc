@@ -68,7 +68,9 @@ class uploader:
 
         except pyro_errors.FloodWait as e:
             await asyncio.sleep(e.value)
-            await reply.edit(f"`Failed: FloodWait error {enmoji2()}\nRetrying in 10 seconds…`")
+            await reply.edit(
+                f"`Failed: FloodWait error {enmoji2()}\nRetrying in 10 seconds…`"
+            )
             await asyncio.sleep(10)
             s = await self.start(from_user_id, filepath, reply, thum, caption, message)
             return s
@@ -228,7 +230,9 @@ class downloader:
 
         except pyro_errors.FloodWait as e:
             await asyncio.sleep(e.value)
-            await reply.edit(f"`Failed: FloodWait error {enmoji2()}\nRetrying in 10 seconds…`")
+            await reply.edit(
+                f"`Failed: FloodWait error {enmoji2()}\nRetrying in 10 seconds…`"
+            )
             await asyncio.sleep(10)
             dl_task = await self.start(dl, file, message, e)
             return dl_task
