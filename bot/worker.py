@@ -208,8 +208,8 @@ async def en_download(event):
         if args is not None:
             args = event.pattern_match.group(1).strip()
             loc = args
-            if loc.endswith("//"):
-                loc += message.caption
+            if loc.endswith("?"):
+                loc = loc.replace("?", message.caption)
             elif loc.endswith("/"):
                 loc += r.file.name
         else:
