@@ -342,7 +342,7 @@ async def queue_status(event):
                     except Exception:
                         pass
                     QUEUE_STATUS.remove(q_id)
-                    return QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
+                return QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
         else:
             QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
     except Exception:
