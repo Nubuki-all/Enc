@@ -366,7 +366,7 @@ async def q_dup_check(event):
         er = traceback.format_exc()
         LOGS.info(er)
         await channel_log(er)
-    return check 
+    return check
 
 
 async def get_queue():
