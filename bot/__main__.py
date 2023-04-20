@@ -487,7 +487,9 @@ async def something():
                                         f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by` [{download.canceller.first_name}.](tg://user?id={download.canceller.id})"
                                     )
                                 else:
-                                    await op.edit(f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled.")
+                                    await op.edit(
+                                        f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled."
+                                    )
                             if QUEUE:
                                 QUEUE.pop(list(QUEUE.keys())[0])
                             await save2db()
