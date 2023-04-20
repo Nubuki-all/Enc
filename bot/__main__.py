@@ -482,9 +482,12 @@ async def something():
                                 await mssg_f.delete()
                             await e.delete()
                             if op:
-                                await op.edit(
-                                    f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by` [{download.canceller.first_name}.](tg://user?id={download.canceller.id})"
-                                )
+                                if download.canceller:
+                                    await op.edit(
+                                        f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by` [{download.canceller.first_name}.](tg://user?id={download.canceller.id})"
+                                    )
+                                else:
+                                    await op.edit(f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled.")
                             if QUEUE:
                                 QUEUE.pop(list(QUEUE.keys())[0])
                             await save2db()
