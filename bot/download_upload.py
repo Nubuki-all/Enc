@@ -66,6 +66,13 @@ class uploader:
             s = await self.start(from_user_id, filepath, reply, thum, caption, message)
             return s
 
+        except pyro_errors.FloodWait as e:
+            await asyncio.sleep(e.value)
+            await reply.edit(f"`Failed: FloodWait error {enmoji2()}\nRetrying in 10 seconds…`")
+            await asyncio.sleep(10)
+            s = await self.start(from_user_id, filepath, reply, thum, caption, message)
+            return s
+
         except Exception:
             app.remove_handler(*self.handler)
             ers = traceback.format_exc()
@@ -215,6 +222,13 @@ class downloader:
 
         except pyro_errors.BadRequest:
             await reply.edit(f"`Failed {enmoji2()}\nRetrying in 10 seconds…`")
+            await asyncio.sleep(10)
+            dl_task = await self.start(dl, file, message, e)
+            return dl_task
+
+        except pyro_errors.FloodWait as e:
+            await asyncio.sleep(e.value)
+            await reply.edit(f"`Failed: FloodWait error {enmoji2()}\nRetrying in 10 seconds…`")
             await asyncio.sleep(10)
             dl_task = await self.start(dl, file, message, e)
             return dl_task

@@ -337,7 +337,7 @@ async def something():
                     dl = "downloads/" + name
                     if message:
                         if message.text:
-                            if " " in message.text:
+                            if message.text.startswith("/"):
                                 uri = message.text.split(" ", maxsplit=1)[1]
                             else:
                                 uri = message.text
