@@ -351,6 +351,24 @@ async def queue_status(event):
         await channel_log(er)
 
 
+async def q_dup_check(event):
+    try:
+        if QUEUE_STATUS:
+            check = True
+            for q_id in QUEUE_STATUS:
+                _chat_id, _msg_id = q_id.split()
+                if event.chat_id == int(_chat_id):
+                    check = False
+        else:
+            check = True
+    except Exception:
+        check = True
+        er = traceback.format_exc()
+        LOGS.info(er)
+        await channel_log(er)
+    return check
+
+
 async def get_queue():
     try:
         if WORKING:

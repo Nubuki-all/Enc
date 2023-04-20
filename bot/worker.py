@@ -704,13 +704,17 @@ async def listqueue(event):
 
     while True:
         try:
+            _is_duplicate = await q_dup_check(event2)
+            if _is_duplicate:
+                await event2.delete()
+                break
             msg = await get_queue()
             await event2.edit(msg)
             if not msg.endswith(">"):
                 await asyncio.sleep(5)
                 await event2.delete()
                 break
-            await asyncio.sleep(45)
+            await asyncio.sleep(30)
         except errors.rpcerrorlist.MessageNotModifiedError:
             await asyncio.sleep(30)
             continue
@@ -729,7 +733,7 @@ async def listqueuep(event):
             yo = await event.reply("Nothing In Queue")
             await asyncio.sleep(3)
             await yo.delete()
-            return await event.delete
+            return await event.delete()
         try:
             if WORKING:
                 i = 0
