@@ -356,8 +356,8 @@ async def q_dup_check(event):
         if QUEUE_STATUS:
             check = True
             for q_id in QUEUE_STATUS:
-                _chat_id, _msg_id = q_id.split()
-                if event.chat_id == int(_chat_id):
+                _q_id = str(event.chat_id) + " " + str(event.id)
+                if q_id == _q_id:
                     check = False
         else:
             check = True
@@ -366,7 +366,7 @@ async def q_dup_check(event):
         er = traceback.format_exc()
         LOGS.info(er)
         await channel_log(er)
-    return check
+    return check 
 
 
 async def get_queue():
