@@ -207,27 +207,11 @@ async def en_download(event):
         e = await message.reply(f"{enmoji()} `Downloading…`", quote=True)
         if args is not None:
             args = event.pattern_match.group(1).strip()
-            loc = ""
-            i = 0
-            if len(args.split()) > 1:
-                for x in args.split():
-                    try:
-                        if "-d" == x:
-                            if loc:
-                                loc = args.split()[i + 1] + "/" + loc
-                            else:
-                                loc += args.split()[i + 1] + "/"
-
-                        if "-r" == x:
-                            loc += args.split()[i + 1]
-                        i = i + 1
-                    except Exception:
-                        pass
-            else:
-                loc = args
-            if loc.endswith("/"):
+            loc = args
+            if loc.endswith("//"):
+                loc += message.caption
+            elif loc.endswith("/"):
                 loc += r.file.name
-
         else:
             loc = r.file.name
         await event.delete()
@@ -255,6 +239,8 @@ async def en_rename(event):
         message = await app.get_messages(event.chat_id, int(r.id))
         if args is None:
             loc = r.file.name
+        elif args == "0":
+            loc = message.caption
         else:
             loc = args.strip()
             root, ext = os.path.splitext(loc)
@@ -523,7 +509,7 @@ async def en_upload(event):
                             continue
                         await asyncio.sleep(10)
                         upload = uploader()
-                        ul = await upload(
+                        ul = await upload.start(
                             event.chat_id, file, r, "thumb.jpg", f"`{name}`", message
                         )
                         if not upload.is_cancelled:

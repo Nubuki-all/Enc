@@ -100,7 +100,7 @@ class uploader:
 
             progress = "{0}{1} \n<b>Progress:</b> `{2}%`\n".format(
                 "".join(
-                    [FINISHED_PROGRESS_STR for i in range(math.floor(percentage / 10))]
+                    [enhearts() for i in range(math.floor(percentage / 10))]
                 ),
                 "".join(
                     [
@@ -262,7 +262,7 @@ class downloader:
 
             progress = "{0}{1} \n<b>Progress:</b> `{2}%`\n".format(
                 "".join(
-                    [FINISHED_PROGRESS_STR for i in range(math.floor(percentage / 10))]
+                    [enhearts() for i in range(math.floor(percentage / 10))]
                 ),
                 "".join(
                     [

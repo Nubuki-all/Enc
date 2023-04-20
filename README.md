@@ -1,5 +1,4 @@
-# Encode2Tg [BETA] [![pyLint](https://github.com/Niffy-the-conqueror/Encode2Tg/actions/workflows/pyLint.yml/badge.svg?branch=anime)](https://github.com/Niffy-the-conqueror/Encode2Tg/actions/workflows/pyLint.yml)
-[![Build Status](https://dev.azure.com/itsjustplainr/E2tg/_apis/build/status/Niffy-the-conqueror.Encode2Tg?branchName=anime&jobName=Work)](https://dev.azure.com/itsjustplainr/E2tg/_build/latest?definitionId=2&branchName=anime)
+# [BETA] [![pyLint](https://github.com/Nubuki-all/Tg-encoder/actions/workflows/pyLint.yml/badge.svg?branch=main)](https://github.com/Nubuki-all/Tg-encoder/actions/workflows/pyLint.yml)
 
 ## With HandBrakeCLI support
 
@@ -49,7 +48,7 @@ ping - Ping!
 l - pass uri link with a single file to dl with aria2c 
 queue - List queue
 encodequeue - List queue (parsed)
-fix - Turn V2 On (With Message) or Off
+v - Turn V2,3,4… On (With Message) or Off
 get - Get Current ffmpeg code
 set - Set custom ffmpeg code
 reset - Reset default ffmpeg code
