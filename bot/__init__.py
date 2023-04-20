@@ -141,6 +141,7 @@ def enmoji2():
     y = random.choice(emoji)
     return y
 
+
 def enhearts():
     emoji = (
         "♥️",

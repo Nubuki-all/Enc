@@ -99,9 +99,7 @@ class uploader:
             time_to_completion = time_formatter(int((total - current) / speed))
 
             progress = "{0}{1} \n<b>Progress:</b> `{2}%`\n".format(
-                "".join(
-                    [enhearts() for i in range(math.floor(percentage / 10))]
-                ),
+                "".join([enhearts() for i in range(math.floor(percentage / 10))]),
                 "".join(
                     [
                         UN_FINISHED_PROGRESS_STR
@@ -261,9 +259,7 @@ class downloader:
             time_to_completion = time_formatter(int((total - current) / speed))
 
             progress = "{0}{1} \n<b>Progress:</b> `{2}%`\n".format(
-                "".join(
-                    [enhearts() for i in range(math.floor(percentage / 10))]
-                ),
+                "".join([enhearts() for i in range(math.floor(percentage / 10))]),
                 "".join(
                     [
                         UN_FINISHED_PROGRESS_STR
