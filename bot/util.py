@@ -471,7 +471,7 @@ async def custcap(name, fname):
         try:
             wfil3t = ""
             fil3t = ""
-            wrefil3t
+            wrefil3t = ""
             if wreleaser:
                 for item in wreleaser.split("\n"):
                     if item.split("|")[0].casefold() in e.casefold():

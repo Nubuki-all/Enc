@@ -524,11 +524,7 @@ async def something():
                     kk = kk
                 aa = kk.split(".")[-1]
                 rr = "encode"
-                namo = dl.split("/")[1]
-                if "v2" in namo:
-                    name = namo.replace("v2", "")
-                else:
-                    name = namo
+                name = dl.split("/")[-1]
                 bb, bb2 = await parse(name, kk, aa)
                 out = f"{rr}/{bb}"
                 b, d, c, rlsgrp = await dynamicthumb(name)
