@@ -1504,7 +1504,7 @@ async def enleech(event):
                             QUEUE.update({uri: [file_name, event.sender_id]})
                         await save2db()
                         msg = await event2.reply(
-                            f"**Torrent added To Queue ⏰, POS:** `{len(QUEUE)}`\n`Please Wait , Encode will start soon`"
+                            f"**Torrent added To Queue ⏰, POS:** `{len(QUEUE)-1}`\n`Please Wait , Encode will start soon`"
                         )
                         temp = temp - 1
                         temp2 = temp2 + 1
@@ -1557,7 +1557,7 @@ async def enleech(event):
         await save2db()
         if len(QUEUE) > 1 or LOCKFILE:
             msg = await event.reply(
-                f"**Torrent added To Queue ⏰, POS:** `{len(QUEUE)}`\n`Please Wait , Encode will start soon`"
+                f"**Torrent added To Queue ⏰, POS:** `{len(QUEUE)-1}`\n`Please Wait , Encode will start soon`"
             )
             return asyncio.create_task(listqueue(msg))
         else:
@@ -1628,7 +1628,7 @@ async def pencode(message):
         await save2db()
         if len(QUEUE) > 1 or LOCKFILE:
             await xxx.edit(
-                f"**Added To Queue ⏰, POS:** `{len(QUEUE)}` \n`Please Wait , Encode will start soon`"
+                f"**Added To Queue ⏰, POS:** `{len(QUEUE)-1}` \n`Please Wait , Encode will start soon`"
             )
         return
 
