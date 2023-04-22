@@ -120,6 +120,7 @@ async def wfilter():
     wname = Path("Namefilter.txt")
     wrelease = Path("Releasefilter.txt")
     aure = Path("Auto-rename.txt")
+    wrecap = Path("Release_caption.txt")
 
     if wname.is_file():
         with open("Namefilter.txt", "r") as file:
@@ -139,7 +140,13 @@ async def wfilter():
             file.close()
     else:
         aurer = ""
-    return wnamer, wreleaser, aurer
+    if wrecap.is_file():
+        with open(wrecap, "r") as file:
+            wrecaper = file.read().strip()
+            file.close()
+    else:
+        wrecaper = ""
+    return wnamer, wreleaser, aurer, wrecaper
 
 
 url = "https://graphql.anilist.co"
@@ -285,7 +292,7 @@ async def parse(name, kk="", aa=".mkv"):
             raise Exception("Parsing Failed")
         if not kk:
             kk = name
-        wnamer, wreleaser, aurer = await wfilter()
+        wnamer, wreleaser, aurer, wrecaper = await wfilter()
         codec = await get_codec()
         con = ""
         olif = Path("filter.txt")
@@ -459,11 +466,12 @@ async def custcap(name, fname):
             raise Exception("Parsing Failed")
         cdp = CAP_DECO
         temp_oi = oi
-        wnamer, wreleaser, aurer = await wfilter()
+        wnamer, wreleaser, aurer, wrecaper = await wfilter()
         codec = await get_codec()
         try:
             wfil3t = ""
             fil3t = ""
+            wrefil3t
             if wreleaser:
                 for item in wreleaser.split("\n"):
                     if item.split("|")[0].casefold() in e.casefold():
@@ -485,10 +493,8 @@ async def custcap(name, fname):
                         fil3t += item.split("|")[2] + " "
                     if item.startswith("^"):
                         break
-                if not fil3t and wfil3t:
-                    fil3t = wfil3t
-            else:
-                fil3t = wfil3t if wfil3t else fil3t
+
+            fil3t = wfil3t if wfil3t else fil3t
 
             if fil3t:
                 fil3t = fil3t.strip()
@@ -496,7 +502,19 @@ async def custcap(name, fname):
                 if s:
                     fil3t = s
                 else:
-                    fil3t = "English Subtitle"
+                    fil3t = "(English Subtitle)"
+
+            if wrecaper:
+                for item in wrecaper.split("\n"):
+                    _check_r = item.split("||", maxsplit=1)
+                    if _check_r[0] in e:
+                        for items in _check_r[1].split("||"):
+                            if items.split("|")[0] in name:
+                                wrefil3t = items.split("|")[1]
+                        break
+
+            fil3t = wrefil3t + " " + fil3t if wrefil3t else fil3t
+                        
         except Exception:
             pass
         try:
