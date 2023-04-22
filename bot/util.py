@@ -257,7 +257,7 @@ async def parser(name):
         except Exception:
             e = ""
         try:
-            s = na["subtitles"]
+            s = f"({na["subtitles"]})"
         except Exception:
             s = ""
         try:
@@ -513,7 +513,7 @@ async def custcap(name, fname):
                                 wrefil3t = items.split("|")[1]
                         break
 
-            fil3t = wrefil3t + " " + fil3t if wrefil3t else fil3t
+            fil3t = wrefil3t + " : " + fil3t if wrefil3t else fil3t
 
         except Exception:
             pass
