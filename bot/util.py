@@ -257,7 +257,7 @@ async def parser(name):
         except Exception:
             e = ""
         try:
-            s = f"({na["subtitles"]})"
+            s = f'({na["subtitles"]})'
         except Exception:
             s = ""
         try:
