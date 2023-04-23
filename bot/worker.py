@@ -434,6 +434,7 @@ async def dumpdl(dl, name, thum, user, message):
         await asyncio.sleep(2)
         if int(_dmp.stat().st_size) > 2126000000:
             dp = await reply.reply("**File too large to dump, Aborting…**")
+            f_reply = reply
         else:
             upload = uploader()
             dp = await upload.start(user, dmp, reply, thum, f"`{name}`", message)
@@ -1516,7 +1517,7 @@ async def enleech(event):
                     return
                 else:
                     return await event.reply(
-                        f"**Pardon me, but what does*** `'{temp2}'` **mean?\noh and btw whatever you did has failed."
+                        f"**Pardon me, but what does this mean?**\n`Error: expected number but received '{args}'.`"
                     )
             else:
                 uri = rep_event.text
