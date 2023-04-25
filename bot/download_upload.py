@@ -83,6 +83,8 @@ class uploader:
             return None
 
     async def progress_for_pyrogram(self, current, total, app, ud_type, message, start):
+        fin_str = enhearts()
+        unfin_str = UN_FINISHED_PROGRESS_STR
         now = time.time()
         diff = now - start
         if self.is_cancelled:
@@ -99,10 +101,10 @@ class uploader:
             time_to_completion = time_formatter(int((total - current) / speed))
 
             progress = "{0}{1} \n<b>Progress:</b> `{2}%`\n".format(
-                "".join([enhearts() for i in range(math.floor(percentage / 10))]),
+                "".join([fin_str for i in range(math.floor(percentage / 10))]),
                 "".join(
                     [
-                        UN_FINISHED_PROGRESS_STR
+                        unfin_str
                         for i in range(10 - math.floor(percentage / 10))
                     ]
                 ),
@@ -243,6 +245,8 @@ class downloader:
             return None
 
     async def progress_for_pyrogram(self, current, total, app, ud_type, message, start):
+        fin_str = enhearts()
+        unfin_str = UN_FINISHED_PROGRESS_STR
         now = time.time()
         diff = now - start
         if self.is_cancelled:
@@ -259,10 +263,10 @@ class downloader:
             time_to_completion = time_formatter(int((total - current) / speed))
 
             progress = "{0}{1} \n<b>Progress:</b> `{2}%`\n".format(
-                "".join([enhearts() for i in range(math.floor(percentage / 10))]),
+                "".join([fin_str for i in range(math.floor(percentage / 10))]),
                 "".join(
                     [
-                        UN_FINISHED_PROGRESS_STR
+                        unfin_str
                         for i in range(10 - math.floor(percentage / 10))
                     ]
                 ),
