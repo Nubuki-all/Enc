@@ -69,14 +69,14 @@ async def get_queue():
             #button_layout = [
             #    [btn_prev, btn_next],
             #    [btn_refresh]
-            ]
+            #]
             # Create the InlineKeyboardMarkup
             #button = InlineKeyboardMarkup(button_layout)
             btn_prev = Button.inline("<<", data="status prev")
             btn_next = Button.inline(">>", data="status next")
             btn_refresh = Button.inline("♻️", data="status")
             # Define the button layout
-            button = [([btn_prev, btn_next]), [btn_refresh],]
+            button = [[btn_prev, btn_next], [btn_refresh]]
         else:
             msg += f"**Pending Tasks:** {i}\n"
 
