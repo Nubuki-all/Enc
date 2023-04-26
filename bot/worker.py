@@ -715,9 +715,9 @@ async def listqueue(event):
                 await event2.delete()
                 break
             await event2.edit(msg, buttons=button)
-            await asyncio.sleep(8)
+            await asyncio.sleep(5)
         except errors.rpcerrorlist.MessageNotModifiedError:
-            await asyncio.sleep(30)
+            await asyncio.sleep(8)
             continue
         except errors.FloodWaitError as e:
             await asyncio.sleep(e.seconds)
