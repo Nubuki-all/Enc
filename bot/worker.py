@@ -711,11 +711,10 @@ async def listqueue(event):
                 await event2.delete()
                 break
             msg, button = await get_queue()
-            await event2.edit(msg, buttons=button)
-            if not msg.endswith(">"):
-                await asyncio.sleep(5)
+            if not msg:
                 await event2.delete()
                 break
+            await event2.edit(msg, buttons=button)
             await asyncio.sleep(30)
         except errors.rpcerrorlist.MessageNotModifiedError:
             await asyncio.sleep(30)

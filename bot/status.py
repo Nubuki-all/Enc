@@ -37,6 +37,7 @@ async def get_queue():
     button = None
     try:
         i = len(QUEUE)
+        _no = 1
         globals()["PAGES"] = (i + STATUS_LIMIT - 1) // STATUS_LIMIT
         if PAGE_NO > PAGES and PAGES != 0:
             globals()["STATUS_START"] = STATUS_LIMIT * (PAGES - 1)
@@ -54,12 +55,13 @@ async def get_queue():
                         user = await app.get_users(OWNER.split()[0])
             else:
                 user = await app.get_users(_id)
-            msg += f"{i}. `{file_name}`\n**Added by:** [{user.first_name}](tg://user?id={_id})\n"
+            msg += f"{_no}. `{file_name}`\n**Added by:** [{user.first_name}](tg://user?id={_id})\n\n"
+            _no = _no + 1
 
         if msg:
-            msg += f"\n**{enmoji()} Tip: To remove an item from queue use** /clear <queue number>"
+            pass
         else:
-            msg = "**Nothing Here** 🐱"
+            return None, None
         if i > STATUS_LIMIT:
             msg += f"**Page:** {PAGE_NO}/{PAGES} | **Pending Tasks:** {i}\n"
             # Define the buttons
@@ -80,6 +82,7 @@ async def get_queue():
             button = [[btn_prev, btn_next], [btn_refresh]]
         else:
             msg += f"**Pending Tasks:** {i}\n"
+        msg += f"\n**{enmoji()} Tip: To remove an item from queue use** /clear <queue number>"
 
     except Exception:
         er = traceback.format_exc()
