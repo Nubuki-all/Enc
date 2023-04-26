@@ -692,13 +692,15 @@ async def cache_dl():
 
 async def listqueue(event, deletable=True):
     if event.sender_id is not None and event.sender_id != int(BOT_TOKEN.split(":")[0]):
-        if event.is_channel:
+        if event.is_channel and not event.is_group:
             return
         if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
             return
     if not QUEUE:
         yo = await event.reply("Nothing In Queue")
-        await asyncio.sleep(30)
+        await asyncio.sleep(10)
+        if deletable:
+            await event.delete()
         return await yo.delete()
     event2 = await event.reply("`Listing queue pls wait…`")
     await queue_status(event2)
@@ -712,6 +714,8 @@ async def listqueue(event, deletable=True):
                 break
             msg, button = await get_queue()
             if not msg:
+                await event2.edit("`Nothing Here, yet! 💖`")
+                await asyncio.sleep(10)
                 await event2.delete()
                 break
             await event2.edit(msg, buttons=button)
