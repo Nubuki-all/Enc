@@ -9,6 +9,6 @@ pymongo[srv]
 qbittorrent-api
 random_word
 quote
-telethon
+telethon>=1.28.5
 #https://github.com/New-dev0/Telethon/archive/Aurium.zip
 html_telegraph_poster
