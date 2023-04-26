@@ -313,6 +313,7 @@ async def parse(name, kk="", aa=".mkv"):
                 con = f"{json['countryOfOrigin']}"
                 con = await conconvert(con)
                 g = f"{json.get('episodes')}"
+                g = "0" + str(g) if d.startswith("0") else g
             except Exception:
                 con = ""
                 g = ""
@@ -539,6 +540,7 @@ async def custcap(name, fname):
             oi = f"{json['title']['english']}"
             oi = f"{json['title']['romaji']}" if oi == "None" else oi
             g = f"{json.get('episodes')}"
+            g = "0" + str(g) if z.startswith("0") else g
         except Exception:
             g = ""
         oi = string.capwords(oi)
