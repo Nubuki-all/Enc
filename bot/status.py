@@ -63,7 +63,7 @@ async def get_queue():
         else:
             return None, None
         if (i + 1) > STATUS_LIMIT:
-            #msg += f"**Page:** {PAGE_NO}/{PAGES} | **Pending Tasks:** {i}\n"
+            # msg += f"**Page:** {PAGE_NO}/{PAGES} | **Pending Tasks:** {i}\n"
             # Define the buttons
             # btn_prev = InlineKeyboardButton("<<", callback_data="status prev")
             # btn_next = InlineKeyboardButton(">>", callback_data="status next")
