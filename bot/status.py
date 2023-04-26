@@ -112,5 +112,4 @@ async def turn_page(event):
                 PAGE_NO -= 1
 
 
-
-bot.add_event_handler(turn_page, events.callbackquery.CallbackQuery(data=re.compile(b"status(.*)"))
+bot.add_event_handler(turn_page, events.callbackquery.CallbackQuery(data=re.compile(b"status(.*)")))
