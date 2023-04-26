@@ -37,11 +37,11 @@ async def get_queue():
     button = None
     try:
         i = len(QUEUE)
-        _no = 1
         globals()["PAGES"] = (i + STATUS_LIMIT - 1) // STATUS_LIMIT
         if PAGE_NO > PAGES and PAGES != 0:
             globals()["STATUS_START"] = STATUS_LIMIT * (PAGES - 1)
             globals()["PAGE_NO"] = PAGES
+        _no = STATUS_START + 1
         for file in list(QUEUE.values())[STATUS_START : STATUS_LIMIT + STATUS_START]:
             file_name, _id = file
             file_id = list(QUEUE.keys())[list(QUEUE.values()).index(file)]
