@@ -93,23 +93,30 @@ async def get_queue():
 
 
 async def turn_page(event):
-    data = event.pattern_match.group(1).strip()
-    global STATUS_START, PAGE_NO
-    async with status_lock:
-        if data == "next":
-            if PAGE_NO == PAGES:
-                STATUS_START = 0
-                PAGE_NO = 1
-            else:
-                STATUS_START += STATUS_LIMIT
-                PAGE_NO += 1
-        elif data == "prev":
-            if PAGE_NO == 1:
-                STATUS_START = STATUS_LIMIT * (PAGES - 1)
-                PAGE_NO = PAGES
-            else:
-                STATUS_START -= STATUS_LIMIT
-                PAGE_NO -= 1
+    try:
+        data = event.pattern_match.group(1).strip()
+        global STATUS_START, PAGE_NO
+        async with status_lock:
+            LOGS.info("debug")
+            if data == "next":
+                LOGS.info("debug")
+                if PAGE_NO == PAGES:
+                    STATUS_START = 0
+                    PAGE_NO = 1
+                else:
+                    STATUS_START += STATUS_LIMIT
+                    PAGE_NO += 1
+            elif data == "prev":
+                if PAGE_NO == 1:
+                    STATUS_START = STATUS_LIMIT * (PAGES - 1)
+                    PAGE_NO = PAGES
+                else:
+                    STATUS_START -= STATUS_LIMIT
+                    PAGE_NO -= 1
+    except Exception:
+        er = traceback.format_exc()
+        LOGS.info(er)
+        await channel_log(er)
 
 
 bot.add_event_handler(
