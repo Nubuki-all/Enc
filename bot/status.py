@@ -77,12 +77,11 @@ async def get_queue():
             # button = InlineKeyboardMarkup(button_layout)
             btn_prev = Button.inline("<<", data="status prev")
             btn_next = Button.inline(">>", data="status next")
-            btn_refresh = Button.inline("♻️", data="status")
             # Define the button layout
-            button = [[btn_prev, btn_next], [btn_refresh]]
+            button = [[btn_prev, btn_next]]
         else:
             msg += f"**Pending Tasks:** {i}\n"
-        msg += f"\n**{enmoji()} Tip: To remove an item from queue use** /clear <queue number>"
+        msg += f"\n**📌 Tip: To remove an item from queue use** /clear <queue number>"
 
     except Exception:
         er = traceback.format_exc()
@@ -97,9 +96,7 @@ async def turn_page(event):
         data = event.pattern_match.group(1).decode().strip()
         global STATUS_START, PAGE_NO, PAGES
         async with status_lock:
-            LOGS.info(f"debug: {data}")
             if data == "next":
-                LOGS.info("debug")
                 if PAGE_NO == PAGES:
                     STATUS_START = 0
                     PAGE_NO = 1

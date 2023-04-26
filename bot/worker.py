@@ -715,7 +715,7 @@ async def listqueue(event):
                 await event2.delete()
                 break
             await event2.edit(msg, buttons=button)
-            await asyncio.sleep(30)
+            await asyncio.sleep(08)
         except errors.rpcerrorlist.MessageNotModifiedError:
             await asyncio.sleep(30)
             continue
@@ -847,7 +847,6 @@ async def statuschecker():
                     getattr(signal, signame),
                     lambda: asyncio.create_task(on_termination()),
                 )
-            await bot.catch_up()
             # some other stuff to do ONLY on startup couldn't find a better way
             # even after more than 8 trials which i committed
             await asyncio.sleep(30)
