@@ -97,7 +97,7 @@ async def turn_page(event):
         data = event.pattern_match.group(1).strip()
         global STATUS_START, PAGE_NO
         async with status_lock:
-            LOGS.info("debug")
+            LOGS.info(f"debug: {data}")
             if data == "next":
                 LOGS.info("debug")
                 if PAGE_NO == PAGES:
