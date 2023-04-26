@@ -76,7 +76,7 @@ async def get_queue():
             btn_next = Button.inline(">>", data="status next")
             btn_refresh = Button.inline("♻️", data="status")
             # Define the button layout
-            button = [[btn_prev, btn_next], [btn_refresh],]
+            button = [([btn_prev, btn_next]), [btn_refresh],]
         else:
             msg += f"**Pending Tasks:** {i}\n"
 
