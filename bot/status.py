@@ -1,7 +1,7 @@
-from .funcn import *
 from telethon import events
 from telethon.tl.custom import Button
-from telethon.tl.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+from .funcn import *
 
 status_lock = asyncio.Lock()
 
@@ -9,6 +9,7 @@ STATUS_START = 0
 PAGES = 1
 PAGE_NO = 1
 STATUS_LIMIT = 10
+
 
 async def queue_status(event):
     try:
@@ -31,16 +32,17 @@ async def queue_status(event):
         LOGS.info(er)
         await channel_log(er)
 
+
 async def get_queue():
     msg = ""
     button = None
     try:
         i = len(QUEUE)
-        globals()['PAGES'] = (i + STATUS_LIMIT - 1) // STATUS_LIMIT
+        globals()["PAGES"] = (i + STATUS_LIMIT - 1) // STATUS_LIMIT
         if PAGE_NO > PAGES and PAGES != 0:
-            globals()['STATUS_START'] = STATUS_LIMIT * (PAGES - 1)
-            globals()['PAGE_NO'] = PAGES
-        for file in list(QUEUE.values())[STATUS_START:STATUS_LIMIT+STATUS_START]:
+            globals()["STATUS_START"] = STATUS_LIMIT * (PAGES - 1)
+            globals()["PAGE_NO"] = PAGES
+        for file in list(QUEUE.values())[STATUS_START : STATUS_LIMIT + STATUS_START]:
             file_name, _id = file
             file_id = list(QUEUE.keys())[list(QUEUE.values()).index(file)]
             if str(_id).startswith("-100"):
@@ -62,16 +64,16 @@ async def get_queue():
         if i > STATUS_LIMIT:
             msg += f"**Page:** {PAGE_NO}/{PAGES} | **Pending Tasks:** {i}\n"
             # Define the buttons
-            #btn_prev = InlineKeyboardButton("<<", callback_data="status prev")
-            #btn_next = InlineKeyboardButton(">>", callback_data="status next")
-            #btn_refresh = InlineKeyboardButton("♻️", callback_data="status ref")
+            # btn_prev = InlineKeyboardButton("<<", callback_data="status prev")
+            # btn_next = InlineKeyboardButton(">>", callback_data="status next")
+            # btn_refresh = InlineKeyboardButton("♻️", callback_data="status ref")
             # Define the button layout
-            #button_layout = [
+            # button_layout = [
             #    [btn_prev, btn_next],
             #    [btn_refresh]
-            #]
+            # ]
             # Create the InlineKeyboardMarkup
-            #button = InlineKeyboardMarkup(button_layout)
+            # button = InlineKeyboardMarkup(button_layout)
             btn_prev = Button.inline("<<", data="status prev")
             btn_next = Button.inline(">>", data="status next")
             btn_refresh = Button.inline("♻️", data="status")
@@ -85,7 +87,7 @@ async def get_queue():
         LOGS.info(er)
         await channel_log(er)
         msg = "__An error occurred.__"
-    return msg, button 
+    return msg, button
 
 
 async def turn_page(event):
@@ -109,6 +111,8 @@ async def turn_page(event):
 
 
 pattern = re.compile(r"^status")
+
+
 @events.register(events.CallbackQuery(pattern=pattern))
 async def callback_query_handler(event):
     async def _(e):

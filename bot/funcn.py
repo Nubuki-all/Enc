@@ -330,7 +330,6 @@ async def channel_log(error):
         return msg
 
 
-
 async def q_dup_check(event):
     try:
         if QUEUE_STATUS:
@@ -347,8 +346,6 @@ async def q_dup_check(event):
         LOGS.info(er)
         await channel_log(er)
     return check
-
-
 
 
 async def get_cached(dl, sender, user, e, op):
