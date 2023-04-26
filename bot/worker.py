@@ -690,7 +690,7 @@ async def cache_dl():
         CACHE_QUEUE.clear()
 
 
-async def listqueue(event):
+async def listqueue(event, deletable=True):
     if event.sender_id is not None and event.sender_id != int(BOT_TOKEN.split(":")[0]):
         if event.is_channel:
             return
@@ -724,6 +724,9 @@ async def listqueue(event):
             continue
         except Exception:
             break
+    if deletable:
+        await event.delete()
+    return
 
 
 async def listqueuep(event):
@@ -1509,7 +1512,7 @@ async def enleech(event):
                         )
                         temp = temp - 1
                         temp2 = temp2 + 1
-                        asyncio.create_task(listqueue(msg))
+                        asyncio.create_task(listqueue(msg, False))
                         await asyncio.sleep(5)
                     if LOCKFILE:
                         if LOCKFILE[0] == "leechlock":
@@ -1560,9 +1563,9 @@ async def enleech(event):
             msg = await event.reply(
                 f"**Torrent added To Queue ⏰, POS:** `{len(QUEUE)-1}`\n`Please Wait , Encode will start soon`"
             )
-            return asyncio.create_task(listqueue(msg))
+            return asyncio.create_task(listqueue(msg, False))
         else:
-            return asyncio.create_task(listqueue(event))
+            return asyncio.create_task(listqueue(event, False))
     except Exception:
         ers = traceback.format_exc()
         LOGS.info(ers)
