@@ -87,7 +87,7 @@ except Exception:
     LOG_CHANNEL = ""
 
 try:
-    bot = TelegramClient(None, APP_ID, API_HASH)
+    bot = TelegramClient(None, APP_ID, API_HASH, catch_up=True)
     app = Client(
         "Encoder",
         api_id=APP_ID,
