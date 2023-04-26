@@ -715,7 +715,7 @@ async def listqueue(event):
                 await event2.delete()
                 break
             await event2.edit(msg, buttons=button)
-            await asyncio.sleep(08)
+            await asyncio.sleep(8)
         except errors.rpcerrorlist.MessageNotModifiedError:
             await asyncio.sleep(30)
             continue
