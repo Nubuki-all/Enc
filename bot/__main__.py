@@ -26,7 +26,7 @@ LOGS.info("Starting...")
 
 
 try:
-    bot.start(bot_token=BOT_TOKEN, catch_up=True)
+    bot.start(bot_token=BOT_TOKEN)
     app.start()
 except Exception as er:
     LOGS.info(er)
