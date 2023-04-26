@@ -19,9 +19,9 @@ import time
 from pathlib import Path
 
 import psutil
-from .status import get_queue, queue_status
 
 from .download_upload import downloader, uploader
+from .status import get_queue, queue_status
 from .util import *
 from .worker import *
 
