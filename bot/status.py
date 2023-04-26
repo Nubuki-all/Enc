@@ -37,17 +37,17 @@ async def get_queue():
     button = None
     try:
         i = len(QUEUE)
-        globals()["PAGES"] = (i + STATUS_LIMIT - 1) // STATUS_LIMIT
+        globals()["PAGES"] = (i + STATUS_LIMIT - 2) // STATUS_LIMIT
         if PAGE_NO > PAGES and PAGES != 0:
-            globals()["STATUS_START"] = STATUS_LIMIT * (PAGES - 1)
+            globals()["STATUS_START"] = STATUS_LIMIT * PAGES
             globals()["PAGE_NO"] = PAGES
         _no = STATUS_START
         for file in list(QUEUE.values())[STATUS_START : STATUS_LIMIT + STATUS_START]:
             file_name, _id = file
             file_id = list(QUEUE.keys())[list(QUEUE.values()).index(file)]
             if str(_id).startswith("-100"):
-                msg = await app.get_messages(_id, int(file_id))
-                user = msg.from_user
+                g_msg = await app.get_messages(_id, int(file_id))
+                user = g_msg.from_user
                 if user is None:
                     if UNLOCK_UNSTABLE:
                         user = await app.get_users(777000)
@@ -99,7 +99,7 @@ async def turn_page(event):
         async with status_lock:
             if data == "next":
                 if PAGE_NO == PAGES:
-                    STATUS_START = 0
+                    STATUS_START = 1
                     PAGE_NO = 1
                 else:
                     STATUS_START += STATUS_LIMIT
