@@ -94,7 +94,7 @@ async def get_queue():
 
 async def turn_page(event):
     try:
-        data = event.pattern_match.group(1).strip()
+        data = event.pattern_match.group(1).decode().strip()
         global STATUS_START, PAGE_NO
         async with status_lock:
             LOGS.info(f"debug: {data}")
