@@ -106,7 +106,7 @@ async def turn_page(event):
                     PAGE_NO += 1
             elif data == "prev":
                 if PAGE_NO == 1:
-                    STATUS_START = STATUS_LIMIT * (PAGES - 1)
+                    STATUS_START = (STATUS_LIMIT * (PAGES - 1)) + 1
                     PAGE_NO = PAGES
                 else:
                     STATUS_START -= STATUS_LIMIT
