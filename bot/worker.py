@@ -19,7 +19,7 @@ import time
 from pathlib import Path
 
 import psutil
-from status import get_queue, queue_status
+from .status import get_queue, queue_status
 
 from .download_upload import downloader, uploader
 from .util import *

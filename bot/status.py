@@ -1,5 +1,4 @@
 from telethon import events
-from telethon.tl.custom import Button
 
 from .funcn import *
 
