@@ -41,7 +41,7 @@ async def get_queue():
         if PAGE_NO > PAGES and PAGES != 0:
             globals()["STATUS_START"] = STATUS_LIMIT * (PAGES - 1)
             globals()["PAGE_NO"] = PAGES
-        _no = STATUS_START + 1
+        _no = STATUS_START
         for file in list(QUEUE.values())[STATUS_START : STATUS_LIMIT + STATUS_START]:
             file_name, _id = file
             file_id = list(QUEUE.keys())[list(QUEUE.values()).index(file)]
@@ -62,8 +62,8 @@ async def get_queue():
             pass
         else:
             return None, None
-        if i > STATUS_LIMIT:
-            msg += f"**Page:** {PAGE_NO}/{PAGES} | **Pending Tasks:** {i}\n"
+        if (i + 1) > STATUS_LIMIT:
+            #msg += f"**Page:** {PAGE_NO}/{PAGES} | **Pending Tasks:** {i}\n"
             # Define the buttons
             # btn_prev = InlineKeyboardButton("<<", callback_data="status prev")
             # btn_next = InlineKeyboardButton(">>", callback_data="status next")
@@ -76,11 +76,12 @@ async def get_queue():
             # Create the InlineKeyboardMarkup
             # button = InlineKeyboardMarkup(button_layout)
             btn_prev = Button.inline("<<", data="status prev")
+            btn_info = Button.inline(f"{PAGE_NO}/{PAGES} ({i - 1})", data="None")
             btn_next = Button.inline(">>", data="status next")
             # Define the button layout
-            button = [[btn_prev, btn_next]]
+            button = [[btn_prev, btn_info, btn_next]]
         else:
-            msg += f"**Pending Tasks:** {i}\n"
+            msg += f"**Pending Tasks:** {i - 1}\n"
         msg += f"\n**📌 Tip: To remove an item from queue use** /clear <queue number>"
 
     except Exception:
