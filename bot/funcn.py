@@ -330,26 +330,6 @@ async def channel_log(error):
         return msg
 
 
-async def queue_status(event):
-    try:
-        if QUEUE_STATUS:
-            for q_id in QUEUE_STATUS:
-                _chat_id, _msg_id = q_id.split()
-                if event.chat_id == int(_chat_id):
-                    msg = await app.get_messages(int(_chat_id), int(_msg_id))
-                    try:
-                        await msg.delete()
-                    except Exception:
-                        pass
-                    QUEUE_STATUS.remove(q_id)
-                return QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
-        else:
-            QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
-    except Exception:
-        er = traceback.format_exc()
-        LOGS.info(er)
-        await channel_log(er)
-
 
 async def q_dup_check(event):
     try:
@@ -369,40 +349,6 @@ async def q_dup_check(event):
     return check
 
 
-async def get_queue():
-    try:
-        if WORKING:
-            i = 0
-        else:
-            i = 1
-        x = ""
-        while i < len(QUEUE):
-            file_name, _id = QUEUE[list(QUEUE.keys())[i]]
-            file_id = list(QUEUE.keys())[i]
-            if str(_id).startswith("-100"):
-                msg = await app.get_messages(_id, int(file_id))
-                user = msg.from_user
-                if user is None:
-                    if UNLOCK_UNSTABLE:
-                        user = await app.get_users(777000)
-                    else:
-                        user = await app.get_users(OWNER.split()[0])
-            else:
-                user = await app.get_users(_id)
-            x += f"{i}. {file_name} ({user.first_name})\n"
-            i = i + 1
-
-        if x:
-            x += f"\n**{enmoji()} Tip: To remove an item from queue use** /clear <queue number>"
-        else:
-            x = "**Nothing Here** 🐱"
-
-    except Exception:
-        er = traceback.format_exc()
-        LOGS.info(er)
-        await channel_log(er)
-        x = "__An error occurred.__"
-    return x
 
 
 async def get_cached(dl, sender, user, e, op):

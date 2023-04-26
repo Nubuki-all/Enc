@@ -20,6 +20,7 @@ from pathlib import Path
 
 import psutil
 
+from status import get_queue, turn_page, queue_status
 from .download_upload import downloader, uploader
 from .util import *
 from .worker import *
@@ -709,8 +710,8 @@ async def listqueue(event):
             if _is_duplicate:
                 await event2.delete()
                 break
-            msg = await get_queue()
-            await event2.edit(msg)
+            msg, button = await get_queue()
+            await event2.edit(msg, buttons=button)
             if not msg.endswith(">"):
                 await asyncio.sleep(5)
                 await event2.delete()
