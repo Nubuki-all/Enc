@@ -4,7 +4,7 @@ from .funcn import *
 
 status_lock = asyncio.Lock()
 
-STATUS_START = 0
+STATUS_START = 1
 PAGES = 1
 PAGE_NO = 1
 STATUS_LIMIT = 10
