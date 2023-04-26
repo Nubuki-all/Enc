@@ -93,7 +93,7 @@ async def get_queue():
 
 
 async def turn_page(event):
-    data = event.data.decode()
+    data = event.pattern_match.group(1).strip()
     global STATUS_START, PAGE_NO
     async with status_lock:
         if data[1] == "status next":
@@ -112,10 +112,5 @@ async def turn_page(event):
                 PAGE_NO -= 1
 
 
-pattern = re.compile(r"^status")
 
-
-@events.register(events.CallbackQuery(pattern=pattern))
-async def callback_query_handler(event):
-    async def _(e):
-        await turn_page(e)
+bot.add_event_handler(turn_page, events.callbackquery.CallbackQuery(data=re.compile(b"status(.*)"))
