@@ -257,6 +257,10 @@ async def parser(name):
         except Exception:
             e = ""
         try:
+            r = f'[{na["release_information"]}]'
+        except Exception:
+            r = ""
+        try:
             s = f'({na["subtitles"]})'
         except Exception:
             s = ""
@@ -272,7 +276,7 @@ async def parser(name):
                 b = b + " " + yr
         except Exception:
             pass
-        return na, b, d, c, e, fil2, fil3, s, st
+        return na, b, d, c, e, fil2, fil3, s, st, r
     except Exception:
         pass
 
@@ -287,12 +291,14 @@ async def conconvert(iso2_codes):
 
 async def parse(name, kk="", aa=".mkv"):
     try:
-        ani, b, d, c, e, fil2, fil3, s, st = await parser(name)
+        ani, b, d, c, e, fil2, fil3, s, st, r = await parser(name)
         if b is None:
             raise Exception("Parsing Failed")
         if not kk:
             kk = name
         wnamer, wreleaser, aurer, wrecaper = await wfilter()
+        r_is_end = False
+        r_is_end = True if r == "[END]" else r_is_end
         codec = await get_codec()
         con = ""
         olif = Path("filter.txt")
@@ -385,7 +391,7 @@ async def parse(name, kk="", aa=".mkv"):
             bb += f" - {d}"
         if VERSION2:
             bb += f"v{VERSION2[0]}"
-        if g == d and not c:
+        if g == d and not c or r_is_end:
             bb += " [END]"
         if col:
             bb += f" [{col}]"
@@ -406,7 +412,7 @@ async def parse(name, kk="", aa=".mkv"):
 
 async def dynamicthumb(name, thum="thumb2.jpg"):
     try:
-        ani, b, d, c, e, fil2, fil3, s, st = await parser(name)
+        ani, b, d, c, e, fil2, fil3, s, st, r = await parser(name)
         try:
             ttx = Path("parse.txt")
             if ttx.is_file():
@@ -462,12 +468,14 @@ async def dynamicthumb(name, thum="thumb2.jpg"):
 
 async def custcap(name, fname):
     try:
-        ani, oi, z, y, e, fil2, fil3, s, st = await parser(name)
+        ani, oi, z, y, e, fil2, fil3, s, st, r = await parser(name)
         if oi is None:
             raise Exception("Parsing Failed")
         cdp = CAP_DECO
         temp_oi = oi
         wnamer, wreleaser, aurer, wrecaper = await wfilter()
+        r_is_end = False
+        r_is_end = True if r == "[END]" else r_is_end
         codec = await get_codec()
         try:
             wfil3t = ""
@@ -539,6 +547,13 @@ async def custcap(name, fname):
             )
             oi = f"{json['title']['english']}"
             oi = f"{json['title']['romaji']}" if oi == "None" else oi
+            if y:
+                variables = {"search": f"{oi} {y}", "type": "ANIME"}
+                json = (
+                    requests.post(url, json={"query": anime_query, "variables": variables})
+                    .json()["data"]
+                    .get("Media")
+                )
             g = f"{json.get('episodes')}"
             g = "0" + str(g) if z.startswith("0") else g
         except Exception:
@@ -571,7 +586,9 @@ async def custcap(name, fname):
         else:
             fil3 = fil3.format(**locals())
             caption += f"**{cdp} Type:** `{fil3}`"
-        if z == g:
+        if not r_is_end:
+            caption += f" `{r}`"
+        if z == g or r_is_end:
             caption += " **[END]**\n"
         else:
             caption += "\n"
