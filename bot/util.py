@@ -550,7 +550,9 @@ async def custcap(name, fname):
             if y:
                 variables = {"search": f"{oi} {y}", "type": "ANIME"}
                 json = (
-                    requests.post(url, json={"query": anime_query, "variables": variables})
+                    requests.post(
+                        url, json={"query": anime_query, "variables": variables}
+                    )
                     .json()["data"]
                     .get("Media")
                 )
