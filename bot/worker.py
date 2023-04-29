@@ -499,6 +499,7 @@ async def en_upload(event):
             # await event.delete()
             args = event.pattern_match.group(1).strip()
             file = Path(args)
+            chain_msg = message 
             if not file.is_file() and not os.path.isdir(file):
                 return await event.reply("__File or folder not found__")
             if os.path.isdir(file):
@@ -510,28 +511,43 @@ async def en_upload(event):
                     t = 1
                     for name in files:
                         file = os.path.join(path, name)
-                        cap = file.split("/", maxsplit=1)[-1]
-                        r = await message.reply(
-                            f"`Uploading {name} from 📁 {path} ({t}/{i})…`", quote=True
-                        )
                         if int(Path(file).stat().st_size) > 2126000000:
-                            await r.edit(
+                            await chain_msg.edit(
                                 f"Uploading of `{name}` failed because file was larger than 2GB"
                             )
                             continue
-                        await asyncio.sleep(10)
-                        upload = uploader()
-                        ul = await upload.start(
-                            event.chat_id, file, r, "thumb.jpg", f"`{name}`", message
-                        )
-                        if not upload.is_cancelled:
-                            await r.edit(f"`{name} uploaded successfully.`")
-                        else:
-                            await r.edit(f"Uploading of `{name}` cancelled.")
-                        t = t + 1
-                    await ul.reply(
-                        f"All files in {path} has been uploaded successfully {enmoji()}."
-                    )
+                        while True:
+                            try:
+                                cap = file.split("/", maxsplit=1)[-1]
+                                chain_msg = await chain_msg.reply(
+                                    f"`Uploading {name} from 📁 {path} ({t}/{i})…`", quote=True
+                                )
+                                await asyncio.sleep(10)
+                                upload = uploader()
+                                ul = await upload.start(
+                                    event.chat_id, file, chain_msg, "thumb.jpg", f"`{name}`", chain_msg
+                                )
+                                if not upload.is_cancelled:
+                                    await chain_msg.edit(f"`{name} uploaded successfully.`")
+                                    chain_msg = ul
+                                else:
+                                    await chain_msg.edit(f"Uploading of `{name}` cancelled.")
+                                t = t + 1
+                                if ul:
+                                    final = ul
+                                else:
+                                    final = message
+                                await final.reply(
+                                    f"All files in {path} has been uploaded successfully {enmoji()}."
+                                )
+                            except pyro_errors.FloodWait as e:
+                                await asyncio.sleep(e.value)
+                                continue
+                            except pyro_errors.BadRequest:
+                                await asyncio.sleep(10)
+                                continue
+                            break
+                        
 
             else:
                 r = await message.reply(f"`Uploading {args}…`", quote=True)
@@ -697,7 +713,7 @@ async def listqueue(event, deletable=True):
         if str(event.sender_id) not in OWNER and str(event.sender_id) not in TEMP_USERS:
             return
     if not QUEUE:
-        yo = await event.reply("Nothing In Queue")
+        yo = await event.reply("`I'm as free as a bird 🦅`")
         await asyncio.sleep(10)
         if deletable:
             await event.delete()
