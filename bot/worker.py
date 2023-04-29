@@ -499,7 +499,7 @@ async def en_upload(event):
             # await event.delete()
             args = event.pattern_match.group(1).strip()
             file = Path(args)
-            chain_msg = message 
+            chain_msg = message
             if not file.is_file() and not os.path.isdir(file):
                 return await event.reply("__File or folder not found__")
             if os.path.isdir(file):
@@ -520,18 +520,28 @@ async def en_upload(event):
                             try:
                                 cap = file.split("/", maxsplit=1)[-1]
                                 chain_msg = await chain_msg.reply(
-                                    f"`Uploading {name} from 📁 {path} ({t}/{i})…`", quote=True
+                                    f"`Uploading {name} from 📁 {path} ({t}/{i})…`",
+                                    quote=True,
                                 )
                                 await asyncio.sleep(10)
                                 upload = uploader()
                                 ul = await upload.start(
-                                    event.chat_id, file, chain_msg, "thumb.jpg", f"`{name}`", chain_msg
+                                    event.chat_id,
+                                    file,
+                                    chain_msg,
+                                    "thumb.jpg",
+                                    f"`{name}`",
+                                    chain_msg,
                                 )
                                 if not upload.is_cancelled:
-                                    await chain_msg.edit(f"`{name} uploaded successfully.`")
+                                    await chain_msg.edit(
+                                        f"`{name} uploaded successfully.`"
+                                    )
                                     chain_msg = ul
                                 else:
-                                    await chain_msg.edit(f"Uploading of `{name}` cancelled.")
+                                    await chain_msg.edit(
+                                        f"Uploading of `{name}` cancelled."
+                                    )
                                 t = t + 1
                                 if ul:
                                     final = ul
@@ -547,7 +557,6 @@ async def en_upload(event):
                                 await asyncio.sleep(10)
                                 continue
                             break
-                        
 
             else:
                 r = await message.reply(f"`Uploading {args}…`", quote=True)
