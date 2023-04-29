@@ -525,29 +525,27 @@ async def en_upload(event):
                         while True:
                             try:
                                 cap = file.split("/", maxsplit=1)[-1]
-                                chain_msg = await chain_msg.reply(
+                                ul = await chain_msg.reply(
                                     f"`Uploading {name} from 📁 {path} ({t}/{i})…`",
                                     quote=True,
                                 )
                                 await asyncio.sleep(10)
                                 upload = uploader()
-                                ul = await upload.start(
+                                chain_msg = await upload.start(
                                     event.chat_id,
                                     file,
-                                    chain_msg,
+                                    ul,
                                     "thumb.jpg",
                                     f"`{name}`",
                                     chain_msg,
                                 )
                                 if not upload.is_cancelled:
-                                    await chain_msg.edit(
-                                        f"`{name} uploaded successfully.`"
-                                    )
-                                    chain_msg = ul
+                                    await ul.delete()
                                 else:
-                                    await chain_msg.edit(
+                                    await ul.edit(
                                         f"Uploading of `{name}` was cancelled."
                                     )
+                                    chain_msg = ul
                                 t = t + 1
                             except pyro_errors.FloodWait as e:
                                 await asyncio.sleep(e.value)
@@ -556,14 +554,9 @@ async def en_upload(event):
                                 await asyncio.sleep(10)
                                 continue
                             break
-                    if ul:
-                        final = ul
-                    else:
-                        final = message
                     await asyncio.sleep(10)
-                    await final.reply(
+                    await event.reply(
                         f"`All files in {path} has been uploaded successfully. {enmoji()}`",
-                        quote=True,
                     )
 
             else:
