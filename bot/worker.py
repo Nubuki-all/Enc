@@ -513,7 +513,9 @@ async def en_upload(event):
                     for name in files:
                         if U_CANCEL:
                             U_CANCEL.clear()
-                            return await event.reply("`Folder upload has been force cancelled`")
+                            return await event.reply(
+                                "`Folder upload has been force cancelled`"
+                            )
                         file = os.path.join(path, name)
                         if int(Path(file).stat().st_size) > 2126000000:
                             await chain_msg.edit(
