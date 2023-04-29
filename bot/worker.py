@@ -505,7 +505,8 @@ async def en_upload(event):
             if os.path.isdir(file):
                 for path, subdirs, files in os.walk(file):
                     if not files:
-                        return await event.reply(f"`📁 {path} is empty.`")
+                        await event.reply(f"`📁 {path} is empty.`")
+                        continue
                     files.sort()
                     i = len(files)
                     t = 1
@@ -540,16 +541,9 @@ async def en_upload(event):
                                     chain_msg = ul
                                 else:
                                     await chain_msg.edit(
-                                        f"Uploading of `{name}` cancelled."
+                                        f"Uploading of `{name}` was cancelled."
                                     )
                                 t = t + 1
-                                if ul:
-                                    final = ul
-                                else:
-                                    final = message
-                                await final.reply(
-                                    f"All files in {path} has been uploaded successfully {enmoji()}."
-                                )
                             except pyro_errors.FloodWait as e:
                                 await asyncio.sleep(e.value)
                                 continue
@@ -557,6 +551,14 @@ async def en_upload(event):
                                 await asyncio.sleep(10)
                                 continue
                             break
+                        if ul:
+                            final = ul
+                        else:
+                            final = message
+                        await asyncio.sleep(10)
+                        await final.reply(
+                            f"`All files in {path} has been uploaded successfully. {enmoji()}`"
+                        )
 
             else:
                 r = await message.reply(f"`Uploading {args}…`", quote=True)
@@ -568,9 +570,9 @@ async def en_upload(event):
                 if not upload.is_cancelled:
                     await r.edit(f"`{cap} uploaded successfully.`")
                 else:
-                    await r.edit(f"Uploading of {cap} has been cancelled.")
+                    await r.edit(f"`Uploading of {cap} has been cancelled.`")
         else:
-            return await event.reply("Upload what exactly?")
+            return await event.reply("`Upload what exactly?`")
     except Exception:
         ers = traceback.format_exc()
         await channel_log(ers)
