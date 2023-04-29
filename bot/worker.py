@@ -551,14 +551,14 @@ async def en_upload(event):
                                 await asyncio.sleep(10)
                                 continue
                             break
-                        if ul:
-                            final = ul
-                        else:
-                            final = message
-                        await asyncio.sleep(10)
-                        await final.reply(
-                            f"`All files in {path} has been uploaded successfully. {enmoji()}`"
-                        )
+                    if ul:
+                        final = ul
+                    else:
+                        final = message
+                    await asyncio.sleep(10)
+                    await final.reply(
+                        f"`All files in {path} has been uploaded successfully. {enmoji()}`", quote=True
+                    )
 
             else:
                 r = await message.reply(f"`Uploading {args}…`", quote=True)
