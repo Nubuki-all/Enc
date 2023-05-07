@@ -304,7 +304,7 @@ async def en_mux(event):
     if str(event.sender_id) not in OWNER and event.sender_id != DEV:
         return await event.delete()
     if not event.is_reply:
-        return await event.reply("`Reply to a file to rename it`")
+        return await event.reply("`Reply to a file to remux it`")
     try:
         args = event.pattern_match.group(1)
         r = await event.get_reply_message()

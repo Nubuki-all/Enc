@@ -350,13 +350,10 @@ async def something():
                         if mssg_r:
                             await mssg_r.edit("`Downloading Torrent\nPlease wait…`")
                             await mssg_f.delete()
-                        cmd = f"aria2c --seed-time=0 -d downloads '{uri}' > leech_log 2>&1"
+                        cmd = f"aria2c --follow-torrent=mem --seed-time=0 -d downloads '{uri}' > leech_log 2>&1"
                         leech_task = asyncio.create_task(enshell(cmd))
                         await asyncio.sleep(3)
                         name = await get_leech_file()
-                        for extr in [".torrent", ".aria2"]:
-                            while extr in name:
-                                name = name.replace(extr, "")
                         dl = "downloads/" + name
                         wah = code(dl)
                         dl_info = await parse_dl(name)
@@ -512,8 +509,6 @@ async def something():
                     QUEUE.pop(list(QUEUE.keys())[0])
                     await save2db()
                     continue
-                if uri_name:
-                    os.system(f"rm '{uri_name + '.torrent'}'")
                 es = dt.now()
                 kk = dl.split("/")[-1]
                 if "[" in kk and "]" in kk:
