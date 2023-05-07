@@ -293,7 +293,6 @@ async def something():
                 file = list(QUEUE.keys())[0]
                 name, user = QUEUE[list(QUEUE.keys())[0]]
                 uri = None
-                uri_name = ""
                 try:
                     message = await app.get_messages(user, int(file))
                     mssg_r = await message.reply("`Download Pending…`", quote=True)
@@ -346,7 +345,6 @@ async def something():
                         if is_url(str(file)) is True:
                             uri = file
                     if uri:
-                        uri_name = name
                         if mssg_r:
                             await mssg_r.edit("`Downloading Torrent\nPlease wait…`")
                             await mssg_f.delete()
