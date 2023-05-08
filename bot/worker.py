@@ -363,6 +363,15 @@ async def en_mux(event):
             await e.edit(reply)
             return R_QUEUE.pop(0)
         args = args.strip()
+        thum = Path("thumb3.jpg")
+        b, d, c, rlsgrp = await dynamicthumb(__loc, thum)
+        if "This Episode" in args:
+            bo = b
+            if d:
+                bo = f"Episode {d} of {b}"
+            if c:
+                bo += f" Season {c}"
+            args = args.replace(f"This Episode", bo)
         if "Fileinfo" in args:
             args = args.replace("Fileinfo", __out1)
         await e.edit(f"Download of `{__loc}` completed")
@@ -396,8 +405,6 @@ async def en_mux(event):
             else:
                 wrror = await message.reply(er, quote=True)
             raise Exception("Encoding Failed!")
-        thum = Path("thumb3.jpg")
-        b, d, c, rlsgrp = await dynamicthumb(__loc, thum)
         if thum.is_file():
             pass
         else:
