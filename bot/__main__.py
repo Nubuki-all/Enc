@@ -242,7 +242,7 @@ async def _(e):
     await lock(e)
 
 
-@bot.on(events.NewMessage(pattern="/encodequeue"))
+@bot.on(events.NewMessage(pattern=r"^!queue -p([\s\S]*)$"))
 async def _(e):
     await listqueuep(e)
 

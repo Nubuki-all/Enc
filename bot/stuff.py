@@ -136,8 +136,23 @@ async def ihelp(event):
 
 
 async def beck(event):
+    sender = str(event.query.user_id)
+    currentTime = get_readable_time(time.time() - botStartTime)
+    msg = ""
+    msg1 = f"Hi `{event.sender.first_name}`\n"
+    msg2 = f"{msg1}I've been alive for `{currentTime}` and i'm ready to encode videos 😗"
+    msg3 = f"{msg2}\nand by the way you're a temporary user"
+    priv = await app.get_users(OWNER.split()[0])
+    msg4 = f"{msg1}You're not allowed access to this bot\nAsk [{priv.first_name}](tg://user?id={OWNER.split()[0]}) (nicely) to grant you access."
+    if sender not in OWNER:
+        if sender not in TEMP_USERS:
+            msg = msg4
+        else:
+            msg = msg3
+    if not msg:
+        msg = msg2
     await event.edit(
-        f"Hi `{event.sender.first_name}`\nThis is bot that encodes Videos.\n\n",
+        msg,
         buttons=[
             [Button.inline("HELP", data="ihelp")],
             [
