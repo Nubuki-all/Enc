@@ -47,7 +47,7 @@ async def save2db2(mara, para):
 
 
 async def on_termination():
-    async def term_pm_log:
+    async def term_pm_log():
         try:
             dead_msg = f"**I'm {enquip2()} {enmoji2()}**"
             for i in OWNER.split():
@@ -56,7 +56,7 @@ async def on_termination():
                 await bot.send_message(int(LOG_CHANNEL), dead_msg)
         except Exception:
             pass
-    async def term_stat:
+    async def term_stat():
         try:
             if FCHANNEL_STAT:
                 estat = "**#Dead**"
