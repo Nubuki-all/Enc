@@ -56,6 +56,7 @@ async def on_termination():
                 await bot.send_message(int(LOG_CHANNEL), dead_msg)
         except Exception:
             pass
+
     async def term_stat():
         try:
             if FCHANNEL_STAT:
@@ -778,29 +779,44 @@ async def listqueuep(event):
         args = event.pattern_match.group(1)
         try:
             if not args:
-                return await event.reply("Send a range of number or number of item in queue to be parsed.\nrange maximum 10.")
-            if args.isdigit() and int(args) <= (len(QUEUE) - 1) :
+                return await event.reply(
+                    "Send a range of number or number of item in queue to be parsed.\nrange maximum 10."
+                )
+            if args.isdigit() and int(args) <= (len(QUEUE) - 1):
                 args = int(args)
                 file_name, chat_id = QUEUE[list(QUEUE.keys())[args]]
                 p_file_name = await qparse(file_name)
-                return await event.reply("`"+p_file_name+"`")
-                
+                return await event.reply("`" + p_file_name + "`")
+
             else:
-                if len(args.split("-")) == 2 and args.split("-")[0].isdigit() and args.split("-")[1].isdigit():
-                    x,y = map(int, args.split("-"))
-                    if (y - x) > 10 or y == x or x > (len(QUEUE) - 1) or y > (len(QUEUE) -1):
-                        return await event.reply("First and last number must be within the limits of the number of items on queue and must be less than or equal to 10.")
+                if (
+                    len(args.split("-")) == 2
+                    and args.split("-")[0].isdigit()
+                    and args.split("-")[1].isdigit()
+                ):
+                    x, y = map(int, args.split("-"))
+                    if (
+                        (y - x) > 10
+                        or y == x
+                        or x > (len(QUEUE) - 1)
+                        or y > (len(QUEUE) - 1)
+                    ):
+                        return await event.reply(
+                            "First and last number must be within the limits of the number of items on queue and must be less than or equal to 10."
+                        )
                     rply = ""
                     i = x
                     for file in list(QUEUE.values())[x:y]:
                         file_name, chat_id = file
                         file_name = await qparse(file_name)
-                        rply +=  f"{i}. {filename}\n"
+                        rply += f"{i}. {filename}\n"
                         i = i + 1
                     if rply:
                         rply += "\n**Queue based on auto-generated filename if you you want the actual queue use the command** /queue"
                 else:
-                    return await event.reply("Send a range of number or number of item in queue to be parsed.\n**Range:** `1-10` Maximum 10.")
+                    return await event.reply(
+                        "Send a range of number or number of item in queue to be parsed.\n**Range:** `1-10` Maximum 10."
+                    )
         except Exception:
             rply = "__An error occurred.__"
             er = traceback.format_exc()
