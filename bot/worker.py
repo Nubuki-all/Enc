@@ -792,8 +792,8 @@ async def listqueuep(event):
             else:
                 if (
                     len(args.split("-")) == 2
-                    and args.split("-")[0].isdigit()
-                    and args.split("-")[1].isdigit()
+                    and (args.split("-")[0].strip()).isdigit()
+                    and (args.split("-")[1].strip()).isdigit()
                 ):
                     x, y = map(int, args.split("-"))
                     if (
@@ -810,7 +810,7 @@ async def listqueuep(event):
                     for file in list(QUEUE.values())[x:y]:
                         file_name, chat_id = file
                         file_name = await qparse(file_name)
-                        rply += f"{i}. {filename}\n"
+                        rply += f"{i}. {file_name}\n"
                         i = i + 1
                     if rply:
                         rply += "\n**Queue based on auto-generated filename if you you want the actual queue use the command** /queue"
