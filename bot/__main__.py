@@ -231,6 +231,7 @@ async def _(e):
 async def _(e):
     await change(e)
 
+
 @bot.on(events.NewMessage(pattern=r"^!queue(\s+.+)?$"))
 @bot.on(events.NewMessage(pattern="/queue"))
 async def _(e):
