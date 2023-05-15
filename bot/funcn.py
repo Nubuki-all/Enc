@@ -470,6 +470,9 @@ async def get_leech_file():
         dt_ = glob.glob("downloads/*")
         data = max(dt_, key=os.path.getctime)
         dat = data.replace("downloads/", "")
+        if dat.endswith(".aria2"):
+            await asyncio.sleep(2)
+            dat = await get_leech_file()
     except Exception:
         dat = ""
         ers = traceback.format_exc()
