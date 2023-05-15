@@ -782,6 +782,7 @@ async def listqueuep(event):
                 return await event.reply(
                     "Send a range of number or number of item in queue to be parsed.\nrange maximum 10."
                 )
+            args = args.strip()
             if args.isdigit() and int(args) <= (len(QUEUE) - 1):
                 args = int(args)
                 file_name, chat_id = QUEUE[list(QUEUE.keys())[args]]
