@@ -220,12 +220,12 @@ async def en_download(event):
         download = downloader()
         await download.start(loc, 0, message, e)
         if download.is_cancelled:
-            reply = f"Download of `{loc}` was cancelled"
+            reply = f"Download of `{loc}` was cancelled."
             if download.canceller:
                 reply += f" by {download.canceller.first_name}"
             reply += "!"
             return await e.edit(reply)
-        await e.edit(f"`saved to {loc} successfully`")
+        await e.edit(f"__Saved to__ `{loc}` __successfully!__")
     except Exception:
         ers = traceback.format_exc()
         await channel_log(ers)
@@ -269,13 +269,13 @@ async def en_rename(event):
         await download.start(loc, 0, message, e)
         if download.is_cancelled:
             # os.system(f"rm '{loc}'")
-            reply = f"Download of `{loc}` was cancelled"
+            reply = f"Download of `{loc}` was cancelled."
             if download.canceller:
                 reply += f" by {download.canceller.first_name}"
             reply += "!"
             await e.edit(reply)
             return R_QUEUE.pop(0)
-        await e.edit(f"Download of {loc} completed")
+        await e.edit(f"Download of `{loc}` completed.")
         await asyncio.sleep(5)
         thum = Path("thumb3.jpg")
         b, d, c, rlsgrp = await dynamicthumb(__loc, thum)
@@ -287,9 +287,9 @@ async def en_rename(event):
         upload = uploader(event.sender_id)
         await upload.start(event.chat_id, loc, e, thum, cap, message)
         if not upload.is_cancelled:
-            await e.edit(f"`{__out} uploaded successfully.`")
+            await e.edit(f"`{__out}` __uploaded successfully.__")
         else:
-            await e.edit(f"`Upload of {__out} was cancelled.`")
+            await e.edit(f"__Upload of__ `{__out}` was cancelled.__")
         os.system("rm thumb3.jpg")
         os.remove(loc)
         R_QUEUE.pop(0)
@@ -377,7 +377,7 @@ async def en_mux(event):
             args = args.replace("Fileinfo", __out1)
         await e.edit(f"Download of `{__loc}` completed")
         await asyncio.sleep(3)
-        await e.edit("`Muxing using provided parameters`")
+        await e.edit("`Muxing using provided parameters…`")
         cmd = f'ffmpeg -i "{dl}" {args} "{loc}" -y'
         if ALLOW_ACTION is True:
             async with bot.action(event.chat_id, "game"):
@@ -415,9 +415,9 @@ async def en_mux(event):
         upload = uploader(event.sender_id)
         await upload.start(event.chat_id, loc, e, thum, cap, message)
         if not upload.is_cancelled:
-            await e.edit(f"`{__out} uploaded successfully.`")
+            await e.edit(f"`{__out}` __uploaded successfully.__")
         else:
-            await e.edit(f"`Upload of {__out} was cancelled.`")
+            await e.edit(f"__Upload of__ `{__out}` __was cancelled.__")
         os.system("rm thumb3.jpg")
         os.remove(dl)
         os.remove(loc)
@@ -449,7 +449,7 @@ async def dumpdl(dl, name, thum, user, message):
             dp = await upload.start(user, dmp, reply, thum, f"`{name}`", message)
 
             if not upload.is_cancelled:
-                f_reply = await reply.edit(f"`{name} Dumped successfully.`")
+                f_reply = await reply.edit(f"`{name}` __dumped successfully.__")
             else:
                 f_reply = await reply.edit(f"`Dumping of {name} was cancelled.`")
         if LOG_CHANNEL:
@@ -787,7 +787,7 @@ async def listqueuep(event):
                 args = int(args)
                 file_name, chat_id = QUEUE[list(QUEUE.keys())[args]]
                 p_file_name = await qparse(file_name)
-                return await event.reply("`" + p_file_name + "`")
+                return await event.reply(str(args) + ". `" + p_file_name + "`")
 
             else:
                 if (
@@ -807,6 +807,7 @@ async def listqueuep(event):
                         )
                     rply = ""
                     i = x
+                    y = y + 1
                     for file in list(QUEUE.values())[x:y]:
                         file_name, chat_id = file
                         file_name = await qparse(file_name)
