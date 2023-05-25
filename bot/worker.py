@@ -811,7 +811,7 @@ async def listqueuep(event):
                     for file in list(QUEUE.values())[x:y]:
                         file_name, chat_id = file
                         file_name = await qparse(file_name)
-                        rply += f"{i}. {file_name}\n"
+                        rply += f"{i}. `{file_name}`\n"
                         i = i + 1
                     if rply:
                         rply += "\n**Queue based on auto-generated filename if you you want the actual queue use the command** /queue"
