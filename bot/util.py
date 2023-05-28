@@ -701,9 +701,9 @@ async def f_post(name):
             id_ = json["id"]
             pic_url = f"https://img.anili.st/media/{id_}"
             try:
-                json["genres"]
+                gen = json["genres"]
             except Exception:
-                pass
+                gen = None
 
         except Exception:
             pass
@@ -711,7 +711,7 @@ async def f_post(name):
         s_lang = ""
 
         def get_flag(lang_t):
-            if e == "[Erai-raws]":
+            if e == "Erai-raws":
                 if lang_t.casefold() == "eng" or lang_t.casefold() == "english":
                     lang_t = "US"
                 elif lang_t.casefold() == "ara":
@@ -721,14 +721,24 @@ async def f_post(name):
                 lang_t = flag.flag(lang_t)
             return lang_t
 
-        for a_lang_t in _ainfo.split("|"):
-            a_lang += get_flag(a_lang_t)
-            a_lang += ", "
-        a_lang = a_lang.strip(", ")
-        for s_lang_t in _sinfo.split("|"):
-            s_lang += get_flag(s_lang_t)
-            s_lang += ", "
-        s_lang = s_lang.strip(", ")
+        if _ainfo:
+            for a_lang_t in _ainfo.split("|"):
+                a_lang += get_flag(a_lang_t)
+                a_lang += ", "
+            a_lang = a_lang.strip(", ")
+        else:
+            a_lang = "N/A"
+        if _sinfo:
+            for s_lang_t in _sinfo.split("|"):
+                s_lang += get_flag(s_lang_t)
+                s_lang += ", "
+            s_lang = s_lang.strip(", ")
+        else:
+            s_lang = "N/A"
+        if gen:
+            genre = ""
+            for x in gen:
+                genre += "#" + x.replace(" ", "_") + " "
 
         msg = ""
         if b == br:
@@ -736,13 +746,15 @@ async def f_post(name):
         else:
             msg += f"**{br}** | `{b}`"
         msg += "\n\n"
+        if gen and genre:
+            msg += f"**‣ Genre** : {genre}\n"
         if d:
             msg += f"**‣ Episode** : {d}\n"
         if c:
             msg += f"**‣ Season** : {c}\n"
-        msg += f"**‣ Quality** : `{codec}`"
-        msg += f"**‣ Audio(s)** : `{a_lang}`"
-        msg += f"**‣ Subtitle(s)** : `{s_lang}`"
+        msg += f"**‣ Quality** : `{codec}`\n"
+        msg += f"**‣ Audio(s)** : `{a_lang}`\n"
+        msg += f"**‣ Subtitle(s)** : `{s_lang}`\n"
     except Exception:
         pic_url = None
         msg = None
