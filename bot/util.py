@@ -711,7 +711,7 @@ async def f_post(name):
         s_lang = ""
 
         def get_flag(lang_t):
-            if e == "Erai-raws":
+            if not lang_t == "?":
                 if lang_t.casefold() == "eng" or lang_t.casefold() == "english":
                     lang_t = "US"
                 elif lang_t.casefold() == "ara":
@@ -749,9 +749,9 @@ async def f_post(name):
         if gen and genre:
             msg += f"**‣ Genre** : {genre}\n"
         if d:
-            msg += f"**‣ Episode** : {d}\n"
+            msg += f"**‣ Episode** : `{d}`\n"
         if c:
-            msg += f"**‣ Season** : {c}\n"
+            msg += f"**‣ Season** : `{c}`\n"
         msg += f"**‣ Quality** : `{codec}`\n"
         msg += f"**‣ Audio(s)** : `{a_lang}`\n"
         msg += f"**‣ Subtitle(s)** : `{s_lang}`\n"

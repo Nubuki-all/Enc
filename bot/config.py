@@ -35,6 +35,7 @@ try:
     FCHANNEL = config("FCHANNEL", default="")
     FCHANNEL_STAT = config("FCHANNEL_STAT", default="")
     FCODEC = config("FCODEC", default="")
+    FBANNER = config("FBANNER", default=False, cast=bool)
     C_LINK = config("C_LINK", default="@ANi_MiNE")
     RELEASER = config("RELEASER", default="A-M|ANi-MiNE")
     CAP_DECO = config("CAP_DECO", default="◉")

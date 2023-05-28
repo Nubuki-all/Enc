@@ -686,8 +686,9 @@ async def something():
                 await nnn.delete()
                 if FCHANNEL:
                     chat = int(FCHANNEL)
-                    pic_id, f_msg = await f_post(name)
-                    await app.send_photo(photo=pic_id, caption=f_msg, chat_id=chat)
+                    if FBANNER:
+                        pic_id, f_msg = await f_post(name)
+                        await app.send_photo(photo=pic_id, caption=f_msg, chat_id=chat)
                     await ds.copy(chat_id=chat)
                 if LOG_CHANNEL:
                     chat = int(LOG_CHANNEL)
