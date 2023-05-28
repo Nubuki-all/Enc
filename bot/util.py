@@ -146,7 +146,7 @@ async def get_stream_info(file):
         ers = traceback.format_exc()
         await channel_log(ers)
         LOGS.info(ers)
-   return a_lang, s_lang
+    return a_lang, s_lang
 
 
 async def wfilter():
