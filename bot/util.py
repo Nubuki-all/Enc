@@ -119,7 +119,7 @@ async def get_codec():
 
 async def get_stream_info(file):
     try:
-        out =  await enshell(f"ffprobe -hide_banner -show_streams -print_format json '{file}'")
+        out = await enshell(f"ffprobe -hide_banner -show_streams -print_format json '{file}'")
         details = json.loads(out[1])
         a_lang = ""
         s_lang = ""
@@ -127,20 +127,20 @@ async def get_stream_info(file):
             pos = stream["index"]
             try:
                 stream_name = stream["codec_name"]
-            except:
+            except Exception:
                 continue
             stream_type = stream["codec_type"]
             if not stream_type in ("audio", "subtitle"):
                 continue
-            if stream_type in "audio":
+            if stream_type == "audio":
                 try: 
                     a_lang += f"{stream["tags"]["language"]}|"
-                except:
+                except Exception:
                     a_lang += "?|"
-            elif stream_type in "subtitle":
+            elif stream_type == "subtitle":
                 try: 
                     s_lang += f"{stream["tags"]["language"]}|"
-                except:
+                except Exception:
                     s_lang += "?|"
     except Exception:
         ers = traceback.format_exc()
