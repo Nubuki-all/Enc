@@ -137,12 +137,12 @@ async def get_stream_info(file):
                 continue
             if stream_type == "audio":
                 try:
-                    a_lang += {stream["tags"]["language"]} + "|"
+                    a_lang += stream["tags"]["language"] + "|"
                 except BaseException:
                     a_lang += "?|"
             elif stream_type == "subtitle":
                 try:
-                    s_lang += {stream["tags"]["language"]} + "|"
+                    s_lang += stream["tags"]["language"] + "|"
                 except BaseException:
                     s_lang += "?|"
     except Exception:
@@ -406,8 +406,10 @@ async def parse(name, kk="", aa=".mkv"):
             col = con
         a_check, _none = await get_stream_info(_infile)
         if a_check:
-            if len(a_check.split("|")) > 2:
+            if len(a_check.split("|")) > 3:
                 col = "MULTi"
+            elif len(a_check.split("|")) == 3:
+                col = "Tri"
             elif len(a_check.split("|")) == 2:
                 col = "Dual"
         if olif.is_file() and fil2.casefold() != "auto":
@@ -559,6 +561,8 @@ async def custcap(name, fname):
                         audio_count = len(_ainfo.split("|"))
                         if audio_count > 3:
                             fil3t += f"(Multi-Audio)[{audio_count}] "
+                        elif audio_count == 3:
+                            fil3t += "(Tri-Audio)"
                         elif audio_count == 2:
                             fil3t += f"(Dual-Audio)"
                     if _sinfo:
@@ -676,7 +680,7 @@ async def custcap(name, fname):
 async def f_post(name):
     try:
         ani, b, d, c, e, fil2, fil3, st, r = await parser(name)
-        _ainfo, _sinfo = await get_stream_info(out)
+        _ainfo, _sinfo = await get_stream_info("downloads/" + name)
         if FCODEC:
             codec = FCODEC
         else:
@@ -740,6 +744,8 @@ async def f_post(name):
         msg += f"**‣ Audio(s)** : `{a_lang}`"
         msg += f"**‣ Subtitle(s)** : `{s_lang}`"
     except Exception:
+        pic_url = None
+        msg = None 
         ers = traceback.format_exc()
         LOGS.info(ers)
     return pic_url, msg
