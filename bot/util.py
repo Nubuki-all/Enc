@@ -702,7 +702,7 @@ async def f_post(name):
             pass
         a_lang = ""
         s_lang = ""
-        def get_flag(lang_t)
+        def get_flag(lang_t):
             if e == "[Erai-raws]":
                 if lang_t.casefold() == "eng" or lang_t.casefold() == "english":
                     lang_t = "US"
