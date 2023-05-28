@@ -1480,17 +1480,6 @@ async def stats(e):
         )
 
 
-async def enshell(cmd):
-    # Create a subprocess and wait for it to finish
-    process = await asyncio.create_subprocess_shell(
-        cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-    )
-    stdout, stderr = await process.communicate()
-
-    # Return the output of the command and the process object
-    return (process, stdout.decode(), stderr.decode())
-
-
 async def encod(event):
     try:
         EVENT2.clear()

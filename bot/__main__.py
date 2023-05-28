@@ -510,12 +510,6 @@ async def something():
                     continue
                 es = dt.now()
                 kk = dl.split("/")[-1]
-                if "[" in kk and "]" in kk:
-                    pp = kk.split("[")[0]
-                    qq = kk.split("]")[1]
-                    kk = pp + qq
-                else:
-                    kk = kk
                 aa = kk.split(".")[-1]
                 rr = "encode"
                 name = dl.split("/")[-1]
@@ -692,6 +686,8 @@ async def something():
                 await nnn.delete()
                 if FCHANNEL:
                     chat = int(FCHANNEL)
+                    pic_id, f_msg = await f_post(name)
+                    await app.send_photo(photo=pic_id, chat_id=chat) 
                     await ds.copy(chat_id=chat)
                 if LOG_CHANNEL:
                     chat = int(LOG_CHANNEL)

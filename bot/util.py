@@ -3,6 +3,8 @@ import zlib
 
 import anitopy
 import country_converter as coco
+import flag
+import pycountry
 import requests
 
 from . import *
@@ -114,6 +116,37 @@ async def get_codec():
         if key in ff_code:
             __out += f"[{value}] "
     return __out.strip()
+
+async def get_stream_info(file):
+    try:
+        out =  await enshell(f"ffprobe -hide_banner -show_streams -print_format json '{file}'")
+        details = json.loads(out[1])
+        a_lang = ""
+        s_lang = ""
+        for stream in details["streams"]:
+            pos = stream["index"]
+            try:
+                stream_name = stream["codec_name"]
+            except:
+                continue
+            stream_type = stream["codec_type"]
+            if not stream_type in ("audio", "subtitle"):
+                continue
+            if stream_type in "audio":
+                try: 
+                    a_lang += f"{stream["tags"]["language"]}|"
+                except:
+                    a_lang += "?|"
+            elif stream_type in "subtitle":
+                try: 
+                    s_lang += f"{stream["tags"]["language"]}|"
+                except:
+                    s_lang += "?|"
+    except Exception:
+        ers = traceback.format_exc()
+        await channel_log(ers)
+        LOGS.info(ers)
+   return a_lang, s_lang
 
 
 async def wfilter():
@@ -296,6 +329,9 @@ async def parse(name, kk="", aa=".mkv"):
             raise Exception("Parsing Failed")
         if not kk:
             kk = name
+        _infile = Path("downloads/" + kk)
+        if not _infile.is_file():
+            _infile = Path("thumb/" + kk)
         wnamer, wreleaser, aurer, wrecaper = await wfilter()
         r_is_end = False
         r_is_end = True if r == "[END]" else r_is_end
@@ -369,6 +405,12 @@ async def parse(name, kk="", aa=".mkv"):
             pass
         else:
             col = con
+        a_check, _none = await get_stream_info(_infile)
+        if a_check:
+            if len(a_check.split("|")) > 2:
+                col = "MULTi"
+            elif len(a_check.split("|")) ==  2:
+                col = "Dual"
         if olif.is_file() and fil2.casefold() != "auto":
             col = fil2
             col = "" if fil2.casefold() == "disable" else col
@@ -471,6 +513,9 @@ async def custcap(name, fname):
         ani, oi, z, y, e, fil2, fil3, s, st, r = await parser(name)
         if oi is None:
             raise Exception("Parsing Failed")
+       out = Path("encode/" + fname)
+        if not out.is_file():
+            out = Path("thumb/" + fname)
         cdp = CAP_DECO
         temp_oi = oi
         wnamer, wreleaser, aurer, wrecaper = await wfilter()
@@ -505,13 +550,27 @@ async def custcap(name, fname):
 
             fil3t = wfil3t if wfil3t else fil3t
 
+            _ainfo, _sinfo = await get_stream_info(out)
             if fil3t:
                 fil3t = fil3t.strip()
             else:
                 if s:
                     fil3t = s
                 else:
-                    fil3t = "(English Subtitle)"
+                    fil3t = ""
+                    if _ainfo:
+                        if len(_ainfo.split("|")) > 3:
+                            fil3t = f"(Multi-Audio)[{len(_ainfo.split("|"))}] "
+                        elif len(_ainfo.split("|")) == 2:
+                            fil3t = f"(Dual-Audio)"
+                    if _sinfo:
+                        if len(_sinfo.split("|")) > 2:
+                            fil3t = f"(Multi-Subs)[{len(_sinfo.split("|"))}] "
+                        else:
+                            fil3t += "(Subs: "
+                            for subs in _sinfo.split("|"):
+                                fil3t = f"[{subs}] "
+                        fil3t += ")"
 
             if wrecaper:
                 for item in wrecaper.split("\n"):
@@ -562,9 +621,6 @@ async def custcap(name, fname):
             g = ""
         oi = string.capwords(oi)
         oi = await auto_rename(oi, temp_oi, aurer, caption=True)
-        out = Path("encode/" + fname)
-        if not out.is_file():
-            out = Path("thumb/" + fname)
         crc32s = await crc32(out)
         try:
             a2 = await info(out, e)
@@ -613,3 +669,72 @@ async def custcap(name, fname):
         ot = om.split("@")[0]
         caption = f"**{ot}**\n**🔗 {C_LINK}**"
     return caption
+
+async def f_post(name):
+    try:
+        ani, b, d, c, e, fil2, fil3, s, st, r = await parser(name)
+        _ainfo, _sinfo = await get_stream_info(out)
+        if FCODEC:
+            codec = FCODEC
+        else:
+            codec = await get_codec()
+        try:
+            ttx = Path("parse.txt")
+            if ttx.is_file():
+                raise Exception("Parsing turned off")
+            variables = {"search": b, "type": "ANIME"}
+            json = (
+                requests.post(url, json={"query": anime_query, "variables": variables})
+                .json()["data"]
+                .get("Media")
+            )
+            b = json['title']['english']
+            b = json['title']['romaji'] if b == "None" else b
+            br = json['title']['romaji']
+            id_ = json["id"]
+            pic_url = f"https://img.anili.st/media/{id_}"
+            try:
+                gen = json["genres"]
+            except Exception:
+                gen = None
+ 
+        except Exception:
+            pass
+        a_lang = ""
+        s_lang = ""
+        def get_flag(lang_t)
+            if e == "[Erai-raws]":
+                if lang_t.casefold() == "eng" or lang_t.casefold() == "english":
+                    lang_t = "US"
+                elif lang_t.casefold() == "ara":
+                        lang_t = "Arabia"
+                lang_t = pycountry.countries.search_fuzzy(lang_t)
+                lang_t = lang_t[0].alpha_2
+                lang_t = flag.flag(lang_t)
+            return lang_t
+        for a_lang_t in _ainfo.split("|"):
+            a_lang += get_flag(a_lang_t)
+            a_lang += ", "
+        a_lang = a_lang.strip(", ")
+        for s_lang_t in _sinfo.split("|"):
+            s_lang += get_flag(s_lang_t)
+            s_lang += ", "
+        s_lang = s_lang.strip(", ")
+
+        msg = ""
+        if b == br:
+            msg += f"`{b}`"
+        else:
+            msg += f"**{br}** | `{b}`" 
+        msg += "\n\n"
+        if d:
+            msg += f"**‣ Episode** : {d}\n"
+        if c:
+            msg += f"**‣ Season** : {c}\n"
+        msg += f"**‣ Quality** : `{codec}`"
+        msg += f"**‣ Audio(s)** : `{a_lang}`"
+        msg += f"**‣ Subtitle(s)** : `{s_lang}`"
+    except Exception:
+        ers = traceback.format_exc()
+        LOGS.info(ers)
+    return pic_url, msg

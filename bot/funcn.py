@@ -615,6 +615,17 @@ async def progress(current, total, event, start, type_of_ps, file=None):
             await event.edit("`✦ {}`\n\n{}".format(type_of_ps, tmp))
 
 
+async def enshell(cmd):
+    # Create a subprocess and wait for it to finish
+    process = await asyncio.create_subprocess_shell(
+        cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+    )
+    stdout, stderr = await process.communicate()
+
+    # Return the output of the command and the process object
+    return (process, stdout.decode(), stderr.decode())
+
+
 async def info(file, event):
     process = subprocess.Popen(
         ["mediainfo", file, "--Output=HTML"],
