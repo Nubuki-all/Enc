@@ -117,9 +117,12 @@ async def get_codec():
             __out += f"[{value}] "
     return __out.strip()
 
+
 async def get_stream_info(file):
     try:
-        out = await enshell(f"ffprobe -hide_banner -show_streams -print_format json '{file}'")
+        out = await enshell(
+            f"ffprobe -hide_banner -show_streams -print_format json '{file}'"
+        )
         details = json.loads(out[1])
         a_lang = ""
         s_lang = ""
@@ -127,20 +130,20 @@ async def get_stream_info(file):
             pos = stream["index"]
             try:
                 stream_name = stream["codec_name"]
-            except:
+            except BaseException:
                 continue
             stream_type = stream["codec_type"]
-            if not stream_type in ("audio", "subtitle"):
+            if stream_type not in ("audio", "subtitle"):
                 continue
             if stream_type == "audio":
-                try: 
+                try:
                     a_lang += {stream["tags"]["language"]} + "|"
-                except:
+                except BaseException:
                     a_lang += "?|"
             elif stream_type == "subtitle":
-                try: 
+                try:
                     s_lang += {stream["tags"]["language"]} + "|"
-                except:
+                except BaseException:
                     s_lang += "?|"
     except Exception:
         ers = traceback.format_exc()
@@ -409,7 +412,7 @@ async def parse(name, kk="", aa=".mkv"):
         if a_check:
             if len(a_check.split("|")) > 2:
                 col = "MULTi"
-            elif len(a_check.split("|")) ==  2:
+            elif len(a_check.split("|")) == 2:
                 col = "Dual"
         if olif.is_file() and fil2.casefold() != "auto":
             col = fil2
@@ -513,7 +516,7 @@ async def custcap(name, fname):
         ani, oi, z, y, e, fil2, fil3, s, st, r = await parser(name)
         if oi is None:
             raise Exception("Parsing Failed")
-        out = Path("encode/" + fname)    
+        out = Path("encode/" + fname)
         if not out.is_file():
             out = Path("thumb/" + fname)
         cdp = CAP_DECO
@@ -560,12 +563,12 @@ async def custcap(name, fname):
                     fil3t = ""
                     if _ainfo:
                         if len(_ainfo.split("|")) > 3:
-                            fil3t = f"(Multi-Audio)[{len(_ainfo.split("|"))}] "
+                            fil3t = f"(Multi-Audio)[{len(_ainfo.split(" | "))}] "
                         elif len(_ainfo.split("|")) == 2:
                             fil3t = f"(Dual-Audio)"
                     if _sinfo:
                         if len(_sinfo.split("|")) > 2:
-                            fil3t = f"(Multi-Subs)[{len(_sinfo.split("|"))}] "
+                            fil3t = f"(Multi-Subs)[{len(_sinfo.split(" | "))}] "
                         else:
                             fil3t += "(Subs: "
                             for subs in _sinfo.split("|"):
@@ -670,6 +673,7 @@ async def custcap(name, fname):
         caption = f"**{ot}**\n**🔗 {C_LINK}**"
     return caption
 
+
 async def f_post(name):
     try:
         ani, b, d, c, e, fil2, fil3, s, st, r = await parser(name)
@@ -688,30 +692,32 @@ async def f_post(name):
                 .json()["data"]
                 .get("Media")
             )
-            b = json['title']['english']
-            b = json['title']['romaji'] if b == "None" else b
-            br = json['title']['romaji']
+            b = json["title"]["english"]
+            b = json["title"]["romaji"] if b == "None" else b
+            br = json["title"]["romaji"]
             id_ = json["id"]
             pic_url = f"https://img.anili.st/media/{id_}"
             try:
                 gen = json["genres"]
             except Exception:
                 gen = None
- 
+
         except Exception:
             pass
         a_lang = ""
         s_lang = ""
+
         def get_flag(lang_t):
             if e == "[Erai-raws]":
                 if lang_t.casefold() == "eng" or lang_t.casefold() == "english":
                     lang_t = "US"
                 elif lang_t.casefold() == "ara":
-                        lang_t = "Arabia"
+                    lang_t = "Arabia"
                 lang_t = pycountry.countries.search_fuzzy(lang_t)
                 lang_t = lang_t[0].alpha_2
                 lang_t = flag.flag(lang_t)
             return lang_t
+
         for a_lang_t in _ainfo.split("|"):
             a_lang += get_flag(a_lang_t)
             a_lang += ", "
@@ -725,7 +731,7 @@ async def f_post(name):
         if b == br:
             msg += f"`{b}`"
         else:
-            msg += f"**{br}** | `{b}`" 
+            msg += f"**{br}** | `{b}`"
         msg += "\n\n"
         if d:
             msg += f"**‣ Episode** : {d}\n"
