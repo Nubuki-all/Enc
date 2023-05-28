@@ -700,6 +700,7 @@ async def f_post(name):
             br = json["title"]["romaji"]
             id_ = json["id"]
             pic_url = f"https://img.anili.st/media/{id_}"
+            con = f"{json['countryOfOrigin']}"
             try:
                 gen = json["genres"]
             except Exception:
@@ -735,12 +736,13 @@ async def f_post(name):
             s_lang = s_lang.strip(", ")
         else:
             s_lang = "N/A"
+        cflag = flag.flag(con)
         if gen:
             genre = ""
             for x in gen:
                 genre += "#" + x.replace(" ", "_") + " "
 
-        msg = ""
+        msg = cflag
         if b == br:
             msg += f"`{b}`"
         else:
