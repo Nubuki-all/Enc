@@ -297,12 +297,6 @@ async def parser(name):
         except Exception:
             r = ""
         try:
-            s = f'({na["subtitles"]})'
-            if s == "(Multiple Subtitle)":
-                s = ""
-        except Exception:
-            s = ""
-        try:
             st = na["episode_title"]
             st = "" if st == "END" else st
             st = "" if "MULTi" in st else st
@@ -314,7 +308,7 @@ async def parser(name):
                 b = b + " " + yr
         except Exception:
             pass
-        return na, b, d, c, e, fil2, fil3, s, st, r
+        return na, b, d, c, e, fil2, fil3, st, r
     except Exception:
         pass
 
@@ -329,7 +323,7 @@ async def conconvert(iso2_codes):
 
 async def parse(name, kk="", aa=".mkv"):
     try:
-        ani, b, d, c, e, fil2, fil3, s, st, r = await parser(name)
+        ani, b, d, c, e, fil2, fil3, st, r = await parser(name)
         if b is None:
             raise Exception("Parsing Failed")
         if not kk:
@@ -459,7 +453,7 @@ async def parse(name, kk="", aa=".mkv"):
 
 async def dynamicthumb(name, thum="thumb2.jpg"):
     try:
-        ani, b, d, c, e, fil2, fil3, s, st, r = await parser(name)
+        ani, b, d, c, e, fil2, fil3, st, r = await parser(name)
         try:
             ttx = Path("parse.txt")
             if ttx.is_file():
@@ -515,7 +509,7 @@ async def dynamicthumb(name, thum="thumb2.jpg"):
 
 async def custcap(name, fname):
     try:
-        ani, oi, z, y, e, fil2, fil3, s, st, r = await parser(name)
+        ani, oi, z, y, e, fil2, fil3, st, r = await parser(name)
         if oi is None:
             raise Exception("Parsing Failed")
         out = Path("encode/" + fname)
@@ -559,9 +553,7 @@ async def custcap(name, fname):
             if fil3t:
                 fil3t = fil3t.strip()
             else:
-                if s:
-                    fil3t = s
-                else:
+                if _ainfo or _sinfo:
                     fil3t = ""
                     if _ainfo:
                         audio_count = len(_ainfo.split("|"))
@@ -579,6 +571,8 @@ async def custcap(name, fname):
                                 fil3t += f"[{subs}] "
                             fil3t = fil3t.strip()
                             fil3t += ")"
+                else:
+                    fil3t = "(English subtitle)"
 
             if wrecaper:
                 for item in wrecaper.split("\n"):
@@ -681,7 +675,7 @@ async def custcap(name, fname):
 
 async def f_post(name):
     try:
-        ani, b, d, c, e, fil2, fil3, s, st, r = await parser(name)
+        ani, b, d, c, e, fil2, fil3, st, r = await parser(name)
         _ainfo, _sinfo = await get_stream_info(out)
         if FCODEC:
             codec = FCODEC
