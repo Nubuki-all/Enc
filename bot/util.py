@@ -562,18 +562,21 @@ async def custcap(name, fname):
                 else:
                     fil3t = ""
                     if _ainfo:
-                        if len(_ainfo.split("|")) > 3:
-                            fil3t = f"(Multi-Audio)[{len(_ainfo.split(" | "))}] "
-                        elif len(_ainfo.split("|")) == 2:
-                            fil3t = f"(Dual-Audio)"
+                        audio_count = len(_ainfo.split("|"))
+                        if audio_count > 3:
+                            fil3t += f"(Multi-Audio)[{audio_count}] "
+                        elif audio_count == 2:
+                            fil3t += f"(Dual-Audio)"
                     if _sinfo:
-                        if len(_sinfo.split("|")) > 2:
-                            fil3t = f"(Multi-Subs)[{len(_sinfo.split(" | "))}] "
+                        sub_count = len(_sinfo.split("|"))
+                        if sub_count > 2:
+                            fil3t += f"(Multi-Subs)[{sub_count}] "
                         else:
                             fil3t += "(Subs: "
                             for subs in _sinfo.split("|"):
-                                fil3t = f"[{subs}] "
-                        fil3t += ")"
+                                fil3t += f"[{subs}] "
+                            fil3t = fil3t.strip()
+                            fil3t += ")"
 
             if wrecaper:
                 for item in wrecaper.split("\n"):
