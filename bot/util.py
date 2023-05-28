@@ -127,20 +127,20 @@ async def get_stream_info(file):
             pos = stream["index"]
             try:
                 stream_name = stream["codec_name"]
-            except Exception:
+            except:
                 continue
             stream_type = stream["codec_type"]
             if not stream_type in ("audio", "subtitle"):
                 continue
             if stream_type == "audio":
                 try: 
-                    a_lang += f"{stream["tags"]["language"]}|"
-                except Exception:
+                    a_lang += {stream["tags"]["language"]} + "|"
+                except:
                     a_lang += "?|"
             elif stream_type == "subtitle":
                 try: 
-                    s_lang += f"{stream["tags"]["language"]}|"
-                except Exception:
+                    s_lang += {stream["tags"]["language"]} + "|"
+                except:
                     s_lang += "?|"
     except Exception:
         ers = traceback.format_exc()
