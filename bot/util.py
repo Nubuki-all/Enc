@@ -513,9 +513,9 @@ async def custcap(name, fname):
         ani, oi, z, y, e, fil2, fil3, s, st, r = await parser(name)
         if oi is None:
             raise Exception("Parsing Failed")
-       out = Path("encode/" + fname)
-        if not out.is_file():
-            out = Path("thumb/" + fname)
+       out = Path("encode/" + fname)    
+       if not out.is_file():
+           out = Path("thumb/" + fname)
         cdp = CAP_DECO
         temp_oi = oi
         wnamer, wreleaser, aurer, wrecaper = await wfilter()
