@@ -298,7 +298,7 @@ async def parser(name):
             r = ""
         try:
             s = f'({na["subtitles"]})'
-            if s == "Multiple Subtitle":
+            if s == "(Multiple Subtitle)":
                 s = ""
         except Exception:
             s = ""
