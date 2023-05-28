@@ -127,9 +127,9 @@ async def get_stream_info(file):
         a_lang = ""
         s_lang = ""
         for stream in details["streams"]:
-            pos = stream["index"]
+            stream["index"]
             try:
-                stream_name = stream["codec_name"]
+                stream["codec_name"]
             except BaseException:
                 continue
             stream_type = stream["codec_type"]
@@ -701,9 +701,9 @@ async def f_post(name):
             id_ = json["id"]
             pic_url = f"https://img.anili.st/media/{id_}"
             try:
-                gen = json["genres"]
+                json["genres"]
             except Exception:
-                gen = None
+                pass
 
         except Exception:
             pass
