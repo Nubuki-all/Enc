@@ -742,7 +742,7 @@ async def f_post(name):
             for x in gen:
                 genre += "#" + x.replace(" ", "_") + " "
 
-        msg = cflag
+        msg = f"[{cflag}]"
         if b == br:
             msg += f"`{b}`"
         else:
