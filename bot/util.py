@@ -149,7 +149,7 @@ async def get_stream_info(file):
         ers = traceback.format_exc()
         await channel_log(ers)
         LOGS.info(ers)
-    return a_lang, s_lang
+    return (a_lang.strip("|"), s_lang.strip("|"))
 
 
 async def wfilter():
@@ -298,6 +298,8 @@ async def parser(name):
             r = ""
         try:
             s = f'({na["subtitles"]})'
+            if s == "Multiple Subtitle":
+                s = ""
         except Exception:
             s = ""
         try:
