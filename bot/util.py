@@ -745,7 +745,7 @@ async def f_post(name):
         msg += f"**‣ Subtitle(s)** : `{s_lang}`"
     except Exception:
         pic_url = None
-        msg = None 
+        msg = None
         ers = traceback.format_exc()
         LOGS.info(ers)
     return pic_url, msg
