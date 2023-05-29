@@ -121,7 +121,7 @@ async def get_codec():
 async def get_stream_info(file):
     try:
         out = await enshell(
-            f"ffprobe -hide_banner -show_streams -print_format json '{file}'"
+            f"ffprobe -hide_banner -show_streams -print_format json \"\"\"{file}\"\"\""
         )
         details = json.loads(out[1])
         a_lang = ""
