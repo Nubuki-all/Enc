@@ -688,7 +688,7 @@ async def something():
                     chat = int(FCHANNEL)
                     if FBANNER:
                         try:
-                            pic_id, f_msg = await f_post(name)
+                            pic_id, f_msg = await f_post(name, out)
                             await app.send_photo(
                                 photo=pic_id, caption=f_msg, chat_id=chat
                             )
