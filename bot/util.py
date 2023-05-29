@@ -682,7 +682,7 @@ async def custcap(name, fname):
 async def f_post(name, out):
     try:
         ani, b, d, c, e, fil2, fil3, st, r = await parser(name)
-        _ainfo, _sinfo = await get_stream_info(Path (out)
+        _ainfo, _sinfo = await get_stream_info(Path(out))
         pb = b
         if FCODEC:
             codec = FCODEC
