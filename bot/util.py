@@ -730,10 +730,12 @@ async def f_post(name, out):
 
         def get_flag(lang_t):
             if not lang_t == "?":
-                if lang_t.casefold() == "eng" or lang_t.casefold() == "english":
+                if lang_t.casefold() == "eng":
                     lang_t = "US"
                 elif lang_t.casefold() == "ara":
                     lang_t = "Arabia"
+                elif lang_t.casefold() == "hin":
+                    lang_t = "ind"
                 lang_t = pycountry.countries.search_fuzzy(lang_t)
                 lang_t = lang_t[0].alpha_2
                 lang_t = flag.flag(lang_t)
