@@ -757,7 +757,7 @@ async def f_post(name, out):
         if gen:
             genre = ""
             for x in gen:
-                genre += "#" + x.replace(" ", "_") + " "
+                genre += "#" + (x.replace(" ", "_")).replace("-", "_") + " "
 
         msg = f"[{cflag}]"
         if b == br:
