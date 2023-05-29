@@ -687,8 +687,11 @@ async def something():
                 if FCHANNEL:
                     chat = int(FCHANNEL)
                     if FBANNER:
-                        pic_id, f_msg = await f_post(name)
-                        await app.send_photo(photo=pic_id, caption=f_msg, chat_id=chat)
+                        try:
+                            pic_id, f_msg = await f_post(name)
+                            await app.send_photo(photo=pic_id, caption=f_msg, chat_id=chat)
+                        except Exception:
+                            pass
                     await ds.copy(chat_id=chat)
                 if LOG_CHANNEL:
                     chat = int(LOG_CHANNEL)

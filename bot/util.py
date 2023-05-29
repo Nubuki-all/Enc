@@ -681,6 +681,7 @@ async def f_post(name):
     try:
         ani, b, d, c, e, fil2, fil3, st, r = await parser(name)
         _ainfo, _sinfo = await get_stream_info("downloads/" + name)
+        pb = b
         if FCODEC:
             codec = FCODEC
         else:
@@ -689,8 +690,16 @@ async def f_post(name):
             ttx = Path("parse.txt")
             if ttx.is_file():
                 raise Exception("Parsing turned off")
+            if c:
+                pb = b + " " + c
             variables = {"search": b, "type": "ANIME"}
             json = (
+                requests.post(url, json={"query": anime_query, "variables": variables})
+                .json()["data"]
+                .get("Media")
+            )
+            variables = {"search": pb, "type": "ANIME"}
+            json2 = (
                 requests.post(url, json={"query": anime_query, "variables": variables})
                 .json()["data"]
                 .get("Media")
@@ -698,7 +707,10 @@ async def f_post(name):
             b = json["title"]["english"]
             b = f"{json['title']['romaji']}" if b == "None" else b
             br = json["title"]["romaji"]
-            id_ = json["id"]
+            try:
+                id_ = json2["id"]
+            except Exception:
+                id_ = json["id"]
             pic_url = f"https://img.anili.st/media/{id_}"
             con = f"{json['countryOfOrigin']}"
             try:
@@ -707,7 +719,10 @@ async def f_post(name):
                 gen = None
 
         except Exception:
-            pass
+            br = "N/A"
+            con = "N/A"
+            gen = None
+            pic_url = "https://upload.wikimedia.org/wikipedia/commons/d/d1/Image_not_available.png"
         a_lang = ""
         s_lang = ""
 
