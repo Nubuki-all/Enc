@@ -689,7 +689,9 @@ async def something():
                     if FBANNER:
                         try:
                             pic_id, f_msg = await f_post(name)
-                            await app.send_photo(photo=pic_id, caption=f_msg, chat_id=chat)
+                            await app.send_photo(
+                                photo=pic_id, caption=f_msg, chat_id=chat
+                            )
                         except Exception:
                             pass
                     await ds.copy(chat_id=chat)
