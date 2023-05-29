@@ -696,7 +696,7 @@ async def f_post(name):
                 .get("Media")
             )
             b = json["title"]["english"]
-            b = json["title"]["romaji"] if b == "None" else b
+            b = f"{json['title']['romaji']}" if b == "None" else b
             br = json["title"]["romaji"]
             id_ = json["id"]
             pic_url = f"https://img.anili.st/media/{id_}"
