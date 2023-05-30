@@ -736,6 +736,8 @@ async def f_post(name, out):
                     lang_t = "Arabia"
                 elif lang_t.casefold() == "hin":
                     lang_t = "ind"
+                elif lang_t.casefold() == "ind":
+                    lang_t = "Indonesia"
                 lang_t = pycountry.countries.search_fuzzy(lang_t)
                 lang_t = lang_t[0].alpha_2
                 lang_t = flag.flag(lang_t)
