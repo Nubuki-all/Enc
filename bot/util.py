@@ -722,7 +722,7 @@ async def f_post(name, out):
 
         except Exception:
             br = "N/A"
-            con = "N/A"
+            con = "?"
             gen = None
             pic_url = "https://upload.wikimedia.org/wikipedia/commons/d/d1/Image_not_available.png"
         a_lang = ""
@@ -757,7 +757,8 @@ async def f_post(name, out):
             s_lang = s_lang.strip(", ")
         else:
             s_lang = "N/A"
-        cflag = flag.flag(con)
+        if not con == "?":
+            cflag = flag.flag(con)
         if gen:
             genre = ""
             for x in gen:
