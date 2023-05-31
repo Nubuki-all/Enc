@@ -722,7 +722,7 @@ async def f_post(name, out):
 
         except Exception:
             br = "N/A"
-            con = "?"
+            cflag = con = "?"
             gen = None
             pic_url = "https://upload.wikimedia.org/wikipedia/commons/d/d1/Image_not_available.png"
         a_lang = ""
