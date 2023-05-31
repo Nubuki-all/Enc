@@ -398,7 +398,7 @@ async def enpause(message):
     while LOCKFILE:
         try:
             await message.edit(enmoji() + pause_msg)
-            await asyn.sleep(10)
+            await asyncio.sleep(10)
         except pyro_errors.FloodWait as e:
             await asyncio.sleep(e.value)
             continue
