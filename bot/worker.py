@@ -445,10 +445,13 @@ async def dumpdl(dl, name, thum, user, message):
         dmp = "dump/" + name
         shutil.copy2(dl, dmp)
         _dmp = Path(dmp)
-        if message:
+        if DUMP_CHANNEL:
+            message = await app.send_message(int(DUMP_CHANNEL), "`🚨 Incoming! 🚨`\n\n" + await parse_dl(name))
+            reply = await message.reply(f"`Dumping {name}…`", quote=True)
+        elif message:
             reply = await message.reply(f"`Dumping {name}…`", quote=True)
         else:
-            reply = await app.send_message(f"`Dumping {name}…`")
+            reply = await app.send_message(user, f"`Dumping {name}…`")
         await asyncio.sleep(2)
         if int(_dmp.stat().st_size) > 2126000000:
             dp = await reply.reply("**File too large to dump, Aborting…**")

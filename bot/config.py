@@ -30,6 +30,7 @@ try:
     ENCODER = config("ENCODER", default="")
     DL_STUFF = config("DL_STUFF", default="")
     LOG_CHANNEL = config("LOG_CHANNEL", default="")
+    DUMP_CHANNEL = config("DUMP_CHANNEL", default="")
     DBNAME = config("DBNAME", default=str(BOT_TOKEN.split(":", 1)[0]))
     DATABASE_URL = config("DATABASE_URL", default="")
     FCHANNEL = config("FCHANNEL", default="")
