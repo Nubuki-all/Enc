@@ -275,7 +275,16 @@ async def en_rename(event):
             reply += "!"
             await e.edit(reply)
             return R_QUEUE.pop(0)
-        await e.edit(f"Download of `{loc}` completed.")
+        await e.edit(f"Downloading to `{loc}` completed.")
+        __pout, __pout1 = await parse(__loc, __out)
+        if not __pout == __out:
+            await asyncio.sleep(3)
+            await e.edit(f"Renaming `{__out}` >>> `{__pout}`…")
+            ploc = "thumb/" + __pout
+            shutil.copy2(loc, ploc)
+            os.remove(loc)
+            loc = ploc
+            __out = __pout
         await asyncio.sleep(5)
         thum = Path("thumb3.jpg")
         b, d, c, rlsgrp = await dynamicthumb(__loc, thum)
@@ -339,8 +348,6 @@ async def en_mux(event):
                 name = root + ext
         __loc = name
         dl = "thumb/" + name
-        __out, __out1 = await parse(name)
-        loc = "thumb/" + __out
         if R_QUEUE:
             R_QUEUE.append(str(event.id) + ":" + str(event.chat_id))
             q = await message.reply("`Added to queue!`")
@@ -364,6 +371,8 @@ async def en_mux(event):
             await e.edit(reply)
             return R_QUEUE.pop(0)
         args = args.strip()
+        __out, __out1 = await parse(name)
+        loc = "thumb/" + __out
         thum = Path("thumb3.jpg")
         b, d, c, rlsgrp = await dynamicthumb(__loc, thum)
         if "This Episode" in args:
