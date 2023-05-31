@@ -453,6 +453,7 @@ async def dumpdl(dl, name, thum, user, message):
             message = await app.send_message(
                 int(DUMP_CHANNEL), "`🚨 Incoming! 🚨`\n\n" + await parse_dl(name)
             )
+            await asyncio.sleep(5)
             reply = await message.reply(f"`Dumping {name}…`", quote=True)
         elif message:
             reply = await message.reply(f"`Dumping {name}…`", quote=True)
@@ -476,6 +477,12 @@ async def dumpdl(dl, name, thum, user, message):
             if dp is not None:
                 await dp.copy(chat_id=chat)
         os.remove(dmp)
+    except pyro_errors.FloodWait as e:
+        await asyncio.sleep(e.value)
+        await dumpdl(dl, name, thum, user, message)
+    except pyro_errors.BadRequest:
+        await asyncio.sleep(20)
+        await dumpdl(dl, name, thum, user, message)
     except Exception:
         ers = traceback.format_exc()
         LOGS.info(ers)
