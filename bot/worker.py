@@ -446,7 +446,9 @@ async def dumpdl(dl, name, thum, user, message):
         shutil.copy2(dl, dmp)
         _dmp = Path(dmp)
         if DUMP_CHANNEL:
-            message = await app.send_message(int(DUMP_CHANNEL), "`🚨 Incoming! 🚨`\n\n" + await parse_dl(name))
+            message = await app.send_message(
+                int(DUMP_CHANNEL), "`🚨 Incoming! 🚨`\n\n" + await parse_dl(name)
+            )
             reply = await message.reply(f"`Dumping {name}…`", quote=True)
         elif message:
             reply = await message.reply(f"`Dumping {name}…`", quote=True)
