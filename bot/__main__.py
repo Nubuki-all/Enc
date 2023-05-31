@@ -303,13 +303,13 @@ async def something():
                         "**[DEBUG]** `Preparing…`",
                         reply_to=message.id,
                     )
-                    mssg_f = await message.reply("**[DEBUG]** `Waiting for download handler…`", quote=True)
+                    mssg_f = await message.reply(
+                        "**[DEBUG]** `Waiting for download handler…`", quote=True
+                    )
                 except Exception:
                     message = None
                     mssg_r = None
-                    e = await bot.send_message(
-                        user, "`▼ Downloading…▼`"
-                    )
+                    e = await bot.send_message(user, "`▼ Downloading…▼`")
                 if message:
                     try:
                         user = message.from_user.id
