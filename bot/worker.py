@@ -446,6 +446,7 @@ async def dumpdl(dl, name, thum, user, message):
         shutil.copy2(dl, dmp)
         _dmp = Path(dmp)
         if DUMP_CHANNEL:
+            await app.send_sticker(int(DUMP_CHANNEL), sticker="CAACAgEAAxkBAAI0aWKx36P2GY9Fq6xvN0SBU1V2xZYIAAKXAgACJ_hhR9HcWzoditT7HgQ")
             message = await app.send_message(
                 int(DUMP_CHANNEL), "`🚨 Incoming! 🚨`\n\n" + await parse_dl(name)
             )
