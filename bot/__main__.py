@@ -695,6 +695,16 @@ async def something():
                         except Exception:
                             pass
                     await ds.copy(chat_id=chat)
+                    if FSTICKER:
+                        try:
+                            await app.send_sticker(
+                                chat,
+                                sticker=FSTICKER,
+                            )
+                        except Exception:
+                            er = traceback.format_exc()
+                            LOGS.info(er)
+                            await channel_log(er)
                 if LOG_CHANNEL:
                     chat = int(LOG_CHANNEL)
                     await ds.copy(chat_id=chat)
