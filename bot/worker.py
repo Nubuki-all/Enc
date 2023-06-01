@@ -454,11 +454,11 @@ async def dumpdl(dl, name, thum, user, message):
                 int(DUMP_CHANNEL), "`🚨 Incoming! 🚨`\n\n" + await parse_dl(name)
             )
             await asyncio.sleep(5)
-            reply = await message.reply(f"`Dumping {name}…`", quote=True)
+            reply = await message.reply(f"__Dumping__ `{name}`__…__", quote=True)
         elif message:
-            reply = await message.reply(f"`Dumping {name}…`", quote=True)
+            reply = await message.reply(f"`Dumping` `{name}``…`", quote=True)
         else:
-            reply = await app.send_message(user, f"`Dumping {name}…`")
+            reply = await app.send_message(user, f"`Dumping` `{name}``…`")
         await asyncio.sleep(2)
         if int(_dmp.stat().st_size) > 2126000000:
             dp = await reply.reply("**File too large to dump, Aborting…**")
