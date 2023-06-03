@@ -370,7 +370,7 @@ async def en_mux(event):
             reply += "!"
             await e.edit(reply)
             return R_QUEUE.pop(0)
-        t_file = "thumb/" root + " [Temp]" + ext
+        t_file = "thumb/" + root + " [Temp]" + ext
         args = args.strip()
         await e.edit(f"Download to `{__loc}` completed")
         await asyncio.sleep(3)
