@@ -364,14 +364,14 @@ async def en_mux(event):
         await download.start(dl, 0, message, e)
         if download.is_cancelled:
             # os.system(f"rm {dl}")
-            reply = f"Download of `{loc}` was cancelled"
+            reply = f"Download of `{__loc}` was cancelled"
             if download.canceller:
                 reply += f" by {download.canceller.first_name}"
             reply += "!"
             await e.edit(reply)
             return R_QUEUE.pop(0)
         args = args.strip()
-        __out, __out1 = await parse(name)
+        __out, __out1 = await parse(name, dl.split("/")[-1])
         loc = "thumb/" + __out
         thum = Path("thumb3.jpg")
         b, d, c, rlsgrp = await dynamicthumb(__loc, thum)
@@ -384,7 +384,7 @@ async def en_mux(event):
             args = args.replace(f"This Episode", bo)
         if "Fileinfo" in args:
             args = args.replace("Fileinfo", __out1)
-        await e.edit(f"Download of `{__loc}` completed")
+        await e.edit(f"Download to `{loc}` completed")
         await asyncio.sleep(3)
         await e.edit("`Muxing using provided parameters…`")
         cmd = f'ffmpeg -i "{dl}" {args} "{loc}" -y'
