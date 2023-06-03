@@ -732,7 +732,7 @@ async def f_post(name, out):
             if not lang_t == "?":
                 if "-" in lang_t:
                     lang_t1, lang_t2 = lang_t.split("-", maxsplit=1)
-                    if lang_t.isdigit():
+                    if lang_t2.isdigit():
                         lang_t = lang_t1
                     else:
                         lang_t = lang_t2
