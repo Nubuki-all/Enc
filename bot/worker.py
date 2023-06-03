@@ -408,9 +408,9 @@ async def en_mux(event):
         thum = Path("thumb3.jpg")
         b, d, c, rlsgrp = await dynamicthumb(__loc, thum)
         args2 = ""
-        for arg in args.split():
-            if "-metadata" in arg:
-                args2 += arg + " "
+        for arg in args.split("-"):
+            if "metadata" in arg:
+                args2 += "-" + arg + " "
         if "This Episode" in args2:
             bo = b
             if d:
