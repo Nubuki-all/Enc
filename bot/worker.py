@@ -370,24 +370,57 @@ async def en_mux(event):
             reply += "!"
             await e.edit(reply)
             return R_QUEUE.pop(0)
+        t_file = root + " [Temp]" + ext
         args = args.strip()
-        __out, __out1 = await parse(name, dl.split("/")[-1])
+        await e.edit(f"Download to `{__loc}` completed")
+        await asyncio.sleep(3)
+        await e.edit("`Muxing using provided parameters…`")
+        cmd = f'ffmpeg -i "{dl}" {args} "{t_file}" -y'
+        if ALLOW_ACTION is True:
+            async with bot.action(event.chat_id, "game"):
+                process = await asyncio.create_subprocess_shell(
+                    cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+                )
+                stdout, stderr = await process.communicate()
+        else:
+            process = await asyncio.create_subprocess_shell(
+                cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+            )
+            stdout, stderr = await process.communicate()
+        er = stderr.decode()
+        if process.returncode != 0:
+            if len(stderr) > 4095:
+                out_file = "ffmpeg_error.txt"
+                with open(out_file, "w") as file:
+                    file.write(str(er))
+                    wrror = await message.reply_document(
+                        document=out_file,
+                        force_document=True,
+                        quote=True,
+                        caption="`ffmpeg error`",
+                    )
+                os.remove(out_file)
+            else:
+                wrror = await message.reply(er, quote=True)
+            raise Exception("Encoding Failed!")
+        __out, __out1 = await parse(name, t_file)
         loc = "thumb/" + __out
         thum = Path("thumb3.jpg")
         b, d, c, rlsgrp = await dynamicthumb(__loc, thum)
-        if "This Episode" in args:
+        args2 = ""
+        for arg in args.split():
+            if "-metadata" in arg:
+                args2 += arg + " "
+        if "This Episode" in args2:
             bo = b
             if d:
                 bo = f"Episode {d} of {b}"
             if c:
                 bo += f" Season {c}"
-            args = args.replace(f"This Episode", bo)
+            args2 = args2.replace(f"This Episode", bo)
         if "Fileinfo" in args:
-            args = args.replace("Fileinfo", __out1)
-        await e.edit(f"Download to `{loc}` completed")
-        await asyncio.sleep(3)
-        await e.edit("`Muxing using provided parameters…`")
-        cmd = f'ffmpeg -i "{dl}" {args} "{loc}" -y'
+            args2 = args2.replace("Fileinfo", __out1)
+        cmd = f'ffmpeg -i "{t_file}" -map 0:v? -map 1:a? -map 0:s? -map 0:t? -map 0:a? {args2} "{loc}" -codec copy -y'
         if ALLOW_ACTION is True:
             async with bot.action(event.chat_id, "game"):
                 process = await asyncio.create_subprocess_shell(
@@ -429,12 +462,13 @@ async def en_mux(event):
             await e.edit(f"__Upload of__ `{__out}` __was cancelled.__")
         os.system("rm thumb3.jpg")
         os.remove(dl)
+        os.remove(t_file)
         os.remove(loc)
         R_QUEUE.pop(0)
     except Exception:
         if R_QUEUE:
             R_QUEUE.pop(0)
-        os.system(f"rm -rf {dl} {loc}")
+        os.system(f"rm -rf {dl} {t_file} {loc}")
         ers = traceback.format_exc()
         await channel_log(ers)
         LOGS.info(ers)
