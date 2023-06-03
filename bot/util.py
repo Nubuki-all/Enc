@@ -731,7 +731,11 @@ async def f_post(name, out):
         def get_flag(lang_t):
             if not lang_t == "?":
                 if "-" in lang_t:
-                    lang_t = lang_t.split("-")[-1]
+                    lang_t1, lang_t2 = lang_t.split("-", maxsplit=1)
+                    if lang_t.isdigit():
+                        lang_t = lang_t1
+                    else:
+                        lang_t = lang_t2
                 if lang_t.casefold() == "eng":
                     lang_t = "US"
                 elif lang_t.casefold() == "ara":

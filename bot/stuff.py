@@ -180,11 +180,11 @@ async def temp_unauth(event):
                 new_id = args
             else:
                 return await event.reply(
-                    f"What do you mean by  `{args}` ?\nneed help? send /unauth"
+                    f"What do you mean by  `{args}` ?\nneed help? send /unpermit"
                 )
         else:
             return await event.reply(
-                "Either reply to a message sent by the user you want to remove from temporarily allowed users or send /unauth (user-id)\nExample:\n  /unauth 123456"
+                "Either reply to a message sent by the user you want to remove from temporarily allowed users or send /unpermit (user-id)\nExample:\n  /unpermit 123456"
             )
     new_id = str(new_id)
     if new_id == sender:
@@ -221,13 +221,15 @@ async def temp_auth(event):
             args = args.strip()
             if args.isdigit():
                 new_id = args
+            elif args.startswith("-100") and (args.lstrip("-100")).isdigit():
+                new_id = args
             else:
                 return await event.reply(
-                    f"What do you mean by  `{args}` ?\nneed help? send /auth"
+                    f"What do you mean by  `{args}` ?\nneed help? send /permit"
                 )
         else:
             return await event.reply(
-                "Either reply to a message sent by the user you want to add to temporarily allowed users or send /auth (user-id)\nExample:\n  /auth 123456"
+                "Either reply to a message sent by the user you want to add to temporarily allowed users or send /permit (user-id)\nExample:\n  /permit 123456"
             )
     new_id = str(new_id)
     if new_id == sender:
