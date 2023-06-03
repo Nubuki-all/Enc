@@ -370,7 +370,7 @@ async def en_mux(event):
             reply += "!"
             await e.edit(reply)
             return R_QUEUE.pop(0)
-        t_file = root + " [Temp]" + ext
+        t_file = "thumb/" root + " [Temp]" + ext
         args = args.strip()
         await e.edit(f"Download to `{__loc}` completed")
         await asyncio.sleep(3)
@@ -403,7 +403,7 @@ async def en_mux(event):
             else:
                 wrror = await message.reply(er, quote=True)
             raise Exception("Encoding Failed!")
-        __out, __out1 = await parse(name, t_file)
+        __out, __out1 = await parse(name, t_file.split("/")[-1])
         loc = "thumb/" + __out
         thum = Path("thumb3.jpg")
         b, d, c, rlsgrp = await dynamicthumb(__loc, thum)
@@ -420,7 +420,7 @@ async def en_mux(event):
             args2 = args2.replace(f"This Episode", bo)
         if "Fileinfo" in args:
             args2 = args2.replace("Fileinfo", __out1)
-        cmd = f'ffmpeg -i "{t_file}" -map 0:v? -map 0:a? -map 0:s? -map 0:t? -map 0:a? {args2} "{loc}" -codec copy -y'
+        cmd = f'ffmpeg -i "{t_file}" -map 0:v? -map 0:a? -map 0:s? -map 0:t? -map 0:a? {args2} -codec copy "{loc}" -y'
         if ALLOW_ACTION is True:
             async with bot.action(event.chat_id, "game"):
                 process = await asyncio.create_subprocess_shell(
