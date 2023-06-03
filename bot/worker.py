@@ -420,7 +420,7 @@ async def en_mux(event):
             args2 = args2.replace(f"This Episode", bo)
         if "Fileinfo" in args:
             args2 = args2.replace("Fileinfo", __out1)
-        cmd = f'ffmpeg -i "{t_file}" -map 0:v? -map 0:a? -map 0:s? -map 0:t? -map 0:a? {args2} -codec copy "{loc}" -y'
+        cmd = f'ffmpeg -i "{t_file}" -map 0:v? -map 0:a? -map 0:s? -map 0:t? {args2} -codec copy "{loc}" -y'
         if ALLOW_ACTION is True:
             async with bot.action(event.chat_id, "game"):
                 process = await asyncio.create_subprocess_shell(
