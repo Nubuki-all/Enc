@@ -900,8 +900,13 @@ async def encodestat():
                 x = "    **CURRENT ITEMS ON QUEUE:**\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
             else:
                 i = 1
-                y, yy = QUEUE[list(QUEUE.keys())[0]]
-                y = await qparse(y)
+                try:
+                    dt_ = glob.glob("encode/*")
+                    data = max(dt_, key=os.path.getctime)
+                    y = data.replace("encode/", "")
+                except Exception:
+                    y, yy = QUEUE[list(QUEUE.keys())[0]]
+                    y = await qparse(y)
                 e = "🟢"
                 if LOCKFILE:
                     e = "⏸️"
