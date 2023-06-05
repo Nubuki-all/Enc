@@ -406,6 +406,7 @@ async def parse(name, kk="", aa=".mkv"):
             pass
         else:
             col = con
+
         a_check, _none = await get_stream_info(_infile)
         if a_check:
             if len(a_check.split("|")) > 3:
@@ -414,6 +415,9 @@ async def parse(name, kk="", aa=".mkv"):
                 col = "Tri"
             elif len(a_check.split("|")) == 2:
                 col = "Dual"
+        elif a_check is None:
+            col = "TBD"
+
         if olif.is_file() and fil2.casefold() != "auto":
             col = fil2
             col = "" if fil2.casefold() == "disable" else col
