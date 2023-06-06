@@ -7,6 +7,11 @@
     "success_url": "https://t.me/Ani_Mine",
     "stack": "container",
     "env": {
+        "ALWAYS_DEPLOY_LATEST": {
+            "description": "Whether to update on startup",
+            "value": "True",
+            "required": false
+        },
         "APP_ID": {
             "description": "You api id, from my.telegram.org or @apiScrapperRoBot.",
             "value": ""
@@ -26,6 +31,46 @@
         "LOG_CHANNEL": {
             "description": "Input Log Channel Id",
             "value": "",
+            "required": false
+        },
+        "WORKERS": {
+            "description": "Number of pyrogram workers",
+            "value": "1",
+            "required": false
+        },
+        "FCHANNEL": {
+            "description": "Input Foward Channel Id",
+            "value": "",
+            "required": false
+        },
+        "FCHANNEL_STAT": {
+            "description": "Input Forward channel status message id",
+            "value": "",
+            "required": false
+        },
+        "FBANNER": {
+            "description": "Disable/enable Forward channel banner",
+            "value": "True",
+            "required": false
+        },
+        "FSTICKER": {
+            "description": "Enable forward channel sticker divider",
+            "value": "",
+            "required": false
+        },
+        "CAP_DECO": {
+            "description": "Input Caption decoration",
+            "value": "🌸",
+            "required": false
+        },
+        "DUMP_LEECH": {
+            "description": "Enable/disable dumping",
+            "value": "False",
+            "required": false
+        },
+        "CACHE_DL": {
+            "description": "Enable/disable caching downloads.",
+            "value": "True",
             "required": false
         },
         "DATABASE_URL": {
