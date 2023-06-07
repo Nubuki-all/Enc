@@ -60,7 +60,7 @@ uptime = dt.now()
 #    "curl -sL https://raw.githubusercontent.com/anasty17/mirror-leech-telegram-bot/master/aria.sh|bash"
 # )
 
-if EABF is True:
+if EABF:
     UNLOCK_UNSTABLE.append(1)
 
 if THUMB:
@@ -69,6 +69,9 @@ if THUMB:
 if DL_STUFF:
     for link in DL_STUFF.split(","):
         os.system(f"wget {link.strip()}")
+
+if LOCK_ON_STARTUP:
+    LOCKFILE.append(1)
 
 ffmpegfile = Path("ffmpeg.txt")
 if ffmpegfile.is_file():
