@@ -301,7 +301,7 @@ async def something():
                     e = await bot.send_message(
                         user,
                         "**[DEBUG]** `Preparing…`",
-                        reply_to=message.id,
+                        reply_to=mssg_r.id,
                     )
                     mssg_f = await message.reply(
                         "**[DEBUG]** `Waiting for download handler…`", quote=True
