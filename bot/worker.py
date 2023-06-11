@@ -1423,22 +1423,9 @@ async def thumb(event):
     await event.reply("**Thumbnail Saved Successfully.**")
 
 
-async def qparse(q):
-    kk = q
-    if "[" in kk and "]" in kk:
-        pp = kk.split("[")[0]
-        qq = kk.split("]")[1]
-        kk = pp + qq
-    else:
-        kk = kk
-    aa = kk.split(".")[-1]
-    namo = q
-    if "v2" in namo:
-        name = namo.replace("v2", "")
-    else:
-        name = namo
-    bb2 = await parse(name, kk, aa)
-    bb = bb2[0]
+async def qparse(name):
+    parsed_name = await parse(name)
+    bb = parsed_name[0]
     return bb
 
 
@@ -1472,6 +1459,12 @@ async def pres(e):
         q = (q[:45] + "…") if len(q) > 45 else q
         ansa = f"Auto-generated Filename:\n{nme}\n\nAuto-Generated Thumbnail:\n{oho}\n\nNext Up:\n{q}\n\nQueue Count:\n{t}"
         await e.answer(ansa, cache_time=0, alert=True)
+    except AttributeError:
+        raw_ansa = "Oops! data of this button was lost,\n most probably due to restart.\nAnd as such the outdated message will be removed…"
+        for ansa in raw_ansa.split("\n"):
+            await e.answer(ansa, cache_time=0, alert=False)
+            await asyncio.sleep(5)
+        await e.delete()
     except Exception:
         ers = traceback.format_exc()
         LOGS.info(ers)
@@ -1488,6 +1481,8 @@ async def dl_stat(e):
     try:
         wah = e.pattern_match.group(1).decode("UTF-8")
         dl = decode(wah)
+        if not dl:
+            raise AttributeError("No data")
         dl_check = Path(dl)
         if dl_check.is_file():
             dls = dl
@@ -1499,6 +1494,12 @@ async def dl_stat(e):
         q = await qparse(name)
         ans = f"📥 Downloading:\n{input}\n\n⭕ Current Size:\n{ov}\n\n\n{enmoji()}:\n{q}"
         await e.answer(ans, cache_time=0, alert=True)
+    except AttributeError:
+        raw_ansa = "Oops! data of this button was lost,\n most probably due to restart.\nAnd as such the outdated message will be removed…"
+        for ansa in raw_ansa.split("\n"):
+            await e.answer(ansa, cache_time=0, alert=False)
+            await asyncio.sleep(5)
+        await e.delete()
     except Exception:
         ers = traceback.format_exc()
         LOGS.info(ers)
@@ -1529,6 +1530,12 @@ async def stats(e):
         psutil.disk_usage("/").percent
         ans = f"CPU: {cpuUsage}%\n\nTotal Disk Space:\n{total}\n\nDownloaded:\n{ov}\n\nFileName:\n{input}\n\nCompressing:\n{ot}\n\nBot Uptime:\n{currentTime}\n\nUsed: {used}  Free: {free}"
         await e.answer(ans, cache_time=0, alert=True)
+    except AttributeError:
+        raw_ansa = "Oops! data of this button was lost,\n most probably due to restart.\nAnd as such the outdated message will be removed…"
+        for ansa in raw_ansa.split("\n"):
+            await e.answer(ansa, cache_time=0, alert=False)
+            await asyncio.sleep(5)
+        await e.delete()
     except Exception:
         ers = traceback.format_exc()
         LOGS.info(ers)
