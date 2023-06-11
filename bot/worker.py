@@ -1499,6 +1499,12 @@ async def dl_stat(e):
         for ansa in raw_ansa.split("\n"):
             await e.answer(ansa, cache_time=0, alert=False)
             await asyncio.sleep(5)
+        try:
+            rep_e = await e.get_reply_message()
+            await rep_e.delete()
+        except Exception:
+            ers = traceback.format_exc()
+            LOGS.info("[DEBUG] -dl_stat- " + ers)
         await e.delete()
     except Exception:
         ers = traceback.format_exc()
