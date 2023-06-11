@@ -1464,7 +1464,7 @@ async def pres(e):
         await e.answer(ansa, cache_time=0, alert=False)
         await asyncio.sleep(5)
         try:
-            rep_e = await e.get_reply_message()
+            rep_e = await (await e.get_message()).get_reply_message()
             await rep_e.delete()
         except Exception:
             ers = traceback.format_exc()
@@ -1504,7 +1504,7 @@ async def dl_stat(e):
         await e.answer(ansa, cache_time=0, alert=False)
         await asyncio.sleep(5)
         try:
-            rep_e = await e.get_reply_message()
+            rep_e = await (await e.get_message()).get_reply_message()
             await rep_e.delete()
         except Exception:
             ers = traceback.format_exc()
@@ -1545,7 +1545,7 @@ async def stats(e):
         await e.answer(ansa, cache_time=0, alert=False)
         await asyncio.sleep(5)
         try:
-            rep_e = await e.get_reply_message()
+            rep_e = await (await e.get_message()).get_reply_message()
             await rep_e.delete()
         except Exception:
             ers = traceback.format_exc()
