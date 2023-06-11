@@ -147,6 +147,13 @@ async def get_stream_info(file):
                     s_lang += stream["tags"]["language"] + "|"
                 except BaseException:
                     s_lang += "?|"
+    except KeyError as k_e:
+        if not str(k_e) == "'streams'":
+            ers = traceback.format_exc()
+            await channel_log(ers)
+            LOGS.info(ers)
+        else:
+            LOGS.info("[NOTICE] No stream was found.")
     except Exception:
         ers = traceback.format_exc()
         await channel_log(ers)
