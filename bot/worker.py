@@ -1460,10 +1460,15 @@ async def pres(e):
         ansa = f"Auto-generated Filename:\n{nme}\n\nAuto-Generated Thumbnail:\n{oho}\n\nNext Up:\n{q}\n\nQueue Count:\n{t}"
         await e.answer(ansa, cache_time=0, alert=True)
     except AttributeError:
-        raw_ansa = "Oops! data of this button was lost,\n most probably due to restart.\nAnd as such the outdated message will be removed…"
-        for ansa in raw_ansa.split("\n"):
-            await e.answer(ansa, cache_time=0, alert=False)
-            await asyncio.sleep(5)
+        ansa = "Oops! data of this button was lost,\n most probably due to restart.\nAnd as such the outdated message will be removed…"
+        await e.answer(ansa, cache_time=0, alert=False)
+        await asyncio.sleep(5)
+        try:
+            rep_e = await e.get_reply_message()
+            await rep_e.delete()
+        except Exception:
+            ers = traceback.format_exc()
+            LOGS.info("[DEBUG] -pres- " + ers)
         await e.delete()
     except Exception:
         ers = traceback.format_exc()
@@ -1495,10 +1500,9 @@ async def dl_stat(e):
         ans = f"📥 Downloading:\n{input}\n\n⭕ Current Size:\n{ov}\n\n\n{enmoji()}:\n{q}"
         await e.answer(ans, cache_time=0, alert=True)
     except AttributeError:
-        raw_ansa = "Oops! data of this button was lost,\n most probably due to restart.\nAnd as such the outdated message will be removed…"
-        for ansa in raw_ansa.split("\n"):
-            await e.answer(ansa, cache_time=0, alert=False)
-            await asyncio.sleep(5)
+        ansa = "Oops! data of this button was lost,\n most probably due to restart.\nAnd as such the outdated message will be removed…"
+        await e.answer(ansa, cache_time=0, alert=False)
+        await asyncio.sleep(5)
         try:
             rep_e = await e.get_reply_message()
             await rep_e.delete()
@@ -1537,10 +1541,15 @@ async def stats(e):
         ans = f"CPU: {cpuUsage}%\n\nTotal Disk Space:\n{total}\n\nDownloaded:\n{ov}\n\nFileName:\n{input}\n\nCompressing:\n{ot}\n\nBot Uptime:\n{currentTime}\n\nUsed: {used}  Free: {free}"
         await e.answer(ans, cache_time=0, alert=True)
     except AttributeError:
-        raw_ansa = "Oops! data of this button was lost,\n most probably due to restart.\nAnd as such the outdated message will be removed…"
-        for ansa in raw_ansa.split("\n"):
-            await e.answer(ansa, cache_time=0, alert=False)
-            await asyncio.sleep(5)
+        ansa = "Oops! data of this button was lost,\n most probably due to restart.\nAnd as such the outdated message will be removed…"
+        await e.answer(ansa, cache_time=0, alert=False)
+        await asyncio.sleep(5)
+        try:
+            rep_e = await e.get_reply_message()
+            await rep_e.delete()
+        except Exception:
+            ers = traceback.format_exc()
+            LOGS.info("[DEBUG] -stats- " + ers)
         await e.delete()
     except Exception:
         ers = traceback.format_exc()
