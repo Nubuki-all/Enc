@@ -463,7 +463,8 @@ async def en_mux(event):
         os.system("rm thumb3.jpg")
         os.remove(dl)
         os.remove(t_file)
-        os.remove(loc)
+        if not loc == dl:
+            os.remove(loc)
         R_QUEUE.pop(0)
     except Exception:
         if R_QUEUE:
