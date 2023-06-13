@@ -1232,9 +1232,10 @@ async def lock(event):
         except Exception:
             pass
         if not temp:
-            await event.reply(
-                f"`Locking Failed: send amount of time to lock in seconds`\nFor instance /lock 30\n\n**Peace**"
-            )
+            if LOCKFILE:
+                await event.reply("**Lock Status:** != `Bot is currently locked`")
+            else:
+                await event.reply("**Lock Status:** `Bot is not locked`")
             return
         if temp.casefold() == "disable" or temp.casefold() == "off":
             try:
@@ -1251,24 +1252,24 @@ async def lock(event):
         if not LOCKFILE:
             ot = ""
             LOCKFILE.append(temp)
-            await event.reply(f"**Locking for** `{temp}s`")
-            lock_dur = f"for `{LOCKFILE[0]}s`"
+            await event.reply(f"**Locking for** `{get_readable_time(temp)}`")
+            lock_dur = f"for `{get_readable_time(LOCKFILE[0])}`"
             if int(LOCKFILE[0]) == 0:
                 lock_dur = "Indefinitely!"
-            try:
-                for i in OWNER.split():
+            for i in OWNER.split():
+                try:
                     oo = await bot.send_message(
                         int(i), f"Bot has been locked {lock_dur}"
                     )
-            except Exception:
-                pass
-            try:
-                for i in TEMP_USERS.split():
+                except Exception:
+                    pass
+            for i in TEMP_USERS.split():
+                try:
                     ot = await bot.send_message(
                         int(i), f"Bot has been locked {lock_dur}"
                     )
-            except Exception:
-                pass
+                except Exception:
+                    pass
             if LOG_CHANNEL:
                 log = int(LOG_CHANNEL)
                 op = await bot.send_message(
@@ -1298,8 +1299,11 @@ async def lock(event):
             if LOG_CHANNEL:
                 await edito(op)
             return
-        if LOCKFILE:
-            return await event.reply("**Bot already locked\nDo /lock off to unlock**")
+        if LOCKFILE == 0:
+            return await event.reply("**Bot was locked indefinitely!\nSend /lock off to unlock**")
+        else:
+            LOCKFILE.clear()
+            return await lock(event)
     except Exception:
         await event.reply("Error Occurred")
         ers = traceback.format_exc()
