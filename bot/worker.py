@@ -1300,7 +1300,9 @@ async def lock(event):
                 await edito(op)
             return
         if LOCKFILE == 0:
-            return await event.reply("**Bot was locked indefinitely!\nSend /lock off to unlock**")
+            return await event.reply(
+                "**Bot was locked indefinitely!\nSend /lock off to unlock**"
+            )
         else:
             LOCKFILE.clear()
             return await lock(event)
