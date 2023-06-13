@@ -1263,7 +1263,7 @@ async def lock(event):
                     )
                 except Exception:
                     pass
-            for i in TEMP_USERS.split():
+            for i in TEMP_USERS:
                 try:
                     ot = await bot.send_message(
                         int(i), f"Bot has been locked {lock_dur}"
