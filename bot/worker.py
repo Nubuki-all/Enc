@@ -1233,7 +1233,7 @@ async def lock(event):
             pass
         if not temp:
             if LOCKFILE:
-                await event.reply("**Lock Status:** != `Bot is currently locked`")
+                await event.reply("**Lock Status:** `Bot is currently locked`")
             else:
                 await event.reply("**Lock Status:** `Bot is not locked`")
             return
