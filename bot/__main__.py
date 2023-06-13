@@ -516,6 +516,9 @@ async def something():
                 bb, bb2 = await parse(name, kk, aa)
                 out = f"{rr}/{bb}"
                 b, d, c, rlsgrp = await dynamicthumb(name)
+                a_auto_disp = "-disposition:a auto"
+                s_auto_disp = "-disposition:s auto"
+                a_pos_in_stm, s_pos_in_stm = await pos_in_stm(dl)
                 tbcheck = Path("thumb2.jpg")
                 if tbcheck.is_file():
                     thum = "thumb2.jpg"
@@ -545,6 +548,16 @@ async def something():
                     ffmpeg = nano.replace(f"Fileinfo", bb2)
                 else:
                     ffmpeg = nano
+                if a_auto_disp in ffmpeg:
+                    if a_pos_in_stm:
+                        ffmpeg = ffmpeg.replace(a_auto_disp, f"-disposition:a 0 -disposition:a:{s_pos_in_stm} default")
+                    else:
+                        ffmpeg = ffmpeg.replace(a_auto_disp, "-disposition:a 0")
+                if s_auto_disp in ffmpeg:
+                    if s_pos_in_stm:
+                        ffmpeg = ffmpeg.replace(s_auto_disp, f"-disposition:s 0 -disposition:s:{s_pos_in_stm} default")
+                    else:
+                        ffmpeg = ffmpeg.replace(s_auto_disp, "-disposition:s 0")
                 dtime = ts(int((es - s).seconds) * 1000)
                 if uri:
                     name2, user2 = QUEUE[list(QUEUE.keys())[0]]
