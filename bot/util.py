@@ -168,13 +168,13 @@ async def pos_in_stm(file, lang1="eng", lang2="eng-us"):
         a_pos = ""
         s_pos = ""
         _ainfo, _sinfo = await get_stream_info(Path(file))
-        i = 1
+        i = 0
         for audio in _ainfo.split("|"):
             if audio == lang1 or audio == lang2:
                 a_pos = i
                 break
             i = i + 1
-        i = 1
+        i = 0
         for subs in _sinfo.split("|"):
             if subs == lang1 or audio == lang2:
                 s_pos = i
@@ -184,7 +184,6 @@ async def pos_in_stm(file, lang1="eng", lang2="eng-us"):
         await channel_log(ers)
         LOGS.info(ers)
     return a_pos, s_pos
-
 
 async def wfilter():
     wname = Path("Namefilter.txt")
