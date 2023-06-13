@@ -185,6 +185,7 @@ async def pos_in_stm(file, lang1="eng", lang2="eng-us"):
         LOGS.info(ers)
     return a_pos, s_pos
 
+
 async def wfilter():
     wname = Path("Namefilter.txt")
     wrelease = Path("Releasefilter.txt")
