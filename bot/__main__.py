@@ -549,7 +549,7 @@ async def something():
                 else:
                     ffmpeg = nano
                 if a_auto_disp in ffmpeg:
-                    if a_pos_in_stm:
+                    if a_pos_in_stm or a_pos_in_stm == 0:
                         ffmpeg = ffmpeg.replace(
                             a_auto_disp,
                             f"-disposition:a 0 -disposition:a:{s_pos_in_stm} default",
@@ -557,7 +557,7 @@ async def something():
                     else:
                         ffmpeg = ffmpeg.replace(a_auto_disp, "-disposition:a 0")
                 if s_auto_disp in ffmpeg:
-                    if s_pos_in_stm:
+                    if s_pos_in_stm or s_pos_in_stm == 0:
                         ffmpeg = ffmpeg.replace(
                             s_auto_disp,
                             f"-disposition:s 0 -disposition:s:{s_pos_in_stm} default",
