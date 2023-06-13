@@ -476,6 +476,9 @@ async def get_leech_file():
         if dat.endswith(".aria2"):
             await asyncio.sleep(2)
             dat = await get_leech_file()
+    except ValueError:
+        await asyncio.sleep(5)
+        dat = await get_leech_file()
     except Exception:
         dat = ""
         ers = traceback.format_exc()
