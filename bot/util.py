@@ -153,6 +153,7 @@ async def get_stream_info(file):
             await channel_log(ers)
             LOGS.info(ers)
         else:
+            return None, None
             LOGS.info("[NOTICE] No stream was found.")
     except Exception:
         ers = traceback.format_exc()
