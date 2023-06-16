@@ -1305,6 +1305,7 @@ async def lock(event):
             )
         else:
             LOCKFILE.clear()
+            await asyncio.sleep(3)
             return asyncio.create_task(lock(event))
     except Exception:
         await event.reply("Error Occurred")
