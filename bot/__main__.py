@@ -309,6 +309,7 @@ async def something():
                 except Exception:
                     message = None
                     mssg_r = None
+                    mssg_f = None
                     e = await bot.send_message(user, "`▼ Downloading…▼`")
                 if message:
                     try:
