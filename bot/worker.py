@@ -402,7 +402,7 @@ async def en_mux(event):
                 os.remove(out_file)
             else:
                 wrror = await message.reply(er, quote=True)
-            raise Exception("Encoding Failed!")
+            raise Exception("Muxing Failed!")
         __out, __out1 = await parse(name, t_file.split("/")[-1])
         loc = "thumb/" + __out
         thum = Path("thumb3.jpg")
@@ -418,7 +418,7 @@ async def en_mux(event):
             if c:
                 bo += f" Season {c}"
             args2 = args2.replace(f"This Episode", bo)
-        if "Fileinfo" in args:
+        if "Fileinfo" in args2:
             args2 = args2.replace("Fileinfo", __out1)
         cmd = f'ffmpeg -i "{t_file}" -map 0:v? -map 0:a? -map 0:s? -map 0:t? {args2} -codec copy "{loc}" -y'
         if ALLOW_ACTION is True:
@@ -447,7 +447,7 @@ async def en_mux(event):
                 os.remove(out_file)
             else:
                 wrror = await message.reply(er, quote=True)
-            raise Exception("Encoding Failed!")
+            raise Exception("Editing Metadata Failed!")
         if thum.is_file():
             pass
         else:

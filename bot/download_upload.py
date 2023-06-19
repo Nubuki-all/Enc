@@ -23,7 +23,7 @@ class uploader:
 
     async def start(self, from_user_id, filepath, reply, thum, caption, message=""):
         try:
-            if thumb:
+            if thum:
                 thum = Path(thum)
                 if not thum.is_file():
                     thum = None
