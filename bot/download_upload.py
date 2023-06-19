@@ -23,9 +23,10 @@ class uploader:
 
     async def start(self, from_user_id, filepath, reply, thum, caption, message=""):
         try:
-            thum = Path(thum)
-            if not thum.is_file():
-                thum = None
+            if thumb:
+                thum = Path(thum)
+                if not thum.is_file():
+                    thum = None
             async with bot.action(from_user_id, "file"):
                 await reply.edit("🔺Uploading🔺")
                 u_start = time.time()
