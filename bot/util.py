@@ -94,6 +94,8 @@ async def auto_rename(parsed_name, original_name, refunc, caption=False):
                     out_name = cap_name
     if not out_name:
         out_name = parsed_name
+    elif str(out_name) == "00":
+        out_name = original_name
     return out_name
 
 
