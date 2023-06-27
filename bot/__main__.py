@@ -277,8 +277,8 @@ async def _(app, message):
 
 
 async def something():
+    await statuschecker()
     for i in itertools.count():
-        await statuschecker()
         try:
             while LOCKFILE:
                 await asyncio.sleep(10)
@@ -329,7 +329,7 @@ async def something():
                     log = int(LOG_CHANNEL)
                     op = await bot.send_message(
                         log,
-                        f"[{sender.first_name}](tg://user?id={user}) `Currently Downloading A Queued Video…`",
+                        f"[{sender.first_name}](tg://user?id={user}) `Currently Downloading A Video…`",
                     )
                 else:
                     op = None
@@ -581,7 +581,7 @@ async def something():
                 except Exception:
                     pass
                 nn = await e.edit(
-                    "`Encoding Files…` \n**⏳This Might Take A While⏳**",
+                    "`Encoding File(s)…` \n**⏳This Might Take A While⏳**",
                     buttons=[
                         [Button.inline("📂", data=f"pres{wah2}")],
                         [Button.inline("STATS", data=f"stats{wah}")],
@@ -590,7 +590,7 @@ async def something():
                 )
                 if LOG_CHANNEL:
                     wak = await op.edit(
-                        f"[{sender.first_name}](tg://user?id={user}) `Is Currently Encoding A Queued Video…`",
+                        f"[{sender.first_name}](tg://user?id={user}) `Is Currently Encoding a Video…`",
                         buttons=[
                             [Button.inline("📁", data=f"pres{wah2}")],
                             [Button.inline("CHECK PROGRESS", data=f"stats{wah}")],
@@ -768,7 +768,11 @@ async def something():
         except Exception:
             er = traceback.format_exc()
             LOGS.info(er)
+            er = er + "\n\nDue to the above fatal error bot has been locked to continue unlock bot."
             await channel_log(er)
+            for user in OWNER.split():
+                await bot.send_message(int(user), f"`{er}`")
+            LOCKFILE.append("ERROR")
 
 
 ########### Start ############

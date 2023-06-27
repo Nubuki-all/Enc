@@ -308,8 +308,7 @@ async def parser(name):
                 name = name.replace(i, "")
         if fil3.casefold() == "disable":
             fil3 = ""
-        na = anitopy.parse(f"{name}")
-        print(na)
+        na = anitopy.parse(name)
         try:
             b = na["anime_title"]
         except Exception:
