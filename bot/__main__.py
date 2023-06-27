@@ -768,7 +768,10 @@ async def something():
         except Exception:
             er = traceback.format_exc()
             LOGS.info(er)
-            er = er + "\n\nDue to the above fatal error bot has been locked to continue unlock bot."
+            er = (
+                er
+                + "\n\nDue to the above fatal error bot has been locked to continue unlock bot."
+            )
             await channel_log(er)
             for user in OWNER.split():
                 await bot.send_message(int(user), f"`{er}`")
