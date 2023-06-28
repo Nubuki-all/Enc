@@ -123,12 +123,12 @@ class uploader:
                 reply_markup = InlineKeyboardMarkup([[cancel_button]])
                 if not message.photo:
                     await message.edit_text(
-                        text="{}\n {}".format(ud_type, tmp),
+                        text="{}\n{}".format(ud_type, tmp),
                         reply_markup=reply_markup,
                     )
                 else:
                     await message.edit_caption(
-                        caption="{}\n {}".format(ud_type, tmp),
+                        caption="{}\n{}".format(ud_type, tmp),
                         reply_markup=reply_markup,
                     )
             except BaseException:
@@ -280,12 +280,12 @@ class downloader:
                 reply_markup = InlineKeyboardMarkup([[cancel_button]])
                 if not message.photo:
                     await message.edit_text(
-                        text="{}\n {}".format(ud_type, tmp),
+                        text="{}\n{}".format(ud_type, tmp),
                         reply_markup=reply_markup,
                     )
                 else:
                     await message.edit_caption(
-                        caption="{}\n {}".format(ud_type, tmp),
+                        caption="{}\n{}".format(ud_type, tmp),
                         reply_markup=reply_markup,
                     )
             except BaseException:
