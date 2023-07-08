@@ -275,6 +275,7 @@ class downloader:
         try:
             await self.log_download()
             ttt = time.time()
+            await asyncio.sleep(3)
             downloads = self.aria2.add(self.uri, {"dir": f"{os.getcwd()}/downloads"})
             self.uri_gid = downloads[0].gid
             while True:
