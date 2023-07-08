@@ -198,6 +198,9 @@ class downloader:
                 cancel_button = InlineKeyboardButton(
                     text=f"{enmoji()} CANCEL DOWNLOAD", callback_data=self.callback_data
                 )
+                more_button = InlineKeyboardButton(
+                    text="ℹ️", callback_data=f"more {code(self.file_name)}"
+                )
                 reply_markup = InlineKeyboardMarkup([[cancel_button]])
                 dl_info = await parse_dl(self.file_name)
                 msg = "Currently downloading a video"
@@ -208,7 +211,7 @@ class downloader:
                     f"`{msg} sent by` {self.sender.mention(style='md')}\n" + dl_info,
                     reply_markup=reply_markup,
                 )
-                self.lm = log
+                self.lm = message
             except Exception:
                 ers = traceback.format_exc()
                 await channel_log(ers)

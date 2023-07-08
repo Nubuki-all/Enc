@@ -1,1 +1,1 @@
-v1.1.0-beta.0.0 (Beta)
+v1.1.0-beta.1.0 (Beta)

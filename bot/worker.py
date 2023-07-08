@@ -208,6 +208,9 @@ async def en_download(event):
                 loc += r.file.name
         else:
             loc = r.file.name
+        _dir, _none = os.path.split(loc)
+        if not _dir:
+            loc = "downloads/" + loc
         await event.delete()
         download = downloader()
         await download.start(loc, 0, message, e)
