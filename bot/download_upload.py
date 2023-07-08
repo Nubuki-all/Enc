@@ -162,6 +162,7 @@ class downloader:
         self.uri = uri
         self.uri_gid = None
         self.lc = lc
+        self.lm = None
         self.handler = app.add_handler(
             CallbackQueryHandler(
                 self.download_button_callback, filters=regex("^" + self.callback_data)
@@ -199,7 +200,7 @@ class downloader:
                 )
                 reply_markup = InlineKeyboardMarkup([[cancel_button]])
                 dl_info = await parse_dl(self.file_name)
-                msg = "Currently downloading a file"
+                msg = "Currently downloading a video"
                 if self.uri:
                     msg += "from a link"
                 message = await app.get_messages(self.lc.chat_id, self.lc.id)
@@ -207,7 +208,7 @@ class downloader:
                     f"`{msg} sent by` {self.sender.mention(style='md')}\n" + dl_info,
                     reply_markup=reply_markup,
                 )
-                return log
+                self.lm = log
             except Exception:
                 ers = traceback.format_exc()
                 await channel_log(ers)

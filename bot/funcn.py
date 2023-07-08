@@ -42,6 +42,7 @@ USER_MAN = []
 GROUPENC = []
 LOCKFILE = []
 VERSION2 = []
+E_CANCEL = []
 U_CANCEL = []
 R_QUEUE = []
 STARTUP = []
@@ -733,6 +734,12 @@ def value_check(value):
     return value
 
 
+def s_remove(filename):
+    try:
+        os.remove(filename)
+    except OSError:
+        pass
+
 async def qclean():
     try:
         os.system("rm downloads/*")
@@ -768,8 +775,9 @@ async def skip(e):
         ans = "Cancelling encoding please wait…"
         await e.answer(ans, cache_time=0, alert=False)
         await e.delete()
-        os.remove(dl)
-        os.remove(out)
+        s_remove(dl)
+        s_remove(out)
+        E_CANCEL.append(e.query.user_id)
         # Lets kill ffmpeg else it will run in memory even after deleting
         # input.
         for proc in psutil.process_iter():

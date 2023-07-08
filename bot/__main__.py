@@ -516,7 +516,33 @@ async def something():
                 er = stderr.decode()
                 try:
                     if process.returncode != 0:
-                        if len(er) > 4095:
+                        reply = f"Encoding of `{bb2}` "
+                        if E_CANCEL:
+                            reply += "was cancelled"
+                        else:
+                            reply += "Failed.\nLogs available below."
+                        if E_CANCEL:
+                            if E_CANCEL[0] != user:
+                                canceller = await app.get_users(E_CANCEL[0])
+                                if message:
+                                    reply += (
+                                        f" by {canceller.mention(style='md')}"
+                                    )
+                                else:
+                                    reply += (
+                                        f" by [{canceller.first_name}.](tg://user?id={canceller.id})"
+                                    )
+                            reply += "!"
+                        if message:
+                            await mssg_r.edit(reply)
+                            if op:
+                                await download.lm.edit(reply)
+                        else:
+                            await e.reply(reply)
+                            if op:
+                                await op.edit(reply)
+                        await e.delete()
+                        if len(er) > 4095 and not E_CANCEL:
                             yo = await app.send_message(
                                 e.chat_id, "Uploading Error logs…"
                             )
@@ -531,20 +557,18 @@ async def something():
                             )
                             await yo.delete()
                             os.remove(out_file)
+                        elif not E_CANCEL:
+                            wrror = await bot.send_message(int(user), stderr.decode())
+                        if uri:
+                            aria2 = ARIA2[0]
+                            download = aria2.get_download(download.uri_gid)
+                            download.remove(force=True, files=True)
+                            if download.followed_by_ids:
+                                download = aria2.get_download(download.followed_by_ids[0])
+                                download.remove(force=True, files=True)
                         else:
-                            wrror = await nn.reply(stderr.decode())
-                        nnn = await wrror.reply(
-                            f"🔺 **Encoding of** `{bb2}` **Failed!**"
-                        )
-                        try:
-                            os.remove(dl)
-                        except Exception:
-                            await nnn.reply("**Reason:** `Encoding Cancelled!`")
-                        try:
-                            await nn.delete()
-                            await wak.delete()
-                        except Exception:
-                            pass
+                            s_remove(dl)
+                        s_remove(out)
                         if QUEUE:
                             QUEUE.pop(list(QUEUE.keys())[0])
                         await channel_log(stderr.decode())
