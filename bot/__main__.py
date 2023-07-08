@@ -571,6 +571,7 @@ async def something():
                         s_remove(out)
                         if QUEUE:
                             QUEUE.pop(list(QUEUE.keys())[0])
+                        E_CANCEL.clear()
                         await channel_log(stderr.decode())
                         await save2db()
                         continue
