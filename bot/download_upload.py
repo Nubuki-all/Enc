@@ -361,11 +361,11 @@ class downloader:
 
     async def progress_for_aria2(self, gid, start, message, silent=False):
         try:
-            download = aria2.get_download(gid)
+            download = self.aria2.get_download(gid)
             download = download.live
             if download.followed_by_ids:
                 gid = download.followed_by_ids[0]
-            download = aria2.get_download(gid)
+            download = self.aria2.get_download(gid)
             if download.status == "error" or self.download.is_cancelled:
                 if download.status == "error":
                     self.download_error = (
@@ -373,7 +373,7 @@ class downloader:
                     )
                 download.remove(force=True, files=True)
                 if download.following_id:
-                    download = aria2.get_download(download.following_id)
+                    download = self.aria2.get_download(download.following_id)
                     download.remove(force=True, files=True)
                 return None
 

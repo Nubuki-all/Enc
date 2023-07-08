@@ -662,6 +662,7 @@ async def something():
                 await save2db()
                 os.system("rm -rf thumb2.jpg")
                 if uri:
+                    aria2 = ARIA2[0]
                     download = aria2.get_download(download.uri_gid)
                     download.remove(force=True, files=True)
                     if download.followed_by_ids:
