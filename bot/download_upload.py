@@ -201,11 +201,11 @@ class downloader:
                 more_button = InlineKeyboardButton(
                     text="ℹ️", callback_data=f"more {code(self.file_name)}"
                 )
-                reply_markup = InlineKeyboardMarkup([[cancel_button], [more_button]])
+                reply_markup = InlineKeyboardMarkup([[more_button], [cancel_button]])
                 dl_info = await parse_dl(self.file_name)
                 msg = "Currently downloading a video"
                 if self.uri:
-                    msg += "from a link"
+                    msg += " from a link"
                 message = await app.get_messages(self.lc.chat_id, self.lc.id)
                 log = await message.edit(
                     f"`{msg} sent by` {self.sender.mention(style='md')}\n" + dl_info,
@@ -214,15 +214,15 @@ class downloader:
                 self.lm = message
             except Exception:
                 ers = traceback.format_exc()
-                await channel_log(ers)
                 LOGS.info(ers)
+                await channel_log(ers)
 
     async def start(self, dl, file, message="", e=""):
         try:
             self.file_name = dl
-            await self.log_download()
             if self.uri:
                 return await self.start2(dl, file, message, e)
+            await self.log_download()
             if message:
                 ttt = time.time()
                 media_type = str(message.media)
@@ -273,6 +273,7 @@ class downloader:
 
     async def start2(self, dl, file, message, e):
         try:
+            await self.log_download()
             ttt = time.time()
             downloads = self.aria2.add(self.uri, {"dir": f"{os.getcwd()}/downloads"})
             self.uri_gid = downloads[0].gid
@@ -493,8 +494,8 @@ class downloader:
             )
         except Exception:
             ers = traceback.format_exc()
-            await channel_log(ers)
             LOGS.info(ers)
+            await channel_log(ers)
 
 
 async def dl_info(client, query):
