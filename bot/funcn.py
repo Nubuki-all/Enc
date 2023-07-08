@@ -47,6 +47,8 @@ R_QUEUE = []
 STARTUP = []
 WORKING = []
 EVENT2 = []
+ARIA2 = []
+
 QUEUE = {}
 OK = {}
 
@@ -306,6 +308,7 @@ async def start_aria2p():
         downloads = aria2.get_downloads()
         await asyncio.sleep(3)
         aria2.remove(downloads, force=True, files=True, clean=True)
+        ARIA2.append(aria2)
 
         # return aria2
 

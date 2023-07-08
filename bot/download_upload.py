@@ -150,8 +150,6 @@ class uploader:
 
 
 class downloader:
-    global aria2
-
     def __init__(self, sender=123456, lc=None, uri=False, dl_info=False):
         self.sender = sender
         self.sender_is_id = False
@@ -169,6 +167,7 @@ class downloader:
                 self.download_button_callback, filters=regex("^" + self.callback_data)
             )
         )
+        self.aria2 = ARIA2[0]
         DISPLAY_DOWNLOAD.clear()
         if str(sender).isdigit():
             self.sender_is_id = True
@@ -276,7 +275,7 @@ class downloader:
     async def start2(self, dl, file, message, e):
         try:
             ttt = time.time()
-            downloads = aria2.add(self.uri, {"dir": f"{os.getcwd()}/downloads"})
+            downloads = self.aria2.add(self.uri, {"dir": f"{os.getcwd()}/downloads"})
             self.uri_gid = downloads[0].gid
             while True:
                 if message:
