@@ -366,7 +366,7 @@ class downloader:
             if download.followed_by_ids:
                 gid = download.followed_by_ids[0]
             download = self.aria2.get_download(gid)
-            if download.status == "error" or self.download.is_cancelled:
+            if download.status == "error" or self.is_cancelled:
                 if download.status == "error":
                     self.download_error = (
                         "E" + download.error_code + " :" + download.error_message
@@ -377,7 +377,11 @@ class downloader:
                     download.remove(force=True, files=True)
                 return None
 
-            ud_type = "Downloading video with link…"
+            ud_type = "`Download Pending…`"
+            if not download.name.endswith(".torrent"):
+                ud_type = f"Downloading `{self.file_name.split("/")[-1]}`"
+                if download.is_torrent:
+                    ud_type += " via torrent."
             remaining_size = download.total_length - download.completed_length
             total = download.total_length
             current = download.completed_length
