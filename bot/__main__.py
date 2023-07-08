@@ -303,11 +303,17 @@ async def something():
                         "**[DEBUG]** `Preparing…`",
                         reply_to=mssg_r.id,
                     )
-                    await asyncio.sleep(2)
-                    mssg_f = await (await app.get_messages(e.chat.id, e.id)).reply(
-                        "**[DEBUG]** `Waiting for download handler…`", quote=True
-                    )
+                    while true:
+                        try:
+                            await asyncio.sleep(2)
+                            mssg_f = await (await app.get_messages(e.chat_id, e.id)).edit(
+                                "**[DEBUG]** `Waiting for download handler…`"
+                            )
+                            break
+                        except pyro_errors.FloodWait as e:
+                            await asyncio.sleep(e.value)
                 except Exception:
+                    LOGS.info(traceback.format_exc())
                     message = None
                     mssg_r = None
                     mssg_f = None

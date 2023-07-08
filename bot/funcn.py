@@ -553,8 +553,9 @@ async def get_leech_name(url):
 async def start_rpc():
     try:
         os.system(
-            "aria2c --enable-rpc=true --rpc-max-request-size=1024M --seed-time=0 --follow-torrent=mem --summary-interval=0 --daemon=true"
+            "aria2c --enable-rpc=true --rpc-max-request-size=1024M --seed-time=0 --follow-torrent=mem --summary-interval=0 --daemon=true --allow-overwrite=true"
         )
+        await asyncio.sleep(3)
         await start_aria2p()
     except Exception:
         ers = traceback.format_exc()
