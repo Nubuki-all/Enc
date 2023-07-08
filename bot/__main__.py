@@ -529,7 +529,7 @@ async def something():
                                 quote=True,
                                 caption="`ffmpeg error`",
                             )
-                            yo.delete()
+                            await yo.delete()
                             os.remove(out_file)
                         else:
                             wrror = await nn.reply(stderr.decode())

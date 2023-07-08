@@ -270,7 +270,7 @@ class downloader:
             LOGS.info(ers)
             return None
 
-    async def start2(dl, file, message, e):
+    async def start2(self, dl, file, message, e):
         try:
             ttt = time.time()
             downloads = aria2.add(self.uri, {"dir": f"{os.getcwd()}/downloads"})
@@ -354,6 +354,7 @@ class downloader:
                         reply_markup=reply_markup,
                     )
             except BaseException:
+                LOGS.info(traceback.format_exc())
                 pass
 
     async def progress_for_aria2(self, gid, start, message, silent=False):
