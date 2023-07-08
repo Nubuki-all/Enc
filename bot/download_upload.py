@@ -281,7 +281,7 @@ class downloader:
                     )
                 if not download:
                     break
-                if download.is_complete():
+                if download.is_complete:
                     app.remove_handler(*self.handler)
                     break
             return download
@@ -381,7 +381,8 @@ class downloader:
             total = download.total_length
             current = download.completed_length
             speed = download.download_speed
-            time_to_completion = download.eta
+            # time_to_completion = download.eta
+            time_to_completion = ""
             now = time.time()
             diff = now - start
             fin_str = enhearts()
@@ -396,9 +397,9 @@ class downloader:
                 )
 
             progress = "{0}{1} \n<b>Progress:</b> `{2}%`\n".format(
-                "".join([unfin_str for i in range(math.floor(download.progress / 10))]),
+                "".join([fin_str for i in range(math.floor(download.progress / 10))]),
                 "".join(
-                    [fin_str for i in range(10 - math.floor(download.progress / 10))]
+                    [unfin_str for i in range(10 - math.floor(download.progress / 10))]
                 ),
                 round(download.progress, 2),
             )
