@@ -1423,11 +1423,6 @@ async def thumb(event):
     await event.reply("**Thumbnail Saved Successfully.**")
 
 
-async def qparse(name):
-    parsed_name = await parse(name)
-    bb = parsed_name[0]
-    return bb
-
 
 async def pres(e):
     try:

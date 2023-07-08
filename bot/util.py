@@ -717,6 +717,12 @@ async def custcap(name, fname):
     return caption
 
 
+async def qparse(name):
+    parsed_name = await parse(name)
+    bb = parsed_name[0]
+    return bb
+
+
 async def f_post(name, out):
     try:
         ani, b, d, c, e, fil2, fil3, st, r = await parser(name)

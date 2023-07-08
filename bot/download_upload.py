@@ -4,8 +4,7 @@ from pyrogram.filters import regex
 from pyrogram.handlers import CallbackQueryHandler
 
 from .funcn import *
-from .util import parse_dl
-from .worker import qparse
+from .util import parse_dl, qparse
 
 
 class uploader:
