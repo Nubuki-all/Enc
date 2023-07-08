@@ -362,7 +362,9 @@ async def something():
                                 reply += "Failed"
                             if download.canceller:
                                 if download.canceller.id != user:
-                                    reply += f" by {download.canceller.mention(style='md')}"
+                                    reply += (
+                                        f" by {download.canceller.mention(style='md')}"
+                                    )
                             reply += "!"
                             if download.download_error:
                                 reply += f"\n`{download.download_error}`"

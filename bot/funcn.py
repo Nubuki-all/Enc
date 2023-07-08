@@ -13,7 +13,6 @@
 # License can be found in <
 # https://github.com/1Danish-00/CompressorQueue/blob/main/License> .
 
-import aria2p
 import asyncio
 import glob
 import io
@@ -26,6 +25,7 @@ from io import StringIO
 from re import match as re_match
 from subprocess import run as bashrun
 
+import aria2p
 from pymongo import MongoClient
 from quote import quote
 from random_word import RandomWords
@@ -292,24 +292,30 @@ def hbs(size):
 
 No_Flood = {}
 
+
 async def start_aria2p():
     try:
-        globals()["aria2"] = aria2p.API(aria2p.Client(host="http://localhost", port=6800, secret=""))
-        aria2.add("https://nyaa.si/download/1690208.torrent", {'dir': f"{os.getcwd()}/downloads"})
+        globals()["aria2"] = aria2p.API(
+            aria2p.Client(host="http://localhost", port=6800, secret="")
+        )
+        aria2.add(
+            "https://nyaa.si/download/1690208.torrent",
+            {"dir": f"{os.getcwd()}/downloads"},
+        )
         await asyncio.sleep(2)
         downloads = aria2.get_downloads()
         await asyncio.sleep(3)
         aria2.remove(downloads, force=True, files=True, clean=True)
 
-        #return aria2
+        # return aria2
 
     except Exception:
         ers = traceback.format_exc()
         LOGS.critical(ers)
-        await channel_log('An error occurred while starting aria2p')
+        await channel_log("An error occurred while starting aria2p")
         await channel_log(ers)
 
-        #return None
+        # return None
 
 
 async def updater():
@@ -510,7 +516,7 @@ async def get_leech_file():
 
 async def get_leech_name(url):
     try:
-        downloads = aria2.add(url, {'dir': f"{os.getcwd()}/temp"})
+        downloads = aria2.add(url, {"dir": f"{os.getcwd()}/temp"})
         while True:
             download = aria2.get_download(downloads[0].gid)
             download = download.live
@@ -518,7 +524,9 @@ async def get_leech_name(url):
                 gid = download.followed_by_ids[0]
                 download = aria2.get_download(gid)
             if download.status == "error":
-                download_error = "E" + download.error_code + " :" + download.error_message
+                download_error = (
+                    "E" + download.error_code + " :" + download.error_message
+                )
                 filename = "aria2_error " + download_error
                 break
             if download.name.endswith(".torrent"):
@@ -541,15 +549,21 @@ async def get_leech_name(url):
         LOGS.info(ers)
     return filename
 
+
 async def start_rpc():
     try:
-        os.system("aria2c --enable-rpc=true --rpc-max-request-size=1024M --seed-time=0 --follow-torrent=mem --summary-interval=0 --daemon=true")
+        os.system(
+            "aria2c --enable-rpc=true --rpc-max-request-size=1024M --seed-time=0 --follow-torrent=mem --summary-interval=0 --daemon=true"
+        )
         await start_aria2p()
     except Exception:
         ers = traceback.format_exc()
         LOGS.critical(ers)
-        await channel_log("A major error pertaining to aria2 occured and as such error cannot be recovered from do /restart to allow bot an attempt to fix.\ncheck below for details.")
+        await channel_log(
+            "A major error pertaining to aria2 occured and as such error cannot be recovered from do /restart to allow bot an attempt to fix.\ncheck below for details."
+        )
         await channel_log()
+
 
 async def enquoter(msg, rply):
     try:

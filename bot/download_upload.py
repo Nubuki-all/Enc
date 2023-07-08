@@ -4,8 +4,8 @@ from pyrogram.filters import regex
 from pyrogram.handlers import CallbackQueryHandler
 
 from .funcn import *
-from .worker import qparse
 from .util import parse_dl
+from .worker import qparse
 
 
 class uploader:
@@ -171,7 +171,7 @@ class downloader:
         if str(sender).isdigit():
             self.sender_is_id = True
             self.sender = int(sender)
-        
+
     def __str__(self):
         return "#wip"
 
@@ -180,26 +180,20 @@ class downloader:
         cancel_button = InlineKeyboardButton(
             text=f"{enmoji()} Cancel Download", callback_data=self.callback_data
         )
-        #Create an "info" button
-        info_button = InlineKeyboardButton(
-            text="ℹ️", callback_data="dl_info"
-        )
-        #Create a "more" button
+        # Create an "info" button
+        info_button = InlineKeyboardButton(text="ℹ️", callback_data="dl_info")
+        # Create a "more" button
         more_button = InlineKeyboardButton(
             text="More…", callback_data=f"more {self.file_name}"
         )
-        #create "back" button
-        back_button = InlineKeyboardButton(
-            text="↩️", callback_data="back"
-        )
+        # create "back" button
+        back_button = InlineKeyboardButton(text="↩️", callback_data="back")
         return info_button, more_button, back_button, cancel_button
-
 
     def value_check(value):
         if not value:
-            return ("-")
+            return "-"
         return value
-
 
     async def log_download(self):
         if self.lc:
@@ -226,7 +220,7 @@ class downloader:
     async def start(self, dl, file, message="", e=""):
         try:
             self.file_name = dl
-            ld = await self.log_download()
+            await self.log_download()
             if self.uri:
                 return await self.start2(dl, file, message, e)
             if message:
@@ -280,13 +274,15 @@ class downloader:
     async def start2(dl, file, message, e):
         try:
             ttt = time.time()
-            downloads = aria2.add(self.uri, {'dir': f"{os.getcwd()}/downloads"})
+            downloads = aria2.add(self.uri, {"dir": f"{os.getcwd()}/downloads"})
             self.uri_gid = downloads[0].gid
             while True:
                 if message:
                     download = await self.progress_for_aria2(downloads[0].gid, ttt, e)
                 else:
-                    download = await self.progress_for_aria2(downloads[0].gid, ttt, e, silent=True)
+                    download = await self.progress_for_aria2(
+                        downloads[0].gid, ttt, e, silent=True
+                    )
                 if not download:
                     break
                 if download.is_complete():
@@ -335,7 +331,12 @@ class downloader:
                 # Attach the button to the message with an inline keyboard
                 reply_markup = []
                 dl_info = await parse_dl(self.file_name)
-                info_button, more_button, back_button, cancel_button = self.gen_buttons()
+                (
+                    info_button,
+                    more_button,
+                    back_button,
+                    cancel_button,
+                ) = self.gen_buttons()
                 if not DISPLAY_DOWNLOAD:
                     reply_markup.extend(([info_button], [cancel_button]))
                     dsp = "{}\n{}".format(ud_type, tmp)
@@ -365,7 +366,9 @@ class downloader:
             download = aria2.get_download(gid)
             if download.status == "error" or self.download.is_cancelled:
                 if download.status == "error":
-                    self.download_error = "E" + download.error_code + " :" + download.error_message
+                    self.download_error = (
+                        "E" + download.error_code + " :" + download.error_message
+                    )
                 download.remove(force=True, files=True)
                 if download.following_id:
                     download = aria2.get_download(download.following_id)
@@ -379,26 +382,36 @@ class downloader:
             speed = download.download_speed
             time_to_completion = download.eta
             now = time.time()
-            diff = now - start
+            now - start
             fin_str = enhearts()
             unfin_str = UN_FINISHED_PROGRESS_STR
-            
+
             if download.completed_length and download.download_speed:
-                time_to_completion = time_formatter(int((download.total_length - download.completed_length) / download.download_speed))
+                time_to_completion = time_formatter(
+                    int(
+                        (download.total_length - download.completed_length)
+                        / download.download_speed
+                    )
+                )
 
             progress = "{0}{1} \n<b>Progress:</b> `{2}%`\n".format(
                 "".join([unfin_str for i in range(math.floor(download.progress / 10))]),
-                "".join([fin_str for i in range(10 - math.floor(download.progress / 10))]),
+                "".join(
+                    [fin_str for i in range(10 - math.floor(download.progress / 10))]
+                ),
                 round(download.progress, 2),
             )
-            tmp = progress + "`{0} of {1}`\n**Speed:** `{2}/s`\n**Remains:** `{3}`\n**ETA:** `{4}`\n".format(
-                value_check(hbs(current)),
-                value_check(hbs(total)),
-                value_check(hbs(speed)),
-                value_check(hbs(remaining_size)),
-                # elapsed_time if elapsed_time != '' else "0 s",
-                # download.eta if len(str(download.eta)) < 30 else "0 s",
-                time_to_completion if time_to_completion else "0 s",
+            tmp = (
+                progress
+                + "`{0} of {1}`\n**Speed:** `{2}/s`\n**Remains:** `{3}`\n**ETA:** `{4}`\n".format(
+                    value_check(hbs(current)),
+                    value_check(hbs(total)),
+                    value_check(hbs(speed)),
+                    value_check(hbs(remaining_size)),
+                    # elapsed_time if elapsed_time != '' else "0 s",
+                    # download.eta if len(str(download.eta)) < 30 else "0 s",
+                    time_to_completion if time_to_completion else "0 s",
+                )
             )
             if silent:
                 await asyncio.sleep(10)
@@ -408,7 +421,12 @@ class downloader:
                 reply_markup = []
                 file_name = self.file_name.split("/")[-1]
                 dl_info = await parse_dl(file_name)
-                info_button, more_button, back_button, cancel_button = self.gen_buttons()
+                (
+                    info_button,
+                    more_button,
+                    back_button,
+                    cancel_button,
+                ) = self.gen_buttons()
                 if not DISPLAY_DOWNLOAD:
                     reply_markup.extend(([info_button], [cancel_button]))
                     dsp = "{}\n{}".format(ud_type, tmp)
@@ -447,8 +465,6 @@ class downloader:
             await channel_log(ers)
             LOGS.info(ers)
             return None
-
-
 
     async def download_button_callback(self, client, callback_query):
         try:
@@ -527,18 +543,6 @@ async def dl_stat(client, query):
         await query.answer(ans, cache_time=0, show_alert=True)
 
 
-app.add_handler(
-    CallbackQueryHandler(
-        back, filters=regex("^back")
-        )
-    )
-app.add_handler(
-    CallbackQueryHandler(
-        dl_info, filters=regex("^dl_info")
-        )
-    )
-app.add_handler(
-    CallbackQueryHandler(
-        dl_stat, filters=regex("^more")
-        )
-    )
+app.add_handler(CallbackQueryHandler(back, filters=regex("^back")))
+app.add_handler(CallbackQueryHandler(dl_info, filters=regex("^dl_info")))
+app.add_handler(CallbackQueryHandler(dl_stat, filters=regex("^more")))

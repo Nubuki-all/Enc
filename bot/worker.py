@@ -1627,9 +1627,7 @@ async def enleech(event):
                             continue
                         if file_name.startswith("aria2_error"):
                             error = file_name.split("aria2_error")[1].strip()
-                            await event2.reply(
-                                f"`{error}`"
-                            )
+                            await event2.reply(f"`{error}`")
                             temp = temp - 1
                             temp2 = temp2 + 1
                             await asyncio.sleep(10)
@@ -1698,9 +1696,7 @@ async def enleech(event):
             )
         if file_name.startswith("aria2_error"):
             error = file_name.split("aria2_error")[1].strip()
-            return await event.reply(
-                f"`{error}`"
-            )
+            return await event.reply(f"`{error}`")
         for item in QUEUE.values():
             if file_name in item:
                 return await event.reply(
