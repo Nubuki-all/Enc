@@ -726,10 +726,12 @@ def decode(key):
         return OK[int(key)]
     return
 
+
 def value_check(value):
     if not value:
         return "-"
     return value
+
 
 async def qclean():
     try:
