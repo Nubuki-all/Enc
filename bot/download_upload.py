@@ -204,8 +204,8 @@ class downloader:
                 reply_markup = InlineKeyboardMarkup([[more_button], [cancel_button]])
                 dl_info = await parse_dl(self.file_name)
                 msg = "Currently downloading a video"
-                # if self.uri:
-                #    msg += " from a link"
+                if self.uri:
+                    msg += " from a link"
                 message = await app.get_messages(self.lc.chat_id, self.lc.id)
                 log = await message.edit(
                     f"`{msg} sent by` {self.sender.mention(style='md')}\n" + dl_info,
