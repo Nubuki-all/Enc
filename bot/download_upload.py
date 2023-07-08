@@ -169,6 +169,7 @@ class downloader:
                 self.download_button_callback, filters=regex("^" + self.callback_data)
             )
         )
+        DISPLAY_DOWNLOAD.clear()
         if str(sender).isdigit():
             self.sender_is_id = True
             self.sender = int(sender)
