@@ -151,6 +151,7 @@ class uploader:
 
 class downloader:
     global aria2
+
     def __init__(self, sender=123456, lc=None, uri=False, dl_info=False):
         self.sender = sender
         self.sender_is_id = False
