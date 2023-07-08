@@ -303,7 +303,7 @@ async def something():
                         "**[DEBUG]** `Preparing…`",
                         reply_to=mssg_r.id,
                     )
-                    while true:
+                    while True:
                         try:
                             await asyncio.sleep(2)
                             mssg_f = await (
