@@ -1423,7 +1423,6 @@ async def thumb(event):
     await event.reply("**Thumbnail Saved Successfully.**")
 
 
-
 async def pres(e):
     try:
         wah = e.pattern_match.group(1).decode("UTF-8")
