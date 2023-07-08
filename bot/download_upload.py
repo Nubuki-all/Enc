@@ -201,7 +201,7 @@ class downloader:
                 more_button = InlineKeyboardButton(
                     text="ℹ️", callback_data=f"more {code(self.file_name)}"
                 )
-                reply_markup = InlineKeyboardMarkup([[cancel_button]])
+                reply_markup = InlineKeyboardMarkup([[cancel_button], [more_button]])
                 dl_info = await parse_dl(self.file_name)
                 msg = "Currently downloading a video"
                 if self.uri:
@@ -330,8 +330,8 @@ class downloader:
             try:
                 # Attach the button to the message with an inline keyboard
                 reply_markup = []
-                file_name = self.file_name.split("/")[-1]
-                dl_info = await parse_dl(file_name)
+                # file_name = self.file_name.split("/")[-1]
+                dl_info = await parse_dl(self.file_name)
                 (
                     info_button,
                     more_button,
@@ -426,8 +426,8 @@ class downloader:
             try:
                 # Attach the button to the message with an inline keyboard
                 reply_markup = []
-                file_name = self.file_name.split("/")[-1]
-                dl_info = await parse_dl(file_name)
+                # file_name = self.file_name.split("/")[-1]
+                dl_info = await parse_dl(self.file_name)
                 (
                     info_button,
                     more_button,
