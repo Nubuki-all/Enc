@@ -355,7 +355,6 @@ class downloader:
                     )
             except BaseException:
                 LOGS.info(traceback.format_exc())
-                pass
 
     async def progress_for_aria2(self, gid, start, message, silent=False):
         try:
