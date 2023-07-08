@@ -382,7 +382,7 @@ class downloader:
             speed = download.download_speed
             time_to_completion = download.eta
             now = time.time()
-            now - start
+            diff = now - start
             fin_str = enhearts()
             unfin_str = UN_FINISHED_PROGRESS_STR
 
@@ -403,7 +403,7 @@ class downloader:
             )
             tmp = (
                 progress
-                + "`{0} of {1}`\n**Speed:** `{2}/s`\n**Remains:** `{3}`\n**ETA:** `{4}`\n".format(
+                + "`{0} of {1}`\n**Speed:** `{2}/s`\n**Remains:** `{3}`\n**ETA:** `{4}`\n**Elapsed:** `{5}`\n".format(
                     value_check(hbs(current)),
                     value_check(hbs(total)),
                     value_check(hbs(speed)),
@@ -411,6 +411,7 @@ class downloader:
                     # elapsed_time if elapsed_time != '' else "0 s",
                     # download.eta if len(str(download.eta)) < 30 else "0 s",
                     time_to_completion if time_to_completion else "0 s",
+                    time_formatter(diff),
                 )
             )
             if silent:
