@@ -306,9 +306,9 @@ async def something():
                     while true:
                         try:
                             await asyncio.sleep(2)
-                            mssg_f = await (await app.get_messages(e.chat_id, e.id)).edit(
-                                "**[DEBUG]** `Waiting for download handler…`"
-                            )
+                            mssg_f = await (
+                                await app.get_messages(e.chat_id, e.id)
+                            ).edit("**[DEBUG]** `Waiting for download handler…`")
                             break
                         except pyro_errors.FloodWait as e:
                             await asyncio.sleep(e.value)
