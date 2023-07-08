@@ -766,6 +766,7 @@ async def skip(e):
     wah = e.pattern_match.group(1).decode("UTF-8")
     wh = decode(wah)
     out, dl, id = wh.split(";")
+    msg = await e.get_message()
     try:
         # if QUEUE.get(int(id)):
         if QUEUE.get(id):
@@ -775,7 +776,8 @@ async def skip(e):
             await save2db()
         ans = "Cancelling encoding please wait…"
         await e.answer(ans, cache_time=0, alert=False)
-        await e.delete()
+        if str(msg.chat_id) not in LOG_CHANNEL:
+            await e.delete()
         s_remove(dl)
         s_remove(out)
         E_CANCEL.append(e.query.user_id)
