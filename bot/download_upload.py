@@ -150,6 +150,7 @@ class uploader:
 
 
 class downloader:
+    global aria2
     def __init__(self, sender=123456, lc=None, uri=False, dl_info=False):
         self.sender = sender
         self.sender_is_id = False
@@ -183,7 +184,7 @@ class downloader:
         info_button = InlineKeyboardButton(text="ℹ️", callback_data="dl_info")
         # Create a "more" button
         more_button = InlineKeyboardButton(
-            text="More…", callback_data=f"more {self.file_name}"
+            text="More…", callback_data=f"more {code(self.file_name)}"
         )
         # create "back" button
         back_button = InlineKeyboardButton(text="↩️", callback_data="back")
@@ -329,7 +330,8 @@ class downloader:
             try:
                 # Attach the button to the message with an inline keyboard
                 reply_markup = []
-                dl_info = await parse_dl(self.file_name)
+                file_name = self.file_name.split("/")[-1]
+                dl_info = await parse_dl(file_name)
                 (
                     info_button,
                     more_button,
@@ -513,7 +515,9 @@ async def back(client, query):
 async def dl_stat(client, query):
     try:
         data = query.data.split()
-        dl = data[1]
+        dl = decode(data[1])
+        if not dl:
+            raise IndexError("No data!")
         dl_check = Path(dl)
         if dl_check.is_file():
             dls = dl
