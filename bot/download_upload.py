@@ -191,10 +191,7 @@ class downloader:
         back_button = InlineKeyboardButton(text="↩️", callback_data="back")
         return info_button, more_button, back_button, cancel_button
 
-    def value_check(value):
-        if not value:
-            return "-"
-        return value
+
 
     async def log_download(self):
         if self.lc:
