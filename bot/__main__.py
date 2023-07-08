@@ -551,6 +551,7 @@ async def something():
                                 quote=True,
                                 caption="`ffmpeg error`",
                             )
+                            await wrror.copy(chat_id=int(LOG_CHANNEL))
                             await yo.delete()
                             os.remove(out_file)
                         elif not E_CANCEL:
@@ -570,7 +571,6 @@ async def something():
                         if QUEUE:
                             QUEUE.pop(list(QUEUE.keys())[0])
                         E_CANCEL.clear()
-                        await channel_log(stderr.decode())
                         await save2db()
                         continue
                 except BaseException:
@@ -705,7 +705,10 @@ async def something():
             )
             await channel_log(er)
             for user in OWNER.split():
-                await bot.send_message(int(user), f"`{er}`")
+                try:
+                    await bot.send_message(int(user), f"`{er}`")
+                except Exception:
+                    pass
             LOCKFILE.append("ERROR")
 
 
