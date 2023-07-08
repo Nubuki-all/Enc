@@ -47,26 +47,18 @@ async def save2db2(mara, para):
 
 
 async def on_termination():
-    async def term_pm_log():
-        try:
-            dead_msg = f"**I'm {enquip2()} {enmoji2()}**"
+    try:
+        dead_msg = f"**I'm {enquip2()} {enmoji2()}**"
+        if LOG_CHANNEL:
+            await bot.send_message(int(LOG_CHANNEL), dead_msg)
+        else:
             for i in OWNER.split():
-                await bot.send_message(int(i), dead_msg)
-            if LOG_CHANNEL:
-                await bot.send_message(int(LOG_CHANNEL), dead_msg)
-        except Exception:
-            pass
-
-    async def term_stat():
-        try:
-            if FCHANNEL_STAT:
-                estat = "**#Dead**"
-                await stateditor(estat, int(FCHANNEL), int(FCHANNEL_STAT))
-        except Exception:
-            pass
-
-    asyncio.create_task(term_pm_log)
-    asyncio.create_task(term_stat)
+                try:
+                    await bot.send_message(int(i), dead_msg)
+                except Exception:
+                    pass
+    except Exception:
+        pass
     # More cleanup code?
     exit()
 
@@ -972,6 +964,7 @@ async def statuschecker():
     if not STARTUP:
         try:
             asyncio.create_task(autostat())
+            asyncio.create_task(start_rpc())
             loop = asyncio.get_running_loop()
             for signame in {"SIGINT", "SIGTERM", "SIGABRT"}:
                 loop.add_signal_handler(
@@ -1037,7 +1030,7 @@ async def del_auto_rename(event):
                 return await event.reply("__Not found check__ /vname")
             for dat in r_file.split("\n"):
                 if not dat.strip == temp:
-                    ans = ans + dat + "\n"
+                    ans += dat + "\n"
             r_file = ans
 
         file = open(text_file, "w")
@@ -1092,8 +1085,9 @@ async def auto_rename(event):
         for __check in r_file.split("\n"):
             if __check.split("|")[0].casefold() == rslt[0].casefold():
                 return await event.reply("__Already added.__")
-        file = open(text_file, "a")
-        file.write(str(temp) + "\n")
+        r_file = r_file.strip("\n") + "\n" if r_file.endswith("\n\n") else r_file
+        file = open(text_file, "w")
+        file.write(r_file + str(temp) + "\n")
         file.close()
         file = open(text_file, "r")
         r_file = file.read().strip()
@@ -1631,6 +1625,15 @@ async def enleech(event):
                             temp2 = temp2 + 1
                             await asyncio.sleep(5)
                             continue
+                        if file_name.startswith("aria2_error"):
+                            error = file_name.split("aria2_error")[1].strip()
+                            await event2.reply(
+                                f"`{error}`"
+                            )
+                            temp = temp - 1
+                            temp2 = temp2 + 1
+                            await asyncio.sleep(10)
+                            continue
                         already_in_queue = False
                         for item in QUEUE.values():
                             if file_name in item:
@@ -1692,6 +1695,11 @@ async def enleech(event):
         if not file_name:
             return await event.reply(
                 "`Torrent is…\neither not a video\nor is a batch torrent which is currently not supported.`"
+            )
+        if file_name.startswith("aria2_error"):
+            error = file_name.split("aria2_error")[1].strip()
+            return await event.reply(
+                f"`{error}`"
             )
         for item in QUEUE.values():
             if file_name in item:

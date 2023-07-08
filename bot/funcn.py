@@ -13,6 +13,7 @@
 # License can be found in <
 # https://github.com/1Danish-00/CompressorQueue/blob/main/License> .
 
+import aria2p
 import asyncio
 import glob
 import io
@@ -33,8 +34,8 @@ from . import *
 from .config import *
 
 DOCKER_DEPLOYMENT = []
+DISPLAY_DOWNLOAD = []
 UNLOCK_UNSTABLE = []
-DOWNLOAD_CANCEL = []
 QUEUE_STATUS = []
 CACHE_QUEUE = []
 USER_MAN = []
@@ -55,7 +56,8 @@ MAX_MESSAGE_LENGTH = 4096
 URL_REGEX = r"^(https?://|ftp://)?(www\.)?[^/\s]+\.[^/\s:]+(:\d+)?(/[^?\s]*[\s\S]*)?(\?[^#\s]*[\s\S]*)?(#.*)?$"
 
 uptime = dt.now()
-
+global aria2
+aria2 = None
 # os.system(
 #    "curl -sL https://raw.githubusercontent.com/anasty17/mirror-leech-telegram-bot/master/aria.sh|bash"
 # )
@@ -290,6 +292,25 @@ def hbs(size):
 
 No_Flood = {}
 
+async def start_aria2p():
+    try:
+        globals()["aria2"] = aria2p.API(aria2p.Client(host="http://localhost", port=6800, secret=""))
+        aria2.add("https://nyaa.si/download/1690208.torrent", {'dir': f"{os.getcwd()}/downloads"})
+        await asyncio.sleep(2)
+        downloads = aria2.get_downloads()
+        await asyncio.sleep(3)
+        aria2.remove(downloads, force=True, files=True, clean=True)
+
+        #return aria2
+
+    except Exception:
+        ers = traceback.format_exc()
+        LOGS.critical(ers)
+        await channel_log('An error occurred while starting aria2p')
+        await channel_log(ers)
+
+        #return None
+
 
 async def updater():
     try:
@@ -489,16 +510,30 @@ async def get_leech_file():
 
 async def get_leech_name(url):
     try:
-        os.system(f"aria2c --follow-torrent=false -d temp '{url}'")
-        dt_ = glob.glob("temp/*")
-        data = max(dt_, key=os.path.getctime)
-        dat = data.replace("temp/", "")
-        filename = dat.split(".torrent", maxsplit=1)[-2]
-        if is_video_file(filename) is True:
-            pass
-        else:
-            filename = ""
-        os.system("rm -rf temp/*")
+        downloads = aria2.add(url, {'dir': f"{os.getcwd()}/temp"})
+        while True:
+            download = aria2.get_download(downloads[0].gid)
+            download = download.live
+            if download.followed_by_ids:
+                gid = download.followed_by_ids[0]
+                download = aria2.get_download(gid)
+            if download.status == "error":
+                download_error = "E" + download.error_code + " :" download.error_message
+                filename = "aria2_error " + download_error
+                break
+            if download.name.endswith(".torrent"):
+                await asyncio.sleep(2)
+                continue
+            else:
+                if is_video_file(download.name) is True:
+                    filename = download.name
+                else:
+                    filename = ""
+                break
+        download.remove(force=True, files=True)
+        if download.following_id:
+            download = aria2.get_download(download.following_id)
+            download.remove(force=True, files=True)
     except Exception:
         filename = None
         ers = traceback.format_exc()
@@ -506,6 +541,15 @@ async def get_leech_name(url):
         LOGS.info(ers)
     return filename
 
+async def start_rpc():
+    try:
+        os.system("aria2c --enable-rpc=true --rpc-max-request-size=1024M --seed-time=0 --follow-torrent=mem --summary-interval=0 --daemon=true")
+        await start_aria2p()
+    except Exception:
+        ers = traceback.format_exc()
+        LOGS.critical(ers)
+        await channel_log("A major error pertaining to aria2 occured and as such error cannot be recovered from do /restart to allow bot an attempt to fix.\ncheck below for details.")
+        await channel_log()
 
 async def enquoter(msg, rply):
     try:

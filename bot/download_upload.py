@@ -4,6 +4,8 @@ from pyrogram.filters import regex
 from pyrogram.handlers import CallbackQueryHandler
 
 from .funcn import *
+from .worker import qparse
+from .util import parse_dl
 
 
 class uploader:
@@ -149,13 +151,17 @@ class uploader:
 
 
 class downloader:
-    def __init__(self, sender=123456, lc=None, uri=False):
+    def __init__(self, sender=123456, lc=None, uri=False, dl_info=False):
         self.sender = sender
         self.sender_is_id = False
         self.callback_data = "cancel_download" + str(uuid.uuid4())
         self.is_cancelled = False
         self.canceller = None
+        self.dl_info = dl_info
+        self.download_error = None
+        self.file_name = None
         self.uri = uri
+        self.uri_gid = None
         self.lc = lc
         self.handler = app.add_handler(
             CallbackQueryHandler(
@@ -165,9 +171,35 @@ class downloader:
         if str(sender).isdigit():
             self.sender_is_id = True
             self.sender = int(sender)
-
+        
     def __str__(self):
         return "#wip"
+
+    def gen_buttons(self):
+        # Create a "Cancel" button
+        cancel_button = InlineKeyboardButton(
+            text=f"{enmoji()} Cancel Download", callback_data=self.callback_data
+        )
+        #Create an "info" button
+        info_button = InlineKeyboardButton(
+            text="ℹ️", callback_data="dl_info"
+        )
+        #Create a "more" button
+        more_button = InlineKeyboardButton(
+            text="More…", callback_data=f"more {self.file_name}"
+        )
+        #create "back" button
+        back_button = InlineKeyboardButton(
+            text="↩️", callback_data="back"
+        )
+        return info_button, more_button, back_button, cancel_button
+
+
+    def value_check(value):
+        if not value:
+            return ("-")
+        return value
+
 
     async def log_download(self):
         if self.lc:
@@ -176,9 +208,13 @@ class downloader:
                     text=f"{enmoji()} CANCEL DOWNLOAD", callback_data=self.callback_data
                 )
                 reply_markup = InlineKeyboardMarkup([[cancel_button]])
+                dl_info = await parse_dl(self.file_name)
+                msg = "Currently downloading a file"
+                if self.uri:
+                    msg += "from a link"
                 message = await app.get_messages(self.lc.chat_id, self.lc.id)
-                log = await message.reply(
-                    f"`Currently downloading a file sent by` {self.sender.mention(style='md')}",
+                log = await message.edit(
+                    f"`{msg} sent by` {self.sender.mention(style='md')}\n" + dl_info,
                     reply_markup=reply_markup,
                 )
                 return log
@@ -189,7 +225,10 @@ class downloader:
 
     async def start(self, dl, file, message="", e=""):
         try:
+            self.file_name = dl
             ld = await self.log_download()
+            if self.uri:
+                return await self.start2(dl, file, message, e)
             if message:
                 ttt = time.time()
                 media_type = str(message.media)
@@ -208,8 +247,6 @@ class downloader:
                     message=file,
                     file_name=dl,
                 )
-            if ld:
-                await ld.delete()
             try:
                 if self.is_cancelled:
                     os.remove(dl)
@@ -233,6 +270,29 @@ class downloader:
             dl_task = await self.start(dl, file, message, e)
             return dl_task
 
+        except Exception:
+            app.remove_handler(*self.handler)
+            ers = traceback.format_exc()
+            await channel_log(ers)
+            LOGS.info(ers)
+            return None
+
+    async def start2(dl, file, message, e):
+        try:
+            ttt = time.time()
+            downloads = aria2.add(self.uri, {'dir': f"{os.getcwd()}/downloads"})
+            self.uri_gid = downloads[0].gid
+            while True:
+                if message:
+                    download = await self.progress_for_aria2(downloads[0].gid, ttt, e)
+                else:
+                    download = await self.progress_for_aria2(downloads[0].gid, ttt, e, silent=True)
+                if not download:
+                    break
+                if download.is_complete():
+                    app.remove_handler(*self.handler)
+                    break
+            return download
         except Exception:
             app.remove_handler(*self.handler)
             ers = traceback.format_exc()
@@ -272,24 +332,123 @@ class downloader:
                 time_to_completion if time_to_completion else "0 s",
             )
             try:
-                # Create a "Cancel" button
-                cancel_button = InlineKeyboardButton(
-                    text=f"{enmoji()} Cancel", callback_data=self.callback_data
-                )
                 # Attach the button to the message with an inline keyboard
-                reply_markup = InlineKeyboardMarkup([[cancel_button]])
+                reply_markup = []
+                dl_info = await parse_dl(self.file_name)
+                info_button, more_button, back_button, cancel_button = self.gen_buttons()
+                if not DISPLAY_DOWNLOAD:
+                    reply_markup.extend(([info_button], [cancel_button]))
+                    dsp = "{}\n{}".format(ud_type, tmp)
+                else:
+                    reply_markup.extend(([more_button], [back_button], [cancel_button]))
+                    dsp = dl_info
+                reply_markup = InlineKeyboardMarkup(reply_markup)
                 if not message.photo:
                     await message.edit_text(
-                        text="{}\n{}".format(ud_type, tmp),
+                        text=dsp,
                         reply_markup=reply_markup,
                     )
                 else:
                     await message.edit_caption(
-                        caption="{}\n{}".format(ud_type, tmp),
+                        caption=dsp,
                         reply_markup=reply_markup,
                     )
             except BaseException:
                 pass
+
+    async def progress_for_aria2(self, gid, start, message, silent=False):
+        try:
+            download = aria2.get_download(gid)
+            download = download.live
+            if download.followed_by_ids:
+                gid = download.followed_by_ids[0]
+            download = aria2.get_download(gid)
+            if download.status == "error" or self.download.is_cancelled:
+                if download.status == "error":
+                    self.download_error = "E" + download.error_code + " :" download.error_message
+                download.remove(force=True, files=True)
+                if download.following_id:
+                    download = aria2.get_download(download.following_id)
+                    download.remove(force=True, files=True)
+                return None
+
+            ud_type = "Downloading video with link…"
+            remaining_size = download.total_length - download.completed_length
+            total = download.total_length
+            current = download.completed_length
+            speed = download.download_speed
+            time_to_completion = download.eta
+            now = time.time()
+            diff = now - start
+            fin_str = enhearts()
+            unfin_str = UN_FINISHED_PROGRESS_STR
+            
+            if download.completed_length and download.download_speed:
+                time_to_completion = time_formatter(int((download.total_length - download.completed_length) / download.download_speed))
+
+            progress = "{0}{1} \n<b>Progress:</b> `{2}%`\n".format(
+                "".join([unfin_str for i in range(math.floor(download.progress / 10))]),
+                "".join([fin_str for i in range(10 - math.floor(download.progress / 10))]),
+                round(download.progress, 2),
+            )
+            tmp = progress + "`{0} of {1}`\n**Speed:** `{2}/s`\n**Remains:** `{3}`\n**ETA:** `{4}`\n".format(
+                value_check(hbs(current)),
+                value_check(hbs(total)),
+                value_check(hbs(speed)),
+                value_check(hbs(remaining_size)),
+                # elapsed_time if elapsed_time != '' else "0 s",
+                # download.eta if len(str(download.eta)) < 30 else "0 s",
+                time_to_completion if time_to_completion else "0 s",
+            )
+            if silent:
+                await asyncio.sleep(10)
+                return download
+            try:
+                # Attach the button to the message with an inline keyboard
+                reply_markup = []
+                file_name = self.file_name.split("/")[-1]
+                dl_info = await parse_dl(file_name)
+                info_button, more_button, back_button, cancel_button = self.gen_buttons()
+                if not DISPLAY_DOWNLOAD:
+                    reply_markup.extend(([info_button], [cancel_button]))
+                    dsp = "{}\n{}".format(ud_type, tmp)
+                else:
+                    reply_markup.extend(([more_button], [back_button], [cancel_button]))
+                    dsp = dl_info
+                reply_markup = InlineKeyboardMarkup(reply_markup)
+                if not message.photo:
+                    await message.edit_text(
+                        text=dsp,
+                        reply_markup=reply_markup,
+                    )
+                else:
+                    await message.edit_caption(
+                        caption=dsp,
+                        reply_markup=reply_markup,
+                    )
+            except BaseException:
+                pass
+
+            await asyncio.sleep(11)
+            return download
+    except pyro_errors.BadRequest:
+            await asyncio.sleep(10)
+            dl = await self.progress_for_aria2(gid, start, message, silent)
+            return dl
+
+        except pyro_errors.FloodWait as e:
+            await asyncio.sleep(e.value)
+            await asyncio.sleep(2)
+            dl = await self.progress_for_aria2(gid, start, message, silent)
+            return dl
+
+        except Exception:
+            ers = traceback.format_exc()
+            await channel_log(ers)
+            LOGS.info(ers)
+            return None
+
+
 
     async def download_button_callback(self, client, callback_query):
         try:
@@ -313,3 +472,73 @@ class downloader:
             ers = traceback.format_exc()
             await channel_log(ers)
             LOGS.info(ers)
+
+
+async def dl_info(client, query):
+    try:
+        await query.answer()
+        DISPLAY_DOWNLOAD.append(1)
+    except Exception:
+        er = traceback.format_exc()
+        LOGS.info(er)
+        await channel_log(er)
+
+
+async def back(client, query):
+    try:
+        await query.answer()
+        DISPLAY_DOWNLOAD.clear()
+    except Exception:
+        er = traceback.format_exc()
+        LOGS.info(er)
+        await channel_log(er)
+
+
+async def dl_stat(client, query):
+    try:
+        data = query.data.split()
+        dl = data[1]
+        dl_check = Path(dl)
+        if dl_check.is_file():
+            dls = dl
+        else:
+            dls = f"{dl}.temp"
+        ov = hbs(int(Path(dls).stat().st_size))
+        name = dl.split("/")[1]
+        input = (name[:45] + "…") if len(name) > 45 else name
+        q = await qparse(name)
+        ans = f"📥 Downloading:\n{input}\n\n⭕ Current Size:\n{ov}\n\n\n{enmoji()}:\n{q}"
+        await query.answer(ans, cache_time=0, show_alert=True)
+    except IndexError:
+        ansa = "Oops! data of this button was lost,\n most probably due to restart.\nAnd as such the outdated message will be removed…"
+        await query.answer(ansa, cache_time=0)
+        await asyncio.sleep(5)
+        try:
+            await query.message.reply_to_message.delete()
+        except Exception:
+            ers = traceback.format_exc()
+            LOGS.info("[DEBUG] -dl_stat- " + ers)
+        await query.message.delete()
+    except Exception:
+        ers = traceback.format_exc()
+        LOGS.info(ers)
+        await channel_log(ers)
+        ans = "Yikes 😬"
+        await query.answer(ans, cache_time=0, show_alert=True)
+
+
+app.add_handler(
+    CallbackQueryHandler(
+        back, filters=regex("^back")
+        )
+    )
+app.add_handler(
+    CallbackQueryHandler(
+        dl_info, filters=regex("^dl_info")
+        )
+    )
+app.add_handler(
+    CallbackQueryHandler(
+        dl_stat, filters=regex("^more")
+        )
+    )

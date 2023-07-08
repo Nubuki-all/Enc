@@ -303,7 +303,8 @@ async def something():
                         "**[DEBUG]** `Preparing…`",
                         reply_to=mssg_r.id,
                     )
-                    mssg_f = await message.reply(
+                    await asyncio.sleep(2)
+                    mssg_f = await (await app.get_messages(e.chat.id, e.id)).reply(
                         "**[DEBUG]** `Waiting for download handler…`", quote=True
                     )
                 except Exception:
@@ -339,164 +340,55 @@ async def something():
                     if message:
                         if message.text:
                             if message.text.startswith("/"):
-                                uri = message.text.split(" ", maxsplit=1)[1]
+                                uri = message.text.split(" ", maxsplit=1)[1].strip()
                             else:
                                 uri = message.text
 
                     else:
                         if is_url(str(file)) is True:
                             uri = file
-                    if uri:
-                        if mssg_r:
-                            await mssg_r.edit("`Downloading Torrent\nPlease wait…`")
-                            await mssg_f.delete()
-                        cmd = f"aria2c --follow-torrent=mem --seed-time=0 -d downloads '{uri}' > leech_log 2>&1"
-                        leech_task = asyncio.create_task(enshell(cmd))
-                        await asyncio.sleep(3)
-                        name = await get_leech_file()
-                        dl = "downloads/" + name
-                        wah = code(dl)
-                        dl_info = await parse_dl(name)
-                        ee = await e.edit(
-                            f"{enmoji()} `Download Information.`{dl_info}",
-                            buttons=[
-                                [Button.inline("ℹ️", data=f"dl_stat{wah}")],
-                                [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
-                            ],
-                        )
-                        if op:
-                            opp = await op.edit(
-                                f"[{sender.first_name}](tg://user?id={user}) `Download Information.`{dl_info}",
-                                buttons=[
-                                    [Button.inline("ℹ️", data=f"dl_stat{wah}")],
-                                    [Button.inline("CANCEL", data=f"cancel_dl{wah}")],
-                                ],
-                            )
-                        if mssg_r:
-                            stdout2 = await fake_progress(leech_task, mssg_r)
-                        else:
-                            with open("leech_log", "r") as file:
-                                stdout2 = file.read().strip()
-                                file.close()
-                        process, stdout, stderr = await leech_task
-                        if process.returncode != 0:
-                            if DOWNLOAD_CANCEL:
-                                canceller = await app.get_users(DOWNLOAD_CANCEL[0])
-                                if message:
-                                    await mssg_r.edit(
-                                        f"Download of `{name}` was cancelled by {canceller.mention(style='md')}"
-                                    )
-                                await e.delete()
-                                if LOG_CHANNEL:
-                                    await op.edit(
-                                        f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by` [{canceller.first_name}.](tg://user?id={DOWNLOAD_CANCEL[0]})",
-                                    )
-                                if QUEUE:
-                                    QUEUE.pop(list(QUEUE.keys())[0])
-                                DOWNLOAD_CANCEL.clear()
-                                await save2db()
-                                await qclean()
-                                continue
+                    if CACHE_QUEUE:
+                        raise (already_dl)
+                    if message:
+                        await mssg_r.edit("`Waiting for download to complete.`")
+                    download = downloader(sender, op, uri=uri, dl_info=True)
+                    downloaded = await download.start(dl, file, message, mssg_f)
+                    if download.is_cancelled or download.download_error:
+                        if message:
+                            reply = f"Download of `{name}` "
+                            if download.is_cancelled:
+                                reply += "was cancelled"
                             else:
-                                try:
-                                    error_msg = (
-                                        f"🔺 **Downloading of** `{name}` **Failed!**"
-                                    )
-                                    if len(stdout2) > 4095:
-                                        yo = await app.send_message(
-                                            e.chat_id, "Uploading Error logs…"
-                                        )
-                                        opp = await channel_log(error_msg)
-                                        out_file = "aria2c_error.txt"
-                                        with open(out_file, "w") as file:
-                                            file.write(str(stdout2))
-                                            wrror = await yo.reply_document(
-                                                document=out_file,
-                                                force_document=True,
-                                                quote=True,
-                                                caption="`aria2c error`",
-                                            )
-
-                                        if LOG_CHANNEL:
-                                            chat = int(LOG_CHANNEL)
-                                            await wrror.copy(chat_id=chat)
-                                        yo.delete()
-                                        os.remove(out_file)
-                                    else:
-                                        if message:
-                                            wrror = await mssg_r.reply(stdout2)
-                                        else:
-                                            wrror = await app.send_message(stdout2)
-                                    nnn = await wrror.reply(error_msg)
-                                    opp = await channel_log(f"{error_msg}\n{stdout2}")
-                                    try:
-                                        await e.delete()
-                                        await op.delete()
-                                    except Exception:
-                                        pass
-                                except Exception:
-                                    pass
-                                retry_msg = "Retrying after 10 seconds"
-                                await wrror.reply(retry_msg)
-                                if op:
-                                    await op.reply(retry_msg)
-                                await asyncio.sleep(10)
-                                await qclean()
-                                DOWNLOAD_CANCEL.clear()
-                                continue
-                        name = await get_leech_file()
-                        dl = "downloads/" + name
-                    else:
-                        if CACHE_QUEUE:
-                            raise (already_dl)
-                        wah = code(dl)
-                        dl_info = await parse_dl(name)
-                        ee = await e.edit(
-                            f"{enmoji()} {dl_info}",
-                            buttons=[
-                                [Button.inline("ℹ️", data=f"dl_stat{wah}")],
-                            ],
-                        )
+                                reply += "Failed"
+                            if download.canceller:
+                                if download.canceller.id != user:
+                                    reply += f" by {download.canceller.mention(style='md')}"
+                            reply += "!"
+                            if download.download_error:
+                                reply += f"\n`{download.download_error}`"
+                            await mssg_r.edit(reply)
+                        await e.delete()
                         if op:
-                            opp = await op.edit(
-                                f"[{sender.first_name}](tg://user?id={user}) `Download Information.`{dl_info}",
-                                buttons=[
-                                    [Button.inline("ℹ️", data=f"dl_stat{wah}")],
-                                ],
-                            )
-                        if message:
-                            await mssg_r.edit("`Waiting for download to complete.`")
-                        download = downloader(sender, op)
-                        await download.start(dl, file, message, mssg_f)
-                        if download.is_cancelled:
-                            if message:
-                                reply = f"Download of `{name}` was cancelled"
-                                if download.canceller:
-                                    if download.canceller.id != user:
-                                        reply += f" by {download.canceller.mention(style='md')}"
-                                reply += "!"
-                                await mssg_r.edit(reply)
-                                await mssg_f.delete()
-                            await e.delete()
-                            if op:
-                                if download.canceller:
-                                    await op.edit(
-                                        f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by` [{download.canceller.first_name}.](tg://user?id={download.canceller.id})"
-                                    )
-                                else:
-                                    await op.edit(
-                                        f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled."
-                                    )
-                            if QUEUE:
-                                QUEUE.pop(list(QUEUE.keys())[0])
-                            await save2db()
-                            await qclean()
-                            continue
-                        if message:
-                            await mssg_f.delete()
+                            if download.canceller:
+                                await op.edit(
+                                    f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by` [{download.canceller.first_name}.](tg://user?id={download.canceller.id})"
+                                )
+                            else:
+                                await op.edit(
+                                    f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled."
+                                )
+                            if download.download_error:
+                                await op.edit(
+                                    f"[{sender.first_name}'s](tg://user?id={user}) `download failed!\n`{download.download_error}`"
+                                )
+                    if not downloaded or download.is_cancelled:
+                        if QUEUE:
+                            QUEUE.pop(list(QUEUE.keys())[0])
+                        await save2db()
+                        await qclean()
+                        continue
                 except already_dl:
                     if message:
-                        await mssg_f.delete()
                         await mssg_r.edit("`Waiting for caching to complete.`")
                     rslt = await get_cached(dl, sender, user, e, op)
                     if rslt is False:
@@ -761,7 +653,14 @@ async def something():
                 QUEUE.pop(list(QUEUE.keys())[0])
                 await save2db()
                 os.system("rm -rf thumb2.jpg")
-                os.remove(dl)
+                if uri:
+                    download = aria2.get_download(download.uri_gid)
+                    download.remove(force=True, files=True)
+                    if download.followed_by_ids:
+                        download = aria2.get_download(download.followed_by_ids[0])
+                        download.remove(force=True, files=True)
+                else:
+                    os.remove(dl)
                 os.remove(out)
             else:
                 await asyncio.sleep(3)
