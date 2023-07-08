@@ -416,22 +416,22 @@ class downloader:
                     reply_markup.extend(([more_button], [back_button], [cancel_button]))
                     dsp = dl_info
                 reply_markup = InlineKeyboardMarkup(reply_markup)
-                if not message.photo:
-                    await message.edit_text(
-                        text=dsp,
-                        reply_markup=reply_markup,
-                    )
-                else:
-                    await message.edit_caption(
-                        caption=dsp,
-                        reply_markup=reply_markup,
-                    )
             except BaseException:
                 pass
+            if not message.photo:
+                await message.edit_text(
+                    text=dsp,
+                    reply_markup=reply_markup,
+                )
+            else:
+                await message.edit_caption(
+                    caption=dsp,
+                    reply_markup=reply_markup,
+                )
 
             await asyncio.sleep(11)
             return download
-    except pyro_errors.BadRequest:
+        except pyro_errors.BadRequest:
             await asyncio.sleep(10)
             dl = await self.progress_for_aria2(gid, start, message, silent)
             return dl
