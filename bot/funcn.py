@@ -361,6 +361,7 @@ async def channel_log(error):
         except Exception:
             ers = traceback.format_exc()
             LOGS.info(ers)
+            LOGS.info(error)
             msg = ""
         return msg
 
