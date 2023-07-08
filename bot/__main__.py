@@ -525,13 +525,9 @@ async def something():
                             if E_CANCEL[0] != user:
                                 canceller = await app.get_users(E_CANCEL[0])
                                 if message:
-                                    reply += (
-                                        f" by {canceller.mention(style='md')}"
-                                    )
+                                    reply += f" by {canceller.mention(style='md')}"
                                 else:
-                                    reply += (
-                                        f" by [{canceller.first_name}.](tg://user?id={canceller.id})"
-                                    )
+                                    reply += f" by [{canceller.first_name}.](tg://user?id={canceller.id})"
                             reply += "!"
                         if message:
                             await mssg_r.edit(reply)
@@ -558,13 +554,15 @@ async def something():
                             await yo.delete()
                             os.remove(out_file)
                         elif not E_CANCEL:
-                            wrror = await bot.send_message(int(user), stderr.decode())
+                            await bot.send_message(int(user), stderr.decode())
                         if uri:
                             aria2 = ARIA2[0]
                             download = aria2.get_download(download.uri_gid)
                             download.remove(force=True, files=True)
                             if download.followed_by_ids:
-                                download = aria2.get_download(download.followed_by_ids[0])
+                                download = aria2.get_download(
+                                    download.followed_by_ids[0]
+                                )
                                 download.remove(force=True, files=True)
                         else:
                             s_remove(dl)
