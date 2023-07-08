@@ -745,7 +745,7 @@ async def f_post(name, out):
                 .get("Media")
             )
             b = json["title"]["english"]
-            b = json["title"]["romaji"]} if b is None else b
+            b = json["title"]["romaji"] if b is None else b
             br = json["title"]["romaji"]
             try:
                 id_ = json2["id"]

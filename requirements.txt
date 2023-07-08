@@ -1,5 +1,6 @@
 aiohttp
 anitopy
+aria2p
 country_converter
 emoji-country-flag
 html_telegraph_poster

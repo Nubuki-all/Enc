@@ -365,7 +365,7 @@ class downloader:
             download = aria2.get_download(gid)
             if download.status == "error" or self.download.is_cancelled:
                 if download.status == "error":
-                    self.download_error = "E" + download.error_code + " :" download.error_message
+                    self.download_error = "E" + download.error_code + " :" + download.error_message
                 download.remove(force=True, files=True)
                 if download.following_id:
                     download = aria2.get_download(download.following_id)

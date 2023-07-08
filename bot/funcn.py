@@ -518,7 +518,7 @@ async def get_leech_name(url):
                 gid = download.followed_by_ids[0]
                 download = aria2.get_download(gid)
             if download.status == "error":
-                download_error = "E" + download.error_code + " :" download.error_message
+                download_error = "E" + download.error_code + " :" + download.error_message
                 filename = "aria2_error " + download_error
                 break
             if download.name.endswith(".torrent"):
