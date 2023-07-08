@@ -379,7 +379,7 @@ class downloader:
 
             ud_type = "`Download Pending…`"
             if not download.name.endswith(".torrent"):
-                ud_type = f"Downloading `{self.file_name.split(" / ")[-1]}`"
+                ud_type = f"Downloading `{self.file_name.split('/')[-1]}`"
                 if download.is_torrent:
                     ud_type += " via torrent."
             remaining_size = download.total_length - download.completed_length
