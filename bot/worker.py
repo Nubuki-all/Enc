@@ -1088,9 +1088,9 @@ async def auto_rename(event):
         for __check in r_file.split("\n"):
             if __check.split("|")[0].casefold() == rslt[0].casefold():
                 return await event.reply("__Already added.__")
-        r_file = r_file.strip("\n") + "\n" if r_file.endswith("\n\n") else r_file
+        r_file = r_file.rstrip("\n")
         file = open(text_file, "w")
-        file.write(r_file + str(temp) + "\n")
+        file.write(r_file + "\n" + str(temp))
         file.close()
         file = open(text_file, "r")
         r_file = file.read().strip()
