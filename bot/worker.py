@@ -568,7 +568,7 @@ async def en_upload(event):
                 folder = "downloads2"
                 dl = await message.reply(
                     "`Preparing to download file from link…`",
-                quote=True,
+                    quote=True,
                 )
                 download = downloader(uri=args, folder=folder)
                 await download.start(None, None, True, dl)
