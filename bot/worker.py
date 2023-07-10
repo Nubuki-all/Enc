@@ -573,7 +573,7 @@ async def en_upload(event):
                 download = downloader(uri=args, folder=folder)
                 await download.start(None, None, True, dl)
                 if download.is_cancelled or download.download_error:
-                    reply = f"Download of `{name}` "
+                    reply = f"Download from `{args}` "
                     if download.is_cancelled:
                         reply += "was cancelled"
                     else:
