@@ -644,13 +644,14 @@ async def en_upload(event):
                                 continue
                             break
                     await asyncio.sleep(10)
-                    if uri:
-                        rm_leech_file(download.uri_gid)
-                        return await event.reply(
-                            f"`All files has been uploaded from` `{args}` `successfully. {enmoji()}`"
-                        )
                     await event.reply(
-                        f"`All files in` `{path}` `has been uploaded successfully. {enmoji()}`",
+                        f"`All files in` `{path}` `have been uploaded successfully. {enmoji()}`",
+                    )
+                if uri:
+                    rm_leech_file(download.uri_gid)
+                    asyncio.sleep(5)
+                    await event.reply(
+                        f"`All files have been uploaded from` `{args}` `successfully. {enmoji()}`"
                     )
 
             else:
