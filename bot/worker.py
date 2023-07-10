@@ -590,6 +590,7 @@ async def en_upload(event):
             if not file.is_file() and not os.path.isdir(file):
                 return await event.reply("__File or folder not found__")
             if os.path.isdir(file):
+                _no = 0
                 for path, subdirs, files in os.walk(file):
                     if not files:
                         if not os.listdir(path):
@@ -630,6 +631,7 @@ async def en_upload(event):
                                 )
                                 if not upload.is_cancelled:
                                     await ul.delete()
+                                    _no = _no + 1
                                 else:
                                     await ul.edit(
                                         f"Uploading of `{name}` was cancelled."
@@ -647,11 +649,12 @@ async def en_upload(event):
                     await event.reply(
                         f"`All files in` `{path}` `have been uploaded successfully. {enmoji()}`",
                     )
+                    await asyncio.sleep(1)
                 if uri:
                     rm_leech_file(download.uri_gid)
                     asyncio.sleep(5)
                     await event.reply(
-                        f"`All files have been uploaded from` `{args}` `successfully. {enmoji()}`"
+                        f"`{_no} file(s) have been uploaded from` `{args}` `successfully. {enmoji()}`"
                     )
 
             else:

@@ -184,7 +184,7 @@ class downloader:
             self.callback_data_b = "back" + str(uuid.uuid4())
             self.handler_i = app.add_handler(
                 CallbackQueryHandler(
-                    self.dl_info, filters=regex("^" + self.callback_data_i)
+                    self.v_info, filters=regex("^" + self.callback_data_i)
                 )
             )
             self.handler_b = app.add_handler(
@@ -544,18 +544,18 @@ class downloader:
             LOGS.info(ers)
             await channel_log(ers)
 
-    async def dl_info(client, query):
+    async def v_info(self, client, query):
         try:
-            await query.answer()
+            await query.answer("Please wait…")
             self.display_dl_info = True
         except Exception:
             er = traceback.format_exc()
             LOGS.info(er)
             await channel_log(er)
 
-    async def back(client, query):
+    async def back(self, client, query):
         try:
-            await query.answer()
+            await query.answer("Please wait…")
             self.display_dl_info = False
         except Exception:
             er = traceback.format_exc()
