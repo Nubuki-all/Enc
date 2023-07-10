@@ -150,7 +150,9 @@ class uploader:
 
 
 class downloader:
-    def __init__(self, sender=123456, lc=None, uri=False, dl_info=False, folder="downloads"):
+    def __init__(
+        self, sender=123456, lc=None, uri=False, dl_info=False, folder="downloads"
+    ):
         self.sender = sender
         self.sender_is_id = False
         self.callback_data = "cancel_download" + str(uuid.uuid4())
@@ -170,7 +172,6 @@ class downloader:
             )
         )
         self.aria2 = ARIA2[0]
-        DISPLAY_DOWNLOAD = DISPLAY_DOWNLOAD
         if str(sender).isdigit():
             self.sender_is_id = True
             self.sender = int(sender)
@@ -179,11 +180,14 @@ class downloader:
             self.callback_data_b = "back" + str(uuid.uuid4())
             self.handler_i = app.add_handler(
                 CallbackQueryHandler(
-                    self.dl_info, filters=regex("^" + self.callback_data_i)))
+                    self.dl_info, filters=regex("^" + self.callback_data_i)
+                )
+            )
             self.handler_b = app.add_handler(
                 CallbackQueryHandler(
-                    self.back, filters=regex("^" + self.callback_data_b)))
-
+                    self.back, filters=regex("^" + self.callback_data_b)
+                )
+            )
 
     def __str__(self):
         return "#wip"
@@ -196,7 +200,7 @@ class downloader:
         if self.dl_info:
             # Create an "info" button
             info_button = InlineKeyboardButton(
-                text="ℹ️", callback_data= self.callback_data_i
+                text="ℹ️", callback_data=self.callback_data_i
             )
             # Create a "more" button
             more_button = InlineKeyboardButton(
@@ -204,7 +208,7 @@ class downloader:
             )
             # create "back" button
             back_button = InlineKeyboardButton(
-                text="↩️", callback_data= self.callback_data_b
+                text="↩️", callback_data=self.callback_data_b
             )
         else:
             info_button, more_button, back_button = None, None, None
@@ -300,7 +304,9 @@ class downloader:
             await self.log_download()
             ttt = time.time()
             await asyncio.sleep(3)
-            downloads = self.aria2.add(self.uri, {"dir": f"{os.getcwd()}/{self.dl_folder}"})
+            downloads = self.aria2.add(
+                self.uri, {"dir": f"{os.getcwd()}/{self.dl_folder}"}
+            )
             self.uri_gid = downloads[0].gid
             while True:
                 if message:
@@ -542,8 +548,7 @@ class downloader:
             er = traceback.format_exc()
             LOGS.info(er)
             await channel_log(er)
-    
-    
+
     async def back(client, query):
         try:
             await query.answer()

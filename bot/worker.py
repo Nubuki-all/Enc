@@ -567,7 +567,7 @@ async def en_upload(event):
             if is_url(args):
                 dl = await message.reply("`Preparing to download file from link…`")
                 download = downloader(uri=args, folder="download2")
-                downloaded = await download.start(None, None, True, dl)
+                await download.start(None, None, True, dl)
                 if download.is_cancelled or download.download_error:
                     reply = f"Download of `{name}` "
                     if download.is_cancelled:
@@ -576,9 +576,7 @@ async def en_upload(event):
                         reply += "Failed"
                     if download.canceller:
                         if download.canceller.id != event.sender_id:
-                            reply += (
-                                f" by {download.canceller.mention(style='md')}"
-                            )
+                            reply += f" by {download.canceller.mention(style='md')}"
                     reply += "!"
                     if download.download_error:
                         reply += f"\n`{download.download_error}`"
@@ -642,7 +640,9 @@ async def en_upload(event):
                     await asyncio.sleep(10)
                     if uri:
                         rm_leech_file(download.uri_gid)
-                        return await event.reply(f"`All files has been uploaded from` `{args}` `successfully. {enmoji()}`")
+                        return await event.reply(
+                            f"`All files has been uploaded from` `{args}` `successfully. {enmoji()}`"
+                        )
                     await event.reply(
                         f"`All files in` `{path}` `has been uploaded successfully. {enmoji()}`",
                     )

@@ -14,7 +14,6 @@
 # https://github.com/1Danish-00/CompressorQueue/blob/main/License> .
 
 import asyncio
-import glob
 import io
 import json
 import math
@@ -512,9 +511,7 @@ def rm_leech_file(gid):
         download = aria2.get_download(gid)
         download.remove(force=True, files=True)
         if download.followed_by_ids:
-            download = aria2.get_download(
-                download.followed_by_ids[0]
-            )
+            download = aria2.get_download(download.followed_by_ids[0])
             download.remove(force=True, files=True)
     except Exception:
         ers = traceback.format_exc()
