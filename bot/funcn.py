@@ -238,12 +238,19 @@ def is_url(url):
     return bool(url)
 
 
-def list_to_str(lst, e=" "):
+def list_to_str(lst, e=" ", n=None):
     string = ""
     for i in lst:
-        string += str(i) + e
+        if n:
+            string += f"{n}. {i}{e}"
+            n = n + 1
+        else:
+            string += str(i) + e
 
-    return string
+    if n:
+        return n, string
+    else:
+        return string
 
 
 def is_video_file(filename):
@@ -500,23 +507,19 @@ async def fake_progress(leech_task, message):
             return "`What have you done?`"
 
 
-async def get_leech_file():
+def rm_leech_file(gid):
     try:
-        dt_ = glob.glob("downloads/*")
-        data = max(dt_, key=os.path.getctime)
-        dat = data.replace("downloads/", "")
-        if dat.endswith(".aria2"):
-            await asyncio.sleep(2)
-            dat = await get_leech_file()
-    except ValueError:
-        await asyncio.sleep(5)
-        dat = await get_leech_file()
+        download = aria2.get_download(gid)
+        download.remove(force=True, files=True)
+        if download.followed_by_ids:
+            download = aria2.get_download(
+                download.followed_by_ids[0]
+            )
+            download.remove(force=True, files=True)
     except Exception:
-        dat = ""
         ers = traceback.format_exc()
         LOGS.info(ers)
         await channel_log(ers)
-    return dat
 
 
 async def get_leech_name(url):

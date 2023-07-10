@@ -555,6 +555,7 @@ async def en_upload(event):
     if str(event.sender_id) not in OWNER and event.sender_id != DEV:
         return await event.delete()
     try:
+        uri = None
         args = event.pattern_match.group(1)
         message = await app.get_messages(event.chat_id, int(event.id))
         if args is not None:
@@ -563,12 +564,33 @@ async def en_upload(event):
             args = event.pattern_match.group(1).strip()
             file = Path(args)
             chain_msg = message
+            if is_url(args):
+                dl = await message.reply("`Preparing to download file from link…`")
+                download = downloader(uri=args, folder="download2")
+                downloaded = await download.start(None, None, True, dl)
+                if download.is_cancelled or download.download_error:
+                    reply = f"Download of `{name}` "
+                    if download.is_cancelled:
+                        reply += "was cancelled"
+                    else:
+                        reply += "Failed"
+                    if download.canceller:
+                        if download.canceller.id != event.sender_id:
+                            reply += (
+                                f" by {download.canceller.mention(style='md')}"
+                            )
+                    reply += "!"
+                    if download.download_error:
+                        reply += f"\n`{download.download_error}`"
+                    return await dl.edit(reply)
+                file = "Downloads2"
             if not file.is_file() and not os.path.isdir(file):
                 return await event.reply("__File or folder not found__")
             if os.path.isdir(file):
                 for path, subdirs, files in os.walk(file):
                     if not files:
-                        await event.reply(f"`📁 {path} is empty.`")
+                        if not os.listdir(path):
+                            await event.reply(f"`📁 {path} is empty.`")
                         continue
                     files.sort()
                     i = len(files)
@@ -581,7 +603,7 @@ async def en_upload(event):
                             )
                         file = os.path.join(path, name)
                         if int(Path(file).stat().st_size) > 2126000000:
-                            await chain_msg.edit(
+                            chain_msg = await chain_msg.reply(
                                 f"Uploading of `{name}` failed because file was larger than 2GB"
                             )
                             continue
@@ -589,7 +611,7 @@ async def en_upload(event):
                             try:
                                 cap = file.split("/", maxsplit=1)[-1]
                                 ul = await chain_msg.reply(
-                                    f"`Uploading {name} from 📁 {path} ({t}/{i})…`",
+                                    f"Uploading `{name}` from 📁 `{path}` `({t}/{i})`…",
                                     quote=True,
                                 )
                                 await asyncio.sleep(10)
@@ -618,8 +640,11 @@ async def en_upload(event):
                                 continue
                             break
                     await asyncio.sleep(10)
+                    if uri:
+                        rm_leech_file(download.uri_gid)
+                        return await event.reply(f"`All files has been uploaded from` `{args}` `successfully. {enmoji()}`")
                     await event.reply(
-                        f"`All files in {path} has been uploaded successfully. {enmoji()}`",
+                        f"`All files in` `{path}` `has been uploaded successfully. {enmoji()}`",
                     )
 
             else:
@@ -636,6 +661,8 @@ async def en_upload(event):
         else:
             return await event.reply("`Upload what exactly?`")
     except Exception:
+        if uri:
+            rm_leech_file(download.uri_gid)
         ers = traceback.format_exc()
         await channel_log(ers)
         LOGS.info(ers)
