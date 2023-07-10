@@ -516,7 +516,6 @@ def rm_leech_file(gid):
     except Exception:
         ers = traceback.format_exc()
         LOGS.info(ers)
-        await channel_log(ers)
 
 
 async def get_leech_name(url):
