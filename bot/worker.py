@@ -565,7 +565,7 @@ async def en_upload(event):
             file = Path(args)
             chain_msg = message
             if is_url(args):
-                folder = "downloads2"
+                folder, uri = "downloads2", True
                 dl = await message.reply(
                     "`Preparing to download file from link…`",
                     quote=True,
