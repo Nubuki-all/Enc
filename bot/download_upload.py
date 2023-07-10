@@ -172,6 +172,10 @@ class downloader:
             )
         )
         self.aria2 = ARIA2[0]
+        if DISPLAY_DOWNLOAD:
+            self.display_dl_info = True
+        else:
+            self.display_dl_info = False
         if str(sender).isdigit():
             self.sender_is_id = True
             self.sender = int(sender)
@@ -379,7 +383,7 @@ class downloader:
                 if not self.dl_info:
                     reply_markup.append([cancel_button])
                     dsp = "{}\n{}".format(ud_type, tmp)
-                elif not DISPLAY_DOWNLOAD:
+                elif not self.display_dl_info:
                     reply_markup.extend(([info_button], [cancel_button]))
                     dsp = "{}\n{}".format(ud_type, tmp)
                 else:
@@ -478,7 +482,7 @@ class downloader:
                 if not self.dl_info:
                     reply_markup.append([cancel_button])
                     dsp = "{}\n{}".format(ud_type, tmp)
-                elif not DISPLAY_DOWNLOAD:
+                elif not self.display_dl_info:
                     reply_markup.extend(([info_button], [cancel_button]))
                     dsp = "{}\n{}".format(ud_type, tmp)
                 else:
@@ -543,7 +547,7 @@ class downloader:
     async def dl_info(client, query):
         try:
             await query.answer()
-            DISPLAY_DOWNLOAD.append(1)
+            self.display_dl_info = True
         except Exception:
             er = traceback.format_exc()
             LOGS.info(er)
@@ -552,7 +556,7 @@ class downloader:
     async def back(client, query):
         try:
             await query.answer()
-            DISPLAY_DOWNLOAD.clear()
+            self.display_dl_info = False
         except Exception:
             er = traceback.format_exc()
             LOGS.info(er)
