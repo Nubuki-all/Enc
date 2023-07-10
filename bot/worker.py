@@ -565,8 +565,12 @@ async def en_upload(event):
             file = Path(args)
             chain_msg = message
             if is_url(args):
-                dl = await message.reply("`Preparing to download file from link…`")
-                download = downloader(uri=args, folder="download2")
+                folder = "downloads2"
+                dl = await message.reply(
+                    "`Preparing to download file from link…`",
+                quote=True,
+                )
+                download = downloader(uri=args, folder=folder)
                 await download.start(None, None, True, dl)
                 if download.is_cancelled or download.download_error:
                     reply = f"Download of `{name}` "
@@ -581,7 +585,8 @@ async def en_upload(event):
                     if download.download_error:
                         reply += f"\n`{download.download_error}`"
                     return await dl.edit(reply)
-                file = Path("Downloads2")
+                await dl.delete()
+                file = Path(folder)
             if not file.is_file() and not os.path.isdir(file):
                 return await event.reply("__File or folder not found__")
             if os.path.isdir(file):
@@ -602,7 +607,8 @@ async def en_upload(event):
                         file = os.path.join(path, name)
                         if int(Path(file).stat().st_size) > 2126000000:
                             chain_msg = await chain_msg.reply(
-                                f"Uploading of `{name}` failed because file was larger than 2GB"
+                                f"Uploading of `{name}` failed because file was larger than 2GB",
+                                quote=True,
                             )
                             continue
                         while True:
