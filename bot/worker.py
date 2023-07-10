@@ -581,7 +581,7 @@ async def en_upload(event):
                     if download.download_error:
                         reply += f"\n`{download.download_error}`"
                     return await dl.edit(reply)
-                file = "Downloads2"
+                file = Path("Downloads2")
             if not file.is_file() and not os.path.isdir(file):
                 return await event.reply("__File or folder not found__")
             if os.path.isdir(file):

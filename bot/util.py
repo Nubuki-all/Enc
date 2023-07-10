@@ -48,6 +48,8 @@ def get_readable_time(seconds: int) -> str:
 async def parse_dl(path):
     if UNLOCK_UNSTABLE:
         try:
+            if not path:
+                return None
             _dir, filename = os.path.split(path)
             na = anitopy.parse(filename)
             ne = f"\n\n**Video/file information:\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━**"
