@@ -132,6 +132,8 @@ class uploader:
                         caption="{}\n{}".format(ud_type, tmp),
                         reply_markup=reply_markup,
                     )
+            except pyro_errors.FloodWait as e:
+                await asyncio.sleep(e.value)
             except BaseException:
                 pass
 
@@ -400,8 +402,10 @@ class downloader:
                         caption=dsp,
                         reply_markup=reply_markup,
                     )
+            except pyro_errors.FloodWait as e:
+                await asyncio.sleep(e.value)
             except BaseException:
-                LOGS.info(traceback.format_exc())
+                pass
 
     async def progress_for_aria2(self, gid, start, message, silent=False):
         try:
