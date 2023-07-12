@@ -565,13 +565,13 @@ async def en_upload(event):
             file = Path(args)
             chain_msg = message
             if is_url(args):
-                folder, uri = "downloads2", True
+                folder, uri = "downloads2/", True
                 dl = await message.reply(
                     "`Preparing to download file from link…`",
                     quote=True,
                 )
                 download = downloader(uri=args, folder=folder)
-                await download.start(None, None, True, dl)
+                downloaded = await download.start(None, None, True, dl)
                 if download.is_cancelled or download.download_error:
                     reply = f"Download from `{args}` "
                     if download.is_cancelled:
@@ -586,7 +586,7 @@ async def en_upload(event):
                         reply += f"\n`{download.download_error}`"
                     return await dl.edit(reply)
                 await dl.delete()
-                file = Path(folder)
+                file = Path(folder + downloaded.name)
             if not file.is_file() and not os.path.isdir(file):
                 return await event.reply("__File or folder not found__")
             if os.path.isdir(file):
