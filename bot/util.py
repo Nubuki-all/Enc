@@ -619,7 +619,7 @@ async def custcap(name, fname):
                             fil3t = fil3t.strip()
                             fil3t += ")"
                         else:
-                            fil3t += f"({_sinfo} Sub)"
+                            fil3t += f"({_sinfo} sub)"
                 else:
                     fil3t = "(English subtitle)"
 
