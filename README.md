@@ -47,7 +47,7 @@ peval - same as eval but with pyrogram
 ping - Ping!
 l - pass uri link with a single file to dl with aria2c 
 queue - List queue
-encodequeue - List queue (parsed)
+fforward - Manually forward a message to FCHANNEL
 v - Turn V2,3,4… On (With Message) or Off
 get - Get Current ffmpeg code
 set - Set custom ffmpeg code
