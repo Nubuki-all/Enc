@@ -612,12 +612,14 @@ async def custcap(name, fname):
                         sub_count = len(_sinfo.split("|"))
                         if sub_count > 2:
                             fil3t += f"(Multi-Subs)[{sub_count}] "
-                        else:
+                        elif sub_count > 1:
                             fil3t += "(Subs: "
                             for subs in _sinfo.split("|"):
                                 fil3t += f"[{subs}] "
                             fil3t = fil3t.strip()
                             fil3t += ")"
+                        else:
+                            fil3t += f"({_sinfo} Sub)"
                 else:
                     fil3t = "(English subtitle)"
 
