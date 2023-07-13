@@ -372,6 +372,21 @@ async def channel_log(error):
         return msg
 
 
+async def fc_forward(msg):
+    try:
+        if not FCHANNEL:
+            return await msg.reply("`FCHANNEL var not set.`")
+        if not msg.reply_to_message:
+            return await msg.reply("`Reply with a message to forward to FCHANNEL`")
+        f_msg = msg.reply_to_message
+        await f_msg.copy(chat_id=int(FCHANNEL))
+        await msg.reply("`Forwarded succesfully.`")
+    except Exception:
+        er = traceback.format_exc()
+        LOGS.info(er)
+        await channel_log(er)
+
+
 async def q_dup_check(event):
     try:
         if QUEUE_STATUS:

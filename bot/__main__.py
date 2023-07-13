@@ -167,6 +167,11 @@ async def _(app, message):
     await update2(app, message)
 
 
+@app.on_message(filters.incoming & filters.command(["fforward"]))
+async def _(app, message):
+    await fc_forward(message)
+
+
 @bot.on(events.NewMessage(pattern="/bash"))
 async def _(e):
     await bash(e)
