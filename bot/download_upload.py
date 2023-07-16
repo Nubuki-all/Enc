@@ -63,10 +63,12 @@ class uploader:
             app.remove_handler(*self.handler)
             return s
         except pyro_errors.BadRequest:
-            await reply.edit(f"`Failed {enmoji2()}\nRetrying in 10 seconds…`")
-            await asyncio.sleep(10)
-            s = await self.start(from_user_id, filepath, reply, thum, caption, message)
-            return s
+            # debug
+            return await reply.edit(traceback.format_exc())
+            # await reply.edit(f"`Failed {enmoji2()}\nRetrying in 10 seconds…`")
+            # await asyncio.sleep(10)
+            # s = await self.start(from_user_id, filepath, reply, thum, caption, message)
+            # return s
 
         except pyro_errors.FloodWait as e:
             await asyncio.sleep(e.value)
@@ -132,8 +134,8 @@ class uploader:
                         caption="{}\n{}".format(ud_type, tmp),
                         reply_markup=reply_markup,
                     )
-            # except pyro_errors.FloodWait as e:
-            # await asyncio.sleep(e.value)
+            except pyro_errors.FloodWait as e:
+                await asyncio.sleep(e.value)
             except BaseException:
                 pass
 
