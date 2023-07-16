@@ -133,7 +133,7 @@ class uploader:
                         reply_markup=reply_markup,
                     )
             # except pyro_errors.FloodWait as e:
-                # await asyncio.sleep(e.value)
+            # await asyncio.sleep(e.value)
             except BaseException:
                 pass
 
