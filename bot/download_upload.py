@@ -64,6 +64,7 @@ class uploader:
             return s
         except pyro_errors.BadRequest:
             # debug
+            LOGS.critical(traceback.format_exc())
             return await reply.edit(traceback.format_exc())
             # await reply.edit(f"`Failed {enmoji2()}\nRetrying in 10 seconds…`")
             # await asyncio.sleep(10)
