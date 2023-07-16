@@ -63,13 +63,10 @@ class uploader:
             app.remove_handler(*self.handler)
             return s
         except pyro_errors.BadRequest:
-            # debug
-            LOGS.critical(traceback.format_exc())
-            return await reply.edit(traceback.format_exc())
-            # await reply.edit(f"`Failed {enmoji2()}\nRetrying in 10 seconds…`")
-            # await asyncio.sleep(10)
-            # s = await self.start(from_user_id, filepath, reply, thum, caption, message)
-            # return s
+            await reply.edit(f"`Failed {enmoji2()}\nRetrying in 10 seconds…`")
+            await asyncio.sleep(10)
+            s = await self.start(from_user_id, filepath, reply, thum, caption, message)
+            return s
 
         except pyro_errors.FloodWait as e:
             await asyncio.sleep(e.value)

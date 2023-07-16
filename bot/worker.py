@@ -650,24 +650,25 @@ async def en_upload(event):
                         f"`All files in` `{path}` `have been uploaded successfully. {enmoji()}`",
                     )
                     await asyncio.sleep(1)
-                if uri:
-                    rm_leech_file(download.uri_gid)
-                    asyncio.sleep(5)
-                    await event.reply(
-                        f"`{_no} file(s) have been uploaded from` `{args}` `successfully. {enmoji()}`"
-                    )
 
             else:
-                r = await message.reply(f"`Uploading {args}…`", quote=True)
-                cap = args.split("/")[-1] if "/" in args else args
+                _no = 1
+                r = await message.reply(f"`Uploading {file}…`", quote=True)
+                _none, cap = os.path.split(file)
                 upload = uploader()
                 await upload.start(
-                    event.chat_id, args, r, "thumb.jpg", f"`{cap}`", message
+                    event.chat_id, file, r, "thumb.jpg", f"`{cap}`", message
                 )
                 if not upload.is_cancelled:
                     await r.edit(f"`{cap} uploaded successfully.`")
                 else:
                     await r.edit(f"`Uploading of {cap} has been cancelled.`")
+            if uri:
+                rm_leech_file(download.uri_gid)
+                asyncio.sleep(5)
+                await event.reply(
+                    f"`{_no} file(s) have been uploaded from` `{args}` `successfully. {enmoji()}`"
+                )
         else:
             return await event.reply("`Upload what exactly?`")
     except Exception:
