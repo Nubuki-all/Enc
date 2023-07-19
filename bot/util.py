@@ -615,7 +615,10 @@ async def custcap(name, fname):
                         elif sub_count > 1:
                             ___dual = False
                             if _ainfo and audio_count == 2:
-                                if _sinfo.split("|")[0] == "eng" and _sinfo.split("|")[0] == _sinfo.split("|")[1]:
+                                if (
+                                    _sinfo.split("|")[0] == "eng"
+                                    and _sinfo.split("|")[0] == _sinfo.split("|")[1]
+                                ):
                                     __dual = True
                             if not __dual:
                                 fil3t += "(Subs: "
