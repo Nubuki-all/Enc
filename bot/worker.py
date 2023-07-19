@@ -186,6 +186,11 @@ async def clean(event):
         print(processName, " - ", processID)
         if processName == "ffmpeg":
             os.kill(processID, signal.SIGKILL)
+    if ARIA2:
+        ARIA2[0] = aria2
+        downloads = aria2.get_downloads()
+        await asyncio.sleep(3)
+        aria2.remove(downloads, force=True, files=True, clean=True)
     return
 
 
