@@ -616,10 +616,7 @@ async def custcap(name, fname):
                         elif sub_count > 1:
                             ___dual = False
                             if _ainfo and audio_count == 2:
-                                if (
-                                    subs[0] == "eng"
-                                    and subs[0] == subs[1]
-                                ):
+                                if subs[0] == "eng" and subs[0] == subs[1]:
                                     __dual = True
                             if not __dual:
                                 if subs[0] != subs[1]:
