@@ -609,30 +609,30 @@ async def custcap(name, fname):
                         elif audio_count == 2:
                             fil3t += f"(Dual-Audio) "
                     if _sinfo:
-                        sub_count = len(_sinfo.split("|"))
+                        subs = _sinfo.split("|")
+                        sub_count = len(subs)
                         if sub_count > 2:
                             fil3t += f"(Multi-Subs)[{sub_count}]"
                         elif sub_count > 1:
                             ___dual = False
                             if _ainfo and audio_count == 2:
                                 if (
-                                    _sinfo.split("|")[0] == "eng"
-                                    and _sinfo.split("|")[0] == _sinfo.split("|")[1]
+                                    subs[0] == "eng"
+                                    and subs[0] == subs[1]
                                 ):
                                     __dual = True
                             if not __dual:
-                                fil3t += "(Subs: "
-                                for subs in _sinfo.split("|"):
-                                    fil3t += f"[{subs}] "
-                                fil3t = fil3t.strip()
-                                fil3t += ")"
+                                if subs[0] != subs[1]:
+                                    fil3t += f"({subs[0]} & {subs[1]} subs)"
+                                else:
+                                    fil3t += f"({subs[0].title()}-subs)"
                         else:
                             __dual = False
                             if _ainfo and audio_count == 2:
-                                if _sinfo.split("|")[0] == "eng":
+                                if _sinfo == "eng":
                                     __dual = True
                             if not __dual:
-                                fil3t += f"({_sinfo} sub)"
+                                fil3t += f"({_sinfo.title()}-sub)"
                 else:
                     fil3t = "(English subtitle)"
 
