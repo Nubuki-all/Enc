@@ -556,7 +556,8 @@ async def something():
                                 quote=True,
                                 caption="`ffmpeg error`",
                             )
-                            await wrror.copy(chat_id=int(LOG_CHANNEL))
+                            if op:
+                                await wrror.copy(chat_id=int(LOG_CHANNEL))
                             await yo.delete()
                             os.remove(out_file)
                         elif not E_CANCEL:
