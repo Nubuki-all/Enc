@@ -180,14 +180,15 @@ async def clean(event):
         queue.delete_many({})
     os.system("rm -rf downloads/*")
     os.system("rm -rf encode/*")
+    os.system("rm -rf thumb/*")
     for proc in psutil.process_iter():
         processName = proc.name()
         processID = proc.pid
         print(processName, " - ", processID)
         if processName == "ffmpeg":
             os.kill(processID, signal.SIGKILL)
-    if ARIA2:
-        ARIA2[0] = aria2
+    if ARIA2 and ARIA2[0]:
+        aria2 = ARIA2[0]
         downloads = aria2.get_downloads()
         await asyncio.sleep(3)
         aria2.remove(downloads, force=True, files=True, clean=True)

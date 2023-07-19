@@ -173,7 +173,10 @@ class downloader:
                 self.download_button_callback, filters=regex("^" + self.callback_data)
             )
         )
-        self.aria2 = ARIA2[0]
+        if ARIA2 and ARIA2[0]:
+            self.aria2 = ARIA2[0]
+        else:
+            self.aria2 = None
         if DISPLAY_DOWNLOAD:
             self.display_dl_info = True
         else:
@@ -310,6 +313,9 @@ class downloader:
             await self.log_download()
             ttt = time.time()
             await asyncio.sleep(3)
+            if not self.aria2:
+                self.download_error = "E404: Aria2 is currently not available."
+                raise Exception(self.download_error)
             downloads = self.aria2.add(
                 self.uri, {"dir": f"{os.getcwd()}/{self.dl_folder}"}
             )
@@ -417,7 +423,7 @@ class downloader:
             if download.status == "error" or self.is_cancelled:
                 if download.status == "error":
                     self.download_error = (
-                        "E" + download.error_code + " :" + download.error_message
+                        "E" + download.error_code + ": " + download.error_message
                     )
                 download.remove(force=True, files=True)
                 if download.following_id:
