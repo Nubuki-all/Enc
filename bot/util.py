@@ -605,21 +605,31 @@ async def custcap(name, fname):
                         if audio_count > 3:
                             fil3t += f"(Multi-Audio)[{audio_count}] "
                         elif audio_count == 3:
-                            fil3t += "(Tri-Audio)"
+                            fil3t += "(Tri-Audio) "
                         elif audio_count == 2:
-                            fil3t += f"(Dual-Audio)"
+                            fil3t += f"(Dual-Audio) "
                     if _sinfo:
                         sub_count = len(_sinfo.split("|"))
                         if sub_count > 2:
-                            fil3t += f"(Multi-Subs)[{sub_count}] "
+                            fil3t += f"(Multi-Subs)[{sub_count}]"
                         elif sub_count > 1:
-                            fil3t += "(Subs: "
-                            for subs in _sinfo.split("|"):
-                                fil3t += f"[{subs}] "
-                            fil3t = fil3t.strip()
-                            fil3t += ")"
+                            ___dual = False
+                            if _ainfo and audio_count == 2:
+                                if _sinfo.split("|")[0] == "eng" and _sinfo.split("|")[0] == _sinfo.split("|")[1]:
+                                    __dual = True
+                            if not __dual:
+                                fil3t += "(Subs: "
+                                for subs in _sinfo.split("|"):
+                                    fil3t += f"[{subs}] "
+                                fil3t = fil3t.strip()
+                                fil3t += ")"
                         else:
-                            fil3t += f"({_sinfo} sub)"
+                            __dual = False
+                            if _ainfo and audio_count == 2:
+                                if _sinfo.split("|")[0] == "eng":
+                                    __dual = True
+                            if not __dual:
+                                fil3t += f"({_sinfo} sub)"
                 else:
                     fil3t = "(English subtitle)"
 
@@ -691,6 +701,7 @@ async def custcap(name, fname):
             caption += f"**{cdp} Season:** `{y}`\n"
         if fil3 and a2:
             fil3 = fil3.format(**locals())
+            fil3 = fil3.strip()
             caption += f"**{cdp} Type:** [{fil3}]({a2})"
         else:
             fil3 = fil3.format(**locals())
