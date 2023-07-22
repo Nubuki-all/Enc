@@ -142,7 +142,7 @@ async def _(e):
     await en_rename(e)
 
 
-@bot.on(events.NewMessage(pattern=r"^!mux(\s+.+)?$"))
+@bot.on(events.NewMessage(pattern=r"^!mux([\s\S]*)$"))
 async def _(e):
     await en_mux(e)
 
