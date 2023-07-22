@@ -617,6 +617,44 @@ async def enquotes():
 class already_dl(Exception):
     pass
 
+def get_filename(message):
+    try:
+        media_type = str(message.media)
+        if media_type == "MessageMediaType.VIDEO":
+            doc = message.video
+        else:
+            doc = message.document
+        sem = message.caption
+        ttt = Path("cap.txt")
+        if sem and "\n" in sem:
+            sem = ""
+        if sem and not ttt.is_file():
+            name = sem
+        else:
+            name = doc.file_name
+        if not name:
+            name = "video_" + dt.now().isoformat("_", "seconds") + ".mp4"
+        root, ext = os.path.splitext(name)
+        if not ext:
+            ext = ".mkv"
+            name = root + ext
+    except Exception:
+        name = None
+    return name
+
+async def get_message_from_link(link, pyro=True):
+    if not is_url(link):
+        return None
+    try:
+        chat_id = link.split("/")[-2]
+        msg_id = link.split("/")[-1]
+        if pyro:
+            message = await app.get_messages(chat_id, msg_id)
+        else:
+            message = await bot.get_messages(chat_id, ids=msg_id)
+    except Exception:
+        message = None
+    return message
 
 async def progress_for_pyrogram(current, total, bot, ud_type, message, start):
     now = time.time()

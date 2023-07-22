@@ -14,6 +14,7 @@
 # https://github.com/1Danish-00/CompressorQueue/blob/main/License> .
 
 
+import argparse
 import asyncio
 import glob
 import inspect
@@ -25,6 +26,7 @@ import math
 import os
 import random
 import re
+import shlex
 import shutil
 import signal
 import subprocess

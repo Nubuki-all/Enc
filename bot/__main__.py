@@ -458,7 +458,7 @@ async def something():
                     if a_pos_in_stm or a_pos_in_stm == 0:
                         ffmpeg = ffmpeg.replace(
                             a_auto_disp,
-                            f"-disposition:a 0 -disposition:a:{s_pos_in_stm} default",
+                            f"-disposition:a 0 -disposition:a:{a_pos_in_stm} default",
                         )
                     else:
                         ffmpeg = ffmpeg.replace(a_auto_disp, "-disposition:a 0")
@@ -563,14 +563,7 @@ async def something():
                         elif not E_CANCEL:
                             await bot.send_message(int(user), stderr.decode())
                         if uri:
-                            aria2 = ARIA2[0]
-                            download = aria2.get_download(download.uri_gid)
-                            download.remove(force=True, files=True)
-                            if download.followed_by_ids:
-                                download = aria2.get_download(
-                                    download.followed_by_ids[0]
-                                )
-                                download.remove(force=True, files=True)
+                            rm_leech_file(download.uri_gid)
                         else:
                             s_remove(dl)
                         s_remove(out)
@@ -691,12 +684,7 @@ async def something():
                 await save2db()
                 os.system("rm -rf thumb2.jpg")
                 if uri:
-                    aria2 = ARIA2[0]
-                    download = aria2.get_download(download.uri_gid)
-                    download.remove(force=True, files=True)
-                    if download.followed_by_ids:
-                        download = aria2.get_download(download.followed_by_ids[0])
-                        download.remove(force=True, files=True)
+                    rm_leech_file(download.uri_gid)
                 else:
                     os.remove(dl)
                 os.remove(out)

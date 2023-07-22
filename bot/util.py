@@ -167,7 +167,7 @@ async def get_stream_info(file):
     return (a_lang.strip("|"), s_lang.strip("|"))
 
 
-async def pos_in_stm(file, lang1="eng", lang2="eng-us"):
+async def pos_in_stm(file, lang1="eng", lang2="eng-us", get=0):
     try:
         if not (Path(file)).is_file():
             return None, None
@@ -189,6 +189,10 @@ async def pos_in_stm(file, lang1="eng", lang2="eng-us"):
         ers = traceback.format_exc()
         await channel_log(ers)
         LOGS.info(ers)
+    if get.casefold() == "a" or get.casefold() == "audio":
+        return a_pos
+    if get.casefold() == "s" or get.casefold() == "sub":
+        return s_pos
     return a_pos, s_pos
 
 
@@ -360,7 +364,7 @@ async def conconvert(iso2_codes):
     return iso3_codes
 
 
-async def parse(name, kk="", aa=".mkv"):
+async def parse(name, kk="", aa=".mkv", anilist=True):
     try:
         ani, b, d, c, e, fil2, fil3, st, r = await parser(name)
         if b is None:
@@ -379,8 +383,8 @@ async def parse(name, kk="", aa=".mkv"):
         temp_b = b
         try:
             ttx = Path("parse.txt")
-            if ttx.is_file():
-                raise Exception("Parsing Turned off")
+            if ttx.is_file() or not anilist:
+                raise Exception("Anilist parsing Turned off")
             variables = {"search": b, "type": "ANIME"}
             json = (
                 requests.post(url, json={"query": anime_query, "variables": variables})
@@ -437,7 +441,7 @@ async def parse(name, kk="", aa=".mkv"):
         except Exception:
             ers = traceback.format_exc()
             LOGS.info(ers)
-            col = ""
+            col, g = "", ""
 
         if col:
             pass
@@ -496,12 +500,12 @@ async def parse(name, kk="", aa=".mkv"):
     return bb, bb2
 
 
-async def dynamicthumb(name, thum="thumb2.jpg"):
+async def dynamicthumb(name, thum="thumb2.jpg", anilist=True):
     try:
         ani, b, d, c, e, fil2, fil3, st, r = await parser(name)
         try:
             ttx = Path("parse.txt")
-            if ttx.is_file():
+            if ttx.is_file() or not anilist:
                 raise Exception("Parsing turned off")
             variables = {"search": b, "type": "ANIME"}
             json = (
@@ -533,7 +537,7 @@ async def dynamicthumb(name, thum="thumb2.jpg"):
         except Exception:
             try:
                 ttx = Path("parse.txt")
-                if ttx.is_file():
+                if ttx.is_file() or not anilist:
                     raise Exception("Parsing turned off")
                 variables = {"search": b, "type": "ANIME"}
                 json = (
@@ -552,7 +556,7 @@ async def dynamicthumb(name, thum="thumb2.jpg"):
     return b, d, c, e
 
 
-async def custcap(name, fname):
+async def custcap(name, fname, anilist=True):
     try:
         ani, oi, z, y, e, fil2, fil3, st, r = await parser(name)
         if oi is None:
@@ -657,7 +661,7 @@ async def custcap(name, fname):
             fil3 = fil3t
         try:
             ttx = Path("parse.txt")
-            if ttx.is_file():
+            if ttx.is_file() or not anilist:
                 raise Exception("Parsing turned off")
             variables = {"search": oi, "type": "ANIME"}
             json = (

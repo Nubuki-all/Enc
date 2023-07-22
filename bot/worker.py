@@ -239,10 +239,17 @@ async def en_rename(event):
     if not event.is_reply:
         return await event.reply("`Reply to a file to rename it`")
     try:
+        parse = True
         args = event.pattern_match.group(1)
         r = await event.get_reply_message()
         message = await app.get_messages(event.chat_id, int(r.id))
-        if args is None:
+        if not message.document or not message.video:
+            return
+        if args and (args.endswith("-no_parse") or args.startswith("-no_parse")):
+            parse = False
+            reg = re.compile('(\s*)-no_parse(\s*)')
+            args = reg.sub('', args)
+        if not args:
             loc = r.file.name
         elif args == "0":
             loc = message.caption
@@ -252,7 +259,7 @@ async def en_rename(event):
             if not ext:
                 loc = root + ".mkv"
         __loc = loc
-        __out, __out1 = await parse(loc)
+        __out, __out1 = await parse(loc, anilist=parse)
         loc = "thumb/" + __out
         if R_QUEUE:
             R_QUEUE.append(str(event.id) + ":" + str(event.chat_id))
@@ -277,7 +284,7 @@ async def en_rename(event):
             await e.edit(reply)
             return R_QUEUE.pop(0)
         await e.edit(f"Downloading to `{loc}` completed.")
-        __pout, __pout1 = await parse(__loc, __out)
+        __pout, __pout1 = await parse(__loc, __out, anilist=parse)
         if not __pout == __out:
             await asyncio.sleep(3)
             await e.edit(f"Renaming `{__out}` >>> `{__pout}`…")
@@ -288,12 +295,12 @@ async def en_rename(event):
             __out = __pout
         await asyncio.sleep(5)
         thum = Path("thumb3.jpg")
-        b, d, c, rlsgrp = await dynamicthumb(__loc, thum)
+        b, d, c, rlsgrp = await dynamicthumb(__loc, thum, anilist=parse)
         if thum.is_file():
             pass
         else:
             thum = "thumb.jpg"
-        cap = await custcap(__loc, __out)
+        cap = await custcap(__loc, __out, anilist=parse)
         upload = uploader(event.sender_id)
         await upload.start(event.chat_id, loc, e, thum, cap, message)
         if not upload.is_cancelled:
@@ -319,34 +326,57 @@ async def en_mux(event):
     try:
         args = event.pattern_match.group(1)
         r = await event.get_reply_message()
+
+        # ref vars.
+        
+        flags = None
+        ani_parse = True
+        input_2 = None
+        default_audio = None
+        default_sub = None
+
         message = await app.get_messages(event.chat_id, int(r.id))
         if message.document:
             if message.document.mime_type not in video_mimetype:
                 return
+        elif not message.video:
+            return
         if args is None:
             return await event.reply(
                 "__ffmpeg muxing parameters are required as arguments__"
             )
-        else:
-            media_type = str(message.media)
-            if media_type == "MessageMediaType.VIDEO":
-                doc = message.video
-            else:
-                doc = message.document
-            sem = message.caption
-            ttt = Path("cap.txt")
-            if sem and "\n" in sem:
-                sem = ""
-            if sem and not ttt.is_file():
-                name = sem
-            else:
-                name = doc.file_name
-            if not name:
-                name = "video_" + dt.now().isoformat("_", "seconds") + ".mp4"
-            root, ext = os.path.splitext(name)
-            if not ext:
-                ext = ".mkv"
-                name = root + ext
+
+        name = get_filename(message)
+        root, ext = os.path.splitext(name)
+        ext = ".mkv" if not ext else ext
+        if "\n" in args:
+            args, flags = args.split("\n", maxsplit=1)
+            parser = argparse.ArgumentParser(description="parse muxing flags")
+            parser.add_argument("-i", type=str, required=False)
+            parser.add_argument("-p", type=str, required=False)
+            parser.add_argument("-default_a", type=str, required=False)
+            parser.add_argument("-default_s", type=str, required=False)
+            try:
+                flag, unknown = parser.parse_known_args(shlex.split(flags))
+            except SystemExit:
+                er = "A drastic error occurred while trying to parse argument."
+                LOGS.info(er)
+                return await message.reply(er)
+            if flag.p and (flap.p.casefold() == "disable" or flag.p.casefold() == "off"):
+                ani_parse = False
+            if flag.i and is_url(flag.i):
+                message_2 = await get_message_from_link(flag.i)
+                if not message_2:
+                    return event.reply("An error occurred while fetching second input.")
+                elif not message_2.video or not message_2.document or (message_2.document and message_2.document.mime_type not in video_mimetype):
+                    return event.reply("Second input is not a video.")
+                name_2 = get_filename(message_2)
+                input_2 = "thumb/" + name_2
+            if flag.default_a:
+                default_audio = flag.default_a
+            if flag.default_s:
+                default_sub = flag.default_s
+
         __loc = name
         dl = "thumb/" + name
         if R_QUEUE:
@@ -371,9 +401,26 @@ async def en_mux(event):
             reply += "!"
             await e.edit(reply)
             return R_QUEUE.pop(0)
+        await e.edit(f"Download to `{__loc}` completed.")
+        if input_2:
+            await asyncio.sleep(3)
+            await e.edit(f"{enmoji()} `Downloading second input to {input_2}…`")
+            await asyncio.sleep(5)
+            download = downloader()
+            await download.start(input_2, 0, message_2, e)
+            if download.is_cancelled:
+                # os.system(f"rm {dl}")
+                reply = f"Download of `{name_2}` was cancelled"
+                if download.canceller:
+                    reply += f" by {download.canceller.first_name}"
+                reply += "!"
+                await e.edit(reply)
+                return R_QUEUE.pop(0)
+            await e.edit(f"Download to `{input_2}` completed.")
+
         t_file = "thumb/" + root + " [Temp]" + ext
         args = args.strip()
-        await e.edit(f"Download to `{__loc}` completed")
+        args = f'-i "{input_2}" ' + args if input_2 else args
         await asyncio.sleep(3)
         await e.edit("`Muxing using provided parameters…`")
         cmd = f'ffmpeg -i "{dl}" {args} "{t_file}" -y'
@@ -404,10 +451,10 @@ async def en_mux(event):
             else:
                 wrror = await message.reply(er, quote=True)
             raise Exception("Muxing Failed!")
-        __out, __out1 = await parse(name, t_file.split("/")[-1])
+        __out, __out1 = await parse(name, t_file.split("/")[-1], anilist=ani_parse)
         loc = "thumb/" + __out
         thum = Path("thumb3.jpg")
-        b, d, c, rlsgrp = await dynamicthumb(__loc, thum)
+        b, d, c, rlsgrp = await dynamicthumb(__loc, thum, anilist=ani_parse)
         args2 = ""
         for arg in args.split("-"):
             if "metadata" in arg:
@@ -421,6 +468,13 @@ async def en_mux(event):
             args2 = args2.replace(f"This Episode", bo)
         if "Fileinfo" in args2:
             args2 = args2.replace("Fileinfo", __out1)
+        args2 = args.strip()
+        if default_audio:
+            a_pos_in_stm = await pos_in_stm(t_file, default_audio, get="audio")
+            args2 += f" -disposition:a 0 -disposition:a:{a_pos_in_stm}"
+        if default_sub:
+            s_pos_in_stm = await pos_in_stm(t_file, default_sub, get="sub")
+            args2 += f" -disposition:s 0 -disposition:s:{s_pos_in_stm}"
         cmd = f'ffmpeg -i "{t_file}" -map 0:v? -map 0:a? -map 0:s? -map 0:t? {args2} -codec copy "{loc}" -y'
         if ALLOW_ACTION is True:
             async with bot.action(event.chat_id, "game"):
@@ -453,7 +507,7 @@ async def en_mux(event):
             pass
         else:
             thum = "thumb.jpg"
-        cap = await custcap(__loc, __out)
+        cap = await custcap(__loc, __out, anilist=ani_parse)
         await asyncio.sleep(5)
         upload = uploader(event.sender_id)
         await upload.start(event.chat_id, loc, e, thum, cap, message)
@@ -466,11 +520,13 @@ async def en_mux(event):
         os.remove(t_file)
         if not loc == dl:
             os.remove(loc)
+        if input_2:
+            os.remove(input_2)
         R_QUEUE.pop(0)
     except Exception:
         if R_QUEUE:
             R_QUEUE.pop(0)
-        os.system(f"rm -rf {dl} {t_file} {loc}")
+        os.system(f'rm -rf "{dl}" "{t_file}" "{loc}" "{input_2}"')
         ers = traceback.format_exc()
         await channel_log(ers)
         LOGS.info(ers)
@@ -1698,7 +1754,8 @@ async def enleech(event):
                         )
                         temp = temp - 1
                         temp2 = temp2 + 1
-                        asyncio.create_task(listqueue(msg, False))
+                        if len(QUEUE) > 1:
+                            asyncio.create_task(listqueue(msg, False))
                         await asyncio.sleep(5)
                     if LOCKFILE:
                         if LOCKFILE[0] == "leechlock":
@@ -1752,9 +1809,8 @@ async def enleech(event):
             msg = await event.reply(
                 f"**Torrent added To Queue ⏰, POS:** `{len(QUEUE)-1}`\n`Please Wait , Encode will start soon`"
             )
-            return asyncio.create_task(listqueue(msg, False))
-        else:
-            return asyncio.create_task(listqueue(event, False))
+            if len(QUEUE) > 1: 
+                return asyncio.create_task(listqueue(msg, False))
     except Exception:
         ers = traceback.format_exc()
         LOGS.info(ers)
