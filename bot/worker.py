@@ -376,7 +376,9 @@ async def en_mux(event):
             if flag.i and is_url(flag.i):
                 message_2 = await get_message_from_link(flag.i)
                 if not message_2:
-                    return await event.reply("An error occurred while fetching second input.")
+                    return await event.reply(
+                        "An error occurred while fetching second input."
+                    )
                 if (
                     not message_2.video
                     and not message_2.document
