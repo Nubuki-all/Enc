@@ -477,7 +477,7 @@ async def en_mux(event):
             args2 = args2.replace(f"This Episode", bo)
         if "Fileinfo" in args2:
             args2 = args2.replace("Fileinfo", __out1)
-        args2 = args.strip()
+        args2 = args2.strip()
         if default_audio:
             a_pos_in_stm = await pos_in_stm(t_file, default_audio, get="audio")
             args2 += f" -disposition:a 0 -disposition:a:{a_pos_in_stm}"

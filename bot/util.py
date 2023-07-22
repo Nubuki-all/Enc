@@ -618,7 +618,7 @@ async def custcap(name, fname, anilist=True):
                         if sub_count > 2:
                             fil3t += f"(Multi-Subs)[{sub_count}]"
                         elif sub_count > 1:
-                            ___dual = False
+                            __dual = False
                             if _ainfo and audio_count == 2:
                                 if subs[0] == "eng" and subs[0] == subs[1]:
                                     __dual = True
