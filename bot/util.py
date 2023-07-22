@@ -167,7 +167,7 @@ async def get_stream_info(file):
     return (a_lang.strip("|"), s_lang.strip("|"))
 
 
-async def pos_in_stm(file, lang1="eng", lang2="eng-us", get=0):
+async def pos_in_stm(file, lang1="eng", lang2="eng-us", get="both"):
     try:
         if not (Path(file)).is_file():
             return None, None
