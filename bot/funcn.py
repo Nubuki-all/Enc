@@ -649,6 +649,7 @@ async def get_message_from_link(link, pyro=True):
         return None
     try:
         chat_id = link.split("/")[-2]
+        chat_id = int("-100" + str(chat_id)) if chat_id.isdigit() else chat_id
         msg_id = link.split("/")[-1]
         if pyro:
             message = await app.get_messages(chat_id, msg_id)
