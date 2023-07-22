@@ -471,8 +471,8 @@ async def en_mux(event):
                 wrror = await message.reply(er, quote=True)
             raise Exception("Muxing Failed!")
         __out, __out1 = await parse(
-            name, t_file.split("/")[-1],
-            anilist=ani_parse, cust_con=file_tag)
+            name, t_file.split("/")[-1], anilist=ani_parse, cust_con=file_tag
+        )
         loc = "thumb/" + __out
         thum = Path("thumb3.jpg")
         b, d, c, rlsgrp = await dynamicthumb(__loc, thum, anilist=ani_parse)
