@@ -363,7 +363,7 @@ async def en_mux(event):
                 LOGS.info(er)
                 return await message.reply(er)
             if flag.p and (
-                flap.p.casefold() == "disable" or flag.p.casefold() == "off"
+                flag.p.casefold() == "disable" or flag.p.casefold() == "off"
             ):
                 ani_parse = False
             if flag.i and is_url(flag.i):
