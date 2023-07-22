@@ -239,14 +239,14 @@ async def en_rename(event):
     if not event.is_reply:
         return await event.reply("`Reply to a file to rename it`")
     try:
-        parse = True
+        _parse = True
         args = event.pattern_match.group(1)
         r = await event.get_reply_message()
         message = await app.get_messages(event.chat_id, int(r.id))
         if not message.document and not message.video:
             return
         if args and (args.endswith("-no_parse") or args.startswith("-no_parse")):
-            parse = False
+            _parse = False
             reg = re.compile("(\\s*)-no_parse(\\s*)")
             args = reg.sub("", args)
         if not args:
@@ -259,7 +259,7 @@ async def en_rename(event):
             if not ext:
                 loc = root + ".mkv"
         __loc = loc
-        __out, __out1 = await parse(loc, anilist=parse)
+        __out, __out1 = await parse(loc, anilist=_parse)
         loc = "thumb/" + __out
         if R_QUEUE:
             R_QUEUE.append(str(event.id) + ":" + str(event.chat_id))
@@ -284,7 +284,7 @@ async def en_rename(event):
             await e.edit(reply)
             return R_QUEUE.pop(0)
         await e.edit(f"Downloading to `{loc}` completed.")
-        __pout, __pout1 = await parse(__loc, __out, anilist=parse)
+        __pout, __pout1 = await parse(__loc, __out, anilist=_parse)
         if not __pout == __out:
             await asyncio.sleep(3)
             await e.edit(f"Renaming `{__out}` >>> `{__pout}`…")
@@ -295,12 +295,12 @@ async def en_rename(event):
             __out = __pout
         await asyncio.sleep(5)
         thum = Path("thumb3.jpg")
-        b, d, c, rlsgrp = await dynamicthumb(__loc, thum, anilist=parse)
+        b, d, c, rlsgrp = await dynamicthumb(__loc, thum, anilist=_parse)
         if thum.is_file():
             pass
         else:
             thum = "thumb.jpg"
-        cap = await custcap(__loc, __out, anilist=parse)
+        cap = await custcap(__loc, __out, anilist=_parse)
         upload = uploader(event.sender_id)
         await upload.start(event.chat_id, loc, e, thum, cap, message)
         if not upload.is_cancelled:
