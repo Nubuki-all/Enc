@@ -243,7 +243,7 @@ async def en_rename(event):
         args = event.pattern_match.group(1)
         r = await event.get_reply_message()
         message = await app.get_messages(event.chat_id, int(r.id))
-        if not message.document or not message.video:
+        if not message.document and not message.video:
             return
         if args and (args.endswith("-no_parse") or args.startswith("-no_parse")):
             parse = False
@@ -372,8 +372,8 @@ async def en_mux(event):
                     return event.reply("An error occurred while fetching second input.")
                 elif (
                     not message_2.video
-                    or not message_2.document
-                    or (
+                    and not message_2.document
+                    and (
                         message_2.document
                         and message_2.document.mime_type not in video_mimetype
                     )
