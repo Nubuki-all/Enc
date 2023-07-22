@@ -479,11 +479,15 @@ async def en_mux(event):
             args2 = args2.replace("Fileinfo", __out1)
         args2 = args2.strip()
         if default_audio:
+            args2 += f" -disposition:a 0"
             a_pos_in_stm = await pos_in_stm(t_file, default_audio, get="audio")
-            args2 += f" -disposition:a 0 -disposition:a:{a_pos_in_stm}"
+            if a_pos_in_stm or a_pos_in_stm == 0:
+                args2 += f" -disposition:a:{a_pos_in_stm} default"
         if default_sub:
+            args2 += f" -disposition:s 0"
             s_pos_in_stm = await pos_in_stm(t_file, default_sub, get="sub")
-            args2 += f" -disposition:s 0 -disposition:s:{s_pos_in_stm}"
+            if s_pos_in_stm or s_pos_in_stm == 0:
+                args2 += f" -disposition:s:{s_pos_in_stm} default"
         cmd = f'ffmpeg -i "{t_file}" -map 0:v? -map 0:a? -map 0:s? -map 0:t? {args2} -codec copy "{loc}" -y'
         if ALLOW_ACTION is True:
             async with bot.action(event.chat_id, "game"):
