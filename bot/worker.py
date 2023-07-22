@@ -334,6 +334,7 @@ async def en_mux(event):
         input_2 = None
         default_audio = None
         default_sub = None
+        file_tag, cap_tag = None, None
 
         message = await app.get_messages(event.chat_id, int(r.id))
         if message.document:
@@ -354,8 +355,11 @@ async def en_mux(event):
             parser = argparse.ArgumentParser(description="parse muxing flags")
             parser.add_argument("-i", type=str, required=False)
             parser.add_argument("-p", type=str, required=False)
+            parser.add_argument("-d", type=str, required=False)
             parser.add_argument("-default_a", type=str, required=False)
             parser.add_argument("-default_s", type=str, required=False)
+            parser.add_argument("-tag_f", type=str, required=False)
+            parser.add_argument("-tag_c", type=str, required=False)
             try:
                 flag, unknown = parser.parse_known_args(shlex.split(flags))
             except SystemExit:
@@ -381,10 +385,16 @@ async def en_mux(event):
                     return event.reply("Second input is not a video.")
                 name_2 = get_filename(message_2)
                 input_2 = "thumb/" + name_2
+            if flag.d:
+                root, ext = os.path.splitext(flag.d)
+                ext = ".mkv" if not ext else ext
+                name = root + ext
             if flag.default_a:
                 default_audio = flag.default_a
             if flag.default_s:
                 default_sub = flag.default_s
+            file_tag = flag.tag_f if flag.tag_f else file_tag
+            cap_tag = flag.tag_c if flag.tag_c else cap_tag
 
         __loc = name
         dl = "thumb/" + name
@@ -460,7 +470,9 @@ async def en_mux(event):
             else:
                 wrror = await message.reply(er, quote=True)
             raise Exception("Muxing Failed!")
-        __out, __out1 = await parse(name, t_file.split("/")[-1], anilist=ani_parse)
+        __out, __out1 = await parse(
+            name, t_file.split("/")[-1],
+            anilist=ani_parse, cust_con=file_tag)
         loc = "thumb/" + __out
         thum = Path("thumb3.jpg")
         b, d, c, rlsgrp = await dynamicthumb(__loc, thum, anilist=ani_parse)
@@ -520,7 +532,7 @@ async def en_mux(event):
             pass
         else:
             thum = "thumb.jpg"
-        cap = await custcap(__loc, __out, anilist=ani_parse)
+        cap = await custcap(__loc, __out, anilist=ani_parse, cust_type=cap_tag)
         await asyncio.sleep(5)
         upload = uploader(event.sender_id)
         await upload.start(event.chat_id, loc, e, thum, cap, message)

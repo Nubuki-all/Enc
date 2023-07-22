@@ -364,7 +364,7 @@ async def conconvert(iso2_codes):
     return iso3_codes
 
 
-async def parse(name, kk="", aa=".mkv", anilist=True):
+async def parse(name, kk="", aa=".mkv", anilist=True, cust_con=None):
     try:
         ani, b, d, c, e, fil2, fil3, st, r = await parser(name)
         if b is None:
@@ -464,6 +464,7 @@ async def parse(name, kk="", aa=".mkv", anilist=True):
             col = "" if fil2.casefold() == "disable" else col
         else:
             pass
+        col = cust_con if cust_con else col
         if len(b) > 33:
             cb = b[:32] + "…"
             cb = cb.split(":")[0]
@@ -556,7 +557,7 @@ async def dynamicthumb(name, thum="thumb2.jpg", anilist=True):
     return b, d, c, e
 
 
-async def custcap(name, fname, anilist=True):
+async def custcap(name, fname, anilist=True, cust_type=None):
     try:
         ani, oi, z, y, e, fil2, fil3, st, r = await parser(name)
         if oi is None:
@@ -659,6 +660,7 @@ async def custcap(name, fname, anilist=True):
             pass
         else:
             fil3 = fil3t
+        fil3 = cust_type if cust_type else fil3
         try:
             ttx = Path("parse.txt")
             if ttx.is_file() or not anilist:
