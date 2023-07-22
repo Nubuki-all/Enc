@@ -617,6 +617,7 @@ async def enquotes():
 class already_dl(Exception):
     pass
 
+
 def get_filename(message):
     try:
         media_type = str(message.media)
@@ -642,6 +643,7 @@ def get_filename(message):
         name = None
     return name
 
+
 async def get_message_from_link(link, pyro=True):
     if not is_url(link):
         return None
@@ -655,6 +657,7 @@ async def get_message_from_link(link, pyro=True):
     except Exception:
         message = None
     return message
+
 
 async def progress_for_pyrogram(current, total, bot, ud_type, message, start):
     now = time.time()

@@ -247,8 +247,8 @@ async def en_rename(event):
             return
         if args and (args.endswith("-no_parse") or args.startswith("-no_parse")):
             parse = False
-            reg = re.compile('(\s*)-no_parse(\s*)')
-            args = reg.sub('', args)
+            reg = re.compile("(\\s*)-no_parse(\\s*)")
+            args = reg.sub("", args)
         if not args:
             loc = r.file.name
         elif args == "0":
@@ -328,7 +328,7 @@ async def en_mux(event):
         r = await event.get_reply_message()
 
         # ref vars.
-        
+
         flags = None
         ani_parse = True
         input_2 = None
@@ -362,13 +362,22 @@ async def en_mux(event):
                 er = "A drastic error occurred while trying to parse argument."
                 LOGS.info(er)
                 return await message.reply(er)
-            if flag.p and (flap.p.casefold() == "disable" or flag.p.casefold() == "off"):
+            if flag.p and (
+                flap.p.casefold() == "disable" or flag.p.casefold() == "off"
+            ):
                 ani_parse = False
             if flag.i and is_url(flag.i):
                 message_2 = await get_message_from_link(flag.i)
                 if not message_2:
                     return event.reply("An error occurred while fetching second input.")
-                elif not message_2.video or not message_2.document or (message_2.document and message_2.document.mime_type not in video_mimetype):
+                elif (
+                    not message_2.video
+                    or not message_2.document
+                    or (
+                        message_2.document
+                        and message_2.document.mime_type not in video_mimetype
+                    )
+                ):
                     return event.reply("Second input is not a video.")
                 name_2 = get_filename(message_2)
                 input_2 = "thumb/" + name_2
@@ -1809,7 +1818,7 @@ async def enleech(event):
             msg = await event.reply(
                 f"**Torrent added To Queue ⏰, POS:** `{len(QUEUE)-1}`\n`Please Wait , Encode will start soon`"
             )
-            if len(QUEUE) > 1: 
+            if len(QUEUE) > 1:
                 return asyncio.create_task(listqueue(msg, False))
     except Exception:
         ers = traceback.format_exc()
