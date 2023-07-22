@@ -376,8 +376,8 @@ async def en_mux(event):
             if flag.i and is_url(flag.i):
                 message_2 = await get_message_from_link(flag.i)
                 if not message_2:
-                    return event.reply("An error occurred while fetching second input.")
-                elif (
+                    return await event.reply("An error occurred while fetching second input.")
+                if (
                     not message_2.video
                     and not message_2.document
                     and (
@@ -385,7 +385,7 @@ async def en_mux(event):
                         and message_2.document.mime_type not in video_mimetype
                     )
                 ):
-                    return event.reply("Second input is not a video.")
+                    return await event.reply("Second input is not a video.")
                 name_2 = get_filename(message_2)
                 input_2 = "thumb/" + name_2
             if flag.d:
