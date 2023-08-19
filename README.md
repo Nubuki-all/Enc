@@ -1,5 +1,6 @@
 # [BETA] [![pyLint](https://github.com/Nubuki-all/Tg-encoder/actions/workflows/pyLint.yml/badge.svg?branch=main)](https://github.com/Nubuki-all/Tg-encoder/actions/workflows/pyLint.yml)
 
+## [To be deprecated…]
 ## With HandBrakeCLI support
 
 ### Variables
