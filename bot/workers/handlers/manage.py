@@ -269,16 +269,16 @@ async def discap(event, args, client):
         if arg2.casefold() in ("on", "enable"):
             if file_exists(caption_file):
                 s_remove(caption_file)
-                reply = "**Successfully Enabled Parse By Caption**"
+                reply = "**Successfully enabled parsing caption as filename**"
             else:
-                reply = "__Parse by caption is already enabled__"
+                reply = "__Parsing captions as filename is already enabled__"
         elif arg2.casefold() in ("off", "disable"):
             if file_exists(caption_file):
-                reply = "__Parse by caption is already disabled__"
+                reply = "__Parsing captions as filename is already disabled__"
             else:
                 with open(caption_file, "w") as file:
                     pass
-                reply = "**Successfully Disabled Parse By Caption**"
+                reply = "**Successfully disabled parse by caption**"
         else:
             reply = f"Invalid argument for `{arg1}`: `{arg2}`"
         await msg_sleep_delete(event, reply, time=20, del_rep=True)
@@ -287,7 +287,7 @@ async def discap(event, args, client):
         if arg2.casefold() in ("on", "enable"):
             if file_exists(parse_file):
                 s_remove(parse_file)
-                reply = "**Successfully Enabled Anilist parsing & Auto-thumbnail**"
+                reply = "**Successfully enabled anilist parsing & auto-thumbnail**"
             else:
                 reply = "__Anilist has already been enabled__"
         elif arg2.casefold() in ("off", "disable"):
@@ -296,7 +296,7 @@ async def discap(event, args, client):
             else:
                 with open(parse_file, "w") as file:
                     pass
-                reply = "**Successfully Disabled Anilist Parsing & Auto-thumbnail**"
+                reply = "**Successfully disabled anilist parsing & auto-thumbnail**"
         else:
             reply = f"Invalid argument for `{arg1}`: `{arg2}`"
         await msg_sleep_delete(event, reply, time=20, del_rep=True)
@@ -310,7 +310,7 @@ async def discap(event, args, client):
 async def auto_rename(event, args, client):
     """
     Ahh yes, the Name filter.
-    A tricky command to use indeed
+    A tricky command to used indeed
     All arguments are to be separated by '|'
 
     Required arguments:
@@ -557,16 +557,16 @@ async def pause(event, args, client):
     try:
         if not args:
             if get_pause_status() == 0:
-                reply = "**Lock Status:** `Bot is currently paused.`"
+                reply = "**Parse Status:** `Bot is currently paused.`"
             else:
-                reply = "**Lock Status:** `Bot is not paused.`"
+                reply = "**Pause Status:** `Bot is not paused.`"
             return await event.reply(reply)
         elif args.casefold() in ("disable", "off"):
             if get_pause_status() == 0:
                 entime.stop_timer()
-                reply = "**Locking Cancelled**"
+                reply = "**Pausing Cancelled**"
             else:
-                reply = "**Bot was not Locked**"
+                reply = "**Bot was not paused**"
             return await event.reply(reply)
         elif not args.isdigit():
             return await event.reply("No clue as to what " f"`{args}` means.")
@@ -586,6 +586,7 @@ async def pause(event, args, client):
 
 
 async def fc_forward(msg):
+    """Forwards replied message to FCHANNEL"""
     try:
         if not FCHANNEL:
             return await msg.reply("`FCHANNEL var not set.`")

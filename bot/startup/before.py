@@ -141,18 +141,3 @@ class EnTimer:
 
 entime = EnTimer()
 
-
-async def varsgetter(files):
-    evars = ""
-    if files.is_file():
-        with open(files, "r") as file:
-            evars = file.read().rstrip()
-            file.close()
-    return evars
-
-
-async def varssaver(evars, files):
-    if evars:
-        file = open(files, "w")
-        file.write(str(evars) + "\n")
-        file.close()

@@ -46,6 +46,8 @@ pause - prevent bot from encoding
 peval - same as eval but with pyrogram
 ping - ping!
 l - add link to queue
+permit - add a temporary user
+unpermit - removes a temporary user
 queue - list queue
 forward - manually forward a message to fchannel
 v - turn v2,3,4… on (with message) or off

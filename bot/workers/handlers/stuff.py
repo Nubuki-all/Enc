@@ -278,6 +278,8 @@ eval - evaluate code
 pause - prevent bot from encoding
 peval - same as eval but with pyrogram
 ping - ping!
+permit - add a temporary user
+unpermit - removes a temporary user
 l - add link to queue
 queue - list queue
 forward - manually forward a message to fchannel
@@ -308,5 +310,5 @@ help - same as start`
 All above commands accept '-h' / '--help' arguments to
 get more detailed help about each command.
         """,
-        buttons=[Button.inline("🔙 Back", data="beck")],
+        buttons=[Button.inline("🔙 Back", data="ihelp")],
     )

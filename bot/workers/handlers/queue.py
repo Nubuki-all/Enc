@@ -28,6 +28,13 @@ from bot.workers.downloaders.dl_helpers import get_leech_name
 
 
 async def listqueue(event, args, client, deletable=True):
+    """
+List items in queue in paged format
+with 10 items per page.
+
+Takes no argument.
+Not to be confused with /queue -p (different command)
+    """
     if args:
         return
     if deletable:
