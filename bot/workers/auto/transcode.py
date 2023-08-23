@@ -94,7 +94,7 @@ async def something():
         # do some other stuff?
 
 
-async def thing()
+async def thing():
      try:
         while get_var("pausefile"):
             await asyncio.sleep(10)
