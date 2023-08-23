@@ -1,0 +1,182 @@
+import asyncio
+import io
+import sys
+import traceback
+
+from bot.utils.bot_utils import MAX_MESSAGE_LENGTH
+from bot.utils.msg_utils import user_is_dev, user_is_owner
+from bot.utils.os_utils import s_remove
+
+
+async def eval(event, cmd, client):
+    """
+    Evaluate and execute code within bot.
+    Global namespace has been cleaned so you'll need to manually import modules
+
+    USAGE:
+    Command requires code to execute as arguments.
+    For example /eval print("Hello World!")
+    Kindly refrain from adding whitelines and newlines between command and argument.
+    """
+    if not user_is_owner(event.sender_id):
+        if not user_is_dev(event.sender_id):
+            return
+    msg = await event.reply("Processing ...")
+    old_stderr = sys.stderr
+    old_stdout = sys.stdout
+    redirected_output = sys.stdout = io.StringIO()
+    redirected_error = sys.stderr = io.StringIO()
+    stdout, stderr, exc = None, None, None
+    try:
+        await aexec(cmd, event)
+    except Exception:
+        exc = traceback.format_exc()
+    stdout = redirected_output.getvalue()
+    stderr = redirected_error.getvalue()
+    sys.stdout = old_stdout
+    sys.stderr = old_stderr
+    evaluation = ""
+    if exc:
+        evaluation = exc
+    elif stderr:
+        evaluation = stderr
+    elif stdout:
+        evaluation = stdout
+    else:
+        evaluation = "Success"
+    if len(evaluation) > 4000:
+        final_output = "EVAL: {} \n\n OUTPUT: \n{} \n".format(cmd, evaluation)
+        with io.BytesIO(str.encode(final_output)) as out_file:
+            out_file.name = "eval.text"
+            await event.client.send_file(
+                event.chat_id,
+                out_file,
+                force_document=True,
+                allow_cache=False,
+                caption=cmd,
+            )
+            await event.delete()
+    else:
+        final_output = "**EVAL**: `{}` \n\n **OUTPUT**: \n`{}` \n".format(
+            cmd, evaluation
+        )
+        await msg.edit(final_output)
+
+
+async def aexec(code, event):
+    exec(f"async def __aexec(event): " + "".join(f"\n {l}" for l in code.split("\n")))
+    return await locals()["__aexec"](event)
+
+
+async def bash(event, cmd, client):
+    """
+    Run bash/system commands in bot
+    Much care must be taken especially on Local deployment
+
+    USAGE:
+    Command requires executables as argument
+    For example "/bash ls"
+    """
+    if not user_is_owner(event.sender_id):
+        if not user_is_dev(event.sender_id):
+            return
+    process = await asyncio.create_subprocess_shell(
+        cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+    )
+    stdout, stderr = await process.communicate()
+    e = stderr.decode()
+    if not e:
+        e = "No Error"
+    o = stdout.decode()
+    if not o:
+        o = "**Tip**: \n`If you want to see the results of your code, I suggest printing them to stdout.`"
+    else:
+        _o = o.split("\n")
+        o = "`\n".join(_o)
+    OUTPUT = f"**QUERY:**\n__Command:__\n`{cmd}` \n__PID:__\n`{process.pid}`\n\n**stderr:** \n`{e}`\n**Output:**\n{o}"
+    if len(OUTPUT) > 4095:
+        with io.BytesIO(str.encode(OUTPUT)) as out_file:
+            out_file.name = "exec.text"
+            await event.client.send_file(
+                event.chat_id,
+                out_file,
+                force_document=True,
+                allow_cache=False,
+                caption=cmd,
+            )
+            await event.delete()
+    await event.reply(OUTPUT)
+
+
+async def aexec2(code, client, message):
+    exec(
+        f"async def __aexec2(client, message): "
+        + "".join(f"\n {l}" for l in code.split("\n"))
+    )
+    return await locals()["__aexec2"](client, message)
+
+
+async def eval_message_p(message, cmd, client):
+    """
+    Evaluate and execute code within bot.
+    with pyrogram's bound message method instead.
+    Global namespace has been cleaned so you'll need to manually import modules
+
+    USAGE:
+    Command requires code to execute as arguments.
+    For example /peval print("Hello World!")
+    Kindly refrain from adding whitelines and newlines between command and argument.
+    """
+    if not user_is_owner(message.from_user.id):
+        return
+    status_message = await message.reply_text("Processing ...")
+
+    reply_to_id = message.id
+    if message.reply_to_message:
+        reply_to_id = message.reply_to_message.id
+
+    old_stderr = sys.stderr
+    old_stdout = sys.stdout
+    redirected_output = sys.stdout = io.StringIO()
+    redirected_error = sys.stderr = io.StringIO()
+    stdout, stderr, exc = None, None, None
+
+    try:
+        await aexec2(cmd, client, message)
+    except Exception:
+        exc = traceback.format_exc()
+
+    stdout = redirected_output.getvalue()
+    stderr = redirected_error.getvalue()
+    sys.stdout = old_stdout
+    sys.stderr = old_stderr
+
+    evaluation = ""
+    if exc:
+        evaluation = exc
+    elif stderr:
+        evaluation = stderr
+    elif stdout:
+        evaluation = stdout
+    else:
+        evaluation = "Success"
+
+    final_output = (
+        "**EVAL**: <code>{}</code>\n\n**OUTPUT**:\n<code>{}</code> \n".format(
+            cmd, evaluation.strip()
+        )
+    )
+
+    if len(final_output) > MAX_MESSAGE_LENGTH:
+        with open("eval.text", "w+", encoding="utf8") as out_file:
+            out_file.write(str(final_output))
+        await message.reply_document(
+            document="eval.text",
+            caption=cmd,
+            disable_notification=True,
+            reply_to_message_id=reply_to_id,
+        )
+        s_remove("eval.text")
+        await status_message.delete()
+    else:
+        await status_message.edit(final_output)

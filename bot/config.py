@@ -1,5 +1,5 @@
-#    This file is part of the Compressor distribution.
-#    Copyright (c) 2021 Danish_00
+#    This file is part of the Encoder distribution.
+#    Copyright (c) 2021 Danish_00, Nubuki-all
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -11,7 +11,9 @@
 #    General Public License for more details.
 #
 # License can be found in <
-# https://github.com/1Danish-00/CompressorQueue/blob/main/License> .
+# https://github.com/Nubuki-all/Enc/blob/main/License> .
+import traceback
+
 from decouple import config
 
 try:
@@ -19,36 +21,44 @@ try:
     ALLOW_ACTION = config("ALLOW_ACTION", default=True, cast=bool)
     APP_ID = config("APP_ID", default=6, cast=int)
     API_HASH = config("API_HASH", default="eb06d4abfb49dc3eeb1aeb98ae0f581e")
+    ARIA2_PORT = config("ARIA2_PORT", default=6800, cast=int)
     BOT_TOKEN = config("BOT_TOKEN")
     CACHE_DL = config("CACHE_DL", default=False, cast=bool)
     CAP_DECO = config("CAP_DECO", default="◉")
     C_LINK = config("C_LINK", default="@ANi_MiNE")
-    DATABASE_URL = config("DATABASE_URL", default="")
-    DBNAME = config("DBNAME", default=str(BOT_TOKEN.split(":", 1)[0]))
-    DEV = 1322549723
-    DL_STUFF = config("DL_STUFF", default="")
-    DUMP_CHANNEL = config("DUMP_CHANNEL", default="")
+    DATABASE_URL = config("DATABASE_URL", default=None)
+    DBNAME = config("DBNAME", default="ENC")
+    DEV = config("DEV", default=123456, cast=int)
+    DL_STUFF = config("DL_STUFF", default=None)
+    DUMP_CHANNEL = config("DUMP_CHANNEL", default=0, cast=int)
     DUMP_LEECH = config("DUMP_LEECH", default=True, cast=bool)
-    EABF = config("EABF", default=True, cast=bool)
-    ENCODER = config("ENCODER", default="")
+    DYNO = config("DYNO", default=None)
+    ENCODER = config("ENCODER", default=None)
     WORKERS = config("WORKERS", default=2, cast=int)
     FBANNER = config("FBANNER", default=False, cast=bool)
-    FCHANNEL = config("FCHANNEL", default="")
-    FCHANNEL_STAT = config("FCHANNEL_STAT", default="")
-    FCODEC = config("FCODEC", default="")
+    FCHANNEL = config("FCHANNEL", default=0, cast=int)
+    FCHANNEL_STAT = config("FCHANNEL_STAT", default=0, cast=int)
+    FCODEC = config("FCODEC", default=None)
     FFMPEG = config(
         "FFMPEG",
         default='ffmpeg -i "{}" -preset ultrafast -c:v libx265 -crf 27 -map 0:v -c:a aac -map 0:a -c:s copy -map 0:s? "{}"',
     )
-    FSTICKER = config("FSTICKER", default="")
+    FSTICKER = config("FSTICKER", default=None)
     LOCK_ON_STARTUP = config("LOCK_ON_STARTUP", default=False, cast=bool)
-    LOG_CHANNEL = config("LOG_CHANNEL", default="")
+    LOG_CHANNEL = config("LOG_CHANNEL", default=0, cast=int)
+    LOGS_IN_CHANNEL = config("LOGS_IN_CHANNEL", default=False, cast=bool)
+    NO_TEMP_PM = config("NO_TEMP_PM", default=False, cast=bool)
+    OVR = config("OVR", default=None)
     OWNER = config("OWNER")
+    PAUSE_ON_DL_INFO = config("PODI", default=True, cast=bool)
     RELEASER = config("RELEASER", default="A-M|ANi-MiNE")
-    TEMP_USERS = config("TEMP_USERS", default="123456")
-    THUMB = config("THUMBNAIL", default="")
-except Exception as e:
+    TELEGRAPH_AUTHOR = config("TELEGRAPH_AUTHOR", default=None)
+    TEMP_USER = config("TEMP_USERS", default=str())
+    TG_DL_CLIENT = config("TG_DL_CLIENT", default="pyrogram")
+    TG_UL_CLIENT = config("TG_UL_CLIENT", default="pyrogram")
+    THUMB = config("THUMBNAIL", default=None)
+except Exception:
     print("Environment vars Missing")
     print("something went wrong")
-    print(str(e))
+    print(traceback.format_exc())
     exit()

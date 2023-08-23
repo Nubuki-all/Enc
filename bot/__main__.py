@@ -1,5 +1,5 @@
-#    This file is part of the Compressor distribution.
-#    Copyright (c) 2021 Danish_00
+#    This file is part of the Encoder distribution.
+#    Copyright (c) 2023 Danish_00, Nubuki-all
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -11,13 +11,61 @@
 #    General Public License for more details.
 #
 # License can be found in
-# <https://github.com/1Danish-00/CompressorQueue/blob/main/License> .
+# <https://github.com/Nubuki-all/Enc/blob/main/License> .
 
 
 from pyrogram import filters
 
 from . import *
-from .devtools import *
+from .startup.after import on_startup
+from .utils.msg_utils import event_handler
+from .workers.handlers.dev import bash
+from .workers.handlers.dev import eval as eval_
+from .workers.handlers.dev import eval_message_p
+from .workers.handlers.e_callbacks import pres, skip, stats
+from .workers.handlers.manage import (
+    allowgroupenc,
+    auto_rename,
+    change,
+    check,
+    clean,
+    del_auto_rename,
+    discap,
+    fc_forward,
+)
+from .workers.handlers.manage import filter as filter_
+from .workers.handlers.manage import (
+    nuke,
+    pause,
+    reffmpeg,
+    restart,
+    rmfilter,
+    save_thumb,
+    update2,
+    v_auto_rename,
+    version2,
+    vfilter,
+)
+from .workers.handlers.queue import clearqueue, enleech, listqueue, listqueuep, pencode
+from .workers.handlers.rebut import (
+    en_download,
+    en_mux,
+    en_rename,
+    en_upload,
+    getlogs,
+    getthumb,
+)
+from .workers.handlers.stuff import beck
+from .workers.handlers.stuff import help as help_
+from .workers.handlers.stuff import (
+    icommands,
+    ihelp,
+    start,
+    status,
+    temp_auth,
+    temp_unauth,
+    up,
+)
 
 LOGS.info("Starting...")
 
@@ -26,89 +74,187 @@ LOGS.info("Starting...")
 
 
 try:
-    bot.start(bot_token=BOT_TOKEN)
-    app.start()
+    tele.start(bot_token=BOT_TOKEN)
+    pyro.start()
 except Exception as er:
     LOGS.info(er)
+
+
+####### CMD FILTER ########
+async def get_me():
+    globals()["me"] = await tele.get_me()
+
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(get_me())
+
+LOGS.info(f"@{me.username} is Ready!")
+
+
+def command(commands, prefixes=["/"]):
+    while len(commands) < len(prefixes):
+        commands.append(commands[-1])
+    pattern = ""
+    for command, prefix in itertools.zip_longest(commands, prefixes, fillvalue="/"):
+        pattern += rf"{prefix}{command}(?:@{me.username})?(?!\S)|"
+    return pattern.rstrip("|")
 
 
 ####### GENERAL CMDS ########
 
 
-@bot.on(events.NewMessage(pattern="/start"))
+@tele.on(events.NewMessage(pattern=command(["start"])))
 async def _(e):
-    await start(e)
+    await event_handler(e, start)
 
 
-@bot.on(events.NewMessage(pattern="/ping"))
+@tele.on(events.NewMessage(pattern="/ping"))
 async def _(e):
-    await up(e)
+    await event_handler(e, up)
 
 
-@bot.on(events.NewMessage(pattern="/help"))
+@tele.on(events.NewMessage(pattern=command(["help"])))
 async def _(e):
-    await help(e)
+    await event_handler(e, help_)
 
 
-@bot.on(events.NewMessage(pattern="/restart"))
+@tele.on(events.NewMessage(pattern=command(["showthumb"])))
 async def _(e):
-    await restart(e)
+    await event_handler(e, getthumb)
 
 
-@bot.on(events.NewMessage(pattern="/nuke"))
+@tele.on(events.NewMessage(pattern=command(["status"])))
 async def _(e):
-    await nuke(e)
+    await event_handler(e, status)
 
 
-@bot.on(events.NewMessage(pattern="/cancelall"))
+####### POWER CMDS #######
+
+
+@tele.on(events.NewMessage(pattern=command(["restart"])))
 async def _(e):
-    await clean(e)
+    await event_handler(e, restart)
 
 
-@bot.on(events.NewMessage(pattern="/showthumb"))
+@tele.on(events.NewMessage(pattern=command(["nuke"])))
 async def _(e):
-    await getthumb(e)
+    await event_handler(e, nuke)
 
 
-@bot.on(events.NewMessage(pattern=r"^/clear(\s+.+)?$"))
+@pyro.on_message(filters.incoming & filters.command(["update"]))
+async def _(pyro, message):
+    await update2(pyro, message)
+
+
+@tele.on(events.NewMessage(pattern=command(["clean", "cancelall"])))
 async def _(e):
-    await clearqueue(e)
+    await event_handler(e, clean)
+
+
+@tele.on(events.NewMessage(pattern=command(["clear"])))
+async def _(e):
+    await event_handler(e, clearqueue, require_args=True)
+
+
+@tele.on(events.NewMessage(pattern=command(["permit"])))
+async def _(e):
+    await event_handler(e, temp_auth, pyro)
+
+
+@tele.on(events.NewMessage(pattern=command(["unpermit"])))
+async def _(e):
+    await event_handler(e, temp_unauth, pyro)
+
+
+@tele.on(events.NewMessage(pattern=command(["groupenc"])))
+async def _(e):
+    await event_handler(e, allowgroupenc)
+
+
+@tele.on(events.NewMessage(pattern=command(["parse"])))
+async def _(e):
+    await event_handler(e, discap, require_args=True)
+
+
+@tele.on(events.NewMessage(pattern=command(["v"])))
+async def _(e):
+    await event_handler(e, version2)
+
+
+@tele.on(events.NewMessage(pattern=command(["filter"])))
+async def _(e):
+    await event_handler(e, filter_, require_args=True)
+
+
+@tele.on(events.NewMessage(pattern=command(["vfilter"])))
+async def _(e):
+    await event_handler(e, vfilter)
+
+
+@tele.on(events.NewMessage(pattern=command(["delfilter"])))
+async def _(e):
+    await event_handler(e, rmfilter)
+
+
+@tele.on(events.NewMessage(pattern=command(["get"])))
+async def _(e):
+    await event_handler(e, check)
+
+
+@tele.on(events.NewMessage(pattern=command(["set"])))
+async def _(e):
+    await event_handler(e, change)
+
+
+@tele.on(events.NewMessage(pattern=command(["reset"])))
+async def _(e):
+    await event_handler(e, reffmpeg)
+
+
+@tele.on(events.NewMessage(pattern=command(["lock", "pause"])))
+async def _(e):
+    await event_handler(e, pause)
 
 
 ######## Callbacks #########
 
 
-@bot.on(events.callbackquery.CallbackQuery(data=re.compile(b"stats(.*)")))
+@tele.on(events.callbackquery.CallbackQuery(data=re.compile(b"stats(.*)")))
 async def _(e):
     await stats(e)
 
 
-@bot.on(events.callbackquery.CallbackQuery(data=re.compile(b"pres(.*)")))
+@tele.on(events.callbackquery.CallbackQuery(data=re.compile(b"pres(.*)")))
 async def _(e):
     await pres(e)
 
 
-@bot.on(events.callbackquery.CallbackQuery(data=re.compile(b"skip(.*)")))
+@tele.on(events.callbackquery.CallbackQuery(data=re.compile(b"skip(.*)")))
 async def _(e):
     await skip(e)
 
 
-@bot.on(events.callbackquery.CallbackQuery(data=re.compile(b"dl_stat(.*)")))
+@tele.on(events.callbackquery.CallbackQuery(data=re.compile(b"dl_stat(.*)")))
 async def _(e):
     await dl_stat(e)
 
 
-@bot.on(events.callbackquery.CallbackQuery(data=re.compile(b"cancel_dl(.*)")))
+@tele.on(events.callbackquery.CallbackQuery(data=re.compile(b"cancel_dl(.*)")))
 async def _(e):
     await cancel_dl(e)
 
 
-@bot.on(events.callbackquery.CallbackQuery(data=re.compile("ihelp")))
+@tele.on(events.callbackquery.CallbackQuery(data=re.compile("ihelp")))
 async def _(e):
     await ihelp(e)
 
 
-@bot.on(events.callbackquery.CallbackQuery(data=re.compile("beck")))
+@tele.on(events.callbackquery.CallbackQuery(data=re.compile("icommands")))
+async def _(e):
+    await icommands(e)
+
+
+@tele.on(events.callbackquery.CallbackQuery(data=re.compile("beck")))
 async def _(e):
     await beck(e)
 
@@ -116,600 +262,105 @@ async def _(e):
 ########## Direct ###########
 
 
-@bot.on(events.NewMessage(pattern=r"^/eval([\s\S]*)$"))
+@tele.on(events.NewMessage(pattern=command(["eval"])))
 async def _(e):
-    await eval(e)
+    await event_handler(e, eval_, pyro, True)
 
 
-@bot.on(events.NewMessage(pattern=r"^/leech(\s+.+)?$"))
-@bot.on(events.NewMessage(pattern=r"^/l(\s+.+)?$"))
+@tele.on(events.NewMessage(pattern=command(["leech", "l"])))
 async def _(e):
-    await enleech(e)
+    await event_handler(e, enleech, pyro)
 
 
-@bot.on(events.NewMessage(pattern=r"^!dl(\s+.+)?$"))
+@tele.on(events.NewMessage(pattern=command(["download", "dl"], ["/", "!", "/"])))
 async def _(e):
-    await en_download(e)
+    await event_handler(e, en_download, pyro)
 
 
-@bot.on(events.NewMessage(pattern=r"^!ul(\s+.+)?$"))
+@tele.on(events.NewMessage(pattern=command(["upload", "ul"], ["/", "!", "/"])))
 async def _(e):
-    await en_upload(e)
+    await event_handler(e, en_upload, pyro, require_args=True)
 
 
-@bot.on(events.NewMessage(pattern=r"^!rename(\s+.+)?$"))
+@tele.on(events.NewMessage(pattern=command(["rename", "rn"], ["/", "!", "/"])))
 async def _(e):
-    await en_rename(e)
+    await event_handler(e, en_rename, pyro)
 
 
-@bot.on(events.NewMessage(pattern=r"^!mux?\b"))
+@tele.on(events.NewMessage(pattern=command(["mux"], ["/", "!"])))
 async def _(e):
-    await en_mux(e)
+    await event_handler(e, en_mux, pyro, require_args=True)
 
 
-@bot.on(events.NewMessage(pattern=r"^/permit(\s+.+)?$"))
-async def _(e):
-    await temp_auth(e)
+@pyro.on_message(filters.incoming & filters.command(["peval"]))
+async def _(pyro, message):
+    await event_handler(message, eval_message_p, tele, require_args=True)
 
 
-@bot.on(events.NewMessage(pattern=r"^/unpermit(\s+.+)?$"))
-async def _(e):
-    await temp_unauth(e)
-
-
-@app.on_message(filters.incoming & filters.command(["peval"]))
-async def _(app, message):
-    await eval_message_p(app, message)
-
-
-@app.on_message(filters.incoming & filters.command(["update"]))
-async def _(app, message):
-    await update2(app, message)
-
-
-@app.on_message(filters.incoming & filters.command(["fforward"]))
-async def _(app, message):
+@pyro.on_message(filters.incoming & filters.command(["fforward", "forward"]))
+async def _(pyro, message):
     await fc_forward(message)
 
 
-@bot.on(events.NewMessage(pattern="/bash"))
+@tele.on(events.NewMessage(pattern=command(["bash"])))
 async def _(e):
-    await bash(e)
+    await event_handler(e, bash, require_args=True)
 
 
-@bot.on(events.NewMessage(pattern="/status"))
+@tele.on(events.NewMessage(pattern=command(["name"])))
 async def _(e):
-    await status(e)
+    await event_handler(e, auto_rename, require_args=True)
 
 
-@bot.on(events.NewMessage(pattern=r"^/parse(\s+.+)?$"))
+@tele.on(events.NewMessage(pattern=command(["vname"])))
 async def _(e):
-    await discap(e)
+    await event_handler(e, v_auto_rename)
 
 
-@bot.on(events.NewMessage(pattern=r"^/v(\s+.+)?$"))
+@tele.on(events.NewMessage(pattern=command(["delname"])))
 async def _(e):
-    await version2(e)
+    await event_handler(e, del_auto_rename, require_args=True)
 
 
-@bot.on(events.NewMessage(pattern="/filter"))
+@tele.on(events.NewMessage(pattern=command(["queue"], ["/", "!"])))
 async def _(e):
-    await filter(e)
+    await event_handler(e, listqueue)
 
 
-@bot.on(events.NewMessage(pattern="/vfilter"))
+@tele.on(events.NewMessage(pattern=command(["queue -p"], ["/", "!"])))
 async def _(e):
-    await vfilter(e)
+    await event_handler(e, listqueuep, require_args=True, split_args="-p")
 
 
-@bot.on(events.NewMessage(pattern="/delfilter"))
+######## DEBUG #########
+
+
+@tele.on(events.NewMessage(pattern=command(["logs"])))
 async def _(e):
-    await rmfilter(e)
-
-
-@bot.on(events.NewMessage(pattern=r"^/name(\s+.+)?$"))
-async def _(e):
-    await auto_rename(e)
-
-
-@bot.on(events.NewMessage(pattern=r"^/vname(\s+.+)?$"))
-async def _(e):
-    await v_auto_rename(e)
-
-
-@bot.on(events.NewMessage(pattern=r"^/delname(\s+.+)?$"))
-async def _(e):
-    await del_auto_rename(e)
-
-
-@bot.on(events.NewMessage(pattern="/reset"))
-async def _(e):
-    await reffmpeg(e)
-
-
-@bot.on(events.NewMessage(pattern="/get"))
-async def _(e):
-    await check(e)
-
-
-@bot.on(events.NewMessage(pattern="/set"))
-async def _(e):
-    await change(e)
-
-
-@bot.on(events.NewMessage(pattern=r"^!queue$"))
-@bot.on(events.NewMessage(pattern="/queue"))
-async def _(e):
-    await listqueue(e)
-
-
-@bot.on(events.NewMessage(pattern=r"^/lock(\s+.+)?$"))
-async def _(e):
-    await lock(e)
-
-
-@bot.on(events.NewMessage(pattern=r"^!queue -p([\s\S]*)$"))
-async def _(e):
-    await listqueuep(e)
-
-
-@bot.on(events.NewMessage(pattern=r"^/groupenc(\s+.+)?$"))
-async def _(e):
-    await allowgroupenc(e)
-
-
-@bot.on(events.NewMessage(pattern="/logs"))
-async def _(e):
-    await getlogs(e)
+    await event_handler(e, getlogs)
 
 
 ########## AUTO ###########
 
 
-@bot.on(events.NewMessage(incoming=True))
+@tele.on(events.NewMessage(incoming=True))
 async def _(e):
-    await thumb(e)
+    await event_handler(e, save_thumb, disable_help=True)
 
 
-@bot.on(events.NewMessage(incoming=True))
-async def _(e):
-    await encod(e)
+# @tele.on(events.NewMessage(incoming=True))
+# async def _(e):
+#    await encod(e)
 
 
-@app.on_message(filters.incoming & (filters.video | filters.document))
-async def _(app, message):
+@pyro.on_message(filters.incoming & (filters.video | filters.document))
+async def _(pyro, message):
     await pencode(message)
-
-
-async def something():
-    await statuschecker()
-    for i in itertools.count():
-        try:
-            while LOCKFILE:
-                await asyncio.sleep(10)
-            if QUEUE:
-                while True:
-                    queue_no = len(QUEUE)
-                    await asyncio.sleep(1)
-                    if len(QUEUE) > queue_no:
-                        await asyncio.sleep(2)
-                    else:
-                        break
-                # user = int(OWNER.split()[0])
-                file = list(QUEUE.keys())[0]
-                name, user = QUEUE[list(QUEUE.keys())[0]]
-                uri = None
-                try:
-                    message = await app.get_messages(user, int(file))
-                    mssg_r = await message.reply("`Download Pending…`", quote=True)
-                    await asyncio.sleep(2)
-                    e = await bot.send_message(
-                        user,
-                        "**[DEBUG]** `Preparing…`",
-                        reply_to=mssg_r.id,
-                    )
-                    while True:
-                        try:
-                            await asyncio.sleep(2)
-                            mssg_f = await (
-                                await app.get_messages(e.chat_id, e.id)
-                            ).edit("**[DEBUG]** `Waiting for download handler…`")
-                            break
-                        except pyro_errors.FloodWait as e:
-                            await asyncio.sleep(e.value)
-                except Exception:
-                    LOGS.info(traceback.format_exc())
-                    message = None
-                    mssg_r = None
-                    mssg_f = None
-                    e = await bot.send_message(user, "`▼ Downloading…▼`")
-                if message:
-                    try:
-                        user = message.from_user.id
-                    except Exception:
-                        pass
-                if message:
-                    s_user = 777000
-                else:
-                    s_user = OWNER.split()[0]
-                if str(user).startswith("-100"):
-                    user = s_user
-                USER_MAN.clear()
-                USER_MAN.append(user)
-                sender = await app.get_users(user)
-                if LOG_CHANNEL:
-                    log = int(LOG_CHANNEL)
-                    op = await bot.send_message(
-                        log,
-                        f"[{sender.first_name}](tg://user?id={user}) `Currently Downloading A Video…`",
-                    )
-                else:
-                    op = None
-                s = dt.now()
-                try:
-                    dl = "downloads/" + name
-                    if message:
-                        if message.text:
-                            if message.text.startswith("/"):
-                                uri = message.text.split(" ", maxsplit=1)[1].strip()
-                            else:
-                                uri = message.text
-
-                    else:
-                        if is_url(str(file)) is True:
-                            uri = file
-                    if CACHE_QUEUE:
-                        raise (already_dl)
-                    if message:
-                        await mssg_r.edit("`Waiting for download to complete.`")
-                    download = downloader(sender, op, uri=uri, dl_info=True)
-                    downloaded = await download.start(dl, file, message, mssg_f)
-                    if download.is_cancelled or download.download_error:
-                        if message:
-                            reply = f"Download of `{name}` "
-                            if download.is_cancelled:
-                                reply += "was cancelled"
-                            else:
-                                reply += "Failed"
-                            if download.canceller:
-                                if download.canceller.id != user:
-                                    reply += (
-                                        f" by {download.canceller.mention(style='md')}"
-                                    )
-                            reply += "!"
-                            if download.download_error:
-                                reply += f"\n`{download.download_error}`"
-                            await mssg_r.edit(reply)
-                        await e.delete()
-                        if op:
-                            if download.canceller:
-                                await op.edit(
-                                    f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled by` [{download.canceller.first_name}.](tg://user?id={download.canceller.id})"
-                                )
-                            else:
-                                await op.edit(
-                                    f"[{sender.first_name}'s](tg://user?id={user}) `download was cancelled."
-                                )
-                            if download.download_error:
-                                await op.edit(
-                                    f"[{sender.first_name}'s](tg://user?id={user}) `download failed!\n`{download.download_error}`"
-                                )
-                    if not downloaded or download.is_cancelled:
-                        if QUEUE:
-                            QUEUE.pop(list(QUEUE.keys())[0])
-                        await save2db()
-                        await qclean()
-                        continue
-                except already_dl:
-                    if message:
-                        await mssg_r.edit("`Waiting for caching to complete.`")
-                    rslt = await get_cached(dl, sender, user, e, op)
-                    if rslt is False:
-                        await mssg_r.delete()
-                        continue
-                except Exception:
-                    er = traceback.format_exc()
-                    LOGS.info(er)
-                    await channel_log(er)
-                    QUEUE.pop(list(QUEUE.keys())[0])
-                    await save2db()
-                    continue
-                es = dt.now()
-                kk = dl.split("/")[-1]
-                aa = kk.split(".")[-1]
-                rr = "encode"
-                name = dl.split("/")[-1]
-                bb, bb2 = await parse(name, kk, aa)
-                out = f"{rr}/{bb}"
-                b, d, c, rlsgrp = await dynamicthumb(name)
-                a_auto_disp = "-disposition:a auto"
-                s_auto_disp = "-disposition:s auto"
-                a_pos_in_stm, s_pos_in_stm = await pos_in_stm(dl)
-                tbcheck = Path("thumb2.jpg")
-                if tbcheck.is_file():
-                    thum = "thumb2.jpg"
-                else:
-                    thum = "thumb.jpg"
-                if uri and DUMP_LEECH is True:
-                    asyncio.create_task(dumpdl(dl, name, thum, e.chat_id, message))
-                if len(QUEUE) > 1 and CACHE_DL is True:
-                    await cache_dl()
-                with open("ffmpeg.txt", "r") as file:
-                    # ffmpeg = file.read().rstrip()
-                    nani = file.read().rstrip()
-                    file.close()
-                try:
-                    if "This Episode" in nani:
-                        bo = b
-                        if d:
-                            bo = f"Episode {d} of {b}"
-                        if c:
-                            bo += f" Season {c}"
-                        nano = nani.replace(f"This Episode", bo)
-                    else:
-                        nano = nani
-                except NameError:
-                    nano = nani
-                if "Fileinfo" in nano:
-                    ffmpeg = nano.replace(f"Fileinfo", bb2)
-                else:
-                    ffmpeg = nano
-                if a_auto_disp in ffmpeg:
-                    if a_pos_in_stm or a_pos_in_stm == 0:
-                        ffmpeg = ffmpeg.replace(
-                            a_auto_disp,
-                            f"-disposition:a 0 -disposition:a:{a_pos_in_stm} default",
-                        )
-                    else:
-                        ffmpeg = ffmpeg.replace(a_auto_disp, "-disposition:a 0")
-                if s_auto_disp in ffmpeg:
-                    if s_pos_in_stm or s_pos_in_stm == 0:
-                        ffmpeg = ffmpeg.replace(
-                            s_auto_disp,
-                            f"-disposition:s 0 -disposition:s:{s_pos_in_stm} default",
-                        )
-                    else:
-                        ffmpeg = ffmpeg.replace(s_auto_disp, "-disposition:s 0")
-                dtime = ts(int((es - s).seconds) * 1000)
-                if uri:
-                    name2, user2 = QUEUE[list(QUEUE.keys())[0]]
-                    dl2 = "downloads/" + name2
-                    hehe = f"{out};{dl2};{list(QUEUE.keys())[0]}"
-                    wah2 = code(hehe)
-                hehe = f"{out};{dl};{list(QUEUE.keys())[0]}"
-                wah = code(hehe)
-                if not uri:
-                    wah2 = wah
-                try:
-                    if message:
-                        await mssg_r.edit("`Waiting For Encoding To Complete`")
-                except Exception:
-                    pass
-                nn = await e.edit(
-                    "`Encoding File(s)…` \n**⏳This Might Take A While⏳**",
-                    buttons=[
-                        [Button.inline("📂", data=f"pres{wah2}")],
-                        [Button.inline("STATS", data=f"stats{wah}")],
-                        [Button.inline("CANCEL PROCESS", data=f"skip{wah}")],
-                    ],
-                )
-                if LOG_CHANNEL:
-                    wak = await op.edit(
-                        f"[{sender.first_name}](tg://user?id={user}) `Is Currently Encoding a Video…`",
-                        buttons=[
-                            [Button.inline("📁", data=f"pres{wah2}")],
-                            [Button.inline("CHECK PROGRESS", data=f"stats{wah}")],
-                            [Button.inline("CANCEL PROCESS", data=f"skip{wah}")],
-                        ],
-                    )
-                cmd = ffmpeg.format(dl, out)
-                if ALLOW_ACTION is True:
-                    async with bot.action(e.chat_id, "game"):
-                        process = await asyncio.create_subprocess_shell(
-                            cmd,
-                            stdout=asyncio.subprocess.PIPE,
-                            stderr=asyncio.subprocess.PIPE,
-                        )
-                        stdout, stderr = await process.communicate()
-                else:
-                    process = await asyncio.create_subprocess_shell(
-                        cmd,
-                        stdout=asyncio.subprocess.PIPE,
-                        stderr=asyncio.subprocess.PIPE,
-                    )
-                    stdout, stderr = await process.communicate()
-                er = stderr.decode()
-                try:
-                    if process.returncode != 0:
-                        reply = f"Encoding of `{bb2}` "
-                        if E_CANCEL:
-                            reply += "was cancelled"
-                        else:
-                            reply += "Failed.\nLogs available below."
-                        if E_CANCEL:
-                            if E_CANCEL[0] != user:
-                                canceller = await app.get_users(E_CANCEL[0])
-                                if message:
-                                    reply += f" by {canceller.mention(style='md')}"
-                                else:
-                                    reply += f" by [{canceller.first_name}.](tg://user?id={canceller.id})"
-                            reply += "!"
-                        if message:
-                            await mssg_r.edit(reply)
-                            if op:
-                                await download.lm.edit(reply)
-                        else:
-                            await e.reply(reply)
-                            if op:
-                                await op.edit(reply)
-                        await e.delete()
-                        if len(er) > 4095 and not E_CANCEL:
-                            yo = await app.send_message(
-                                e.chat_id, "Uploading Error logs…"
-                            )
-                            out_file = "ffmpeg_error.txt"
-                            with open(out_file, "w") as file:
-                                file.write(er)
-                            wrror = await yo.reply_document(
-                                document=out_file,
-                                force_document=True,
-                                quote=True,
-                                caption="`ffmpeg error`",
-                            )
-                            if op:
-                                await wrror.copy(chat_id=int(LOG_CHANNEL))
-                            await yo.delete()
-                            os.remove(out_file)
-                        elif not E_CANCEL:
-                            await bot.send_message(int(user), stderr.decode())
-                        if uri:
-                            rm_leech_file(download.uri_gid)
-                        else:
-                            s_remove(dl)
-                        s_remove(out)
-                        if QUEUE:
-                            QUEUE.pop(list(QUEUE.keys())[0])
-                        E_CANCEL.clear()
-                        await save2db()
-                        continue
-                except BaseException:
-                    er = traceback.format_exc()
-                    LOGS.info(er)
-                    LOGS.info(stderr.decode())
-                    await channel_log(er)
-                    await nn.edit(
-                        "An Unknown error occurred waiting for 30 seconds before trying again. "
-                    )
-                    if LOG_CHANNEL:
-                        await wak.edit(
-                            "An unknown error occurred waiting for 30 seconds before trying again."
-                        )
-                    await asyncio.sleep(30)
-                    await qclean()
-                    continue
-                ees = dt.now()
-                time.time()
-                try:
-                    await nn.delete()
-                    await wak.delete()
-                except Exception:
-                    pass
-                if message:
-                    nnn = mssg_r
-                else:
-                    tex = "`▲ Uploading ▲`"
-                    nnn = await app.send_message(chat_id=e.chat_id, text=tex)
-                await asyncio.sleep(3)
-                await enpause(nnn)
-                fname = out.split("/")[1]
-                tbcheck = Path("thumb2.jpg")
-                if tbcheck.is_file():
-                    thum = "thumb2.jpg"
-                else:
-                    thum = "thumb.jpg"
-                pcap = await custcap(name, fname)
-                upload = uploader(user)
-                ds = await upload.start(e.chat_id, out, nnn, thum, pcap, message)
-                if upload.is_cancelled:
-                    await xxx.edit(f"`Upload of {out} was cancelled.`")
-                    if LOG_CHANNEL:
-                        log = int(LOG_CHANNEL)
-                    canceller = await app.get_users(upload.canceller)
-                    await bot.send_message(
-                        log,
-                        f"[{canceller.first_name}](tg://user?id={upload.canceller})`Cancelled` [{sender.first_name}'s](tg://user?id={user}) upload.",
-                    )
-                    QUEUE.pop(list(QUEUE.keys())[0])
-                    await save2db()
-                    os.system("rm -rf thumb2.jpg")
-                    os.remove(dl)
-                    os.remove(out)
-                    continue
-                await nnn.delete()
-                if FCHANNEL:
-                    chat = int(FCHANNEL)
-                    if FBANNER:
-                        try:
-                            pic_id, f_msg = await f_post(name, out)
-                            await app.send_photo(
-                                photo=pic_id, caption=f_msg, chat_id=chat
-                            )
-                        except Exception:
-                            pass
-                    await ds.copy(chat_id=chat)
-                    if FSTICKER:
-                        try:
-                            await app.send_sticker(
-                                chat,
-                                sticker=FSTICKER,
-                            )
-                        except Exception:
-                            er = traceback.format_exc()
-                            LOGS.info(er)
-                            await channel_log(er)
-                if LOG_CHANNEL:
-                    chat = int(LOG_CHANNEL)
-                    await ds.copy(chat_id=chat)
-                org = int(Path(dl).stat().st_size)
-                com = int(Path(out).stat().st_size)
-                pe = 100 - ((com / org) * 100)
-                per = str(f"{pe:.2f}") + "%"
-                eees = dt.now()
-                x = dtime
-                xx = ts(int((ees - es).seconds) * 1000)
-                xxx = ts(int((eees - ees).seconds) * 1000)
-                try:
-                    a1 = await info(dl, e)
-                    text = ""
-                    if rlsgrp:
-                        text += f"**Source:** `[{rlsgrp}]`"
-                    text += f"\n\nMediainfo: **[(Source)]({a1})**"
-                    dp = await ds.reply(
-                        text,
-                        disable_web_page_preview=True,
-                        quote=True,
-                    )
-                    if LOG_CHANNEL:
-                        await dp.copy(chat_id=chat)
-                except Exception:
-                    pass
-                dk = await ds.reply(
-                    f"**Encode Stats:**\n\nOriginal Size : {hbs(org)}\nEncoded Size : {hbs(com)}\nEncoded Percentage : {per}\n\nDownloaded in {x}\nEncoded in {xx}\nUploaded in {xxx}",
-                    disable_web_page_preview=True,
-                    quote=True,
-                )
-                if LOG_CHANNEL:
-                    await dk.copy(chat_id=chat)
-                QUEUE.pop(list(QUEUE.keys())[0])
-                await save2db()
-                os.system("rm -rf thumb2.jpg")
-                if uri:
-                    rm_leech_file(download.uri_gid)
-                else:
-                    os.remove(dl)
-                os.remove(out)
-            else:
-                await asyncio.sleep(3)
-        except Exception:
-            er = traceback.format_exc()
-            LOGS.info(er)
-            er = (
-                er
-                + "\n\nDue to the above fatal error bot has been locked to continue unlock bot."
-            )
-            await channel_log(er)
-            for user in OWNER.split():
-                try:
-                    await bot.send_message(int(user), f"`{er}`")
-                except Exception:
-                    pass
-            LOCKFILE.append("ERROR")
 
 
 ########### Start ############
 
-LOGS.info("Bot has started.")
-with bot:
-    bot.loop.run_until_complete(startup())
-    bot.loop.run_until_complete(something())
-    bot.loop.run_forever()
+LOGS.info(f"{me.first_name} has started.")
+with tele:
+    tele.loop.run_until_complete(on_startup())
+    tele.loop.run_forever()

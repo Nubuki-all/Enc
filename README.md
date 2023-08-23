@@ -1,6 +1,5 @@
 # [BETA] [![pyLint](https://github.com/Nubuki-all/Tg-encoder/actions/workflows/pyLint.yml/badge.svg?branch=main)](https://github.com/Nubuki-all/Tg-encoder/actions/workflows/pyLint.yml)
 
-## [To be deprecated…]
 ## With HandBrakeCLI support
 
 ### Variables
@@ -22,7 +21,7 @@ Optional Variables | Explanation
 `DATABASE_URL` | input valid Mongodb Database Url
 `ENCODER` | Encoder's name/nickname to be included in captions can also contain encode info.
 `FCHANNEL` `FCHANNEL_STATS` | Input Channel id where **only** the output video will get forwarded. For the 2nd variable input message id of a message in channel to be used as live status for encodes.
-`EABF` type=bool | (Enable all beta features) Enable all beta (maybe unstable) features in bot. Turned on by default, set to false to turn off.
+`LOGS_IN_CHANNEL` type=bool | Get error logs in log channel. Turned off by default, set to True to turn on.
 `ALWAYS_DEPLOY_LATEST` type=bool | When starting bot always pull latest code from upstream repo or default repo if none is given 
 `ALLOW_ACTION` type=bool | Set to True or False depending on whether you want encoding chat actions enabled for bot
 `UPSTREAM_REPO` `UPSTREAM_BRANCH` | Input custom repo link and custom repo branch name, For use with the update function
@@ -37,36 +36,41 @@ __Customized To work Specifically For Animes!__
 ### Commands
 ---
 ```
-start - Check If Bot Is Awake
-restart -  Restart Bot 
-update - Update bot 
-nuke - ☢️ Nuke bot 
-bash - /bash + command 
-eval - Evaluate code
-lock - prevent bot from encoding 
-peval - same as eval but with pyrogram 
-ping - Ping!
-l - pass uri link with a single file to dl with aria2c 
-queue - List queue
-fforward - Manually forward a message to FCHANNEL
-v - Turn V2,3,4… On (With Message) or Off
-get - Get Current ffmpeg code
-set - Set custom ffmpeg code
-reset - Reset default ffmpeg code
-filter - Filter & stuff
-vfilter - View filter
-groupenc - Allow Encoding in Group Toggle 
-delfilter - Delete filter
+start - check if bot is awake and get usage.
+restart -  restart bot
+update - update bot
+nuke - ☢️ nuke bot
+bash - /bash + command
+eval - evaluate code
+pause - prevent bot from encoding
+peval - same as eval but with pyrogram
+ping - ping!
+l - add link to queue
+queue - list queue
+forward - manually forward a message to fchannel
+v - turn v2,3,4… on (with message) or off
+download - download a file or link to bot
+upload - upload from a local directory or link
+rename - rename a video file/link
+mux - remux a file
+get - get current ffmpeg code
+set - set custom ffmpeg code
+reset - reset default ffmpeg code
+filter - filter & stuff
+vfilter - view filter
+groupenc - allow encoding in group toggle
+delfilter - delete filter
 name - quick filter with anime_title
 vname - get list of name filter
 delname - delete name filter
-status - 🆕 Get bot's status
-showthumb - 🖼️ Show Current Thumbnail
-parse - Toggle Parsing with captions or Anilist
-cancelall - ❌ Clear Cached Downloads & Queued Files
-clear - Clear Queued Files
-logs - Get Bot Logs
-help - Get Detailed Help
+status - 🆕 get bot's status
+showthumb - 🖼️ show current thumbnail
+parse - toggle parsing with captions or anilist
+groupenc - turn off/on encoding in groups
+cancelall - ❌ clear cached downloads & queued files
+clear - clear queued files
+logs - get bot logs
+help - same as start
 ```
 
 ### Features:

@@ -1,8 +1,9 @@
 from telethon import events
 
-from .funcn import *
+from bot import Button, itertools, pyro, queue_lock, re, tele
 
-status_lock = asyncio.Lock()
+from .bot_utils import QUEUE, QUEUE_STATUS
+from .log_utils import logger
 
 STATUS_START = 1
 PAGES = 1
@@ -10,14 +11,30 @@ PAGE_NO = 1
 STATUS_LIMIT = 10
 
 
+async def q_dup_check(event):
+    try:
+        if QUEUE_STATUS:
+            check = True
+            for q_id in QUEUE_STATUS:
+                _q_id = str(event.chat_id) + " " + str(event.id)
+                if q_id == _q_id:
+                    check = False
+        else:
+            check = True
+    except Exception:
+        check = True
+        await logger(Exception)
+    return check
+
+
 async def queue_status(event):
     try:
-        async with status_lock:
+        async with queue_lock:
             if QUEUE_STATUS:
                 for q_id in QUEUE_STATUS:
                     _chat_id, _msg_id = q_id.split()
                     if event.chat_id == int(_chat_id):
-                        msg = await app.get_messages(int(_chat_id), int(_msg_id))
+                        msg = await pyro.get_messages(int(_chat_id), int(_msg_id))
                         try:
                             await msg.delete()
                         except Exception:
@@ -27,13 +44,11 @@ async def queue_status(event):
             else:
                 QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
     except Exception:
-        er = traceback.format_exc()
-        LOGS.info(er)
-        await channel_log(er)
+        await logger(Exception)
 
 
-async def get_queue():
-    msg = ""
+async def get_queue_msg():
+    msg = str()
     button = None
     try:
         i = len(QUEUE)
@@ -41,40 +56,23 @@ async def get_queue():
         if PAGE_NO > PAGES and PAGES != 0:
             globals()["STATUS_START"] = (STATUS_LIMIT * PAGES) - 9
             globals()["PAGE_NO"] = PAGES
-        _no = STATUS_START
-        for file in list(QUEUE.values())[STATUS_START : STATUS_LIMIT + STATUS_START]:
-            file_name, _id = file
-            file_id = list(QUEUE.keys())[list(QUEUE.values()).index(file)]
-            if str(_id).startswith("-100"):
-                g_msg = await app.get_messages(_id, int(file_id))
-                user = g_msg.from_user
-                if user is None:
-                    if UNLOCK_UNSTABLE:
-                        user = await app.get_users(777000)
-                    else:
-                        user = await app.get_users(OWNER.split()[0])
-            else:
-                user = await app.get_users(_id)
-            msg += f"{_no}. `{file_name}`\n**Added by:** [{user.first_name}](tg://user?id={_id})\n\n"
-            _no = _no + 1
 
-        if msg:
-            pass
-        else:
+        for file, _no in zip(
+            list(QUEUE.values())[STATUS_START : STATUS_LIMIT + STATUS_START],
+            itertools.count(STATUS_START),
+        ):
+            file_name, u_msg, ver = file
+            chat_id, msg_id = list(QUEUE.keys())[list(QUEUE.values()).index(file)]
+            user_id, message = u_msg
+            user_id = 777000 if str(user_id).startswith("-100") else user_id
+            user = await pyro.get_users(user_id)
+
+            msg += f"{_no}. `{file_name}`\n  **•Release version:** {ver}\n  **•Added by:** [{user.first_name}](tg://user?id={user_id})\n\n"
+
+        if not msg:
             return None, None
         if (i - 1) > STATUS_LIMIT:
-            # msg += f"**Page:** {PAGE_NO}/{PAGES} | **Pending Tasks:** {i}\n"
-            # Define the buttons
-            # btn_prev = InlineKeyboardButton("<<", callback_data="status prev")
-            # btn_next = InlineKeyboardButton(">>", callback_data="status next")
-            # btn_refresh = InlineKeyboardButton("♻️", callback_data="status ref")
-            # Define the button layout
-            # button_layout = [
-            #    [btn_prev, btn_next],
-            #    [btn_refresh]
-            # ]
-            # Create the InlineKeyboardMarkup
-            # button = InlineKeyboardMarkup(button_layout)
+            # Create the Inline button
             btn_prev = Button.inline("<<", data="status prev")
             btn_info = Button.inline(f"{PAGE_NO}/{PAGES} ({i - 1})", data="None")
             btn_next = Button.inline(">>", data="status next")
@@ -85,9 +83,7 @@ async def get_queue():
         msg += f"\n**📌 Tip: To remove an item from queue use** /clear <queue number>"
 
     except Exception:
-        er = traceback.format_exc()
-        LOGS.info(er)
-        await channel_log(er)
+        await logger(Exception)
         msg = "__An error occurred.__"
     return msg, button
 
@@ -96,7 +92,7 @@ async def turn_page(event):
     try:
         data = event.pattern_match.group(1).decode().strip()
         global STATUS_START, PAGE_NO, PAGES
-        async with status_lock:
+        async with queue_lock:
             if data == "next":
                 if PAGE_NO == PAGES:
                     STATUS_START = 1
@@ -112,11 +108,9 @@ async def turn_page(event):
                     STATUS_START -= STATUS_LIMIT
                     PAGE_NO -= 1
     except Exception:
-        er = traceback.format_exc()
-        LOGS.info(er)
-        await channel_log(er)
+        await logger(Exception)
 
 
-bot.add_event_handler(
+tele.add_event_handler(
     turn_page, events.callbackquery.CallbackQuery(data=re.compile(b"status(.*)"))
 )
