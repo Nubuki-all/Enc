@@ -261,7 +261,7 @@ async def something():
         utime = tf(eut - sut)
 
         await mssg_r.delete()
-        await op.delete()
+        await op.delete() if op else None
         await forward_(name, out, up)
         await up.copy(chat_id=log_channel) if log_channel else None
 
