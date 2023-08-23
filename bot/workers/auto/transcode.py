@@ -89,7 +89,13 @@ async def forward_(name, out, ds):
 
 
 async def something():
-    try:
+    while True:
+        await thing()
+        # do some other stuff?
+
+
+async def thing()
+     try:
         while get_var("pausefile"):
             await asyncio.sleep(10)
         queue = get_queue()
@@ -312,4 +318,3 @@ async def something():
 
     finally:
         await asyncio.sleep(5)
-        await something()
