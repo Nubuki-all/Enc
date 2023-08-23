@@ -260,7 +260,7 @@ async def enleech(event, args, client):
 async def pencode(message):
     try:
         if not message.from_user:
-            return await msg_sleep_delete(message, f"`{enquip4}`")
+            return await msg_sleep_delete(message, f"`{enquip4()}`")
         chat_id = message.chat.id
         sender_id = message.from_user.id
         if sender_id != chat_id and not get_var("groupenc"):
