@@ -34,6 +34,7 @@ async def encodestat():
             if i > 6:
                 r = len(queue) - i
                 msg += f"__+{r} more…__\n"
+                break
             out = queue.get(key)
             name = await qparse(out[0], out[2])
             msg += f"{i}. `{name}`\n"
