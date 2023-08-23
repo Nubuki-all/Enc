@@ -46,7 +46,7 @@ async def onrestart():
             if s == "True":
                 with open(version_file, "r") as file:
                     v = file.read()
-                msg = f"**Updated to >>>** {v}"
+                msg = f"**Updated to >>>** `{v}`"
             else:
                 msg = "**No major update found!**\n" f"`Bot restarted! {enmoji()}`"
         else:
