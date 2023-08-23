@@ -31,7 +31,7 @@ def user_is_dev(user):
 
 def pm_is_allowed(in_group=False, in_pm=False):
     if in_pm:
-        return (not NO_TEMP_PM)
+        return not NO_TEMP_PM
     if in_group:
         return TEMP_ONLY_IN_GROUP
 
