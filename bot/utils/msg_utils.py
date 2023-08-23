@@ -29,9 +29,9 @@ def user_is_dev(user):
     return user == DEV
 
 
-def pm_is_allowed(user, in_group=False, in_pm=False):
+def pm_is_allowed(in_group=False, in_pm=False):
     if in_pm:
-        return NO_TEMP_PM
+        return (not NO_TEMP_PM)
     if in_group:
         return TEMP_ONLY_IN_GROUP
 
