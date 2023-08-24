@@ -3,7 +3,6 @@ import asyncio
 from bot import ALLOW_ACTION, Button
 from bot.utils.bot_utils import code, decode
 from bot.utils.log_utils import logger
-from bot.utils.os_utils import is_running
 
 def_enc_msg = "`Encoding File(s)…` \n**⏳This Might Take A While⏳**"
 
@@ -61,9 +60,9 @@ class Encoder:
         async with self.client.action(self.event.chat_id, action):
             com = self.process.communicate()
             # while True:
-                # if not await is_running(self.process):
-                    # break
-                # await asyncio.sleep(5)
+            # if not await is_running(self.process):
+            # break
+            # await asyncio.sleep(5)
         decode(self.enc_id, pop=True)
         if self.log_enc_id:
             decode(self.log_enc_id, pop=True)
