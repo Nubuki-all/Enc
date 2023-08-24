@@ -59,12 +59,13 @@ class Encoder:
     async def await_completion(self):
         action = "game" if ALLOW_ACTION is True else "cancel"
         async with self.client.action(self.event.chat_id, action):
-            while True:
-                if not await is_running(self.process):
-                    break
-                await asyncio.sleep(5)
+            com = self.process.communicate()
+            # while True:
+                # if not await is_running(self.process):
+                    # break
+                # await asyncio.sleep(5)
         decode(self.enc_id, pop=True)
         if self.log_enc_id:
             decode(self.log_enc_id, pop=True)
 
-        return await self.process.communicate()
+        return com
