@@ -100,8 +100,8 @@ async def start(event, args, client):
             return await event.delete()
     if temp_is_allowed(user):
         msg = msg3
-    elif not user_is_allowed(user) and not event.is_private:
-        priv = await event.client.get_entity(owner.split()[0])
+    elif not user_is_allowed(user):
+        priv = await event.client.get_entity(int(owner.split()[0]))
         msg = f"{msg1}You're not allowed access to this bot"
         msg += f"\nAsk [{priv.first_name}](tg://user?id={owner.split()[0]}) "
         msg += "(nicely) to grant you access."
@@ -153,7 +153,7 @@ async def beck(event):
     if temp_is_allowed(sender):
         msg = msg3
     elif not user_is_allowed(sender):
-        priv = await event.client.get_entity(owner.split()[0])
+        priv = await event.client.get_entity(int(owner.split()[0]))
         msg = f"{msg1}You're not allowed access to this bot"
         msg += f"\nAsk [{priv.first_name}](tg://user?id={owner.split()[0]}) "
         msg += "(nicely) to grant you access."

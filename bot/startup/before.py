@@ -23,7 +23,7 @@ if DL_STUFF:
         os.system(f"wget {link.strip()}")
 
 if NO_TEMP_PM:
-    TEMP_ONLY_IN_GROUP(1)
+    TEMP_ONLY_IN_GROUP.append(1)
 
 if not file_exists(ffmpeg_file):
     with open(ffmpeg_file, "w") as file:

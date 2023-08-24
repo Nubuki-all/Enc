@@ -38,8 +38,8 @@ class Encoder:
                 text,
                 buttons=[
                     [Button.inline("ℹ️", data=f"pres{wah}")],
-                    [Button.inline("progress & server-info", data=f"stats{wah}")],
-                    [Button.inline("cancel", data=f"skip{wah}")],
+                    [Button.inline("Progress & Server-info", data=f"stats{wah}")],
+                    [Button.inline("Cancel", data=f"skip{wah}")],
                 ],
             )
             if self.log_msg and self.sender:
