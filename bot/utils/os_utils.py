@@ -1,5 +1,4 @@
 import asyncio
-import contextlib
 import json
 import os
 import sys
@@ -27,8 +26,8 @@ async def enshell(cmd):
 
 
 async def is_running(proc):
-    #with contextlib.suppress(asyncio.TimeoutError):
-        #await asyncio.wait_for(proc.wait(), 1e-6)
+    # with contextlib.suppress(asyncio.TimeoutError):
+    # await asyncio.wait_for(proc.wait(), 1e-6)
     await asyncio.sleep(1e-6)
     return proc.returncode is None
 
