@@ -274,7 +274,7 @@ async def en_mux(event, args, client):
 
         name = get_filename(message) if not link else await get_leech_name(link)
         if not name:
-            error = aria2_err_msg if __out is None else not_vid_msg
+            error = aria2_err_msg if name is None else not_vid_msg
             return await rep_event.reply(error)
         if name.startswith("aria2_error"):
             error = input_2.split("aria2_error")[1].strip()
