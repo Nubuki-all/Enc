@@ -14,6 +14,7 @@ class Encoder:
         self.event = event
         self.log_msg = log
         self.process = None
+        self.req_clean = False
         self.sender = sender
         self.log_enc_id = None
         if self.log_msg:
@@ -31,6 +32,7 @@ class Encoder:
 
     async def callback(self, dl, en, event, user, text=def_enc_msg):
         try:
+            self.req_clean = True
             code(self.process, dl, en, user, self.enc_id)
             wah = 0
             e_msg = await event.edit(
@@ -63,8 +65,9 @@ class Encoder:
             # if not await is_running(self.process):
             # break
             # await asyncio.sleep(5)
-        decode(self.enc_id, pop=True)
-        if self.log_enc_id:
-            decode(self.log_enc_id, pop=True)
+        if self.req_clean:
+            decode(self.enc_id, pop=True)
+            if self.log_enc_id:
+                decode(self.log_enc_id, pop=True)
 
         return com
