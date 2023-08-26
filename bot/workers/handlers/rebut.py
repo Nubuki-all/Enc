@@ -492,6 +492,7 @@ async def en_upload(event, args, client):
             )
             _id = f"{ctrl.chat_id}:{ctrl.id}"
             code(None, None, None, event.sender_id, _id)
+            f_jump = event
             _no = 0
             for path, subdirs, files in os.walk(file):
                 subdirs.sort()
@@ -548,7 +549,7 @@ async def en_upload(event, args, client):
                         u_cancelled().remove(_id)
                         return await event.reply(u_can_msg)
                 await asyncio.sleep(10)
-                await event.reply(
+                f_jump = await f_jump.reply(
                     f"`All files in`:\n'`{path}`'\n`have been uploaded successfully. {enmoji()}`",
                 )
                 await asyncio.sleep(1)
