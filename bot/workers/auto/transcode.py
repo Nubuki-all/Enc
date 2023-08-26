@@ -67,12 +67,12 @@ async def another(text, title, epi, sea, metadata, dl):
     return text
 
 
-async def forward_(name, out, ds):
+async def forward_(name, out, ds, mi):
     if not fc:
         return
     if fb:
         try:
-            pic_id, f_msg = await f_post(name, out, FCODEC)
+            pic_id, f_msg = await f_post(name, out, FCODEC, mi)
             await pyro.send_photo(photo=pic_id, caption=f_msg, chat_id=fc)
         except Exception:
             await logger(Exception)
@@ -268,7 +268,6 @@ async def thing():
 
         await mssg_r.delete()
         await op.delete() if op else None
-        await forward_(name, out, up)
         await up.copy(chat_id=log_channel) if log_channel else None
 
         org_s = int(Path(dl).stat().st_size)
@@ -278,6 +277,8 @@ async def thing():
 
         text = str()
         mi = await info(dl)
+        await forward_(name, out, up, mi)
+
         if rlsgrp:
             text += f"**Source:** `[{rlsgrp}]`"
         if mi:

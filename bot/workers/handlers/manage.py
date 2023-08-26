@@ -33,6 +33,7 @@ async def nuke(event, args, client):
     try:
         if not d_docker:
             await event.reply("`Exited.`")
+            await qclean()
             return exit(1)
         rst = await event.reply("`Trying To Nuke ☣️`")
         await asyncio.sleep(1)

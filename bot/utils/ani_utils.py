@@ -563,7 +563,7 @@ async def qparse(name, ver=None):
     return (await parse(name, v=ver))[0]
 
 
-async def f_post(name, out, fcodec=None):
+async def f_post(name, out, fcodec=None, mi=None):
     try:
         name, _not_used, _not_used2 = await filter_name(name)
         ## Get info ##
@@ -574,6 +574,8 @@ async def f_post(name, out, fcodec=None):
         epi = parsed.get("episode_number")
         # season number
         sn = parsed.get("anime_season")
+        # release group
+        rg = parsed.get("release_group")
         if sn and sn.startswith("0"):
             sn = str(int(sn))
         if sn == "1":
@@ -646,6 +648,9 @@ async def f_post(name, out, fcodec=None):
         else:
             msg += f"**{title_r}** | `{title}`"
         msg += "\n\n"
+        if rg or mi:
+            msg += f"**Source:** **[[{rg}]]({mi})**"
+            msg += "\n\n"
         if gen and genre:
             msg += f"**‣ Genre** : {genre}\n"
         if epi:
