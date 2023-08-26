@@ -225,7 +225,7 @@ async def temp_auth(event, args, client):
     Authorizes a chat or user,
     Requires either a reply to message or user_id as argument
     """
-    sender = str(event.sender_id)
+    sender = event.sender_id
     error = "Failed!,\nCan't add to temporarily allowed users"
     if not user_is_owner(sender):
         return event.reply("Nope, not happening.")
@@ -237,8 +237,6 @@ async def temp_auth(event, args, client):
             args = args.strip()
             if args.isdigit():
                 new_id = args
-            elif args.startswith("-100") and (args.lstrip("-100")).isdigit():
-                new_id = args
             else:
                 return await event.reply(
                     f"What do you mean by  `{args}` ?\nneed help? send /permit"
@@ -247,7 +245,7 @@ async def temp_auth(event, args, client):
             return await event.reply(
                 "Either reply to a message sent by the user you want to add to temporarily allowed users or send /permit (user-id)\nExample:\n  /permit 123456"
             )
-    new_id = str(new_id)
+    new_id = int(new_id)
     if new_id == sender:
         return await event.reply("Why, oh why did you try to permit yourself?")
     if user_is_owner(new_id):
@@ -259,7 +257,7 @@ async def temp_auth(event, args, client):
         new_user = new_user.first_name
     except Exception:
         new_user = new_id
-    add_temp_user(new_id)
+    add_temp_user(str(new_id))
     await save2db2()
     return await event.reply(
         f"Added `{new_user}` to temporarily allowed users {enmoji()}"
