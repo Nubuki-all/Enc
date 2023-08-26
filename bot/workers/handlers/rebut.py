@@ -487,7 +487,7 @@ async def en_upload(event, args, client):
             ctrl = await event.reply(
                 "Folder upload control panel.",
                 buttons=[
-                    [Button.inline("Cancell all", data="skip0")],
+                    [Button.inline("Cancel all", data="skip0")],
                 ],
             )
             _id = f"{ctrl.chat_id}:{ctrl.id}"
