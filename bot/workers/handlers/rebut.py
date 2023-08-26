@@ -494,14 +494,14 @@ async def en_upload(event, args, client):
             code(None, None, None, event.sender_id, _id)
             _no = 0
             for path, subdirs, files in os.walk(file):
+                subdirs.sort()
                 if not files:
                     if not os.listdir(path):
                         await event.reply(f"`📁 {path} is empty.`")
                     continue
-                files.sort()
                 i = len(files)
                 t = 1
-                for name in files:
+                for name in sorted(files):
                     if _id in u_cancelled():
                         u_cancelled().remove(_id)
                         return await event.reply(u_can_msg)
@@ -552,7 +552,7 @@ async def en_upload(event, args, client):
                     f"`All files in`:\n'`{path}`'\n`have been uploaded successfully. {enmoji()}`",
                 )
                 await asyncio.sleep(1)
-                await ctrl.delete()
+            await ctrl.delete()
 
         else:
             _no = 1
