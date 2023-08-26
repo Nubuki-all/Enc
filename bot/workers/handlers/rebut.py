@@ -487,7 +487,7 @@ async def en_upload(event, args, client):
             ctrl = await event.reply(
                 "Folder upload control panel.",
                 buttons=[
-                    [Button.inline("cancell all", data="skip0")],
+                    [Button.inline("Cancell all", data="skip0")],
                 ],
             )
             _id = f"{ctrl.chat_id}:{ctrl.id}"
@@ -517,7 +517,8 @@ async def en_upload(event, args, client):
                         try:
                             cap = f"`{name}`"
                             ul = await chain_msg.reply(
-                                f"Uploading:-\n`{name}` from 📁 `{path}`\n`({t}/{i})`…",
+                                f"**Uploading:-**\n`{name}`\n"
+                                f"**from 📁:**\n `{path}`\n`({t}/{i})`…",
                                 quote=True,
                             )
                             await asyncio.sleep(10)
