@@ -132,7 +132,7 @@ async def get_cus_tag(fn, rg, caption=False):
                 if len(items.split("|")) < 2:
                     continue
                 check, out = items.split("|")
-                if check in name:
+                if check in fn:
                     caption_tag = out
                     break
 

@@ -132,6 +132,7 @@ class EnTimer:
 
     def pause_indefinitely(self, lmsg=None):
         self.ind_pause = True
+        self.time = 0
         self.msg = lmsg
 
     def stop_timer(self):
