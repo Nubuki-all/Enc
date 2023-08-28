@@ -1,16 +1,20 @@
 import os
+import traceback
+
 from decouple import config
 from pathlib import Path
 from subprocess import run as bashrun
 
 try:
     print("Default var for upstream repo & branch will used if none were given!")
-    UPSTREAM_REPO = config("UPSTREAM_REPO", default="")
-    UPSTREAM_BRANCH = config("UPSTREAM_BRANCH", default="")
     ALWAYS_DEPLOY_LATEST = config(
         "ALWAYS_DEPLOY_LATEST",
         default=False,
         cast=bool)
+    AUPR = config("ALWAYS_UPDATE_PY_REQ", default=False, cast=bool)
+    UPSTREAM_REPO = config("UPSTREAM_REPO", default="https://github.com/Nubuki-all/Tg-encoder")
+    UPSTREAM_BRANCH = config("UPSTREAM_BRANCH", default="main")
+
 except Exception:
     print("Environment vars Missing")
     traceback.print_exc()
@@ -42,10 +46,6 @@ update_check = Path("update")
 
 try:
     if ALWAYS_DEPLOY_LATEST is True or update_check.is_file():
-        if not UPSTREAM_REPO:
-            UPSTREAM_REPO = "https://github.com/Nubuki-all/Tg-encoder"
-        if not UPSTREAM_BRANCH:
-            UPSTREAM_BRANCH = "main"
         if os.path.exists('.git'):
             bashrun(["rm", "-rf", ".git"])
         update = bashrun([f"git init -q \
@@ -56,15 +56,16 @@ try:
                        && git remote add origin {UPSTREAM_REPO} \
                        && git fetch origin -q \
                        && git reset --hard origin/{UPSTREAM_BRANCH} -q"], shell=True)
-        bashrun(["pip3", "install", "-r", "requirements.txt"])
+        if AUPR:
+            bashrun(["pip3", "install", "-r", "requirements.txt"])
         if update.returncode == 0:
             print('Successfully updated with latest commit from UPSTREAM_REPO')
-            if update_check.is_file():
-                os.remove("update")
-            varssaver(envars, envp)
-            varssaver(ffmpegs, ffmpegp)
-            varssaver(filters, filterp)
         else:
             print('Something went wrong while updating,maybe invalid upstream repo?')
+        if update_check.is_file():
+            os.remove("update")
+        varssaver(envars, envp)
+        varssaver(ffmpegs, ffmpegp)
+        varssaver(filters, filterp)
 except Exception:
     traceback.print_exc()
