@@ -12,7 +12,9 @@ try:
         default=False,
         cast=bool)
     AUPR = config("ALWAYS_UPDATE_PY_REQ", default=False, cast=bool)
-    UPSTREAM_REPO = config("UPSTREAM_REPO", default="https://github.com/Nubuki-all/Tg-encoder")
+    UPSTREAM_REPO = config(
+        "UPSTREAM_REPO",
+        default="https://github.com/Nubuki-all/Tg-encoder")
     UPSTREAM_BRANCH = config("UPSTREAM_BRANCH", default="main")
 
 except Exception:
