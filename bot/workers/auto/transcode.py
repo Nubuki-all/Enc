@@ -67,12 +67,12 @@ async def another(text, title, epi, sea, metadata, dl):
     return text
 
 
-async def forward_(name, out, ds, mi):
+async def forward_(name, out, ds, mi, f):
     if not fc:
         return
     if fb:
         try:
-            pic_id, f_msg = await f_post(name, out, FCODEC, mi)
+            pic_id, f_msg = await f_post(name, out, FCODEC, mi, _filter=f)
             await pyro.send_photo(photo=pic_id, caption=f_msg, chat_id=fc)
         except Exception:
             await logger(Exception)
@@ -110,7 +110,12 @@ async def thing():
             await asyncio.sleep(10)
         # user = int(OWNER.split()[0])
         chat_id, msg_id = list(queue.keys())[0]
-        name, u_msg, v = list(queue.values())[0]
+        name, u_msg, v_f = list(queue.values())[0]
+        #backward compability:
+        if not isinstance(v_f, tuple):
+            v, f = v_f, None
+        else:
+            v, f = v_f
         sender_id, message = u_msg
         if not message:
             message = await pyro.get_messages(chat_id, msg_id)
@@ -195,9 +200,9 @@ async def thing():
         kk = dl.split("/")[-1]
         aa = kk.split(".")[-1]
         _dir = "encode"
-        file_name, metadata_name = await parse(name, kk, aa, v=v)
+        file_name, metadata_name = await parse(name, kk, aa, v=v, _filter=f)
         out = f"{_dir}/{file_name}"
-        title, epi, sn, rlsgrp = await dynamicthumb(name)
+        title, epi, sn, rlsgrp = await dynamicthumb(name, _filter=f)
 
         if uri and dump is True:
             asyncio.create_task(dumpdl(dl, name, thumb2, e.chat_id, message))
@@ -244,7 +249,7 @@ async def thing():
 
         sut = time.time()
         fname = out.split("/")[1]
-        pcap = await custcap(name, fname, encoder=ENCODER)
+        pcap = await custcap(name, fname, ver=v, encoder=ENCODER, _filter=f)
         await op.edit(f"`Uploading…` `{out}`") if op else None
         upload = uploader(sender_id)
         up = await upload.start(e.chat_id, out, mssg_r, thumb2, pcap, message)
@@ -277,7 +282,7 @@ async def thing():
 
         text = str()
         mi = await info(dl)
-        await forward_(name, out, up, mi)
+        await forward_(name, out, up, mi, f)
 
         if rlsgrp:
             text += f"**Source:** `[{rlsgrp}]`"

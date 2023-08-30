@@ -6,6 +6,7 @@ from bot.utils.ani_utils import qparse
 from bot.utils.bot_utils import (
     bot_is_paused,
     get_filename,
+    get_f,
     get_queue,
     get_v,
     get_var,
@@ -103,7 +104,9 @@ async def listqueuep(event, args, client):
         try:
             if args.isdigit() and ((args := int(args)) <= (len(queue) - 1)):
                 file = list(queue.values())[args]
-                p_file_name = await qparse(file[0])
+                #Backwards compatibility:
+                v, f = file[2] if isinstance(file[2], tuple) else file[2], None
+                p_file_name = await qparse(file[0], v, f)
                 return await event.reply(str(args) + ". `" + p_file_name + "`")
 
             if not valid_range(args):
@@ -118,7 +121,9 @@ async def listqueuep(event, args, client):
             rply = str()
             y = y + 1
             for file, i in zip(list(queue.values())[x:y], itertools.count(start=1)):
-                file_name = await qparse(file[0])
+                #Backwards compatibility:
+                v, f = file[2] if isinstance(file[2], tuple) else file[2], None
+                file_name = await qparse(file[0], v, f)
                 rply += f"{i}. `{file_name}`\n\n"
             if rply:
                 rply += "\n**Queue based on auto-generated filename if you you want the actual queue use the command** /queue"
@@ -205,7 +210,7 @@ async def enleech(event, args, client):
                                 (chat_id, event2.id): [
                                     file_name,
                                     (user_id, event2),
-                                    get_v(),
+                                    (get_v(), get_f()),
                                 ]
                             }
                         )
@@ -250,7 +255,7 @@ async def enleech(event, args, client):
                 return await event.reply(
                     "**THIS TORRENT HAS ALREADY BEEN ADDED TO QUEUE**"
                 )
-        queue.update({(chat_id, event.id): [file_name, (user_id, None), get_v()]})
+        queue.update({(chat_id, event.id): [file_name, (user_id, None), (get_v(), get_f())]})
         await save2db()
         if len(queue) > 1 or bot_is_paused():
             msg = await event.reply(
@@ -287,7 +292,7 @@ async def pencode(message):
         for item in queue.values():
             if name in item:
                 return await xxx.edit("**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**")
-        queue.update({(chat_id, message.id): [name, (sender_id, message), get_v()]})
+        queue.update({(chat_id, message.id): [name, (sender_id, message), (get_v(), get_f())]})
         await save2db()
         if len(queue) > 1 or bot_is_paused():
             await xxx.edit(

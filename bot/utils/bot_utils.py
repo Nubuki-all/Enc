@@ -3,7 +3,7 @@ import zlib
 from pathlib import Path
 from re import match as re_match
 
-from bot import asyncio, caption_file, dt, itertools
+from bot import asyncio, caption_file, dt, filter_file, itertools
 
 
 class Var_list:
@@ -67,6 +67,14 @@ def u_cancelled():
 
 def enc_canceller():
     return E_CANCEL
+
+
+def get_f():
+    if not Path(filter_file).is_file():
+        return
+    with open(filter_file, "r") as file:
+        _f = file.read().strip()
+    return _f
 
 
 def get_queue():

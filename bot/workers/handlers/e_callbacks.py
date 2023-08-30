@@ -40,8 +40,10 @@ async def pres(e):
             ansa += "\n\nAnilist thumbnail:\nYes"
         if length > 1:
             # queue[list(queue.keys())[1]]
-            file_name, _id, v = list(queue.values())[1]
-            next_ = await qparse(file_name, v)
+            file_name, _id, v_f = list(queue.values())[1]
+            #Backwards compatibility:
+            v, f = v_f if isinstance(v_f, tuple) else v_f, None
+            next_ = await qparse(file_name, v, f)
             next_ = (next_[:45] + "…") if len(next_) > 45 else next_
             ansa += f"\n\nNext up:\n{next_}\n\nRemains:- {length - 1}"
         await e.answer(ansa, cache_time=0, alert=True)

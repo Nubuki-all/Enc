@@ -219,16 +219,21 @@ def get_flag(lang_t):
     return lang_t
 
 
-async def filter_name(name):
-    fil1, fil2, fil3 = str(), str(), str()
+async def filter_name(name, _filter):
+    fil1 = fil2 = fil3 = str()
     try:
-        if file_exists(filter_file):
+        if _filter:
+            fil = _filter.strip("\n")
+            if len(fil.split("\n")) < 3:
+                raise Exception("Malformed filter!")
+            fil1, fil2, fil3 = fil.split("\n")
+
+        elif file_exists(filter_file):
             with open(filter_file, "r") as file:
                 fil = file.read().strip("\n")
-                if len(fil.split("\n")) < 3:
-                    raise Exception("Malformed filter!")
-                fil1, fil2, fil3 = fil.split("\n")
-                file.close()
+            if len(fil.split("\n")) < 3:
+                raise Exception("Malformed filter!")
+            fil1, fil2, fil3 = fil.split("\n")
 
         if fil1 and fil1.casefold() != "disable":
             for i in fil1.split("|"):
@@ -259,10 +264,11 @@ async def parse(
     cust_con=None,
     v=None,
     folder="downloads/",
+    _filter=None
 ):
     try:
         _parsed = anitopy.parse(name)
-        name, fil2, fil3 = await filter_name(name)
+        name, fil2, fil3 = await filter_name(name, _filter)
 
         ## Get info ##
         parsed = anitopy.parse(name)
@@ -369,9 +375,9 @@ async def parse(
     return file_name, file_name2
 
 
-async def dynamicthumb(name, thum="thumb2.jpg", anilist=True):
+async def dynamicthumb(name, thum="thumb2.jpg", anilist=True, _filter=None):
     try:
-        name, fil2, fil3 = await filter_name(name)
+        name, fil2, fil3 = await filter_name(name, _filter)
         ## Get info ##
         parsed = anitopy.parse(name)
         # title
@@ -440,9 +446,10 @@ async def custcap(
     ccd=None,
     ver=None,
     encoder=None,
+    _filter=None,
 ):
     try:
-        name, fil2, fil3 = await filter_name(name)
+        name, fil2, fil3 = await filter_name(name, _filter)
         ## Get info ##
         parsed = anitopy.parse(name)
         # title
@@ -521,8 +528,10 @@ async def custcap(
         caption = f"**{ccd} Title:** `{title}`\n"
         if epi:
             caption += f"**{ccd} Episode:** `{epi}`"
-            if ver:
-                caption += f" (v{ver})"
+        if ver:
+            caption += f" (v{ver})"
+            if not epi:
+                caption += "\n"
         if epi:
             caption += "\n"
         if sn:
@@ -559,13 +568,13 @@ async def custcap(
     return caption
 
 
-async def qparse(name, ver=None):
-    return (await parse(name, v=ver))[0]
+async def qparse(name, ver=None, fil=None):
+    return (await parse(name, v=ver, _filter=fil))[0]
 
 
-async def f_post(name, out, fcodec=None, mi=None):
+async def f_post(name, out, fcodec=None, mi=None, _filter=None):
     try:
-        name, _not_used, _not_used2 = await filter_name(name)
+        name = (await filter_name(name, _filter))[0]
         ## Get info ##
         parsed = anitopy.parse(name)
         # title

@@ -14,7 +14,7 @@ from bot import (
 )
 from bot.fun.emojis import enmoji
 from bot.utils.ani_utils import custcap, dynamicthumb, parse
-from bot.utils.bot_utils import code, get_filename, is_url, u_cancelled, video_mimetype
+from bot.utils.bot_utils import code, get_f, get_filename, is_url, u_cancelled, video_mimetype
 from bot.utils.log_utils import logger
 from bot.utils.msg_utils import (
     get_message_from_link,
@@ -173,6 +173,7 @@ async def en_rename(event, args, client):
                 error = __out.split("aria2_error")[1].strip()
                 return await rep_event.reply(f"`{error}`")
             __loc = __out
+        _f = get_f()
         turn().append(turn_id)
         if waiting_for_turn():
             w_msg = await message.reply(
@@ -188,7 +189,7 @@ async def en_rename(event, args, client):
             return await report_failed_download(download, e, __out, user)
         loc = work_folder + __out
         await e.edit(f"Downloading to `{loc}` completed.")
-        __pout, __pout1 = await parse(__loc, __out, anilist=_parse, folder=work_folder)
+        __pout, __pout1 = await parse(__loc, __out, anilist=_parse, folder=work_folder, _filter=_f)
         if not __pout == __out:
             await asyncio.sleep(3)
             await e.edit(f"Renaming:\n`{__out}`\n >>>\n`{__pout}`…")
@@ -199,8 +200,8 @@ async def en_rename(event, args, client):
             __out = __pout
         await asyncio.sleep(5)
         thumb3 = "thumb3.jpg"
-        await dynamicthumb(__loc, thumb3, anilist=_parse)
-        cap = await custcap(__loc, __out, anilist=_parse, folder=work_folder)
+        await dynamicthumb(__loc, thumb3, anilist=_parse, _filter=_f)
+        cap = await custcap(__loc, __out, anilist=_parse, folder=work_folder, _filter=_f)
         upload = uploader(event.sender_id)
         await upload.start(event.chat_id, loc, e, thumb3, cap, message)
         if not upload.is_cancelled:
@@ -229,6 +230,7 @@ async def en_mux(event, args, client):
         -p {disable/turn-off} to turn off anilist
         -d {file_name} to change download name
         -c delete command after muxing - needs no argument.
+        -v tag files with versions.
         -default_a {lang_iso3} iso3 of the audio language to default.
             if there are multiple matching languages the first is selected.
         -default_s {lang_iso3} same as above but for subtitles.
@@ -247,15 +249,16 @@ async def en_mux(event, args, client):
     try:
         # ref vars.
 
-        download, download2 = None, None
-        flags = None
         ani_parse = True
-        input_2 = None
         default_audio = None
         default_sub = None
+        download = download2 = None
+        flags = None
+        input_2 = None
         link = None
-        cap_tag, file_tag, force_ext = None, None, None
+        ver = None
         work_folder = "mux/"
+        cap_tag = file_tag = force_ext = None
 
         rep_event = await event.get_reply_message()
         message = await client.get_messages(event.chat_id, int(rep_event.id))
@@ -286,6 +289,7 @@ async def en_mux(event, args, client):
             parser.add_argument("-i", type=str, required=False)
             parser.add_argument("-p", type=str, required=False)
             parser.add_argument("-d", type=str, required=False)
+            parser.add_argument("-v", type=str, required=False)
             parser.add_argument("-c", action="store_true", required=False)
             parser.add_argument("-default_a", type=str, required=False)
             parser.add_argument("-default_s", type=str, required=False)
@@ -331,8 +335,10 @@ async def en_mux(event, args, client):
             file_tag = flag.tag_f
             force_ext = flag.ext
             name = flag.d or name
+            ver = flag.v
 
         name, root, ext = check_ext(name, get_split=True)
+        _f = get_f()
         ext = force_ext or ext
         __loc = name
         dl = work_folder + name
@@ -385,10 +391,12 @@ async def en_mux(event, args, client):
             t_file.split("/")[-1],
             anilist=ani_parse,
             cust_con=file_tag,
+            v=ver,
             folder=work_folder,
+            _filter=_f,
         )
         loc = work_folder + __out
-        b, d, c, rlsgrp = await dynamicthumb(__loc, thumb3, anilist=ani_parse)
+        b, d, c, rlsgrp = await dynamicthumb(__loc, thumb3, anilist=ani_parse, _filter=_f)
         args2 = ""
         for arg in args.split("-"):
             if "metadata" in arg:
@@ -424,7 +432,7 @@ async def en_mux(event, args, client):
             s_remove(dl, t_file, loc)
             return
         cap = await custcap(
-            __loc, __out, anilist=ani_parse, cust_type=cap_tag, folder=work_folder
+            __loc, __out, anilist=ani_parse, cust_type=cap_tag, folder=work_folder, ver=ver, _filter=_f,
         )
         await asyncio.sleep(5)
         upload = uploader(user)

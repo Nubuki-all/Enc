@@ -61,13 +61,15 @@ async def get_queue_msg():
             list(QUEUE.values())[STATUS_START : STATUS_LIMIT + STATUS_START],
             itertools.count(STATUS_START),
         ):
-            file_name, u_msg, ver = file
+            file_name, u_msg, ver_fil = file
             chat_id, msg_id = list(QUEUE.keys())[list(QUEUE.values()).index(file)]
             user_id, message = u_msg
             user_id = 777000 if str(user_id).startswith("-100") else user_id
             user = await pyro.get_users(user_id)
+            #Backwards compatibility:
+            ver, fil = ver_fil if isinstance(ver_fil, tuple) else ver_fil, None
 
-            msg += f"{_no}. `{file_name}`\n  **•Release version:** {ver}\n  **•Added by:** [{user.first_name}](tg://user?id={user_id})\n\n"
+            msg += f"{_no}. `{file_name}`\n  **•Filter:** {fil}\n  **•Release version:** {ver}\n  **•Added by:** [{user.first_name}](tg://user?id={user_id})\n\n"
 
         if not msg:
             return None, None
