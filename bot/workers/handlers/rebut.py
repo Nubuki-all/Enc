@@ -307,11 +307,10 @@ async def en_mux(event, args, client):
                         return await event.reply(
                             "An error occurred while fetching second input."
                         )
-                    if (
-                        not message_2.video
-                        and not message_2.document
-                    ):
-                        return await event.reply("Second input is not a video/document.")
+                    if not message_2.video and not message_2.document:
+                        return await event.reply(
+                            "Second input is not a video/document."
+                        )
                     name_2 = get_filename(message_2)
                 else:
                     link2 = flag.i
