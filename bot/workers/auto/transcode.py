@@ -111,7 +111,7 @@ async def thing():
         # user = int(OWNER.split()[0])
         chat_id, msg_id = list(queue.keys())[0]
         name, u_msg, v_f = list(queue.values())[0]
-        #backward compability:
+        # backward compability:
         if not isinstance(v_f, tuple):
             v, f = v_f, None
         else:

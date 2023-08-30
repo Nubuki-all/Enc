@@ -264,7 +264,7 @@ async def parse(
     cust_con=None,
     v=None,
     folder="downloads/",
-    _filter=None
+    _filter=None,
 ):
     try:
         _parsed = anitopy.parse(name)

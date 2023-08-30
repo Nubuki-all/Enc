@@ -41,7 +41,7 @@ async def pres(e):
         if length > 1:
             # queue[list(queue.keys())[1]]
             file_name, _id, v_f = list(queue.values())[1]
-            #Backwards compatibility:
+            # Backwards compatibility:
             v, f = v_f if isinstance(v_f, tuple) else v_f, None
             next_ = await qparse(file_name, v, f)
             next_ = (next_[:45] + "…") if len(next_) > 45 else next_

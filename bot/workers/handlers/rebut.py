@@ -14,7 +14,14 @@ from bot import (
 )
 from bot.fun.emojis import enmoji
 from bot.utils.ani_utils import custcap, dynamicthumb, parse
-from bot.utils.bot_utils import code, get_f, get_filename, is_url, u_cancelled, video_mimetype
+from bot.utils.bot_utils import (
+    code,
+    get_f,
+    get_filename,
+    is_url,
+    u_cancelled,
+    video_mimetype,
+)
 from bot.utils.log_utils import logger
 from bot.utils.msg_utils import (
     get_message_from_link,
@@ -189,7 +196,9 @@ async def en_rename(event, args, client):
             return await report_failed_download(download, e, __out, user)
         loc = work_folder + __out
         await e.edit(f"Downloading to `{loc}` completed.")
-        __pout, __pout1 = await parse(__loc, __out, anilist=_parse, folder=work_folder, _filter=_f)
+        __pout, __pout1 = await parse(
+            __loc, __out, anilist=_parse, folder=work_folder, _filter=_f
+        )
         if not __pout == __out:
             await asyncio.sleep(3)
             await e.edit(f"Renaming:\n`{__out}`\n >>>\n`{__pout}`…")
@@ -201,7 +210,9 @@ async def en_rename(event, args, client):
         await asyncio.sleep(5)
         thumb3 = "thumb3.jpg"
         await dynamicthumb(__loc, thumb3, anilist=_parse, _filter=_f)
-        cap = await custcap(__loc, __out, anilist=_parse, folder=work_folder, _filter=_f)
+        cap = await custcap(
+            __loc, __out, anilist=_parse, folder=work_folder, _filter=_f
+        )
         upload = uploader(event.sender_id)
         await upload.start(event.chat_id, loc, e, thumb3, cap, message)
         if not upload.is_cancelled:
@@ -396,7 +407,9 @@ async def en_mux(event, args, client):
             _filter=_f,
         )
         loc = work_folder + __out
-        b, d, c, rlsgrp = await dynamicthumb(__loc, thumb3, anilist=ani_parse, _filter=_f)
+        b, d, c, rlsgrp = await dynamicthumb(
+            __loc, thumb3, anilist=ani_parse, _filter=_f
+        )
         args2 = ""
         for arg in args.split("-"):
             if "metadata" in arg:
@@ -432,7 +445,13 @@ async def en_mux(event, args, client):
             s_remove(dl, t_file, loc)
             return
         cap = await custcap(
-            __loc, __out, anilist=ani_parse, cust_type=cap_tag, folder=work_folder, ver=ver, _filter=_f,
+            __loc,
+            __out,
+            anilist=ani_parse,
+            cust_type=cap_tag,
+            folder=work_folder,
+            ver=ver,
+            _filter=_f,
         )
         await asyncio.sleep(5)
         upload = uploader(user)
