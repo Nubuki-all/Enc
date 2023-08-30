@@ -233,6 +233,7 @@ async def en_mux(event, args, client):
             if there are multiple matching languages the first is selected.
         -default_s {lang_iso3} same as above but for subtitles.
             the probability of this working rests on the source file having a language metadata.
+        -ext {ext} force change extension (without the preceding dot ".")
         -tag_c {string} force tag caption
         -tag_f {string} force tag file
     """
@@ -253,7 +254,7 @@ async def en_mux(event, args, client):
         default_audio = None
         default_sub = None
         link = None
-        file_tag, cap_tag = None, None
+        cap_tag, file_tag, force_ext = None, None, None
         work_folder = "mux/"
 
         rep_event = await event.get_reply_message()
@@ -323,15 +324,15 @@ async def en_mux(event, args, client):
                         error = name_2.split("aria2_error")[1].strip()
                         return await event.reply(f"{error}")
                 input_2 = work_folder + name_2
-            if flag.default_a:
-                default_audio = flag.default_a
-            if flag.default_s:
-                default_sub = flag.default_s
-            name = flag.d if flag.d else name
-            file_tag = flag.tag_f if flag.tag_f else file_tag
-            cap_tag = flag.tag_c if flag.tag_c else cap_tag
+            cap_tag = flag.tag_c
+            default_audio = flag.default_a
+            default_sub = flag.default_s
+            file_tag = flag.tag_f
+            force_ext = flag.ext
+            name = flag.d or name
 
         name, root, ext = check_ext(name, get_split=True)
+        ext = force_ext or ext
         __loc = name
         dl = work_folder + name
         turn().append(turn_id)
