@@ -105,7 +105,7 @@ async def listqueuep(event, args, client):
             if args.isdigit() and ((args := int(args)) <= (len(queue) - 1)):
                 file = list(queue.values())[args]
                 # Backwards compatibility:
-                v, f = file[2] if isinstance(file[2], tuple) else file[2], None
+                v, f = file[2] if isinstance(file[2], tuple) else (file[2], None)
                 p_file_name = await qparse(file[0], v, f)
                 return await event.reply(str(args) + ". `" + p_file_name + "`")
 
@@ -122,7 +122,7 @@ async def listqueuep(event, args, client):
             y = y + 1
             for file, i in zip(list(queue.values())[x:y], itertools.count(start=1)):
                 # Backwards compatibility:
-                v, f = file[2] if isinstance(file[2], tuple) else file[2], None
+                v, f = file[2] if isinstance(file[2], tuple) else (file[2], None)
                 file_name = await qparse(file[0], v, f)
                 rply += f"{i}. `{file_name}`\n\n"
             if rply:

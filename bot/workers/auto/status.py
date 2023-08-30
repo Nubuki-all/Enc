@@ -23,7 +23,7 @@ async def encodestat():
         except Exception:
             out = list(queue.values())[0]
             # Backwards compatibility:
-            v, f = out[2] if isinstance(out[2], tuple) else out[2], None
+            v, f = out[2] if isinstance(out[2], tuple) else (out[2], None)
             file_name = await qparse(out[0], v, f)
         s = "🟢" if get_pause_status() != 0 else "⏸️"
         msg = (
@@ -39,7 +39,7 @@ async def encodestat():
                 break
             out = queue.get(key)
             # Backwards compatibility:
-            v, f = out[2] if isinstance(out[2], tuple) else out[2], None
+            v, f = out[2] if isinstance(out[2], tuple) else (out[2], None)
             name = await qparse(out[0], v, f)
             msg += f"{i}. `{name}`\n"
 
