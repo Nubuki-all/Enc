@@ -310,12 +310,8 @@ async def en_mux(event, args, client):
                     if (
                         not message_2.video
                         and not message_2.document
-                        and (
-                            message_2.document
-                            and message_2.document.mime_type not in video_mimetype
-                        )
                     ):
-                        return await event.reply("Second input is not a video.")
+                        return await event.reply("Second input is not a video/document.")
                     name_2 = get_filename(message_2)
                 else:
                     link2 = flag.i

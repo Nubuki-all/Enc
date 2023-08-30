@@ -277,6 +277,7 @@ async def report_encode_status(
         # if stdout and (out := stdout):
         # er + "\n" + out
         error = None
+        msg_2_delete = msg_2_delete or msg
         if len(er) > 4095 and not cancelled:
             out_file = "ffmpeg_error.txt"
             with open(out_file, "w") as file:

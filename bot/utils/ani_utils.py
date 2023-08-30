@@ -464,7 +464,7 @@ async def custcap(
         yr = parsed.get("anime_year")
         # episode title
         et = parsed.get("episode_title")
-        not_allowed = "END", "MULTi"
+        not_allowed = "END", "MULTi", "WEB"
         et = None if et in not_allowed else et
         # source
         sor = parsed.get("source")
