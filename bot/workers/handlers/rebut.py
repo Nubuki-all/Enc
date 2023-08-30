@@ -233,7 +233,7 @@ async def en_mux(event, args, client):
             if there are multiple matching languages the first is selected.
         -default_s {lang_iso3} same as above but for subtitles.
             the probability of this working rests on the source file having a language metadata.
-        -ext {ext} force change extension (without the preceding dot ".")
+        -ext {ext} force change extension (requires the preceding dot ".")
         -tag_c {string} force tag caption
         -tag_f {string} force tag file
     """
@@ -289,6 +289,7 @@ async def en_mux(event, args, client):
             parser.add_argument("-c", action="store_true", required=False)
             parser.add_argument("-default_a", type=str, required=False)
             parser.add_argument("-default_s", type=str, required=False)
+            parser.add_argument("-ext", type=str, required=False)
             parser.add_argument("-tag_c", type=str, required=False)
             parser.add_argument("-tag_f", type=str, required=False)
             try:

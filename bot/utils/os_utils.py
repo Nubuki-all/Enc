@@ -79,7 +79,7 @@ def p_dl(link, pic):
     return os.system(f"wget {link} -O {pic}")
 
 
-def check_ext(path, ext="mkv", get_split=False):
+def check_ext(path, ext=".mkv", get_split=False):
     """Checks path and if no extension is found and or given, defaults to 'mkv'."""
     root, ext_ = os.path.splitext(path)
     if not ext_:
