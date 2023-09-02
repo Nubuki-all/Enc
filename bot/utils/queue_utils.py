@@ -29,20 +29,19 @@ async def q_dup_check(event):
 
 async def queue_status(event):
     try:
-        async with queue_lock:
-            if QUEUE_STATUS:
-                for q_id in QUEUE_STATUS:
-                    _chat_id, _msg_id = q_id.split()
-                    if event.chat_id == int(_chat_id):
-                        msg = await pyro.get_messages(int(_chat_id), int(_msg_id))
-                        try:
-                            await msg.delete()
-                        except Exception:
-                            pass
-                        QUEUE_STATUS.remove(q_id)
-                return QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
-            else:
-                QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
+        if QUEUE_STATUS:
+            for q_id in QUEUE_STATUS:
+                _chat_id, _msg_id = q_id.split()
+                if event.chat_id == int(_chat_id):
+                    msg = await pyro.get_messages(int(_chat_id), int(_msg_id))
+                    try:
+                        await msg.delete()
+                    except Exception:
+                        pass
+                    QUEUE_STATUS.remove(q_id)
+            return QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
+        else:
+            QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
     except Exception:
         await logger(Exception)
 
@@ -76,7 +75,7 @@ async def get_queue_msg():
         if (i - 1) > STATUS_LIMIT:
             # Create the Inline button
             btn_prev = Button.inline("<<", data="status prev")
-            btn_info = Button.inline(f"{PAGE_NO}/{PAGES} ({i - 1})", data="None")
+            btn_info = Button.inline(f"{PAGE_NO}/{PAGES} ({i - 1})", data="status 🙆")
             btn_next = Button.inline(">>", data="status next")
             # Define the button layout
             button = [[btn_prev, btn_info, btn_next]]
@@ -93,6 +92,7 @@ async def get_queue_msg():
 async def turn_page(event):
     try:
         data = event.pattern_match.group(1).decode().strip()
+        await event.answer(f"{data}…")
         global STATUS_START, PAGE_NO, PAGES
         async with queue_lock:
             if data == "next":

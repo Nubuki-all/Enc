@@ -26,7 +26,7 @@ try:
     CACHE_DL = config("CACHE_DL", default=False, cast=bool)
     CAP_DECO = config("CAP_DECO", default="◉")
     C_LINK = config("C_LINK", default="@ANi_MiNE")
-    C_SUFFIX = config("CMD_SUFFIX", default=0, cast=int)
+    CMD_SUFFIX = config("CMD_SUFFIX", default=0, cast=int)
     DATABASE_URL = config("DATABASE_URL", default=None)
     DBNAME = config("DBNAME", default="ENC")
     DEV = config("DEV", default=123456, cast=int)

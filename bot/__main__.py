@@ -67,7 +67,7 @@ from .workers.handlers.stuff import (
     up,
 )
 
-C_SUFFIX = cmd_suffix
+cmd_suffix = CMD_SUFFIX
 LOGS.info("Starting...")
 
 

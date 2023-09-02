@@ -67,7 +67,8 @@ async def listqueue(event, args, client, deletable=True):
             if _is_duplicate:
                 await event2.delete()
                 break
-            msg, button = await get_queue_msg()
+            async with queue_lock:
+                msg, button = await get_queue_msg()
             if not msg:
                 await msg_sleep_delete(event2, no_queued_msg, edit=True)
                 break
@@ -335,7 +336,8 @@ async def clearqueue(event, args, client):
                 "You didn't add this to queue so you can't remove it!"
             )
         q_values = list(queue.values())[i]
-        queue.pop(list(queue.keys())[i])
+        async with queue_lock:
+            queue.pop(list(queue.keys())[i])
         await event.reply(f"`{q_values[0]}` has been removed from queue")
         return await save2db()
     if "-" in args and not valid_range(args):
@@ -351,7 +353,8 @@ async def clearqueue(event, args, client):
             if not user_is_owner(user) and user != adder:
                 continue
             reply += "{0}. `{1}`\n".format(i, queue.get(key)[0])
-            queue.pop(key)
+            async with queue_lock:
+                queue.pop(key)
         if not reply:
             return await event.reply("`Nothing was cleared.`")
         msg = await event.reply(btch_clr_msg + reply)
@@ -362,7 +365,8 @@ async def clearqueue(event, args, client):
             if not user_is_owner(user) and user != adder:
                 continue
             reply += "{0}. `{1}`\n".format(i, queue.get(key)[0])
-            queue.pop(key)
+            async with queue_lock:
+                queue.pop(key)
         if not reply:
             return await event.reply("`Nothing was cleared.`")
         msg = await event.reply(btch_clr_msg + reply)
