@@ -67,6 +67,7 @@ from .workers.handlers.stuff import (
     up,
 )
 
+C_SUFFIX = cmd_suffix
 LOGS.info("Starting...")
 
 
@@ -88,7 +89,7 @@ async def get_me():
 loop = asyncio.get_event_loop()
 loop.run_until_complete(get_me())
 
-LOGS.info(f"@{me.username} is Ready!")
+LOGS.info(f"@{me.username} is ready!")
 
 
 def command(commands, prefixes=["/"]):
@@ -96,6 +97,8 @@ def command(commands, prefixes=["/"]):
         commands.append(commands[-1])
     pattern = ""
     for command, prefix in itertools.zip_longest(commands, prefixes, fillvalue="/"):
+        if cmd_suffix:
+            command += cmd_suffix
         pattern += rf"{prefix}{command}(?:@{me.username})?(?!\S)|"
     return pattern.rstrip("|")
 

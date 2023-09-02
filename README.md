@@ -1,6 +1,8 @@
-# [BETA] [![pyLint](https://github.com/Nubuki-all/Tg-encoder/actions/workflows/pyLint.yml/badge.svg?branch=main)](https://github.com/Nubuki-all/Tg-encoder/actions/workflows/pyLint.yml)
+# [ENC]
 
-## With HandBrakeCLI support
+[![pyLint](https://github.com/Nubuki-all/Tg-encoder/actions/workflows/pyLint.yml/badge.svg?branch=main)](https://github.com/Nubuki-all/Tg-encoder/actions/workflows/pyLint.yml)
+
+__Still in beta…__
 
 ### Variables
 
@@ -28,10 +30,6 @@ Optional Variables | Explanation
   . | *Note:* Update will fail if there are new modules or dependencies in bot. Redeploy if that happens 
 ---
 
-
-### Anime branch 
-
-__Customized To work Specifically For Animes!__
 
 ### Commands
 ---
