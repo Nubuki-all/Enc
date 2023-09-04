@@ -149,7 +149,9 @@ async def enleech(event, args, client):
         return
     queue = get_queue()
     invalid_msg = "`Invalid torrent/direct link`"
-    no_uri_msg = "`uhm you need to reply to or send command alongside a uri/direct link`"
+    no_uri_msg = (
+        "`uhm you need to reply to or send command alongside a uri/direct link`"
+    )
     no_dl_spt_msg = "`File to download is…\neither not a video\nor is a batch torrent which is currently not supported.`"
     ukn_err_msg = "`An unknown error occurred, might an internal issue with aria2.\nCheck logs for more info`"
     try:

@@ -485,7 +485,7 @@ async def en_upload(event, args, client):
     Just pass any of the following:
         - the file (with -f) e.g -f "something.txt"
         - the folder path
-        - direct link 
+        - direct link
         - torrent/magnet link
         as argument.
     """

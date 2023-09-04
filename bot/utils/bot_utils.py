@@ -128,6 +128,7 @@ async def rm_pause(match=None, time=0):
 def rm_temp_user(id):
     TEMP_USERS.remove(id)
 
+
 MAGNET_REGEX = r"magnet:\?xt=urn:[a-z0-9]+:[a-zA-Z0-9]{32}"
 URL_REGEX = r"^(https?://|ftp://)?(www\.)?[^/\s]+\.[^/\s:]+(:\d+)?(/[^?\s]*[\s\S]*)?(\?[^#\s]*[\s\S]*)?(#.*)?$"
 SIZE_UNITS = ["B", "KB", "MB", "GB", "TB", "PB"]
@@ -148,6 +149,7 @@ video_mimetype = [
     "video/quicktime",
     "video/mpeg",
 ]
+
 
 def is_magnet(magnet_link):
     return bool(re_match(MAGNET_REGEX, magnet_link))
