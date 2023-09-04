@@ -240,9 +240,7 @@ async def enleech(event, args, client):
             uri = args
 
         if not uri:
-            return await event.reply(
-                "`uhm you need to reply to or send command alongside a uri/direct link`"
-            )
+            return await event.reply(no_uri_msg)
         if not (is_url(uri) or is_magnet(uri)):
             return await event.reply(invalid_msg)
         file_name = await get_leech_name(uri)
