@@ -10,6 +10,7 @@ from bot.utils.bot_utils import (
     get_queue,
     get_v,
     get_var,
+    is_magnet,
     is_url,
     pause,
     rm_pause,
@@ -148,6 +149,7 @@ async def enleech(event, args, client):
         return
     queue = get_queue()
     invalid_msg = "`Invalid torrent/direct link`"
+    no_uri_msg = "`uhm you need to reply to or send command alongside a uri/direct link`"
     no_dl_spt_msg = "`File to download is…\neither not a video\nor is a batch torrent which is currently not supported.`"
     ukn_err_msg = "`An unknown error occurred, might an internal issue with aria2.\nCheck logs for more info`"
     try:
@@ -170,7 +172,9 @@ async def enleech(event, args, client):
                             )
                             return await rm_pause(dl_pause, 5)
                         uri = event2.text
-                        if not is_url(uri):
+                        if not uri:
+                            return await event.reply(no_uri_msg)
+                        if not (is_url(uri) or is_magnet(uri)):
                             await event2.reply(invalid_msg)
                             return await rm_pause(dl_pause, 5)
                         file_name = await get_leech_name(uri)
@@ -237,7 +241,7 @@ async def enleech(event, args, client):
             return await event.reply(
                 "`uhm you need to reply to or send command alongside a uri/direct link`"
             )
-        if not is_url(uri):
+        if not (is_url(uri) or is_magnet(uri)):
             return await event.reply(invalid_msg)
         file_name = await get_leech_name(uri)
         if file_name is None or (file_name and file_name.startswith("aria2_error")):

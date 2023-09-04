@@ -18,12 +18,14 @@ from bot.utils.bot_utils import (
     code,
     get_f,
     get_filename,
+    is_magnet,
     is_url,
     u_cancelled,
     video_mimetype,
 )
 from bot.utils.log_utils import logger
 from bot.utils.msg_utils import (
+    get_args,
     get_message_from_link,
     report_encode_status,
     report_failed_download,
@@ -100,7 +102,7 @@ async def en_download(event, args, client):
         link = None
         rep_event = await event.get_reply_message()
         message = await client.get_messages(event.chat_id, int(rep_event.id))
-        if message.text and not is_url(message.text):
+        if message.text and not (is_url(message.text) or is_magnet(message.text)):
             return await message.reply("`Not a valid link`")
         e = await message.reply(f"{enmoji()} `Downloading…`", quote=True)
         if args is not None:
@@ -153,7 +155,7 @@ async def en_rename(event, args, client):
         work_folder = "temp/"
         rep_event = await event.get_reply_message()
         message = await client.get_messages(event.chat_id, int(rep_event.id))
-        if message.text and not is_url(message.text):
+        if message.text and not (is_url(message.text) or is_magnet(message.text)):
             return await message.reply("`Not a valid link.`")
         elif not (message.text or message.document or message.video):
             return await message.reply("`Kindly Reply to a link/video.`")
@@ -277,7 +279,7 @@ async def en_mux(event, args, client):
             if message.document.mime_type not in video_mimetype:
                 return
         elif message.text:
-            if not is_url(message.text):
+            if not (is_url(message.text) or is_magnet(message.text)):
                 return await message.reply("`Invalid Link.`")
             link = message.text
         elif not message.video:
@@ -316,7 +318,7 @@ async def en_mux(event, args, client):
                 flag.p.casefold() == "disable" or flag.p.casefold() == "off"
             ):
                 ani_parse = False
-            if flag.i and is_url(flag.i):
+            if flag.i and (is_url(flag.i) or is_magnet(flag.i)):
                 link2 = None
                 if flag.i.startswith("https://t.me"):
                     message_2 = await get_message_from_link(flag.i)
@@ -480,7 +482,12 @@ async def en_mux(event, args, client):
 async def en_upload(event, args, client):
     """
     Uploads a file/files from local directory or direct/torrent link
-    Just pass the file/folder path or link as argument
+    Just pass any of the following:
+        - the file (with -f) e.g -f "something.txt"
+        - the folder path
+        - direct link 
+        - torrent/magnet link
+        as argument.
     """
     if not user_is_owner(event.sender_id):
         return await event.delete()
@@ -491,7 +498,10 @@ async def en_upload(event, args, client):
         message = await client.get_messages(event.chat_id, int(event.id))
         file = args
         chain_msg = message
-        if is_url(args):
+        arg = get_args("-f", to_parse=args)
+        if arg.f:
+            pass
+        elif is_url(args) or is_magnet(args):
             folder, uri = "downloads2/", True
             dl = await message.reply(
                 "`Preparing to download file from link…`",

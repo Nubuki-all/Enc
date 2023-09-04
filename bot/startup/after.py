@@ -14,7 +14,7 @@ async def start_aria2p():
         )
         aria2.add(
             "https://nyaa.si/download/1690208.torrent",
-            {"dir": f"{os.getcwd()}/downloads"},
+            {"dir": f"{os.getcwd()}/temp"},
         )
         await asyncio.sleep(2)
         downloads = aria2.get_downloads()
