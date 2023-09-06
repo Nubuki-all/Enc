@@ -104,7 +104,7 @@ async def bash(event, cmd, client):
                 allow_cache=False,
                 caption=cmd,
             )
-            await event.delete()
+            return await event.delete()
     await event.reply(OUTPUT)
 
 

@@ -162,9 +162,9 @@ def is_url(url):
 
 def replace_proxy(url):
     if not url:
-        return
+        return url
     if not (REP_PROXY and len(REP_PROXY.split()) > 1):
-        return
+        return url
     d_search, proxy = REP_PROXY.split()
     url = url.replace(d_search, proxy)
     return url
