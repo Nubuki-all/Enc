@@ -3,6 +3,7 @@ import zlib
 from pathlib import Path
 from re import match as re_match
 
+from bot import REP_PROXY
 from bot import asyncio, caption_file, dt, filter_file, itertools
 
 
@@ -158,6 +159,14 @@ def is_magnet(magnet_link):
 def is_url(url):
     url = re_match(URL_REGEX, url)
     return bool(url)
+
+
+def replace_proxy(url):
+    if not (REP_PROXY and len(REP_PROXY.split()) > 1):
+        return
+    d_search, proxy = REP_PROXY.split()
+    url = url.replace(d_search, proxy)
+    return url
 
 
 def list_to_str(lst, sep=" ", start=None, md=True):

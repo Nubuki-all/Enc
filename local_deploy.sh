@@ -10,6 +10,7 @@ if which python3 >/dev/null; then
 else
     echo -e "${RED}python3 not is installed.\nAborting…${NC}"
     exit 1
+fi
 
 # Check the Linux distribution
 if grep -qi "fedora" /etc/os-release; then

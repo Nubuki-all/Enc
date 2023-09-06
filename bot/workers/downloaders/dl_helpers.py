@@ -1,5 +1,5 @@
 from bot import asyncio, math, os, pyro, time
-from bot.utils.bot_utils import CACHE_QUEUE, get_aria2, get_queue, is_video_file
+from bot.utils.bot_utils import CACHE_QUEUE, get_aria2, get_queue, is_video_file, replace_proxy
 from bot.utils.log_utils import log, logger
 
 
@@ -57,6 +57,7 @@ async def download2(dl, file, message=None, e=None):
 async def get_leech_name(url):
     aria2 = get_aria2()
     try:
+        url = replace_proxy(url)
         downloads = aria2.add(url, {"dir": f"{os.getcwd()}/temp"})
         c_time = time.time()
         while True:
@@ -74,7 +75,7 @@ async def get_leech_name(url):
                 )
                 filename = "aria2_error " + download_error
                 break
-            if download.name.endswith(".torrent"):
+            if download.name.startswith("[METADATA]") or download.name.endswith(".torrent"):
                 await asyncio.sleep(2)
                 continue
             else:
