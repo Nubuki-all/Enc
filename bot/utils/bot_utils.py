@@ -3,8 +3,7 @@ import zlib
 from pathlib import Path
 from re import match as re_match
 
-from bot import REP_PROXY
-from bot import asyncio, caption_file, dt, filter_file, itertools
+from bot import REP_PROXY, asyncio, caption_file, dt, filter_file, itertools
 
 
 class Var_list:

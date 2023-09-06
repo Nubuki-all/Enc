@@ -1,5 +1,11 @@
 from bot import asyncio, math, os, pyro, time
-from bot.utils.bot_utils import CACHE_QUEUE, get_aria2, get_queue, is_video_file, replace_proxy
+from bot.utils.bot_utils import (
+    CACHE_QUEUE,
+    get_aria2,
+    get_queue,
+    is_video_file,
+    replace_proxy,
+)
 from bot.utils.log_utils import log, logger
 
 
@@ -75,7 +81,9 @@ async def get_leech_name(url):
                 )
                 filename = "aria2_error " + download_error
                 break
-            if download.name.startswith("[METADATA]") or download.name.endswith(".torrent"):
+            if download.name.startswith("[METADATA]") or download.name.endswith(
+                ".torrent"
+            ):
                 await asyncio.sleep(2)
                 continue
             else:

@@ -7,13 +7,14 @@ from bot import *
 from bot.fun.emojis import enhearts, enmoji, enmoji2
 from bot.others.exceptions import OldMessage
 from bot.utils.ani_utils import qparse
-from bot.utils.bot_utils import DISPLAY_DOWNLOAD, replace_proxy
+from bot.utils.bot_utils import DISPLAY_DOWNLOAD
 from bot.utils.bot_utils import UN_FINISHED_PROGRESS_STR as unfin_str
 from bot.utils.bot_utils import (
     code,
     decode,
     get_aria2,
     hbs,
+    replace_proxy,
     time_formatter,
     value_check,
 )
