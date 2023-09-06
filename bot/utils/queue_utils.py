@@ -68,7 +68,7 @@ async def get_queue_msg():
             # Backwards compatibility:
             ver, fil = ver_fil if isinstance(ver_fil, tuple) else (ver_fil, None)
 
-            msg += f"{_no}. `{file_name}`\n  **•Filter:** {fil.split("\n")}\n  **•Release version:** {ver}\n  **•Added by:** [{user.first_name}](tg://user?id={user_id})\n\n"
+            msg += f"{_no}. `{file_name}`\n  **•Filter:** {fil.split('\n')}\n  **•Release version:** {ver}\n  **•Added by:** [{user.first_name}](tg://user?id={user_id})\n\n"
 
         if not msg:
             return None, None
