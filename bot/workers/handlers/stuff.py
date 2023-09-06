@@ -4,6 +4,7 @@ import time
 
 import psutil
 
+from bot import CMD_SUFFIX
 from bot import OWNER as owner
 from bot import Button, botStartTime, dt, subprocess, version_file
 from bot.fun.emojis import enmoji
@@ -265,48 +266,48 @@ async def temp_auth(event, args, client):
 
 
 async def icommands(event):
+    s = CMD_SUFFIX or str()
     await event.edit(
-        """`
-start - check if bot is awake and get usage.
-restart -  restart bot
-update - update bot
-nuke - ☢️ nuke bot
-bash - /bash + command
-eval - evaluate code
-pause - prevent bot from encoding
-peval - same as eval but with pyrogram
+        f"""`
+start{s} - check if bot is awake and get usage.
+restart{s} -  restart bot
+update{s} - update bot
+nuke{s} - ☢️ nuke bot
+bash{s} - /bash + command
+eval{s} - evaluate code
+pause{s} - prevent bot from encoding
+peval{s} - same as eval but with pyrogram
 ping - ping!
-permit - add a temporary user
-unpermit - removes a temporary user
-l - add link to queue
-queue - list queue
-forward - manually forward a message to fchannel
-v - turn v2,3,4… on (with message) or off
-download - download a file or link to bot
-upload - upload from a local directory or link
-rename - rename a video file/link
-mux - remux a file
-get - get current ffmpeg code
-set - set custom ffmpeg code
-reset - reset default ffmpeg code
-filter - filter & stuff
-vfilter - view filter
-groupenc - allow encoding in group toggle
-delfilter - delete filter
-name - quick filter with anime_title
-vname - get list of name filter
-delname - delete name filter
-status - 🆕 get bot's status
-showthumb - 🖼️ show current thumbnail
-parse - toggle parsing with captions or anilist
-groupenc - turn off/on encoding in groups
-cancelall - ❌ clear cached downloads & queued files
-clear - clear queued files
-logs - get bot logs
-help - same as start`
+permit{s} - add a temporary user
+unpermit{s} - removes a temporary user
+l{s} - add link to queue
+queue{s} - list queue
+forward{s} - manually forward a message to fchannel
+v{s} - turn v2,3,4… on (with message) or off
+download{s} - download a file or link to bot
+upload{s} - upload from a local directory or link
+rename{s} - rename a video file/link
+mux{s} - remux a file
+get{s} - get current ffmpeg code
+set{s} - set custom ffmpeg code
+reset{s} - reset default ffmpeg code
+filter{s} - filter & stuff
+vfilter{s} - view filter
+groupenc{s} - allow encoding in group toggle
+delfilter{s} - delete filter
+name{s} - quick filter with anime_title
+vname{s} - get list of name filter
+delname{s} - delete name filter
+status{s} - 🆕 get bot's status
+showthumb{s} - 🖼️ show current thumbnail
+parse{s} - toggle parsing with captions or anilist
+groupenc{s} - turn off/on encoding in groups
+cancelall{s} - ❌ clear cached downloads & queued files
+clear{s} - clear queued files
+logs{s} - get bot logs
+help{s} - same as start`
 
-All above commands accept '-h' / '--help' arguments to
-get more detailed help about each command.
+All above commands accept '-h' / '--help' arguments to get more detailed help about each command.
         """,
         buttons=[Button.inline("🔙 Back", data="ihelp")],
     )
