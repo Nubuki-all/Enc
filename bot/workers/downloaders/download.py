@@ -13,6 +13,7 @@ from bot.utils.bot_utils import (
     code,
     decode,
     get_aria2,
+    get_queue,
     hbs,
     replace_proxy,
     time_formatter,
@@ -475,7 +476,9 @@ async def dl_stat(client, query):
         ov = hbs(int(Path(dls).stat().st_size))
         name = dl.split("/")[1]
         input = (name[:45] + "…") if len(name) > 45 else name
-        q = await qparse(name)
+        queue = get_queue()
+        ver, fil = (list(queue.values())[0])[2]
+        q = await qparse(name, ver, fil)
         ans = f"📥 Downloading:\n{input}\n\n⭕ Current Size:\n{ov}\n\n\n{enmoji()}:\n{q}"
         await query.answer(ans, cache_time=0, show_alert=True)
     except OldMessage:
