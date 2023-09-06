@@ -284,8 +284,7 @@ async def thing():
         mi = await info(dl)
         await forward_(name, out, up, mi, f)
 
-        if rlsgrp:
-            text += f"**Source:** `[{rlsgrp}]`"
+        text += f"**Source:** `[{rlsgrp}]`"
         if mi:
             text += f"\n\nMediainfo: **[(Source)]({mi})**"
         mi_msg = await up.reply(

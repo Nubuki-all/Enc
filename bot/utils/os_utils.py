@@ -9,7 +9,7 @@ import anitopy
 import psutil
 from html_telegraph_poster import TelegraphPoster
 
-from bot import TELEGRAPH_AUTHOR, signal, tele, version_file
+from bot import TELEGRAPH_API, TELEGRAPH_AUTHOR, signal, tele, version_file
 
 from .log_utils import log, logger
 
@@ -62,7 +62,7 @@ async def info(file):
             raise Exception(stderr)
         else:
             out = stdout
-        client = TelegraphPoster(use_api=True)
+        client = TelegraphPoster(use_api=True, telegraph_api_url=TELEGRAPH_API)
         client.create_api_token("Mediainfo")
         page = client.post(
             title="Mediainfo",
