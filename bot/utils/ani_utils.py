@@ -447,6 +447,7 @@ async def custcap(
     ver=None,
     encoder=None,
     _filter=None,
+    ccodec=None,
 ):
     try:
         name, fil2, fil3 = await filter_name(name, _filter)
@@ -483,6 +484,7 @@ async def custcap(
         or_title = title
         r_is_end = True if ri == "[END]" else False
         codec = await get_codec()
+        codec = ccodec or codec
         cap_info = await get_cus_tag(name, rg, True)
         cap_info = await get_file_tag(out, True) if not cap_info else cap_info
 

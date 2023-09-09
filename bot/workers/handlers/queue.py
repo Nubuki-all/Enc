@@ -19,6 +19,7 @@ from bot.utils.bot_utils import (
 from bot.utils.db_utils import save2db
 from bot.utils.log_utils import logger
 from bot.utils.msg_utils import (
+    get_args
     msg_sleep_delete,
     try_delete,
     user_is_allowed,
@@ -142,11 +143,20 @@ async def enleech(event, args, client):
         Requires a reply to link or the link as argument
         can also add consecutive items to queue by replying
         to the first link and a number of how many links to add to queue
+    Accepts the following flags:
+        -f filter (only use if familiar with filter format)
+        -v number (tag according to version number)
+    Both flags override /filter & /v
+    
+    :: filter format-
+        what_to_remove\\ntag_file_as\\ntag_caption_as
+    ::
     """
     chat_id = event.chat_id
     user_id = event.sender_id
     if not user_is_allowed(user_id):
         return
+    flag, args = get_args("-f", "-v", to_parse=args, get_unknown=True)
     queue = get_queue()
     invalid_msg = "`Invalid torrent/direct link`"
     no_uri_msg = (
@@ -217,7 +227,7 @@ async def enleech(event, args, client):
                                 (chat_id, event2.id): [
                                     file_name,
                                     (user_id, event2),
-                                    (get_v(), get_f()),
+                                    (flag.v or get_v(), flag.f or get_f()),
                                 ]
                             }
                         )
@@ -261,7 +271,7 @@ async def enleech(event, args, client):
                     "**THIS TORRENT HAS ALREADY BEEN ADDED TO QUEUE**"
                 )
         queue.update(
-            {(chat_id, event.id): [file_name, (user_id, None), (get_v(), get_f())]}
+            {(chat_id, event.id): [file_name, (user_id, None), (flag.v or get_v(), flag.f or get_f())]}
         )
         await save2db()
         if len(queue) > 1 or bot_is_paused():

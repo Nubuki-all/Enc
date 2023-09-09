@@ -240,9 +240,9 @@ async def en_mux(event, args, client):
     Optional arguments:
         All optional arguments are passed seperated from the required argument with a newline
         -i {link of file to download, tg link also supported(must be a supergroup link to file)}
-        -p {disable/turn-off} to turn off anilist
+        -np to turn off anilist
         -d {file_name} to change download name
-        -c delete command after muxing - needs no argument.
+        -c to delete command after muxing - needs no argument.
         -v tag files with versions.
         -default_a {lang_iso3} iso3 of the audio language to default.
             if there are multiple matching languages the first is selected.
@@ -263,6 +263,7 @@ async def en_mux(event, args, client):
         # ref vars.
 
         ani_parse = True
+        codec=None
         default_audio = None
         default_sub = None
         download = download2 = None
@@ -298,25 +299,21 @@ async def en_mux(event, args, client):
             return await rep_event.reply(f"{error}")
         if "\n" in args:
             args, flags = args.split("\n", maxsplit=1)
-            parser = argparse.ArgumentParser(description="parse muxing flags")
-            parser.add_argument("-i", type=str, required=False)
-            parser.add_argument("-p", type=str, required=False)
-            parser.add_argument("-d", type=str, required=False)
-            parser.add_argument("-v", type=str, required=False)
-            parser.add_argument("-c", action="store_true", required=False)
-            parser.add_argument("-default_a", type=str, required=False)
-            parser.add_argument("-default_s", type=str, required=False)
-            parser.add_argument("-ext", type=str, required=False)
-            parser.add_argument("-tag_c", type=str, required=False)
-            parser.add_argument("-tag_f", type=str, required=False)
-            try:
-                flag, unknown = parser.parse_known_args(shlex.split(flags))
-            except SystemExit:
-                er = "A drastic error occurred while trying to parse argument."
-                return await event.reply(er)
-            if flag.p and (
-                flag.p.casefold() == "disable" or flag.p.casefold() == "off"
-            ):
+            flag = get_args(
+                ["-c", "store_true"],
+                "-d",
+                "-default_a",
+                "-default_s",
+                "-ext",
+                "-i",
+                ["-np", "store_true"],
+                "-q",
+                "-tag_c",
+                "-tag_f",
+                "-v"
+                to_parse=flags,
+            )
+            if flag.np:
                 ani_parse = False
             if flag.i and (is_url(flag.i) or is_magnet(flag.i)):
                 link2 = None
@@ -343,6 +340,7 @@ async def en_mux(event, args, client):
                         return await event.reply(f"{error}")
                 input_2 = work_folder + name_2
             cap_tag = flag.tag_c
+            codec = flag.q
             default_audio = flag.default_a
             default_sub = flag.default_s
             file_tag = flag.tag_f
@@ -454,6 +452,7 @@ async def en_mux(event, args, client):
             folder=work_folder,
             ver=ver,
             _filter=_f,
+            ccodec=codec
         )
         await asyncio.sleep(5)
         upload = uploader(user)
@@ -500,7 +499,7 @@ async def en_upload(event, args, client):
         chain_msg = message
         arg = get_args("-f", to_parse=args)
         if arg.f:
-            pass
+            file = arg.f
         elif is_url(args) or is_magnet(args):
             folder, uri = "downloads2/", True
             dl = await message.reply(
