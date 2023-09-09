@@ -14,6 +14,7 @@ from bot.utils.bot_utils import (
     is_url,
     pause,
     rm_pause,
+    string_escape,
     video_mimetype,
 )
 from bot.utils.db_utils import save2db
@@ -163,6 +164,7 @@ async def enleech(event, args, client):
         "`uhm you need to reply to or send command alongside a uri/direct link`"
     )
     no_dl_spt_msg = "`File to download is…\neither not a video\nor is a batch torrent which is currently not supported.`"
+    str_esc = string_escape
     ukn_err_msg = "`An unknown error occurred, might an internal issue with aria2.\nCheck logs for more info`"
     try:
         if event.is_reply:
@@ -227,7 +229,7 @@ async def enleech(event, args, client):
                                 (chat_id, event2.id): [
                                     file_name,
                                     (user_id, event2),
-                                    (flag.v or get_v(), flag.f or get_f()),
+                                    (flag.v or get_v(), str_esc(flag.f) or get_f()),
                                 ]
                             }
                         )
@@ -275,7 +277,7 @@ async def enleech(event, args, client):
                 (chat_id, event.id): [
                     file_name,
                     (user_id, None),
-                    (flag.v or get_v(), flag.f or get_f()),
+                    (flag.v or get_v(), str_esc(flag.f) or get_f()),
                 ]
             }
         )

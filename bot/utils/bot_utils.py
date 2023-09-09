@@ -170,6 +170,14 @@ def replace_proxy(url):
     return url
 
 
+def string_escape(s, encoding='utf-8'):
+    "unescape escaped characters in string"
+    #https://stackoverflow.com/questions/14820429/how-do-i-decodestring-escape-in-python-3
+    return (s.encode('latin1')         # To bytes, required by 'unicode-escape'
+             .decode('unicode-escape') # Perform the actual octal-escaping decode
+             .encode('latin1')         # 1:1 mapping back to bytes
+             .decode(encoding)) 
+
 def list_to_str(lst, sep=" ", start=None, md=True):
     string = str()
     t_start = start if isinstance(start, int) else 1
