@@ -310,7 +310,7 @@ async def en_mux(event, args, client):
                 "-q",
                 "-tag_c",
                 "-tag_f",
-                "-v"
+                "-v",
                 to_parse=flags,
             )
             if flag.np:
