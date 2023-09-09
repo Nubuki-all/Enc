@@ -159,7 +159,7 @@ async def thing():
                     uri = message.text.split(" ", maxsplit=1)[1].strip()
                 else:
                     uri = message.text
-                uri = get_args("-f", "-v", to_parse=args, get_unknown=True)[1]
+                uri = get_args("-f", "-v", to_parse=uri, get_unknown=True)[1]
 
             if cached:
                 raise (AlreadyDl)
