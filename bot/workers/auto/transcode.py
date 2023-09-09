@@ -18,6 +18,7 @@ from bot.utils.log_utils import logger
 from bot.utils.msg_utils import (
     bc_msg,
     enpause,
+    get_args,
     get_cached,
     report_encode_status,
     report_failed_download,
@@ -158,6 +159,7 @@ async def thing():
                     uri = message.text.split(" ", maxsplit=1)[1].strip()
                 else:
                     uri = message.text
+                uri = get_args("-f", "-v", to_parse=args, get_unknown=True)[1]
 
             if cached:
                 raise (AlreadyDl)

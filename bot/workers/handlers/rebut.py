@@ -234,6 +234,7 @@ async def en_mux(event, args, client):
         -d {file_name} to change download name
         -c to delete command after muxing - needs no argument.
         -v tag files with versions.
+        -q custom caption codec
         -default_a {lang_iso3} iso3 of the audio language to default.
             if there are multiple matching languages the first is selected.
         -default_s {lang_iso3} same as above but for subtitles.
