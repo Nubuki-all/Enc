@@ -19,7 +19,7 @@ from bot.utils.bot_utils import (
 from bot.utils.db_utils import save2db
 from bot.utils.log_utils import logger
 from bot.utils.msg_utils import (
-    get_args
+    get_args,
     msg_sleep_delete,
     try_delete,
     user_is_allowed,
@@ -147,7 +147,7 @@ async def enleech(event, args, client):
         -f filter (only use if familiar with filter format)
         -v number (tag according to version number)
     Both flags override /filter & /v
-    
+
     :: filter format-
         what_to_remove\\ntag_file_as\\ntag_caption_as
     ::
@@ -271,7 +271,13 @@ async def enleech(event, args, client):
                     "**THIS TORRENT HAS ALREADY BEEN ADDED TO QUEUE**"
                 )
         queue.update(
-            {(chat_id, event.id): [file_name, (user_id, None), (flag.v or get_v(), flag.f or get_f())]}
+            {
+                (chat_id, event.id): [
+                    file_name,
+                    (user_id, None),
+                    (flag.v or get_v(), flag.f or get_f()),
+                ]
+            }
         )
         await save2db()
         if len(queue) > 1 or bot_is_paused():

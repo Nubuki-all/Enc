@@ -1,17 +1,7 @@
 import os
 import shutil
 
-from bot import (
-    Button,
-    argparse,
-    asyncio,
-    home_dir,
-    itertools,
-    log_file_name,
-    pyro_errors,
-    shlex,
-    thumb,
-)
+from bot import Button, asyncio, home_dir, itertools, log_file_name, pyro_errors, thumb
 from bot.fun.emojis import enmoji
 from bot.utils.ani_utils import custcap, dynamicthumb, parse
 from bot.utils.bot_utils import (
@@ -263,7 +253,7 @@ async def en_mux(event, args, client):
         # ref vars.
 
         ani_parse = True
-        codec=None
+        codec = None
         default_audio = None
         default_sub = None
         download = download2 = None
@@ -452,7 +442,7 @@ async def en_mux(event, args, client):
             folder=work_folder,
             ver=ver,
             _filter=_f,
-            ccodec=codec
+            ccodec=codec,
         )
         await asyncio.sleep(5)
         upload = uploader(user)
