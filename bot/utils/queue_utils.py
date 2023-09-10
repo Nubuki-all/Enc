@@ -70,7 +70,7 @@ async def get_queue_msg():
 
             if fil and len(fil.split("\n")) > 2:
                 rm, ftag, ctag = fil.split("\n", maxsplit=2)
-                fil = f"[-rm: `{rm}`, -ftag: `{ftag}`, -ctag: `{ctag}`]"
+                fil = f"[-rm: `{rm}`, -tf: `{ftag}`, -tc: `{ctag}`]"
 
             msg += f"{_no}. `{file_name}`\n  **•Filter:** {fil}\n  **•Release version:** {ver}\n  **•Added by:** [{user.first_name}](tg://user?id={user_id})\n\n"
 

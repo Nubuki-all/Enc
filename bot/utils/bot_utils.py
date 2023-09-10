@@ -179,7 +179,7 @@ def string_escape(s, encoding="utf-8"):
         .decode("unicode-escape")
         .encode("latin1")  # 1:1 mapping back to bytes
         .decode(encoding)
-    )
+    ) if s else s
 
 
 def list_to_str(lst, sep=" ", start=None, md=True):

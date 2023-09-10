@@ -146,6 +146,9 @@ async def enleech(event, args, client):
         to the first link and a number of how many links to add to queue
     Accepts the following flags:
         -f filter (only use if familiar with filter format)
+        -rm what_to_remove (keyword to remove from torrent file_name)
+        -tc caption_tag (tag caption type as…)
+        -tf file_tag (tag file_as)
         -v number (tag according to version number)
     Both flags override /filter & /v
 
@@ -157,7 +160,8 @@ async def enleech(event, args, client):
     user_id = event.sender_id
     if not user_is_allowed(user_id):
         return
-    flag, args = get_args("-f", "-v", to_parse=args, get_unknown=True)
+    flag, args = get_args("-f", "-rm", "-tc", "-tf", "-v", to_parse=args, get_unknown=True)
+    cust_fil = str()
     queue = get_queue()
     invalid_msg = "`Invalid torrent/direct link`"
     no_uri_msg = (
@@ -166,6 +170,11 @@ async def enleech(event, args, client):
     no_dl_spt_msg = "`File to download is…\neither not a video\nor is a batch torrent which is currently not supported.`"
     str_esc = string_escape
     ukn_err_msg = "`An unknown error occurred, might an internal issue with aria2.\nCheck logs for more info`"
+    if flag.rm or flag.tc or tag.tf:
+        cust_fil = flag.rm or "disabled__"
+        cust_fil += str().join(f"\n{x}" if x else "\nauto" for x in [flag.tc, flag.tf])
+    else:
+        cust_fil = str_esc(flag.f)
     try:
         if event.is_reply:
             rep_event = await event.get_reply_message()
@@ -229,7 +238,7 @@ async def enleech(event, args, client):
                                 (chat_id, event2.id): [
                                     file_name,
                                     (user_id, event2),
-                                    (flag.v or get_v(), str_esc(flag.f) or get_f()),
+                                    (flag.v or get_v(), cust_fil or get_f()),
                                 ]
                             }
                         )
@@ -277,7 +286,7 @@ async def enleech(event, args, client):
                 (chat_id, event.id): [
                     file_name,
                     (user_id, None),
-                    (flag.v or get_v(), str_esc(flag.f) or get_f()),
+                    (flag.v or get_v(), cust_fil or get_f()),
                 ]
             }
         )
