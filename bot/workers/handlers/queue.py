@@ -160,7 +160,9 @@ async def enleech(event, args, client):
     user_id = event.sender_id
     if not user_is_allowed(user_id):
         return
-    flag, args = get_args("-f", "-rm", "-tc", "-tf", "-v", to_parse=args, get_unknown=True)
+    flag, args = get_args(
+        "-f", "-rm", "-tc", "-tf", "-v", to_parse=args, get_unknown=True
+    )
     cust_fil = str()
     queue = get_queue()
     invalid_msg = "`Invalid torrent/direct link`"
