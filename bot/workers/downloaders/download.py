@@ -455,8 +455,7 @@ class Downloader:
             else:
                 user = self.sender.id
             if not (
-                str(query.from_user.id) in OWNER
-                or callback_query.from_user.id == user
+                str(query.from_user.id) in OWNER or callback_query.from_user.id == user
             ):
                 return await callback_query.answer(
                     "You're not allowed to do this!", show_alert=False
@@ -473,8 +472,7 @@ class Downloader:
             else:
                 user = self.sender.id
             if not (
-                str(query.from_user.id) in OWNER
-                or callback_query.from_user.id == user
+                str(query.from_user.id) in OWNER or callback_query.from_user.id == user
             ):
                 return await callback_query.answer(
                     "You're not allowed to do this!", show_alert=False
