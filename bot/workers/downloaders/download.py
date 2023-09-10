@@ -450,6 +450,17 @@ class Downloader:
 
     async def v_info(self, client, query):
         try:
+            if self.sender_is_id:
+                user = self.sender
+            else:
+                user = self.sender.id
+            if not (
+                str(query.from_user.id) in OWNER
+                or callback_query.from_user.id == user
+            ):
+                return await callback_query.answer(
+                    "You're not allowed to do this!", show_alert=False
+                )
             await query.answer("Please wait…")
             self.display_dl_info = True
         except Exception:
@@ -457,6 +468,17 @@ class Downloader:
 
     async def back(self, client, query):
         try:
+            if self.sender_is_id:
+                user = self.sender
+            else:
+                user = self.sender.id
+            if not (
+                str(query.from_user.id) in OWNER
+                or callback_query.from_user.id == user
+            ):
+                return await callback_query.answer(
+                    "You're not allowed to do this!", show_alert=False
+                )
             await query.answer("Please wait…")
             self.display_dl_info = False
         except Exception:

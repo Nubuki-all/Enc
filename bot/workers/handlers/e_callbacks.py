@@ -71,7 +71,7 @@ async def skip(e):
         return u_cancelled().append(_id)
     ans = "Cancelling encoding please wait…"
     await e.answer(ans)
-    process.terminate()
+    process.kill()
     # await e.delete()
     s_remove(dl)
     s_remove(en)
