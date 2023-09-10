@@ -261,7 +261,8 @@ async def thing():
             m = f"`Upload of {out} was cancelled`"
             if sender_id != upload.canceller:
                 canceller = await pyro.get_users(upload.canceller)
-                m += f"by [{canceller.first_name}](tg://user?id={upload.canceller})"
+                # m += f"by [{canceller.first_name}](tg://user?id={upload.canceller})"
+                m += f"by {canceller.mention()}"
             m += "!"
             await mssg_r.edit(m)
             if op:
