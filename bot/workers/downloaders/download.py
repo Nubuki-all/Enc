@@ -454,9 +454,7 @@ class Downloader:
                 user = self.sender
             else:
                 user = self.sender.id
-            if not (
-                str(query.from_user.id) in OWNER or query.from_user.id == user
-            ):
+            if not (str(query.from_user.id) in OWNER or query.from_user.id == user):
                 return await query.answer(
                     "You're not allowed to do this!", show_alert=False
                 )
@@ -471,9 +469,7 @@ class Downloader:
                 user = self.sender
             else:
                 user = self.sender.id
-            if not (
-                str(query.from_user.id) in OWNER or query.from_user.id == user
-            ):
+            if not (str(query.from_user.id) in OWNER or query.from_user.id == user):
                 return await query.answer(
                     "You're not allowed to do this!", show_alert=False
                 )
