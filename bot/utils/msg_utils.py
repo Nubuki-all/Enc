@@ -266,7 +266,10 @@ async def report_encode_status(
             who_cancel = E_CANCEL.get(log_id) if not who_cancel else who_cancel
             if who_cancel != user:
                 canceller = await pyro.get_users(who_cancel)
-                reply += f" by [{canceller.first_name}.](tg://user?id={canceller.id})"
+                if not pyro_msg:
+                    reply += f" by [{canceller.first_name}.](tg://user?id={canceller.id})"
+                else:
+                    reply += f"by {canceller.mention()}."
         else:
             reply += f"Failed. {enmoji2()}\nLogs available below."
 

@@ -61,7 +61,7 @@ async def skip(e):
     if not req_info:
         return await clean_old_message(e)
     process, dl, en, user_id = req_info
-    if not (user_is_owner(e.query.user_id) or user_id != e.query.user_id):
+    if not (user_is_owner(e.query.user_id) or user_id == e.query.user_id):
         ans = "You're not allowed to do this!"
         return await e.answer(ans)
     if not process:
