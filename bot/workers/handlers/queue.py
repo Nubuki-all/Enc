@@ -172,7 +172,7 @@ async def enleech(event, args, client):
     no_dl_spt_msg = "`File to download is…\neither not a video\nor is a batch torrent which is currently not supported.`"
     str_esc = string_escape
     ukn_err_msg = "`An unknown error occurred, might an internal issue with aria2.\nCheck logs for more info`"
-    if flag.rm or flag.tc or tag.tf:
+    if flag.rm or flag.tc or flag.tf:
         cust_fil = flag.rm or "disabled__"
         cust_fil += str().join(f"\n{x}" if x else "\nauto" for x in [flag.tc, flag.tf])
     else:
