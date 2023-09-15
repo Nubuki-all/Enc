@@ -174,7 +174,7 @@ def get_args(*args, to_parse, get_unknown=False):
             parser.add_argument(arg[0], action=arg[1], required=False)
         else:
             parser.add_argument(arg, type=str, required=False)
-    flag, unknowns = parser.parse_known_args(shlex.split(to_parse))
+    flag, unknowns = parser.parse_known_args(shlex.split(shlex.quote(to_parse)))
     if get_unknown:
         unknown = " ".join(map(str, unknowns))
         return flag, unknown
@@ -325,7 +325,11 @@ async def report_failed_download(download, msg, file, user=None):
         if download.canceller and (
             not user or (user and download.canceller.id != user)
         ):
-            reply += f" by  [{download.canceller.first_name}](tg://user?id={user})"
+            reply += " by "
+            if not isinstance(msg, pyrogram.types.Message):
+                reply += f"[{download.canceller.first_name}](tg://user?id={user})"
+            else:
+                reply += download.canceller.mention()
     else:
         reply += f"failed.\n`{download.download_error}`"
     reply += "!"
