@@ -168,7 +168,8 @@ async def edit_message(message, text):
 
 
 def line_split(line):
-    return [t.strip('"\'') for t in re.findall(r'[^\s"]+|"[^"]*"', line)]
+    return [t.strip("\"'") for t in re.findall(r'[^\s"]+|"[^"]*"', line)]
+
 
 def get_args(*args, to_parse, get_unknown=False):
     parser = argparse.ArgumentParser(description="parse command flags")
