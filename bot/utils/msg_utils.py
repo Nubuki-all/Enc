@@ -167,6 +167,9 @@ async def edit_message(message, text):
     return edited
 
 
+def line_split(line):
+    return [t.strip('"\'') for t in re.findall(r'[^\s"]+|"[^"]*"', line)]
+
 def get_args(*args, to_parse, get_unknown=False):
     parser = argparse.ArgumentParser(description="parse command flags")
     for arg in args:
@@ -174,7 +177,7 @@ def get_args(*args, to_parse, get_unknown=False):
             parser.add_argument(arg[0], action=arg[1], required=False)
         else:
             parser.add_argument(arg, type=str, required=False)
-    flag, unknowns = parser.parse_known_args(shlex.split(shlex.quote(to_parse)))
+    flag, unknowns = parser.parse_known_args(line_split(to_parse))
     if get_unknown:
         unknown = " ".join(map(str, unknowns))
         return flag, unknown
