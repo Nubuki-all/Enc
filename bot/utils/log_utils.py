@@ -15,7 +15,7 @@ async def channel_log(Exception):
             error = traceback.format_exc()
             msg = await tele.send_message(
                 LOG_CHANNEL,
-                f"**#ERROR\n\n⛱️ Summary of what happened:**\n`{error}`\n\nTo restict error messages to logs set the LOGS_IN_CHANNEL vars to False. {enmoji()}",
+                f"**#ERROR\n\n⛱️ Summary of what happened:**\n`{error}`\n\n**To restict error messages to logs set the** `LOGS_IN_CHANNEL` **env var to** `False`. {enmoji()}",
             )
             return msg
         except Exception:

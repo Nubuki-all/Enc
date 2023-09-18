@@ -1,6 +1,6 @@
 from telethon import events
 
-from bot import Button, itertools, pyro, queue_lock, re, tele
+from bot import Button, CMD_SUFFIX, itertools, pyro, queue_lock, re, tele
 
 from .bot_utils import QUEUE, QUEUE_STATUS
 from .log_utils import logger
@@ -49,6 +49,7 @@ async def queue_status(event):
 async def get_queue_msg():
     msg = str()
     button = None
+    cmd_s = CMD_SUFFIX.strip()
     try:
         i = len(QUEUE)
         globals()["PAGES"] = (i + STATUS_LIMIT - 2) // STATUS_LIMIT
@@ -85,7 +86,7 @@ async def get_queue_msg():
             button = [[btn_prev, btn_info, btn_next]]
         else:
             msg += f"**Pending Tasks:** {i - 1}\n"
-        msg += f"\n**📌 Tip: To remove an item from queue use** /clear <queue number>"
+        msg += f"\n**📌 Tip: To remove an item from queue use** /clear{cmd_s} <queue number>"
 
     except Exception:
         await logger(Exception)
