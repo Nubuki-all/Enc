@@ -6,7 +6,7 @@ from bot.utils.bot_utils import code, decode
 from bot.utils.log_utils import logger
 
 def_enc_msg = (
-    enmoji() + " **Currently Encoding:**\n└`{}`\n\n**⏳This Might Take A While⏳**"
+    "**Currently Encoding {}:**\n└`{}`\n\n**⏳This Might Take A While⏳**"
 )
 
 
@@ -37,9 +37,10 @@ class Encoder:
         try:
             self.req_clean = True
             code(self.process, dl, en, user, stime, self.enc_id)
+            out = en.split("/", maxsplit=1)[-1]
             wah = 0
             e_msg = await event.edit(
-                text.format(en),
+                text.format(enmoji(), out),
                 buttons=[
                     [Button.inline("ℹ️", data=f"pres{wah}")],
                     [Button.inline("Progress", data=f"stats0")],
@@ -49,8 +50,9 @@ class Encoder:
             )
             if self.log_msg and self.sender:
                 code(self.process, dl, en, user, stime, self.log_enc_id)
+                sau = dl.split("/", maxsplit=1)[-1]
                 e_log = await self.log_msg.edit(
-                    f"**User:**\n└[{self.sender.first_name}](tg://user?id={user})\n\n**Currently Encoding:**\n└`{en}`\n\n**Source File:**\n└`{dl}`",
+                    f"**User:**\n└[{self.sender.first_name}](tg://user?id={user})\n\n**Currently Encoding:**\n└`{en}`\n\n**Source File:**\n└`{sau}`",
                     buttons=[
                         [Button.inline("ℹ️", data=f"pres{wah}")],
                         [Button.inline("CHECK PROGRESS", data=f"stats2")],
