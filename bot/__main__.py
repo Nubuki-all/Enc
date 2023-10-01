@@ -144,7 +144,7 @@ async def _(e):
     await event_handler(e, nuke)
 
 
-@pyro.on_message(filters.incoming & filters.command(["update"]))
+@pyro.on_message(filters.incoming & filters.command([f"update{cmd_suffix}"]))
 async def _(pyro, message):
     await update2(pyro, message)
 
@@ -295,14 +295,14 @@ async def _(e):
     await event_handler(e, en_mux, pyro, require_args=True)
 
 
-@pyro.on_message(filters.incoming & filters.command(["peval"]))
+@pyro.on_message(filters.incoming & filters.command([f"peval{cmd_suffix}"]))
 async def _(pyro, message):
     await event_handler(message, eval_message_p, tele, require_args=True)
 
 
-@pyro.on_message(filters.incoming & filters.command(["fforward", "forward"]))
+@pyro.on_message(filters.incoming & filters.command([f"fforward{cmd_suffix}", f"forward{cmd_suffix}"]))
 async def _(pyro, message):
-    await fc_forward(message)
+    await event_handler(message, fc_forward)
 
 
 @tele.on(events.NewMessage(pattern=command(["bash"])))

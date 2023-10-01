@@ -163,6 +163,8 @@ async def edit_message(message, text):
     except errors.FloodWaitError as e:
         await asyncio.sleep(e.seconds)
         return await edit_message(message, text)
+    except Exception:
+        log(Exception)
 
     return edited
 

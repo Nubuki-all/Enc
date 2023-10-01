@@ -292,11 +292,11 @@ async def split_text(text):
     return message_list
 
 
-def code(data, infile=None, outfile=None, user=None, index=None):
+def code(data, infile=None, outfile=None, user=None, stime=None, index=None):
     if not index:
         OK.update({len(OK): data})
         return str(len(OK) - 1)
-    OK.update({index: (data, infile, outfile, user)})
+    OK.update({index: (data, infile, outfile, user, stime)})
     return
 
 

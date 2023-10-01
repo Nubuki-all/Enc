@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from bot import Button, asyncio, home_dir, itertools, log_file_name, pyro_errors, thumb
+from bot import Button, asyncio, home_dir, itertools, log_file_name, pyro_errors, thumb, time
 from bot.fun.emojis import enmoji
 from bot.utils.ani_utils import custcap, dynamicthumb, parse
 from bot.utils.bot_utils import (
@@ -375,12 +375,13 @@ async def en_mux(event, args, client):
         args = args.strip()
         args = f'-i "{input_2}" ' + args if input_2 else args
         await asyncio.sleep(3)
-        text = "`Muxing using provided parameters…`"
+        text = "**Currently Muxing:**\n└`{}`\n\n`using provided parameters…`"
         cmd = f'ffmpeg -i "{dl}" {args} "{t_file}" -y'
         e_id = f"{e.chat_id}:{e.id}"
+        stime = time.time()
         encode = encoder(e_id, event=event)
         await encode.start(cmd)
-        await encode.callback(dl, t_file, e, user, text)
+        await encode.callback(dl, t_file, e, user, text, stime)
         stderr = (await encode.await_completion())[1]
         await report_encode_status(
             encode.process, e_id, stderr, e, user, t_file, _is="Muxing"

@@ -25,17 +25,15 @@ async def pres(e):
         req_info = decode(_id)
         if not req_info:
             return await clean_old_message(e)
-        process, dl, out, user_id = req_info
+        process, dl, out, user_id, stime = req_info
         _dir, ename = os.path.split(out)
         os.path.split(dl)[1]
         if _dir != "encode":
             ans = f"Muxing:\n{ename}"
-            if file_exists("thumb3.jpg"):
-                ans += "\n\nAnilist thumbnail:\nYes"
             return await e.answer(ans, alert=True)
         queue = get_queue()
         length = len(queue)
-        ansa = f"Encoding:\n{ename}"
+        ansa = str()
         if file_exists("thumb2.jpg"):
             ansa += "\n\nAnilist thumbnail:\nYes"
         if length > 1:
@@ -45,7 +43,17 @@ async def pres(e):
             v, f = v_f if isinstance(v_f, tuple) else (v_f, None)
             next_ = await qparse(file_name, v, f)
             next_ = (next_[:45] + "…") if len(next_) > 45 else next_
-            ansa += f"\n\nNext up:\n{next_}\n\nRemains:- {length - 1}"
+            if length > 2:
+                file_name, _id, v_f = list(queue.values())[1]
+                # Backwards compatibility:
+                v, f = v_f if isinstance(v_f, tuple) else (v_f, None)
+                next2_ = "\n" + await qparse(file_name, v, f)
+                next2_ = (next2_[:45] + "…") if len(next2_) > 45 else next2_
+                next2_ = next2_ + f" (+{length - 2})" if length > 3 else next2_
+            else:
+                next2_ = str()
+            ansa += f"\n\nNext up:\n{next_}{next2_}\n\nRemains:- {length - 1}"
+        ansa = ansa or "Wow such emptiness 🐱."
         await e.answer(ansa, cache_time=0, alert=True)
     except Exception:
         await logger(Exception)
@@ -60,7 +68,7 @@ async def skip(e):
     req_info = decode(_id)
     if not req_info:
         return await clean_old_message(e)
-    process, dl, en, user_id = req_info
+    process, dl, en, user_id, stime = req_info
     if not (user_is_owner(e.query.user_id) or user_id == e.query.user_id):
         ans = "You're not allowed to do this!"
         return await e.answer(ans)
@@ -83,10 +91,11 @@ async def skip(e):
 async def stats(e):
     try:
         _id = f"{e.chat_id}:{e.message_id}"
+        data = e.pattern_match.group(1).decode().strip()
         req_info = decode(_id)
         if not req_info:
             return await clean_old_message(e)
-        process, dl, out, user_id = req_info
+        process, dl, out, user_id, stime = req_info
         ot = hbs(int(Path(out).stat().st_size))
         ov = hbs(int(Path(dl).stat().st_size))
         _dir, name = os.path.split(dl)
@@ -96,8 +105,14 @@ async def stats(e):
         total = hbs(total)
         used = hbs(used)
         free = hbs(free)
+        elapsed = time_formatter(time.time() - stime)
         cpuUsage = psutil.cpu_percent(interval=0.5)
-        ans = f"CPU: {cpuUsage}%\n\nTotal Disk Space:\n{total}\n\nDownloaded:\n{ov}\n\nFileName:\n{input}\n\nEncoded:\n{ot}\n\nBot Uptime:\n{currentTime}\n\nUsed: {used}  Free: {free}"
+        if data == "0":
+            ans = f"Downloaded:\n{ov}\n\nFileName:\n{input}\n\nEncoded:\n{ot}\n\nElapsed time:\n{elapsed}"
+        elif data = "1":
+            ans = f"CPU: {cpuUsage}%\n\nTotal Disk Space:\n{total}\n\nBot Uptime:\n{currentTime}\n\nUsed: {used}  Free: {free}"
+        elif data == "2":
+            ans = f"CPU: {cpuUsage}%\n\nTotal Disk Space:\n{total}\n\nDownloaded:\n{ov}\n\nEncoded:\n{ot}\n\nElapsed:\n{elapsed}\n\nBot Uptime:\n{currentTime}\n\nUsed: {used}  Free: {free}"
         await e.answer(ans, alert=True)
     except Exception:
         await logger(Exception)

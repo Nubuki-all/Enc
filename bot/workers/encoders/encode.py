@@ -1,10 +1,11 @@
 import asyncio
 
 from bot import ALLOW_ACTION, Button
+from bot.fun.emojis import enmoji
 from bot.utils.bot_utils import code, decode
 from bot.utils.log_utils import logger
 
-def_enc_msg = "`Encoding File(s)…` \n**⏳This Might Take A While⏳**"
+def_enc_msg = enmoji() + " **Currently Encoding:**\n└`{}`\n\n**⏳This Might Take A While⏳**"
 
 
 class Encoder:
@@ -30,26 +31,27 @@ class Encoder:
         self.process = process
         return process
 
-    async def callback(self, dl, en, event, user, text=def_enc_msg):
+    async def callback(self, dl, en, event, user, text=def_enc_msg, s_time=None):
         try:
             self.req_clean = True
-            code(self.process, dl, en, user, self.enc_id)
+            code(self.process, dl, en, user, stime, self.enc_id)
             wah = 0
             e_msg = await event.edit(
-                text,
+                text.format(en),
                 buttons=[
                     [Button.inline("ℹ️", data=f"pres{wah}")],
-                    [Button.inline("Progress & Server-info", data=f"stats{wah}")],
+                    [Button.inline("Progress", data=f"stats0")],
+                    [Button.inline("Server-info", data=f"stats1")],
                     [Button.inline("Cancel", data=f"skip{wah}")],
                 ],
             )
             if self.log_msg and self.sender:
-                code(self.process, dl, en, user, self.log_enc_id)
+                code(self.process, dl, en, user, stime, self.log_enc_id)
                 e_log = await self.log_msg.edit(
-                    f"[{self.sender.first_name}](tg://user?id={user}) `Is Currently Encoding a Video…`",
+                    f"**User:**\n└[{self.sender.first_name}](tg://user?id={user})\n\n**Currently Encoding:**\n└`{en}`\n\n**Source File:**\n└`{dl}`",
                     buttons=[
                         [Button.inline("ℹ️", data=f"pres{wah}")],
-                        [Button.inline("CHECK PROGRESS", data=f"stats{wah}")],
+                        [Button.inline("CHECK PROGRESS", data=f"stats2")],
                         [Button.inline("CANCEL PROCESS", data=f"skip{wah}")],
                     ],
                 )

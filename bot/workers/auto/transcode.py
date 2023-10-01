@@ -9,7 +9,7 @@ from bot.config import FSTICKER as fs
 from bot.config import LOG_CHANNEL as log_channel
 from bot.others.exceptions import AlreadyDl
 from bot.startup.before import entime
-from bot.utils.ani_utils import custcap, dynamicthumb, f_post, parse
+from bot.utils.ani_utils import custcap, dynamicthumb, f_post, parse, qparse
 from bot.utils.bot_utils import CACHE_QUEUE as cached
 from bot.utils.bot_utils import E_CANCEL, get_queue, get_var, hbs
 from bot.utils.bot_utils import time_formatter as tf
@@ -20,6 +20,7 @@ from bot.utils.msg_utils import (
     enpause,
     get_args,
     get_cached,
+    reply_message,
     report_encode_status,
     report_failed_download,
 )
@@ -80,6 +81,15 @@ async def forward_(name, out, ds, mi, f):
     await ds.copy(chat_id=fc)
     if not fs:
         return
+    if not fb:
+        queue = get_queue()
+        if not len(queue) < 2:
+            name, _none, v_f = list(queue.values())[0]
+            name2, _none, v_f2 = list(queue.values())[1]
+            _pname = await qparse(name, v_f[0], v_f[1])
+            _pname2 = await qparse(name2, v_f2[0], v_f2[1])
+            if _pname.split("-", maxsplit=1)[0] == _pname2.split("-", maxsplit=1)[0]:
+                return
     try:
         await pyro.send_sticker(
             fc,
@@ -123,25 +133,15 @@ async def thing():
         else:
             message._client = pyro
         uri = None
-        mssg_r = await message.reply("`Download Pending…`", quote=True)
+        msg_p = await message.reply("`Download Pending…`", quote=True)
         await asyncio.sleep(2)
-        e = await tele.send_message(
-            chat_id,
-            "**[DEBUG]** `Preparing…`",
-            reply_to=mssg_r.id,
-        )
-        while True:
-            try:
-                await asyncio.sleep(2)
-                mssg_f = await pyro.edit_message_text(
-                    chat_id, e.id, "**[DEBUG]** `Waiting for download handler…`"
-                )
-                break
-            except pyro_errors.FloodWait as e:
-                await asyncio.sleep(e.value)
+        msg_t = await tele.edit_message(
+            msg_p.chat_id,
+            msg_p.id,
+            "`Waiting for download handler…`")
         # USER_MAN.clear()
         # USER_MAN.append(user)
-        _id = f"{e.chat_id}:{e.id}"
+        _id = f"{msg_t.chat_id}:{msg_t.id}"
         if str(sender_id).startswith("-100"):
             sender_id = 777000
         sender = await pyro.get_users(sender_id)
@@ -167,11 +167,11 @@ async def thing():
                 raise (AlreadyDl)
 
             sdt = time.time()
-            await mssg_r.edit("`Waiting for download to complete.`")
+            #await mssg_r.edit("`Waiting for download to complete.`")
             download = downloader(sender, op, uri=uri, dl_info=True)
-            downloaded = await download.start(name, None, message, mssg_f)
+            downloaded = await download.start(name, None, message, msg_p)
             if download.is_cancelled or download.download_error:
-                f_msg = await report_failed_download(download, mssg_r, name, sender_id)
+                f_msg = await report_failed_download(download, msg_p, name, sender_id)
                 if op:
                     await pyro.edit_message_text(
                         log_channel,
@@ -179,7 +179,6 @@ async def thing():
                         f"[{sender.first_name}'s](tg://user?id={sender_id}) "
                         + f_msg.text.markdown,
                     )
-                await e.delete()
             if not downloaded or download.is_cancelled:
                 if queue:
                     queue.pop(list(queue.keys())[0])
@@ -187,11 +186,13 @@ async def thing():
                 await asyncio.sleep(2)
                 return
         except AlreadyDl:
-            await mssg_r.edit("`Waiting for caching to complete.`")
+            msg_r = await reply_message(msg_p, "`Waiting for caching to complete.`")
             sdt = time.time()
-            rslt = await get_cached(dl, sender, sender_id, e, op)
+            rslt = await get_cached(dl, sender, sender_id, msg_t, op)
+            await msg_r.delete()
             if rslt is False:
-                await mssg_r.delete()
+                await msg_p.delete()
+                await op.delete() if op else None
                 return
         except Exception:
             await logger(Exception)
@@ -209,7 +210,7 @@ async def thing():
         title, epi, sn, rlsgrp = await dynamicthumb(name, _filter=f)
 
         if uri and dump is True:
-            asyncio.create_task(dumpdl(dl, name, thumb2, e.chat_id, message))
+            asyncio.create_task(dumpdl(dl, name, thumb2, msg_t.chat_id, message))
         if len(queue) > 1 and cache:
             await cache_dl()
         with open("ffmpeg.txt", "r") as file:
@@ -218,21 +219,19 @@ async def thing():
 
         _set = time.time()
         cmd = ffmpeg.format(dl, out)
-        encode = encoder(_id, sender, e, op)
-        await mssg_r.edit("`Waiting For Encoding To Complete`")
+        encode = encoder(_id, sender, msg_t, op)
+        # await mssg_r.edit("`Waiting For Encoding To Complete`")
         await encode.start(cmd)
-        await encode.callback(dl, out, e, sender_id)
+        await encode.callback(dl, out, msg_t, sender_id, _set)
         stdout, stderr = await encode.await_completion()
         await report_encode_status(
             encode.process,
             _id,
             stderr,
-            mssg_r,
+            msg_t,
             sender_id,
             out,
-            msg_2_delete=e,
             log_msg=op,
-            pyro_msg=True,
         )
         if encode.process.returncode != 0:
             if uri:
@@ -249,14 +248,14 @@ async def thing():
         etime = tf(eet - _set)
 
         await asyncio.sleep(3)
-        await enpause(mssg_r)
+        await enpause(msg_p)
 
         sut = time.time()
         fname = out.split("/")[1]
         pcap = await custcap(name, fname, ver=v, encoder=ENCODER, _filter=f)
         await op.edit(f"`Uploading…` `{out}`") if op else None
         upload = uploader(sender_id)
-        up = await upload.start(e.chat_id, out, mssg_r, thumb2, pcap, message)
+        up = await upload.start(msg_t.chat_id, out, msg_p, thumb2, pcap, message)
         if upload.is_cancelled:
             m = f"`Upload of {out} was cancelled`"
             if sender_id != upload.canceller:
@@ -264,7 +263,7 @@ async def thing():
                 # m += f"by [{canceller.first_name}](tg://user?id={upload.canceller})"
                 m += f"by {canceller.mention()}"
             m += "!"
-            await mssg_r.edit(m)
+            await msg_p.edit(m)
             if op:
                 await op.edit(m)
             queue.pop(list(queue.keys())[0])
@@ -276,7 +275,7 @@ async def thing():
         eut = time.time()
         utime = tf(eut - sut)
 
-        await mssg_r.delete()
+        await msg_p.delete()
         await op.delete() if op else None
         await up.copy(chat_id=log_channel) if log_channel else None
 

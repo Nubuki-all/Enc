@@ -21,13 +21,14 @@ from bot.utils.msg_utils import (
     enquoter,
     get_args,
     msg_sleep_delete,
+    try_delete,
     user_is_owner,
 )
 from bot.utils.os_utils import file_exists, qclean, re_x, s_remove, updater, x_or_66
 
 
 async def nuke(event, args, client):
-    """Kill bot"""
+    """Stop/Nuke bot."""
     if not user_is_owner(event.sender_id):
         return await event.delete()
     try:
@@ -37,7 +38,7 @@ async def nuke(event, args, client):
             return exit(1)
         rst = await event.reply("`Trying To Nuke ☣️`")
         await asyncio.sleep(1)
-        await rst.edit("`☢️ Nuking Please Wait…`")
+        await rst.edit("`☢️ Nuked!`")
         x_or_66()
     except Exception:
         await event.reply("Error Occurred")
@@ -45,7 +46,7 @@ async def nuke(event, args, client):
 
 
 async def restart(event, args, client):
-    """Restarts bot."""
+    """Restarts bot. (To avoid issues use /update instead.)"""
     if not user_is_owner(event.sender_id):
         return await event.delete()
     try:
@@ -62,6 +63,7 @@ async def restart(event, args, client):
 
 
 async def update2(client, message):
+    """Fetches latest update for bot"""
     try:
         if not user_is_owner(message.from_user.id):
             return message.delete()
@@ -586,8 +588,14 @@ async def pause(event, args, client):
         await logger(Exception)
 
 
-async def fc_forward(msg):
+async def fc_forward(msg, args, client):
     """Forwards replied message to FCHANNEL"""
+    if message.from_user:
+        if not user_is_owner(message.from_user.id):
+            return
+    else:
+        if message.chat.id != FCHANNEL:
+            return
     try:
         if not FCHANNEL:
             return await msg.reply("`FCHANNEL var not set.`")
@@ -595,6 +603,9 @@ async def fc_forward(msg):
             return await msg.reply("`Reply with a message to forward to FCHANNEL`")
         f_msg = msg.reply_to_message
         await f_msg.copy(chat_id=FCHANNEL)
-        await msg.reply("`Forwarded succesfully.`")
+        rep = await msg.reply("`Forwarded succesfully.`")
+        if args:
+            await try_delete(msg)
+            await try_delete(rep)
     except Exception:
         await logger(Exception)
