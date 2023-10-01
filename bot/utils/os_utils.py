@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import pickle
 import sys
 from pathlib import Path
 from subprocess import run as bashrun
