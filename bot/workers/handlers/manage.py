@@ -24,7 +24,15 @@ from bot.utils.msg_utils import (
     try_delete,
     user_is_owner,
 )
-from bot.utils.os_utils import file_exists, kill_process, qclean, re_x, s_remove, updater, x_or_66
+from bot.utils.os_utils import (
+    file_exists,
+    kill_process,
+    qclean,
+    re_x,
+    s_remove,
+    updater,
+    x_or_66,
+)
 
 
 async def nuke(event, args, client):
@@ -92,7 +100,7 @@ async def clean(event, args, client):
             Not advised if you're running multiple ffmpeg process.
     if 'queue' is specified;
         clears all queued items.
-            Not advised if encoding as already started, use /clear all instead 
+            Not advised if encoding as already started, use /clear all instead
     """
     if not user_is_owner(event.sender_id):
         return await event.delete()

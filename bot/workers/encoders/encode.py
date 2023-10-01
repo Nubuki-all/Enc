@@ -43,7 +43,7 @@ class Encoder:
                     [Button.inline("ℹ️", data=f"pres{wah}")],
                     [
                         Button.inline("Progress", data=f"stats0"),
-                        Button.inline("Server-info", data=f"stats1")
+                        Button.inline("Server-info", data=f"stats1"),
                     ],
                     [Button.inline("Cancel", data=f"skip{wah}")],
                 ],
