@@ -33,7 +33,7 @@ class Encoder:
         self.process = process
         return process
 
-    async def callback(self, dl, en, event, user, text=def_enc_msg, s_time=None):
+    async def callback(self, dl, en, event, user, text=def_enc_msg, stime=None):
         try:
             self.req_clean = True
             code(self.process, dl, en, user, stime, self.enc_id)
