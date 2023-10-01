@@ -72,7 +72,7 @@ async def get_leech_name(url):
             if download.followed_by_ids:
                 gid = download.followed_by_ids[0]
                 download = aria2.get_download(gid)
-            if c_time - time.time() > 60:
+            if time.time() - c_time > 300:
                 filename = "aria2_error E408: Getting filename timed out."
                 break
             if download.status == "error":
