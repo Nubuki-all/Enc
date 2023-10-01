@@ -98,14 +98,11 @@ else:
             local_users = pickle.load(file)
         for user in local_users:
             TEMP_USERS.append(user)
-        
-
-
 
 
 No_Flood = {}
 
-    
+
 class EnTimer:
     def __init__(self):
         self.ind_pause = LOCK_ON_STARTUP
