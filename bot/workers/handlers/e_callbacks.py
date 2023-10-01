@@ -109,7 +109,7 @@ async def stats(e):
         cpuUsage = psutil.cpu_percent(interval=0.5)
         if data == "0":
             ans = f"Downloaded:\n{ov}\n\nFileName:\n{input}\n\nEncoded:\n{ot}\n\nElapsed time:\n{elapsed}"
-        elif data = "1":
+        elif data == "1":
             ans = f"CPU: {cpuUsage}%\n\nTotal Disk Space:\n{total}\n\nBot Uptime:\n{currentTime}\n\nUsed: {used}  Free: {free}"
         elif data == "2":
             ans = f"CPU: {cpuUsage}%\n\nTotal Disk Space:\n{total}\n\nDownloaded:\n{ov}\n\nEncoded:\n{ot}\n\nElapsed:\n{elapsed}\n\nBot Uptime:\n{currentTime}\n\nUsed: {used}  Free: {free}"
