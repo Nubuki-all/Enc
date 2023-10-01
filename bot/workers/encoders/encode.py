@@ -5,7 +5,9 @@ from bot.fun.emojis import enmoji
 from bot.utils.bot_utils import code, decode
 from bot.utils.log_utils import logger
 
-def_enc_msg = enmoji() + " **Currently Encoding:**\n└`{}`\n\n**⏳This Might Take A While⏳**"
+def_enc_msg = (
+    enmoji() + " **Currently Encoding:**\n└`{}`\n\n**⏳This Might Take A While⏳**"
+)
 
 
 class Encoder:

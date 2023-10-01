@@ -1,4 +1,4 @@
-from bot import Path, asyncio, pyro, pyro_errors, tele, time
+from bot import Path, asyncio, pyro, tele, time
 from bot.config import CACHE_DL as cache
 from bot.config import DUMP_LEECH as dump
 from bot.config import ENCODER
@@ -136,9 +136,8 @@ async def thing():
         msg_p = await message.reply("`Download Pending…`", quote=True)
         await asyncio.sleep(2)
         msg_t = await tele.edit_message(
-            msg_p.chat_id,
-            msg_p.id,
-            "`Waiting for download handler…`")
+            msg_p.chat_id, msg_p.id, "`Waiting for download handler…`"
+        )
         # USER_MAN.clear()
         # USER_MAN.append(user)
         _id = f"{msg_t.chat_id}:{msg_t.id}"
@@ -167,7 +166,7 @@ async def thing():
                 raise (AlreadyDl)
 
             sdt = time.time()
-            #await mssg_r.edit("`Waiting for download to complete.`")
+            # await mssg_r.edit("`Waiting for download to complete.`")
             download = downloader(sender, op, uri=uri, dl_info=True)
             downloaded = await download.start(name, None, message, msg_p)
             if download.is_cancelled or download.download_error:

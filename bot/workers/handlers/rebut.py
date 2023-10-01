@@ -1,7 +1,16 @@
 import os
 import shutil
 
-from bot import Button, asyncio, home_dir, itertools, log_file_name, pyro_errors, thumb, time
+from bot import (
+    Button,
+    asyncio,
+    home_dir,
+    itertools,
+    log_file_name,
+    pyro_errors,
+    thumb,
+    time,
+)
 from bot.fun.emojis import enmoji
 from bot.utils.ani_utils import custcap, dynamicthumb, parse
 from bot.utils.bot_utils import (

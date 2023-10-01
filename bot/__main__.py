@@ -300,7 +300,10 @@ async def _(pyro, message):
     await event_handler(message, eval_message_p, tele, require_args=True)
 
 
-@pyro.on_message(filters.incoming & filters.command([f"fforward{cmd_suffix}", f"forward{cmd_suffix}"]))
+@pyro.on_message(
+    filters.incoming
+    & filters.command([f"fforward{cmd_suffix}", f"forward{cmd_suffix}"])
+)
 async def _(pyro, message):
     await event_handler(message, fc_forward)
 
