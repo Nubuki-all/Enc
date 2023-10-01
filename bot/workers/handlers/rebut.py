@@ -105,14 +105,16 @@ async def en_download(event, args, client):
             return await message.reply("`Not a valid link`")
         e = await message.reply(f"{enmoji()} `Downloading…`", quote=True)
         if args is not None:
+            arg = get_args(
+                ["-h", "store_true"],
+                to_parse=args,
+            )
             if args.endswith("?") and not message.text:
                 loc = args.rstrip("?") + message.caption
             elif args.endswith("/"):
                 _dir = args
-            elif args.startswith("-home") or args.endswith("-home"):
+            elif arg.h:
                 _dir = home_dir
-                reg = re.compile("(\\s*)-home(\\s*)")
-                loc = reg.sub("", args)
             else:
                 loc = args
         link = message.text if message.text else link
@@ -135,7 +137,7 @@ async def en_rename(event, args, client):
     Reply to a file/link to download,rename and upload it.
 
     Available flags:
-    -no_parse - disables anilist parsing.
+    -np - disables anilist parsing.
 
     To define file name send any of the below as arguments:
     "file_name" > str - custom name to rename to (if parsing is enabled this is parsed too)
@@ -159,10 +161,12 @@ async def en_rename(event, args, client):
         elif not (message.text or message.document or message.video):
             return await message.reply("`Kindly Reply to a link/video.`")
         link = message.text if message.text else None
-        if args and (args.endswith("-no_parse") or args.startswith("-no_parse")):
-            _parse = False
-            reg = re.compile("(\\s*)-no_parse(\\s*)")
-            args = reg.sub("", args)
+        if args:
+            arg = get_args(
+                ["-np", "store_false"],
+                to_parse=args,
+            )
+            _parse = arg.np
         if not args and not link:
             loc = rep_event.file.name
         elif args == "0" and not link:

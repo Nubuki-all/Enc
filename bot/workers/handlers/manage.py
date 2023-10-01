@@ -24,7 +24,7 @@ from bot.utils.msg_utils import (
     try_delete,
     user_is_owner,
 )
-from bot.utils.os_utils import file_exists, qclean, re_x, s_remove, updater, x_or_66
+from bot.utils.os_utils import file_exists, kill_process, qclean, re_x, s_remove, updater, x_or_66
 
 
 async def nuke(event, args, client):
@@ -83,13 +83,27 @@ async def clean(event, args, client):
         encoding processes
         cached files - if caching is enabled
 
-    Or if 'aria2' is specified;
-        clean only files downloaded by aria2
+    Or:
+    if 'aria2' is specified;
+        cleans only files downloaded by aria2
             Not advised if you're currently encoding.
+    if 'ffmpeg' is specified;
+        kills all ffmpeg processes
+            Not advised if you're running multiple ffmpeg process.
+    if 'queue' is specified;
+        clears all queued items.
+            Not advised if encoding as already started, use /clear all instead 
     """
     if not user_is_owner(event.sender_id):
         return await event.delete()
     try:
+        if args and args.casefold() == "ffmpeg":
+            kill_process("ffmpeg")
+            return await event.reply("Killed all ffmpeg processes.")
+        if args and args.casefold() == "queue":
+            get_queue().clear()
+            await save2db()
+            return await event.reply("Cleared ALL items on queue.")
         aria2 = get_aria2()
         if aria2:
             downloads = aria2.get_downloads()
