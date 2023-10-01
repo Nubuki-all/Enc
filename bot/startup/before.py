@@ -89,11 +89,23 @@ if DATABASE_URL:
 
 else:
     queuedb = ffmpegdb = filterdb = userdb = None
+    if file_exists("local_queue.pkl"):
+        with open("local_queue.pkl", "rb") as file:
+            local_queue = pickle.load(file)
+        QUEUE.update(local_queue)
+    if file_exists("t_users.pkl"):
+        with open("t_users.pkl", "rb") as file:
+            local_users = pickle.load(file)
+        for user in local_users:
+            TEMP_USERS.append(user)
+        
+
+
 
 
 No_Flood = {}
 
-
+    
 class EnTimer:
     def __init__(self):
         self.ind_pause = LOCK_ON_STARTUP

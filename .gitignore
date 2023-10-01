@@ -1,0 +1,4 @@
+.env
+*.pkl
+ffmpeg.txt
+filter.txt

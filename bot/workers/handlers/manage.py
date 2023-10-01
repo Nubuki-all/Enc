@@ -612,11 +612,11 @@ async def pause(event, args, client):
 
 async def fc_forward(msg, args, client):
     """Forwards replied message to FCHANNEL"""
-    if message.from_user:
-        if not user_is_owner(message.from_user.id):
+    if msg.from_user:
+        if not user_is_owner(msg.from_user.id):
             return
     else:
-        if message.chat.id != FCHANNEL:
+        if msg.chat.id != FCHANNEL:
             return
     try:
         if not FCHANNEL:

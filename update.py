@@ -38,12 +38,8 @@ def varssaver(evars, files):
         file.close()
 
 
-envp = Path(".env")
-ffmpegp = Path("ffmpeg.txt")
-filterp = Path("filter.txt")
-envars = varsgetter(envp)
-ffmpegs = varsgetter(ffmpegp)
-filters = varsgetter(filterp)
+r_filep = Path("Auto-rename.txt")
+rvars = varsgetter(r_filep)
 update_check = Path("update")
 
 try:
@@ -66,8 +62,8 @@ try:
             print('Something went wrong while updating,maybe invalid upstream repo?')
         if update_check.is_file():
             os.remove("update")
-        varssaver(envars, envp)
-        varssaver(ffmpegs, ffmpegp)
-        varssaver(filters, filterp)
+        varssaver(rvars, r_filep)
+    else:
+        print("Auto-update is disabled.")
 except Exception:
     traceback.print_exc()

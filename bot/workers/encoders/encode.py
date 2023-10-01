@@ -52,7 +52,7 @@ class Encoder:
                 code(self.process, dl, en, user, stime, self.log_enc_id)
                 sau = dl.split("/", maxsplit=1)[-1]
                 e_log = await self.log_msg.edit(
-                    f"**User:**\n└[{self.sender.first_name}](tg://user?id={user})\n\n**Currently Encoding:**\n└`{en}`\n\n**Source File:**\n└`{sau}`",
+                    f"**User:**\n└[{self.sender.first_name}](tg://user?id={user})\n\n**Currently Encoding:**\n└`{out}`\n\n**Source File:**\n└`{sau}`",
                     buttons=[
                         [Button.inline("ℹ️", data=f"pres{wah}")],
                         [Button.inline("CHECK PROGRESS", data=f"stats2")],

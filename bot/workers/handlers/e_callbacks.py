@@ -49,7 +49,7 @@ async def pres(e):
                 v, f = v_f if isinstance(v_f, tuple) else (v_f, None)
                 next2_ = "\n" + await qparse(file_name, v, f)
                 next2_ = (next2_[:45] + "…") if len(next2_) > 45 else next2_
-                next2_ = next2_ + f" (+{length - 2})" if length > 3 else next2_
+                next2_ = next2_ + f" (+{length - 3})" if length > 3 else next2_
             else:
                 next2_ = str()
             ansa += f"\n\nNext up:\n{next_}{next2_}\n\nRemains:- {length - 1}"
