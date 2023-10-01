@@ -44,7 +44,7 @@ async def pres(e):
             next_ = await qparse(file_name, v, f)
             next_ = (next_[:45] + "…") if len(next_) > 45 else next_
             if length > 2:
-                file_name, _id, v_f = list(queue.values())[1]
+                file_name, _id, v_f = list(queue.values())[2]
                 # Backwards compatibility:
                 v, f = v_f if isinstance(v_f, tuple) else (v_f, None)
                 next2_ = "\n" + await qparse(file_name, v, f)
