@@ -136,7 +136,7 @@ async def thing():
         msg_p = await message.reply("`Download Pending…`", quote=True)
         await asyncio.sleep(2)
         msg_t = await tele.edit_message(
-            msg_p.chat_id, msg_p.id, "`Waiting for download handler…`"
+            chat_id, msg_p.id, "`Waiting for download handler…`"
         )
         # USER_MAN.clear()
         # USER_MAN.append(user)
