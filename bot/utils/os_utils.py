@@ -9,9 +9,16 @@ import anitopy
 import psutil
 from html_telegraph_poster import TelegraphPoster
 
-from bot import DATABASE_URL, TELEGRAPH_API, TELEGRAPH_AUTHOR, signal, tele, version_file
+from bot import (
+    DATABASE_URL,
+    TELEGRAPH_API,
+    TELEGRAPH_AUTHOR,
+    signal,
+    tele,
+    version_file,
+)
 
-from .bot_utils import TEMP_USERS, list_to_str, get_queue
+from .bot_utils import TEMP_USERS, get_queue, list_to_str
 from .log_utils import log, logger
 
 
@@ -152,9 +159,9 @@ async def updater(msg=None):
             vmsg = False
 
         if not DATABASE_URL:
-            with open('local_queue.pkl', 'wb') as file:
+            with open("local_queue.pkl", "wb") as file:
                 pickle.dump(get_queue(), file)
-            with open('t_users.pkl', 'wb') as file:
+            with open("t_users.pkl", "wb") as file:
                 pickle.dump(list_to_str(TEMP_USERS), file)
 
         if msg:
