@@ -574,6 +574,11 @@ async def qparse(name, ver=None, fil=None):
     return (await parse(name, v=ver, _filter=fil))[0]
 
 
+async def qparse_t(name, ver=None, fil=None):
+    re = anitopy.parse(await qparse(name, ver, fil))
+    return re.get("anime_title")
+
+
 async def f_post(name, out, fcodec=None, mi=None, _filter=None):
     try:
         name = (await filter_name(name, _filter))[0]

@@ -9,7 +9,7 @@ from bot.config import FSTICKER as fs
 from bot.config import LOG_CHANNEL as log_channel
 from bot.others.exceptions import AlreadyDl
 from bot.startup.before import entime
-from bot.utils.ani_utils import custcap, dynamicthumb, f_post, parse, qparse
+from bot.utils.ani_utils import custcap, dynamicthumb, f_post, parse, qparse_t
 from bot.utils.bot_utils import CACHE_QUEUE as cached
 from bot.utils.bot_utils import E_CANCEL, get_queue, get_var, hbs
 from bot.utils.bot_utils import time_formatter as tf
@@ -83,12 +83,12 @@ async def forward_(name, out, ds, mi, f):
         return
     if not fb:
         queue = get_queue()
-        if not len(queue) < 2:
+        if len(queue) > 2:
             name, _none, v_f = list(queue.values())[0]
             name2, _none, v_f2 = list(queue.values())[1]
-            _pname = await qparse(name, v_f[0], v_f[1])
-            _pname2 = await qparse(name2, v_f2[0], v_f2[1])
-            if _pname.split("-", maxsplit=1)[0] == _pname2.split("-", maxsplit=1)[0]:
+            _pname = await qparse_t(name, v_f[0], v_f[1])
+            _pname2 = await qparse_t(name2, v_f2[0], v_f2[1])
+            if _pname == _pname2:
                 return
     try:
         await pyro.send_sticker(
