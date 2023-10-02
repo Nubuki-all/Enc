@@ -159,12 +159,6 @@ async def updater(msg=None):
         else:
             vmsg = False
 
-        if not DATABASE_URL:
-            with open("local_queue.pkl", "wb") as file:
-                pickle.dump(get_queue(), file)
-            with open("t_users.pkl", "wb") as file:
-                pickle.dump(list_to_str(TEMP_USERS), file)
-
         if msg:
             message = str(msg.chat.id) + ":" + str(msg.id)
             os.execl(

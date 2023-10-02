@@ -5,7 +5,8 @@ from pymongo import MongoClient
 from bot import *
 from bot.config import *
 from bot.utils.bot_utils import var
-from bot.utils.os_utils import file_exists, s_remove
+from bot.utils.local_db_utils import load_local_db
+from bot.utils.os_utils import file_exists
 
 attrs = dir(var)
 globals().update({n: getattr(var, n) for n in attrs if not n.startswith("_")})
@@ -90,19 +91,7 @@ if DATABASE_URL:
 else:
     queuedb = ffmpegdb = filterdb = userdb = None
 
-    if file_exists("local_queue.pkl"):
-        with open("local_queue.pkl", "rb") as file:
-            local_queue = pickle.load(file)
-        QUEUE.update(local_queue)
-
-    if file_exists("t_users.pkl"):
-        with open("t_users.pkl", "rb") as file:
-            local_users = pickle.load(file)
-        for user in local_users:
-            TEMP_USERS.append(user)
-
-    s_remove("local_queue.pkl", "t_users.pkl")
-
+    load_local_db()
 
 No_Flood = {}
 
