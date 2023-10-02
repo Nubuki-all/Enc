@@ -1,7 +1,6 @@
 import asyncio
 import json
 import os
-import pickle
 import sys
 from pathlib import Path
 from subprocess import run as bashrun
@@ -10,16 +9,8 @@ import anitopy
 import psutil
 from html_telegraph_poster import TelegraphPoster
 
-from bot import (
-    DATABASE_URL,
-    TELEGRAPH_API,
-    TELEGRAPH_AUTHOR,
-    signal,
-    tele,
-    version_file,
-)
+from bot import TELEGRAPH_API, TELEGRAPH_AUTHOR, signal, tele, version_file
 
-from .bot_utils import TEMP_USERS, get_queue, list_to_str
 from .log_utils import log, logger
 
 

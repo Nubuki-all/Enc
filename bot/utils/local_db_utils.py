@@ -1,8 +1,10 @@
 import pickle
 
 from bot import local_qdb, local_udb
+
 from .bot_utils import QUEUE, TEMP_USERS, list_to_str
 from .os_utils import file_exists
+
 
 def load_local_db():
     if file_exists(local_qdb):
