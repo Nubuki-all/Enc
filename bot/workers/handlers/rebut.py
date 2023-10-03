@@ -130,7 +130,7 @@ async def en_download(event, args, client):
         if not loc:
             loc = rep_event.file.name if not link else link
         _dir = "downloads/" if not _dir else _dir
-        _dir =+ str() if _dir.endswith("/") else "/"
+        _dir = +str() if _dir.endswith("/") else "/"
         await try_delete(event)
         download = downloader(uri=link, folder=_dir)
         await download.start(loc, 0, message, e)
