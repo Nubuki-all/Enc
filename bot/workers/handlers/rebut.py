@@ -400,7 +400,7 @@ async def en_mux(event, args, client):
         args = f'-i "{input_2}" ' + args if input_2 else args
         await asyncio.sleep(3)
         text = "**Currently Muxing:**\n└`{}`\n\n`using provided parameters…`"
-        cmd = f'ffmpeg -i "{dl}" {args} "{t_file}" -y'
+        cmd = f'''ffmpeg -i """{dl}""" {args} """{t_file}""" -y'''
         e_id = f"{e.chat_id}:{e.id}"
         stime = time.time()
         encode = encoder(e_id, event=event)
