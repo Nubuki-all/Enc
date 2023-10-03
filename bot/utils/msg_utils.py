@@ -169,7 +169,9 @@ async def edit_message(message, text):
     return edited
 
 
-class ArgumentParserError(Exception): pass
+class ArgumentParserError(Exception):
+    pass
+
 
 class ThrowingArgumentParser(argparse.ArgumentParser):
     def error(self, message):
