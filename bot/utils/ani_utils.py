@@ -265,6 +265,7 @@ async def parse(
     v=None,
     folder="downloads/",
     _filter=None,
+    ccodec=None,
 ):
     try:
         _parsed = anitopy.parse(name)
@@ -304,6 +305,7 @@ async def parse(
         _infile = folder + _file
         r_is_end = True if ri == "[END]" else False
         codec = await get_codec()
+        codec = ccodec or codec
         con = None
 
         try:

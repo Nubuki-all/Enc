@@ -421,6 +421,7 @@ async def en_mux(event, args, client):
             v=ver,
             folder=work_folder,
             _filter=_f,
+            ccodec=codec,
         )
         loc = work_folder + __out
         b, d, c, rlsgrp = await dynamicthumb(
