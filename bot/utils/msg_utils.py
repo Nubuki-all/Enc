@@ -189,11 +189,7 @@ def get_args(*args, to_parse, get_unknown=False):
             parser.add_argument(arg[0], action=arg[1], required=False)
         else:
             parser.add_argument(arg, type=str, required=False)
-    try:
-        flag, unknowns = parser.parse_known_args(line_split(to_parse))
-    except Exception:
-        logger(Exception)
-        return
+    flag, unknowns = parser.parse_known_args(line_split(to_parse))
     if get_unknown:
         unknown = " ".join(map(str, unknowns))
         return flag, unknown
