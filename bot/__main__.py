@@ -335,7 +335,7 @@ async def _(e):
 
 @tele.on(events.NewMessage(pattern=command(["queue -p"], ["/", "!"])))
 async def _(e):
-    await event_handler(e, listqueuep, require_args=True, split_args="-p")
+    await event_handler(e, listqueuep, require_args=True, split_args=f"-p{cmd_suffix}")
 
 
 ######## DEBUG #########
