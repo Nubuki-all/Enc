@@ -169,12 +169,19 @@ async def edit_message(message, text):
     return edited
 
 
+class ArgumentParserError(Exception): pass
+
+class ThrowingArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        raise ArgumentParserError(message)
+
+
 def line_split(line):
     return [t.strip("\"'") for t in re.findall(r'[^\s"]+|"[^"]*"', line)]
 
 
 def get_args(*args, to_parse, get_unknown=False):
-    parser = argparse.ArgumentParser(description="parse command flags")
+    parser = ThrowingArgumentParser(description="parse command flags")
     for arg in args:
         if isinstance(arg, list):
             parser.add_argument(arg[0], action=arg[1], required=False)
@@ -182,8 +189,8 @@ def get_args(*args, to_parse, get_unknown=False):
             parser.add_argument(arg, type=str, required=False)
     try:
         flag, unknowns = parser.parse_known_args(line_split(to_parse))
-    except SystemExit as e:
-        logger(e=e)
+    except Exception:
+        logger(Exception)
         return
     if get_unknown:
         unknown = " ".join(map(str, unknowns))
