@@ -87,9 +87,13 @@ async def en_download(event, args, client):
     Downloads the replied message: to a location (specified) locally
     Available arguments:
       End the args with '/' to specify the folder in which to download and let the bot use its filename
-          -path specified directly will be downloaded to download folder
-      End the args with a question mark and bot will use caption instead of filename
-      Add -home to args and bot will download file to working dir
+      or:
+        --dir DIR (Must be in double quotes.)
+        --home (To download to current working directory.)
+      --cap (To use download with caption instead of filename.)
+      if no other arg is given after dir, bot automatically downloads to given dir with default filename instead.
+
+      *path specified directly will be downloaded to download folder
     """
     if not user_is_owner(event.sender_id):
         return await event.delete()
@@ -105,16 +109,21 @@ async def en_download(event, args, client):
             return await message.reply("`Not a valid link`")
         e = await message.reply(f"{enmoji()} `Downloading…`", quote=True)
         if args is not None:
-            arg = get_args(
-                ["-h", "store_true"],
+            arg, args = get_args(
+                ["--home", "store_true"],
+                ["--cap", "store_true"],
+                "--dir",
                 to_parse=args,
+                get_unknown=True,
             )
-            if args.endswith("?") and not message.text:
-                loc = args.rstrip("?") + message.caption
-            elif args.endswith("/"):
+            if args.endswith("/"):
                 _dir = args
-            elif arg.h:
+            elif arg.home:
                 _dir = home_dir
+            elif arg.dir:
+                _dir = arg.dir
+            if arg.cap and not message.text:
+                loc = message.caption
             else:
                 loc = args
         link = message.text if message.text else link
@@ -162,9 +171,10 @@ async def en_rename(event, args, client):
             return await message.reply("`Kindly Reply to a link/video.`")
         link = message.text if message.text else None
         if args:
-            arg = get_args(
+            arg, args = get_args(
                 ["-np", "store_false"],
                 to_parse=args,
+                get_unknown=True,
             )
             _parse = arg.np
         if not args and not link:
