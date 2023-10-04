@@ -578,7 +578,7 @@ async def qparse(name, ver=None, fil=None):
 
 async def qparse_t(name, ver=None, fil=None):
     re = anitopy.parse(await qparse(name, ver, fil))
-    return re.get("anime_title")
+    return re.get("anime_title") + str().join(f" {x}" if x else str() for x in [re.get("anime_year"), re.get("anime_season")])
 
 
 async def f_post(name, out, fcodec=None, mi=None, _filter=None):

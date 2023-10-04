@@ -83,7 +83,7 @@ async def forward_(name, out, ds, mi, f):
         return
     if not fb:
         queue = get_queue()
-        if len(queue) > 2:
+        if len(queue) > 1:
             name, _none, v_f = list(queue.values())[0]
             name2, _none, v_f2 = list(queue.values())[1]
             _pname = await qparse_t(name, v_f[0], v_f[1])
