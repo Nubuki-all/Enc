@@ -169,7 +169,7 @@ async def en_rename(event, args, client):
         link = None
         _parse = True
         work_folder = "temp/"
-        _em = _q =  _tc = _tf = _v = None
+        _em = _q = _tc = _tf = _v = None
         rep_event = await event.get_reply_message()
         message = await client.get_messages(event.chat_id, int(rep_event.id))
         if message.text and not (is_url(message.text) or is_magnet(message.text)):
@@ -229,7 +229,14 @@ async def en_rename(event, args, client):
         loc = work_folder + __out
         await e.edit(f"Downloading to `{loc}` completed.")
         __pout, __pout1 = await parse(
-            __loc, __out, anilist=_parse, folder=work_folder, cust_con=_tf, v=_v, _filter=_f, ccodec=_q
+            __loc,
+            __out,
+            anilist=_parse,
+            folder=work_folder,
+            cust_con=_tf,
+            v=_v,
+            _filter=_f,
+            ccodec=_q,
         )
         if not __pout == __out:
             await asyncio.sleep(3)
@@ -243,7 +250,15 @@ async def en_rename(event, args, client):
         thumb3 = "thumb3.jpg"
         await dynamicthumb(__loc, thumb3, anilist=_parse, _filter=_f)
         cap = await custcap(
-            __loc, __out, anilist=_parse, cust_type=_tc, folder=work_folder, ccd=_em, ver=_v, _filter=_f, ccodec=_q
+            __loc,
+            __out,
+            anilist=_parse,
+            cust_type=_tc,
+            folder=work_folder,
+            ccd=_em,
+            ver=_v,
+            _filter=_f,
+            ccodec=_q,
         )
         upload = uploader(event.sender_id)
         await upload.start(event.chat_id, loc, e, thumb3, cap, message)
