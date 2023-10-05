@@ -148,6 +148,11 @@ async def en_rename(event, args, client):
 
     Available flags:
     -np - disables anilist parsing.
+    -e {emoji} customize emoji in caption
+    -q {quality} quality in codec
+    -tc {caption type} specify type in caption
+    -tf {file tag} specify file language tag.
+    -v {int} specify a number for versionimg
 
     To define file name send any of the below as arguments:
     "file_name" > str - custom name to rename to (if parsing is enabled this is parsed too)
@@ -164,6 +169,7 @@ async def en_rename(event, args, client):
         link = None
         _parse = True
         work_folder = "temp/"
+        _em = _q =  _tc = _tf = _v = None
         rep_event = await event.get_reply_message()
         message = await client.get_messages(event.chat_id, int(rep_event.id))
         if message.text and not (is_url(message.text) or is_magnet(message.text)):
@@ -174,10 +180,20 @@ async def en_rename(event, args, client):
         if args:
             arg, args = get_args(
                 ["-np", "store_false"],
+                "-e",
+                "-q",
+                "-tc",
+                "-tf",
+                "-v",
                 to_parse=args,
                 get_unknown=True,
             )
             _parse = arg.np
+            _em = arg.e
+            _q = arg.q
+            _tc = arg.tc
+            _tf = arg.tf
+            _v = arg.v
         if not args and not link:
             loc = rep_event.file.name
         elif args == "0" and not link:
@@ -213,7 +229,7 @@ async def en_rename(event, args, client):
         loc = work_folder + __out
         await e.edit(f"Downloading to `{loc}` completed.")
         __pout, __pout1 = await parse(
-            __loc, __out, anilist=_parse, folder=work_folder, _filter=_f
+            __loc, __out, anilist=_parse, folder=work_folder, cust_con=_tf, v=_v, _filter=_f, ccodec=_q
         )
         if not __pout == __out:
             await asyncio.sleep(3)
@@ -227,7 +243,7 @@ async def en_rename(event, args, client):
         thumb3 = "thumb3.jpg"
         await dynamicthumb(__loc, thumb3, anilist=_parse, _filter=_f)
         cap = await custcap(
-            __loc, __out, anilist=_parse, folder=work_folder, _filter=_f
+            __loc, __out, anilist=_parse, cust_type=_tc, folder=work_folder, ccd=_em, ver=_v, _filter=_f, ccodec=_q
         )
         upload = uploader(event.sender_id)
         await upload.start(event.chat_id, loc, e, thumb3, cap, message)
