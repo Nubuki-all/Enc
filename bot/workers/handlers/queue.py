@@ -7,6 +7,7 @@ from bot.utils.bot_utils import (
     bot_is_paused,
     get_f,
     get_filename,
+    get_pause_status,
     get_queue,
     get_v,
     get_var,
@@ -427,6 +428,7 @@ async def clearqueue(event, args, client):
     Now requires an argument to prevent accidents.
         - pass a number or a range of numbers representing a queue item or queue items to remove __(check with queue)__
         - pass 'all' (not case sensitive) remove all 'pending' queue items
+            if bot is paused, removes all queue items.
     """
     user = event.sender_id
     if not user_is_allowed(user):
@@ -472,7 +474,8 @@ async def clearqueue(event, args, client):
         msg = await event.reply(btch_clr_msg + reply)
     elif args.casefold() == "all":
         reply = str()
-        for key, i in zip(list(queue.keys())[1:], itertools.count(start=1)):
+        s = 0 if get_pause_status() == 0 else 1
+        for key, i in zip(list(queue.keys())[s:], itertools.count(start=1)):
             adder = (queue.get(key)[1])[0]
             if not user_is_owner(user) and user != adder:
                 continue

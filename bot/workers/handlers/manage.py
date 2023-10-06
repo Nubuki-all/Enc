@@ -496,7 +496,7 @@ async def filter(event, args, client):
         if not arg.f and not arg.t and not arg.c:
             return await event.reply(f"`{filter.__doc__}`")
 
-        f = arg.f if arg.f else "Not my problem."
+        f = arg.f if arg.f else "__disabled."
         t = arg.t if arg.t else "auto"
         c = arg.c if arg.c else "auto"
         temp = f"{f}\n{t}\n{c}"
