@@ -404,8 +404,8 @@ async def addqueue(event, args, client):
             return
         if event_2.text.startswith("/l"):
             args = (
-                event.text.split(split_args, maxsplit=1)[1].strip()
-                if len(event.text.split()) > 1
+                event_2.text.split(maxsplit=1)[1].strip()
+                if len(event_2.text.split()) > 1
                 else None
             )
             await enleech(event_2, args, client)
