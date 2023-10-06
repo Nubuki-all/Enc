@@ -280,6 +280,7 @@ peval{s} - same as eval but with pyrogram
 ping - ping!
 permit{s} - add a temporary user
 unpermit{s} - removes a temporary user
+add{s} - add video to queue
 l{s} - add link to queue
 queue{s} - list queue
 forward{s} - manually forward a message to fchannel

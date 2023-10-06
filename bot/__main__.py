@@ -46,7 +46,7 @@ from .workers.handlers.manage import (
     version2,
     vfilter,
 )
-from .workers.handlers.queue import clearqueue, enleech, listqueue, listqueuep, pencode
+from .workers.handlers.queue import addqueue, clearqueue, enleech, listqueue, listqueuep, pencode
 from .workers.handlers.rebut import (
     en_download,
     en_mux,
@@ -273,6 +273,11 @@ async def _(e):
 @tele.on(events.NewMessage(pattern=command(["leech", "l"])))
 async def _(e):
     await event_handler(e, enleech, pyro)
+
+
+@tele.on(events.NewMessage(pattern=command(["add", "releech"])))
+async def _(e):
+    await event_handler(e, addqueue, pyro)
 
 
 @tele.on(events.NewMessage(pattern=command(["download", "dl"], ["/", "!", "/"])))

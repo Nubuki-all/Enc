@@ -160,10 +160,7 @@ async def enleech(event, args, client):
     user_id = event.sender_id
     if not user_is_allowed(user_id):
         return
-    flag, args = get_args(
-        "-f", "-rm", "-tc", "-tf", "-v", to_parse=args, get_unknown=True
-    )
-    cust_fil = str()
+    cust_fil = cust_v = str()
     queue = get_queue()
     invalid_msg = "`Invalid torrent/direct link`"
     no_uri_msg = (
@@ -172,14 +169,22 @@ async def enleech(event, args, client):
     no_dl_spt_msg = "`File to download is…\neither not a video\nor is a batch torrent which is currently not supported.`"
     str_esc = string_escape
     ukn_err_msg = "`An unknown error occurred, might an internal issue with aria2.\nCheck logs for more info`"
-    if flag.rm or flag.tc or flag.tf:
-        cust_fil = flag.rm or "disabled__"
-        cust_fil += str().join(f"\n{x}" if x else "\nauto" for x in [flag.tf, flag.tc])
-    else:
-        cust_fil = str_esc(flag.f)
+    if args:
+        flag, args = get_args(
+            "-f", "-rm", "-tc", "-tf", "-v", to_parse=args, get_unknown=True
+        )
+        if flag.rm or flag.tc or flag.tf:
+            cust_fil = flag.rm or "disabled__"
+            cust_fil += str().join(f"\n{x}" if x else "\nauto" for x in [flag.tf, flag.tc])
+        else:
+            cust_fil = str_esc(flag.f)
+        cust_v = flag.v
     try:
         if event.is_reply:
             rep_event = await event.get_reply_message()
+            if rep_event.media:
+                await event.reply("**Warning:** `Use /add for files instead.`")
+                return await addqueue(event, args, client)
             if args:
                 if not args.isdigit():
                     return await event.reply(
@@ -191,7 +196,7 @@ async def enleech(event, args, client):
                         range(args), itertools.count(start=rep_event.id)
                     ):
                         event2 = await client.get_messages(event.chat_id, _id)
-                        if event2 is None:
+                        if event2.empty:
                             await event.reply(
                                 f"Resend uri links and try replying the first with /l or /leech again"
                             )
@@ -240,7 +245,7 @@ async def enleech(event, args, client):
                                 (chat_id, event2.id): [
                                     file_name,
                                     (user_id, event2),
-                                    (flag.v or get_v(), cust_fil or get_f()),
+                                    (cust_v or get_v(), cust_fil or get_f()),
                                 ]
                             }
                         )
@@ -288,7 +293,7 @@ async def enleech(event, args, client):
                 (chat_id, event.id): [
                     file_name,
                     (user_id, None),
-                    (flag.v or get_v(), cust_fil or get_f()),
+                    (cust_v or get_v(), cust_fil or get_f()),
                 ]
             }
         )
@@ -305,12 +310,12 @@ async def enleech(event, args, client):
         return await event.reply("An Unknown error Occurred.")
 
 
-async def pencode(message):
+async def pencode(message, args=None, sender_id=None, flag=None):
     try:
-        if not message.from_user:
+        if not (message.from_user or sender_id):
             return await msg_sleep_delete(message, f"`{enquip4()}`", time=20)
         chat_id = message.chat.id
-        sender_id = message.from_user.id
+        sender_id = sender_id or message.from_user.id
         if sender_id != chat_id and not get_var("groupenc"):
             return await msg_sleep_delete(
                 message,
@@ -328,19 +333,80 @@ async def pencode(message):
         for item in queue.values():
             if name in item:
                 return await xxx.edit("**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**")
+        cust_fil = cust_v = str()
+        if args:
+            if not flag:
+                flag, args = get_args(
+                    "-f", "-rm", "-tc", "-tf", "-v", to_parse=args, get_unknown=True
+                )
+            if flag.rm or flag.tc or flag.tf:
+                cust_fil = flag.rm or "disabled__"
+                cust_fil += str().join(f"\n{x}" if x else "\nauto" for x in [flag.tf, flag.tc])
+            else:
+                cust_fil = str_esc(flag.f)
+            cust_v = flag.v
         queue.update(
-            {(chat_id, message.id): [name, (sender_id, message), (get_v(), get_f())]}
+            {(chat_id, message.id): [name, (sender_id, message), (cust_v or get_v(), cust_fil or get_f())]}
         )
         await save2db()
         if len(queue) > 1 or bot_is_paused():
             await xxx.edit(
                 f"**Added To Queue ⏰, POS:** `{len(queue)-1}` \n`Please Wait , Encode will start soon`"
             )
+        await add_multi(message, args, sender_id, flag)
         return
-
     except BaseException:
         await logger(BaseException)
+    
 
+
+async def add_multi(message, args, sender_id, flag):
+    if args and args.isdigit():
+        args = int(args) - 1
+        if args < 1:
+            return
+        else:
+            args = str(args)
+        media = await message._client.get_messages(chat_id, message.id + 1)
+        if media.empty:
+            return
+        asyncio.create_task(pencode(media, args, sender_id, flag))
+        return 
+
+
+async def addqueue(event, args, client):
+    """
+    Add replied video to queue with args
+    Accepts the same argument as /l
+    can also be used to reuse a leech command
+    """
+    user_id = event.sender_id
+    if not user_is_allowed(user_id):
+        return
+    if not event.is_reply:
+        return event.reply("Command needs to be a replied message.")
+    try:
+        event_2 = await event.get_reply_message()
+        if event_2.media:
+            media = await client.get_messages(event.chat_id, event2.id)
+            if media.empty:
+                return await event.reply("Try again!")
+            await pencode(media, args, user_id)
+            return
+        if event_2.text.startswith("/l"):
+            args = (
+                event.text.split(split_args, maxsplit=1)[1].strip()
+                if len(event.text.split()) > 1
+                else None
+            )
+            await enleech(event_2, args, client)
+            return
+        await event.reply(addqueue.__doc__)
+    except Exception:
+        logger(Exception)
+    finally:
+        await try_delete(event)
+    
 
 async def clearqueue(event, args, client):
     """

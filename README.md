@@ -43,6 +43,7 @@ eval - evaluate code
 pause - prevent bot from encoding
 peval - same as eval but with pyrogram
 ping - ping!
+add - add video to queue
 l - add link to queue
 permit - add a temporary user
 unpermit - removes a temporary user
