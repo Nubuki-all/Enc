@@ -377,7 +377,7 @@ async def add_multi(message, args, sender_id, flag):
             return
         else:
             args = str(args)
-        media = await message._client.get_messages(chat_id, message.id + 1)
+        media = await message._client.get_messages(message.chat.id, message.id + 1)
         if media.empty:
             return
         asyncio.create_task(pencode(media, args, sender_id, flag))
