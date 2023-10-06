@@ -46,7 +46,14 @@ from .workers.handlers.manage import (
     version2,
     vfilter,
 )
-from .workers.handlers.queue import addqueue, clearqueue, enleech, listqueue, listqueuep, pencode
+from .workers.handlers.queue import (
+    addqueue,
+    clearqueue,
+    enleech,
+    listqueue,
+    listqueuep,
+    pencode,
+)
 from .workers.handlers.rebut import (
     en_download,
     en_mux,

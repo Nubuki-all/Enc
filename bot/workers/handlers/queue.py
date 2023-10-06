@@ -175,7 +175,9 @@ async def enleech(event, args, client):
         )
         if flag.rm or flag.tc or flag.tf:
             cust_fil = flag.rm or "disabled__"
-            cust_fil += str().join(f"\n{x}" if x else "\nauto" for x in [flag.tf, flag.tc])
+            cust_fil += str().join(
+                f"\n{x}" if x else "\nauto" for x in [flag.tf, flag.tc]
+            )
         else:
             cust_fil = str_esc(flag.f)
         cust_v = flag.v
@@ -341,12 +343,20 @@ async def pencode(message, args=None, sender_id=None, flag=None):
                 )
             if flag.rm or flag.tc or flag.tf:
                 cust_fil = flag.rm or "disabled__"
-                cust_fil += str().join(f"\n{x}" if x else "\nauto" for x in [flag.tf, flag.tc])
+                cust_fil += str().join(
+                    f"\n{x}" if x else "\nauto" for x in [flag.tf, flag.tc]
+                )
             else:
                 cust_fil = str_esc(flag.f)
             cust_v = flag.v
         queue.update(
-            {(chat_id, message.id): [name, (sender_id, message), (cust_v or get_v(), cust_fil or get_f())]}
+            {
+                (chat_id, message.id): [
+                    name,
+                    (sender_id, message),
+                    (cust_v or get_v(), cust_fil or get_f()),
+                ]
+            }
         )
         await save2db()
         if len(queue) > 1 or bot_is_paused():
@@ -357,7 +367,6 @@ async def pencode(message, args=None, sender_id=None, flag=None):
         return
     except BaseException:
         await logger(BaseException)
-    
 
 
 async def add_multi(message, args, sender_id, flag):
@@ -371,7 +380,7 @@ async def add_multi(message, args, sender_id, flag):
         if media.empty:
             return
         asyncio.create_task(pencode(media, args, sender_id, flag))
-        return 
+        return
 
 
 async def addqueue(event, args, client):
@@ -406,7 +415,7 @@ async def addqueue(event, args, client):
         logger(Exception)
     finally:
         await try_delete(event)
-    
+
 
 async def clearqueue(event, args, client):
     """
