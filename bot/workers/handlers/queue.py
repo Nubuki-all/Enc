@@ -397,7 +397,7 @@ async def addqueue(event, args, client):
     try:
         event_2 = await event.get_reply_message()
         if event_2.media:
-            media = await client.get_messages(event.chat_id, event2.id)
+            media = await client.get_messages(event.chat_id, event_2.id)
             if media.empty:
                 return await event.reply("Try again!")
             await pencode(media, args, user_id)
@@ -412,7 +412,7 @@ async def addqueue(event, args, client):
             return
         await event.reply(addqueue.__doc__)
     except Exception:
-        logger(Exception)
+        await logger(Exception)
     finally:
         await try_delete(event)
 
