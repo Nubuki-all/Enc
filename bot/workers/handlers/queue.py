@@ -163,6 +163,7 @@ async def enleech(event, args, client):
     if not user_is_allowed(user_id):
         return
     cust_fil = cust_v = str()
+    o_args = None
     queue = get_queue()
     invalid_msg = "`Invalid torrent/direct link`"
     no_uri_msg = (
@@ -171,6 +172,7 @@ async def enleech(event, args, client):
     no_dl_spt_msg = "`File to download is…\neither not a video\nor is a batch torrent which is currently not supported.`"
     ukn_err_msg = "`An unknown error occurred, might an internal issue with aria2.\nCheck logs for more info`"
     if args:
+        o_args = args
         flag, args = get_args(
             "-f", "-rm", "-tc", "-tf", "-v", to_parse=args, get_unknown=True
         )
@@ -187,7 +189,7 @@ async def enleech(event, args, client):
             rep_event = await event.get_reply_message()
             if rep_event.media:
                 await event.reply("**Warning:** `Use /add for files instead.`")
-                return await addqueue(event, args, client)
+                return await addqueue(event, o_args, client)
             if args:
                 if not args.isdigit():
                     return await event.reply(
@@ -380,6 +382,7 @@ async def add_multi(message, args, sender_id, flag):
         media = await message._client.get_messages(message.chat.id, message.id + 1)
         if media.empty:
             return
+        await asyncio.sleep(3)
         asyncio.create_task(pencode(media, args, sender_id, flag))
         return
 
