@@ -31,6 +31,9 @@ from bot.utils.queue_utils import get_queue_msg, q_dup_check, queue_status
 from bot.workers.downloaders.dl_helpers import get_leech_name
 
 
+str_esc = string_escape
+
+
 async def listqueue(event, args, client, deletable=True):
     """
     List items in queue in paged format
@@ -167,7 +170,6 @@ async def enleech(event, args, client):
         "`uhm you need to reply to or send command alongside a uri/direct link`"
     )
     no_dl_spt_msg = "`File to download is…\neither not a video\nor is a batch torrent which is currently not supported.`"
-    str_esc = string_escape
     ukn_err_msg = "`An unknown error occurred, might an internal issue with aria2.\nCheck logs for more info`"
     if args:
         flag, args = get_args(
