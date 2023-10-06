@@ -572,7 +572,7 @@ async def en_upload(event, args, client):
                 ],
             )
             _id = f"{ctrl.chat_id}:{ctrl.id}"
-            code(None, None, None, event.sender_id, _id)
+            code(user=event.sender_id, index=_id)
             f_jump = event
             _no = 0
             for path, subdirs, files in os.walk(file):
