@@ -1,8 +1,3 @@
-import uuid
-
-from pyrogram.filters import regex
-from pyrogram.handlers import CallbackQueryHandler
-
 from bot import *
 from bot.fun.emojis import enhearts, enmoji, enmoji2
 from bot.utils.bot_utils import UN_FINISHED_PROGRESS_STR as unfin_str
@@ -118,5 +113,3 @@ class Uploader:
                 await asyncio.sleep(e.value)
             except BaseException:
                 pass
-
-    

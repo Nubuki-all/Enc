@@ -274,7 +274,5 @@ pyro.add_handler(CallbackQueryHandler(dl_stat, filters=regex("^more")))
 
 
 pyro.add_handler(
-    CallbackQueryHandler(
-        upload_button_callback, filters=regex("^cancel_upload")
-    )
+    CallbackQueryHandler(upload_button_callback, filters=regex("^cancel_upload"))
 )
