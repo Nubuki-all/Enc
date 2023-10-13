@@ -66,7 +66,9 @@ class Uploader:
             decode(self.id, pop=True)
             await logger(Exception)
 
-    async def progress_for_pyrogram(self, current, total, app, ud_type, message, start, file_info):
+    async def progress_for_pyrogram(
+        self, current, total, app, ud_type, message, start, file_info
+    ):
         fin_str = enhearts()
         now = time.time()
         diff = now - start
@@ -94,7 +96,8 @@ class Uploader:
                 "━━━━━━━━━━━━━━━━━━━\n"
                 + progress
                 + "━━━━━━━━━━━━━━━━━━━\n"
-                + file_info + "\n"
+                + file_info
+                + "\n"
                 + "`{0} of {1}`\n**Speed:** `{2}/s`\n**ETA:** `{3}`\n**Elapsed:** `{4}`\n".format(
                     hbs(current),
                     hbs(total),
