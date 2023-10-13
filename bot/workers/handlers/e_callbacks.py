@@ -156,10 +156,10 @@ async def dl_stat(client, query):
         ver, fil = (list(queue.values())[0])[2]
         q = await qparse(d.file_name, ver, fil)
         ans = f"➡️:\n{q}"
-        ans = "\n\n"
-        ans = f'{"Current" if not d.uri else str()} Size:\n{ov}'
-        ans = "\n\n"
-        ans = f"Elapsed time:\n" + time_formatter(time.time() - d.time)
+        ans += "\n\n"
+        ans += f'{"Current" if not d.uri else str()} Size:\n{ov}'
+        ans += "\n\n"
+        ans += f"Elapsed time:\n" + time_formatter(time.time() - d.time)
         await query.answer(ans, cache_time=0, show_alert=True)
     except Exception:
         await logger(Exception)
