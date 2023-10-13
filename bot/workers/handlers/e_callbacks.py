@@ -20,8 +20,8 @@ from bot.utils.log_utils import logger
 from bot.utils.msg_utils import clean_old_message, user_is_owner
 from bot.utils.os_utils import file_exists, s_remove
 
-
 #######! ENCODE CALLBACK HANDLERS !#######
+
 
 async def pres(e):
     try:
@@ -132,9 +132,10 @@ async def stats(e):
 
 #######! DOWNLOAD CALLBACK HANDLERS !#######
 
+
 async def dl_stat(client, query):
     try:
-        data = query.data.split()
+        query.data.split()
         msg = query.message
         if not msg:
             return logger(e="Message too old!")
@@ -239,18 +240,8 @@ async def back(client, query):
 
 
 pyro.add_handler(
-    CallbackQueryHandler(
-        download_button_callback, filters=regex("^cancel_download")
-    )
+    CallbackQueryHandler(download_button_callback, filters=regex("^cancel_download"))
 )
-pyro.add_handler(
-    CallbackQueryHandler(
-        v_info, filters=regex("^dl_info")
-    )
-)
-pyro.add_handler(
-    CallbackQueryHandler(
-        back, filters=regex("^back")
-    )
-)
+pyro.add_handler(CallbackQueryHandler(v_info, filters=regex("^dl_info")))
+pyro.add_handler(CallbackQueryHandler(back, filters=regex("^back")))
 pyro.add_handler(CallbackQueryHandler(dl_stat, filters=regex("^more")))

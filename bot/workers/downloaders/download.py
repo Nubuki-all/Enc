@@ -1,28 +1,29 @@
-import uuid
-
 from bot import *
 from bot.fun.emojis import enhearts, enmoji, enmoji2
-from bot.others.exceptions import OldMessage
-from bot.utils.ani_utils import qparse
 from bot.utils.bot_utils import DISPLAY_DOWNLOAD
 from bot.utils.bot_utils import UN_FINISHED_PROGRESS_STR as unfin_str
 from bot.utils.bot_utils import (
     code,
     decode,
     get_aria2,
-    get_queue,
     hbs,
     replace_proxy,
     time_formatter,
     value_check,
 )
 from bot.utils.log_utils import logger
-from bot.utils.os_utils import file_exists, parse_dl, s_remove
+from bot.utils.os_utils import parse_dl, s_remove
 
 
 class Downloader:
     def __init__(
-        self, sender=123456, lc=None, _id=None, uri=False, dl_info=False, folder="downloads/"
+        self,
+        sender=123456,
+        lc=None,
+        _id=None,
+        uri=False,
+        dl_info=False,
+        folder="downloads/",
     ):
         self.sender = sender
         self.sender_is_id = False
@@ -55,7 +56,6 @@ class Downloader:
         if self.dl_info:
             self.callback_data_i = "dl_info"
             self.callback_data_b = "back"
-
 
     def __str__(self):
         return "#wip"
@@ -110,7 +110,7 @@ class Downloader:
     async def start(self, dl, file, message="", e=""):
         try:
             self.file_name = dl
-            code(self,  index=self.id)
+            code(self, index=self.id)
             if self.uri:
                 return await self.start2(dl, file, message, e)
             await self.log_download()
@@ -156,7 +156,7 @@ class Downloader:
             return dl_task
 
         except Exception:
-            decode(self.id, pop =True)
+            decode(self.id, pop=True)
             await logger(Exception)
             return None
 

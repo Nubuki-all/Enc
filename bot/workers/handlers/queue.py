@@ -38,16 +38,14 @@ async def listqueue(event, args, client, deletable=True):
     """
     List items in queue in paged format
     with 10 items per page.
-    
+
     Argument:
      -p (for parsed queue)
        Not live (Doesn't reflect changes to actual queue)
        for additional help send without additional arguments
     """
     if args:
-        flag, args = get_args(
-            ["-p", "store_true"], to_parse=args, get_unknown=True
-        )
+        flag, args = get_args(["-p", "store_true"], to_parse=args, get_unknown=True)
         if flag.p:
             if not args:
                 return await event.reply(f"`{listqueuep.__doc__}`")

@@ -503,9 +503,7 @@ async def filter(event, args, client):
         with open(filter_file, "w") as file:
             file.write(temp)
         await save2db2(temp, "filter")
-        await event.reply(
-            "**Changed filters Successfully!**."
-        )
+        await event.reply("**Changed filters Successfully!**.")
         await asyncio.sleep(2)
         await vfilter(event, args, client)
     except Exception:
