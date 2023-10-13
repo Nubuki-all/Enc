@@ -216,12 +216,15 @@ class Downloader:
                 round(percentage, 2),
             )
 
-            tmp = progress + "`{0} of {1}`\n**Speed:** `{2}/s`\n**ETA:** `{3}`\n**Elapsed:** `{4}`\n".format(
-                hbs(current),
-                hbs(total),
-                hbs(speed),
-                time_to_completion if time_to_completion else "0 s",
-                elapsed_time if elapsed_time != '' else "0 s",
+            tmp = (
+                progress
+                + "`{0} of {1}`\n**Speed:** `{2}/s`\n**ETA:** `{3}`\n**Elapsed:** `{4}`\n".format(
+                    hbs(current),
+                    hbs(total),
+                    hbs(speed),
+                    time_to_completion if time_to_completion else "0 s",
+                    elapsed_time if elapsed_time != "" else "0 s",
+                )
             )
             try:
                 # Attach the button to the message with an inline keyboard
