@@ -553,7 +553,9 @@ async def en_upload(event, args, client):
         u_can_msg = "`Folder upload has been force cancelled`"
         message = await client.get_messages(event.chat_id, int(event.id))
         chain_msg = message
-        arg, args = get_args("-f", ["-s", "store_true"], to_parse=args, get_unknown=True)
+        arg, args = get_args(
+            "-f", ["-s", "store_true"], to_parse=args, get_unknown=True
+        )
         await try_delete(event) if arg.s else None
         if arg.f:
             file = arg.f
