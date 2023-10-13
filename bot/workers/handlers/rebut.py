@@ -132,7 +132,8 @@ async def en_download(event, args, client):
         _dir = "downloads/" if not _dir else _dir
         _dir += str() if _dir.endswith("/") else "/"
         await try_delete(event)
-        download = downloader(uri=link, folder=_dir)
+        d_id = f"{e.chat.id}:{e.id}"
+        download = downloader(_id=d_id, uri=link, folder=_dir)
         await download.start(loc, 0, message, e)
         if download.is_cancelled or download.download_error:
             return await report_failed_download(download, e, loc, event.sender_id)
@@ -222,7 +223,8 @@ async def en_rename(event, args, client):
         loc = __out
         e = await message.reply(f"{enmoji()} `Downloading to {loc}…`", quote=True)
         await asyncio.sleep(5)
-        download = downloader(uri=link, folder=work_folder)
+        d_id = f"{e.chat.id}:{e.id}"
+        download = downloader(_id=d_id, uri=link, folder=work_folder)
         downloaded = await download.start(loc, 0, message, e)
         if download.is_cancelled or download.download_error:
             return await report_failed_download(download, e, __out, user)
@@ -407,7 +409,8 @@ async def en_mux(event, args, client):
             await wait_for_turn(turn_id, w_msg)
         e = await message.reply(f"{enmoji()} `Downloading to {dl}…`", quote=True)
         await asyncio.sleep(5)
-        download = downloader(uri=link, folder=work_folder)
+        d_id = f"{e.chat.id}:{e.id}"
+        download = downloader(_id=d_id, uri=link, folder=work_folder)
         downloaded = await download.start(name, 0, message, e)
         if download.is_cancelled or download.download_error:
             s_remove(dl)
@@ -417,7 +420,7 @@ async def en_mux(event, args, client):
             await asyncio.sleep(3)
             await e.edit(f"{enmoji()} `Downloading second input to {input_2}…`")
             await asyncio.sleep(5)
-            download2 = downloader(uri=link2, folder=work_folder)
+            download2 = downloader(_id=d_id, uri=link2, folder=work_folder)
             downloaded2 = await download2.start(name_2, 0, message_2, e)
             if download2.is_cancelled or download2.download_error:
                 s_remove(dl)
@@ -502,7 +505,9 @@ async def en_mux(event, args, client):
             _filter=_f,
             ccodec=codec,
         )
+        await e.delete()
         await asyncio.sleep(5)
+        e = await message.reply("…")
         upload = uploader(user)
         await upload.start(event.chat_id, loc, e, thumb3, cap, message)
         if not upload.is_cancelled:
@@ -554,7 +559,8 @@ async def en_upload(event, args, client):
                 "`Preparing to download file from link…`",
                 quote=True,
             )
-            download = downloader(uri=args, folder=folder)
+            d_id = f"{dl.chat.id}:{dl.id}"
+            download = downloader(_id=d_id, uri=args, folder=folder)
             downloaded = await download.start(None, None, True, dl)
             if download.is_cancelled or download.download_error:
                 return await report_failed_download(
@@ -572,7 +578,7 @@ async def en_upload(event, args, client):
                 ],
             )
             _id = f"{ctrl.chat_id}:{ctrl.id}"
-            code(user=event.sender_id, index=_id)
+            code(data=0, user=event.sender_id, index=_id)
             f_jump = event
             _no = 0
             for path, subdirs, files in os.walk(file):

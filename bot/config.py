@@ -53,7 +53,6 @@ try:
     OWNER = config("OWNER")
     PAUSE_ON_DL_INFO = config("PODI", default=True, cast=bool)
     RELEASER = config("RELEASER", default="A-M|ANi-MiNE")
-    REP_PROXY = config("REP_PROXY", default=None)
     TELEGRAPH_API = config("TELEGRAPH_API", default="https://api.telegra.ph")
     TELEGRAPH_AUTHOR = config("TELEGRAPH_AUTHOR", default=None)
     TEMP_USER = config("TEMP_USERS", default=str())

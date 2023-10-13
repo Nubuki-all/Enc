@@ -38,12 +38,21 @@ async def listqueue(event, args, client, deletable=True):
     """
     List items in queue in paged format
     with 10 items per page.
-
-    Takes no argument.
-    Not to be confused with /queue -p (different command)
+    
+    Argument:
+     -p (for parsed queue)
+       Not live (Doesn't reflect changes to actual queue)
+       for additional help send without additional arguments
     """
     if args:
-        return
+        flag, args = get_args(
+            ["-p", "store_true"], to_parse=args, get_unknown=True
+        )
+        if flag.p:
+            if not args:
+                return await event.reply(f"`{listqueuep.__doc__}`")
+            return await listqueuep(event, args, client)
+        return await event.reply(f"Unknown args: {args}")
     if deletable:
         if not (user_is_allowed(event.sender_id) or not deletable):
             return await try_delete(event)

@@ -56,7 +56,7 @@ async def info(file):
         # stdout=subprocess.PIPE,
         # stderr=subprocess.STDOUT,
         # )
-        cmd = f'mediainfo """{file}""" --Output=HTML'
+        cmd = "mediainfo " f'"{file}"' " --Output=HTML"
         proc, stdout, stderr = await enshell(cmd)
         if stderr and not stdout:
             raise Exception(stderr)
@@ -140,7 +140,7 @@ async def updater(msg=None):
         with open(version_file, "r") as file:
             ver = file.read()
         await qclean()
-        os.system("touch update")
+        Path("update").touch()
         bashrun(["python3", "update.py"])
         with open(version_file, "r") as file:
             ver2 = file.read()

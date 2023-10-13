@@ -466,13 +466,13 @@ async def filter(event, args, client):
     Another filter command. (Not to be confused with namefilter)
     Unlike namefilter this targets the file_name and is universal.
     Requires the Following arguments:
-        -f {what to remove} removes the specified string from all filenames
+        -rm {what to remove} removes the specified string from all filenames
             can be used with multiple items each separated/delimited with '|'
-        -t {filetag}
+        -tf {filetag}
             • … <str> (force tag all file as your input without the '[]')
             • disable <str> (to disable)
             • auto <str> (tag files as usual) (default behaviour if argument is not specified)
-        -c {captag}
+        -tc {captag}
             • … <str> (tag all captions as …)
             • disable <str> (to disable)
             • auto <str> (tag captions as usual) (default if not specified.)
@@ -492,20 +492,22 @@ async def filter(event, args, client):
     if not user_is_owner(event.sender_id):
         return await event.delete()
     try:
-        arg = get_args("-f", "-t", "-c", to_parse=args)
+        arg = get_args("-rm", "-tc", "-tf", to_parse=args)
         if not arg.f and not arg.t and not arg.c:
             return await event.reply(f"`{filter.__doc__}`")
 
-        f = arg.f if arg.f else "__disabled."
-        t = arg.t if arg.t else "auto"
-        c = arg.c if arg.c else "auto"
+        f = arg.rm or "__disabled."
+        t = arg.tf or "auto"
+        c = arg.tc or "auto"
         temp = f"{f}\n{t}\n{c}"
         with open(filter_file, "w") as file:
             file.write(temp)
         await save2db2(temp, "filter")
         await event.reply(
-            "**Changed filters Successfully!**\n" "`To view send /vfilter`."
+            "**Changed filters Successfully!**."
         )
+        await asyncio.sleep(2)
+        await vfilter(event, args, client)
     except Exception:
         await event.reply("Error Occurred")
         await logger(Exception)

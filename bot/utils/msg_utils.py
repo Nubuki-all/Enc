@@ -59,16 +59,10 @@ def waiting_for_turn():
     return turn() and len(turn()) > 1
 
 
-async def clean_old_message(e, reply=False):
+async def clean_old_message(e, pyro=False):
     await e.answer("⛔ Old button.  Removing…")
     await asyncio.sleep(5)
-    if reply:
-        try:
-            rep_e = await (await e.get_message()).get_reply_message()
-            await rep_e.delete()
-        except Exception:
-            pass
-    await e.delete()
+    await e.delete() if not pyro else await e.message.delete()
     return
 
 

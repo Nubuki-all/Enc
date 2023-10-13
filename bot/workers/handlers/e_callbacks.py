@@ -3,8 +3,10 @@ import shutil
 from pathlib import Path
 
 import psutil
+from pyrogram.filters import regex
+from pyrogram.handlers import CallbackQueryHandler
 
-from bot import asyncio, botStartTime, time
+from bot import asyncio, botStartTime, pyro, time
 from bot.utils.ani_utils import qparse
 from bot.utils.bot_utils import (
     decode,
@@ -18,6 +20,8 @@ from bot.utils.log_utils import logger
 from bot.utils.msg_utils import clean_old_message, user_is_owner
 from bot.utils.os_utils import file_exists, s_remove
 
+
+#######! ENCODE CALLBACK HANDLERS !#######
 
 async def pres(e):
     try:
@@ -124,3 +128,129 @@ async def stats(e):
             info,
             alert=True,
         )
+
+
+#######! DOWNLOAD CALLBACK HANDLERS !#######
+
+async def dl_stat(client, query):
+    try:
+        data = query.data.split()
+        msg = query.message
+        if not msg:
+            return logger(e="Message too old!")
+        if msg.empty:
+            return logger(e="An error occurred while fetching message details.")
+        _id = f"{msg.chat.id}:{msg.id}"
+        req_info = decode(_id)
+        if not req_info:
+            return await clean_old_message(query, True)
+        d = req_info[0]
+        dl = d.dl_folder + d.file_name
+        if file_exists(dl):
+            dls = dl
+        else:
+            dls = f"{dl}.temp"
+        ov = hbs(int(Path(dls).stat().st_size))
+        queue = get_queue()
+        ver, fil = (list(queue.values())[0])[2]
+        q = await qparse(name, ver, fil)
+        ans = f"➡️:\n{q}"
+        ans = "\n\n"
+        ans = f'{"Current" if not d.uri else str()} Size:\n{ov}'
+        ans = "\n\n"
+        ans = f"Elapsed time:\n" + time_formatter(time.time() - d.time)
+        await query.answer(ans, cache_time=0, show_alert=True)
+    except Exception:
+        await logger(Exception)
+        ans = "Yikes 😬"
+        await query.answer(ans, cache_time=0, show_alert=True)
+
+
+async def download_button_callback(client, callback_query):
+    try:
+        msg = callback_query.message
+        if not msg:
+            return logger(e="Message too old!")
+        if msg.empty:
+            return logger(e="An error occurred while fetching message details.")
+        _id = f"{msg.chat.id}:{msg.id}"
+        req_info = decode(_id)
+        if not req_info:
+            return await clean_old_message(callback_query, True)
+        d = req_info[0]
+        if not (
+            user_is_owner(callback_query.from_user.id)
+            or callback_query.from_user.id == d.sender
+        ):
+            return await callback_query.answer(
+                "You're not allowed to do this!", show_alert=False
+            )
+        d.is_cancelled = True
+        d.canceller = await pyro.get_users(callback_query.from_user.id)
+        await callback_query.answer(
+            "Cancelling download please wait…", show_alert=False
+        )
+    except Exception:
+        await logger(Exception)
+
+
+async def v_info(client, query):
+    try:
+        msg = query.message
+        if not msg:
+            return logger(e="Message too old!")
+        if msg.empty:
+            return logger(e="An error occurred while fetching message details.")
+        _id = f"{msg.chat.id}:{msg.id}"
+        req_info = decode(_id)
+        if not req_info:
+            return await clean_old_message(query, True)
+        d = req_info[0]
+        if not (user_is_owner(query.from_user.id) or query.from_user.id == d.sender):
+            return await query.answer(
+                "You're not allowed to do this!", show_alert=False
+            )
+        await query.answer("Please wait…")
+        d.display_dl_info = True
+    except Exception:
+        await logger(Exception)
+
+
+async def back(client, query):
+    try:
+        msg = query.message
+        if not msg:
+            return logger(e="Message too old!")
+        if msg.empty:
+            return logger(e="An error occurred while fetching message details.")
+        _id = f"{msg.chat.id}:{msg.id}"
+        req_info = decode(_id)
+        if not req_info:
+            return await clean_old_message(query, True)
+        d = req_info[0]
+        if not (user_is_owner(query.from_user.id) or query.from_user.id == d.sender):
+            return await query.answer(
+                "You're not allowed to do this!", show_alert=False
+            )
+        await query.answer("Please wait…")
+        d.display_dl_info = False
+    except Exception:
+        await logger(Exception)
+
+
+pyro.add_handler(
+    CallbackQueryHandler(
+        download_button_callback, filters=regex("^cancel_download")
+    )
+)
+pyro.add_handler(
+    CallbackQueryHandler(
+        v_info, filters=regex("^dl_info")
+    )
+)
+pyro.add_handler(
+    CallbackQueryHandler(
+        back, filters=regex("^back")
+    )
+)
+pyro.add_handler(CallbackQueryHandler(dl_stat, filters=regex("^more")))

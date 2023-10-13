@@ -1,4 +1,9 @@
 .env
+*.jpg
 *.pkl
+*.png
 ffmpeg.txt
 filter.txt
+replace_proxy.txt
+NO_CAPTION
+NO_PARSE

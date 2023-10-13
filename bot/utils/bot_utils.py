@@ -3,7 +3,7 @@ import zlib
 from pathlib import Path
 from re import match as re_match
 
-from bot import REP_PROXY, asyncio, caption_file, dt, filter_file, itertools
+from bot import asyncio, caption_file, dt, filter_file, itertools
 
 
 class Var_list:
@@ -161,12 +161,19 @@ def is_url(url):
 
 
 def replace_proxy(url):
-    if not url:
+    file = "replace_proxy.txt"
+    if not (url and Path(file).is_file()):
         return url
-    if not (REP_PROXY and len(REP_PROXY.split()) > 1):
-        return url
-    d_search, proxy = REP_PROXY.split()
-    url = url.replace(d_search, proxy)
+    with open(file, "r") as file:
+        rep_proxies = file.read().splitlines()
+    for rep_proxy in rep_proxies:
+        if not (rep_proxy and len(rep_proxy.split()) > 1):
+            return url
+        d_search, proxy = rep_proxy.split()
+        if d_search not in url:
+            continue
+        url = url.replace(d_search, proxy)
+        break
     return url
 
 
