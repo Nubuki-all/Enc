@@ -12,16 +12,12 @@ from bot.utils.os_utils import file_exists
 
 
 class Uploader:
-    def __init__(self, sender=123456):
+    def __init__(self, sender=123456, _id=None):
         self.sender = int(sender)
-        self.callback_data = "cancel_upload" + str(uuid.uuid4())
+        self.callback_data = "cancel_upload"
         self.is_cancelled = False
+        self.id = _id
         self.canceller = None
-        self.handler = pyro.add_handler(
-            CallbackQueryHandler(
-                self.upload_button_callback, filters=regex("^" + self.callback_data)
-            )
-        )
 
     def __str__(self):
         return "#wip"
@@ -33,6 +29,7 @@ class Uploader:
                     thum = None
                 else:
                     thum = thumb
+            code(self, index=self.id)
             async with tele.action(from_user_id, "file"):
                 await reply.edit("🔺Uploading🔺")
                 u_start = time.time()
@@ -49,7 +46,7 @@ class Uploader:
                         u_start,
                     ),
                 )
-            pyro.remove_handler(*self.handler)
+            decode(self.id, pop=True)
             return s
         except pyro_errors.BadRequest:
             await reply.edit(f"`Failed {enmoji2()}\nRetrying in 10 seconds…`")
@@ -67,7 +64,7 @@ class Uploader:
             return s
 
         except Exception:
-            pyro.remove_handler(*self.handler)
+            decode(self.id, pop=True)
             await logger(Exception)
 
     async def progress_for_pyrogram(self, current, total, app, ud_type, message, start):
@@ -122,15 +119,4 @@ class Uploader:
             except BaseException:
                 pass
 
-    async def upload_button_callback(self, client, callback_query):
-        # if callback_query.data == "cancel_upload":
-        if (
-            str(callback_query.from_user.id) not in OWNER
-            and callback_query.from_user.id != self.sender
-        ):
-            return await callback_query.answer(
-                "You're not allowed to do this!", show_alert=False
-            )
-        self.is_cancelled = True
-        self.canceller = callback_query.from_user.id
-        await callback_query.answer("Cancelling upload please wait…", show_alert=False)
+    

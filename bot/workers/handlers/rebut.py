@@ -262,7 +262,7 @@ async def en_rename(event, args, client):
             _filter=_f,
             ccodec=_q,
         )
-        upload = uploader(event.sender_id)
+        upload = uploader(event.sender_id, d_id)
         await upload.start(event.chat_id, loc, e, thumb3, cap, message)
         if not upload.is_cancelled:
             await e.edit(f"`{__out}` __uploaded successfully.__")
@@ -508,7 +508,8 @@ async def en_mux(event, args, client):
         await e.delete()
         await asyncio.sleep(5)
         e = await message.reply("…")
-        upload = uploader(user)
+        u_id = f"{e.chat.id}:{e.id}"
+        upload = uploader(user, u_id)
         await upload.start(event.chat_id, loc, e, thumb3, cap, message)
         if not upload.is_cancelled:
             await e.edit(f"`{__out}` __uploaded successfully.__")
@@ -608,8 +609,9 @@ async def en_upload(event, args, client):
                                 f"**from 📁:**\n `{path}`\n`({t}/{i})`…",
                                 quote=True,
                             )
+                            u_id = f"{ul.chat.id}:{ul.id}"
                             await asyncio.sleep(10)
-                            upload = uploader()
+                            upload = uploader(_id=u_id)
                             d_msg = await upload.start(
                                 event.chat_id,
                                 file,

@@ -253,7 +253,7 @@ async def thing():
         fname = out.split("/")[1]
         pcap = await custcap(name, fname, ver=v, encoder=ENCODER, _filter=f)
         await op.edit(f"`Uploading…` `{out}`") if op else None
-        upload = uploader(sender_id)
+        upload = uploader(sender_id, _id)
         up = await upload.start(msg_t.chat_id, out, msg_p, thumb2, pcap, message)
         if upload.is_cancelled:
             m = f"`Upload of {out} was cancelled`"

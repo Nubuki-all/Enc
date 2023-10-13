@@ -138,9 +138,9 @@ async def dl_stat(client, query):
         query.data.split()
         msg = query.message
         if not msg:
-            return logger(e="Message too old!")
+            return await logger(e="Message too old!")
         if msg.empty:
-            return logger(e="An error occurred while fetching message details.")
+            return await logger(e="An error occurred while fetching message details.")
         _id = f"{msg.chat.id}:{msg.id}"
         req_info = decode(_id)
         if not req_info:
@@ -154,7 +154,7 @@ async def dl_stat(client, query):
         ov = hbs(int(Path(dls).stat().st_size))
         queue = get_queue()
         ver, fil = (list(queue.values())[0])[2]
-        q = await qparse(name, ver, fil)
+        q = await qparse(d.file_name, ver, fil)
         ans = f"➡️:\n{q}"
         ans = "\n\n"
         ans = f'{"Current" if not d.uri else str()} Size:\n{ov}'
@@ -171,9 +171,9 @@ async def download_button_callback(client, callback_query):
     try:
         msg = callback_query.message
         if not msg:
-            return logger(e="Message too old!")
+            return await logger(e="Message too old!")
         if msg.empty:
-            return logger(e="An error occurred while fetching message details.")
+            return await logger(e="An error occurred while fetching message details.")
         _id = f"{msg.chat.id}:{msg.id}"
         req_info = decode(_id)
         if not req_info:
@@ -199,9 +199,9 @@ async def v_info(client, query):
     try:
         msg = query.message
         if not msg:
-            return logger(e="Message too old!")
+            return await logger(e="Message too old!")
         if msg.empty:
-            return logger(e="An error occurred while fetching message details.")
+            return await logger(e="An error occurred while fetching message details.")
         _id = f"{msg.chat.id}:{msg.id}"
         req_info = decode(_id)
         if not req_info:
@@ -221,9 +221,9 @@ async def back(client, query):
     try:
         msg = query.message
         if not msg:
-            return logger(e="Message too old!")
+            return await logger(e="Message too old!")
         if msg.empty:
-            return logger(e="An error occurred while fetching message details.")
+            return await logger(e="An error occurred while fetching message details.")
         _id = f"{msg.chat.id}:{msg.id}"
         req_info = decode(_id)
         if not req_info:
@@ -239,9 +239,42 @@ async def back(client, query):
         await logger(Exception)
 
 
+async def upload_button_callback(self, client, callback_query):
+    try:
+        msg = callback_query.message
+        if not msg:
+            return await logger(e="Message too old!")
+        if msg.empty:
+            return await logger(e="An error occurred while fetching message details.")
+        _id = f"{msg.chat.id}:{msg.id}"
+        req_info = decode(_id)
+        if not req_info:
+            return await clean_old_message(callback_query, True)
+        d = req_info[0]
+        if not (
+            user_is_owner(callback_query.from_user.id)
+            or callback_query.from_user.id == d.sender
+        ):
+            return await callback_query.answer(
+                "You're not allowed to do this!", show_alert=False
+            )
+        d.is_cancelled = True
+        d.canceller = callback_query.from_user.id
+        await callback_query.answer("Cancelling upload please wait…", show_alert=False)
+    except Exception:
+        await logger(Exception)
+
+
 pyro.add_handler(
     CallbackQueryHandler(download_button_callback, filters=regex("^cancel_download"))
 )
 pyro.add_handler(CallbackQueryHandler(v_info, filters=regex("^dl_info")))
 pyro.add_handler(CallbackQueryHandler(back, filters=regex("^back")))
 pyro.add_handler(CallbackQueryHandler(dl_stat, filters=regex("^more")))
+
+
+pyro.add_handler(
+    CallbackQueryHandler(
+        upload_button_callback, filters=regex("^cancel_upload")
+    )
+)
