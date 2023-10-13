@@ -540,6 +540,9 @@ async def en_upload(event, args, client):
         - the folder path
         - direct link
         - torrent/magnet link
+        -
+            -s (optional argument)
+            cleans command and remits no message as to what or how many files were uploaded.
         as argument.
     """
     if not user_is_owner(event.sender_id):
@@ -549,9 +552,9 @@ async def en_upload(event, args, client):
         uri = None
         u_can_msg = "`Folder upload has been force cancelled`"
         message = await client.get_messages(event.chat_id, int(event.id))
-        file = args
         chain_msg = message
-        arg = get_args("-f", to_parse=args)
+        arg, args = get_args("-f", ["-s", "store_true"], to_parse=args, get_unknown=True)
+        await try_delete(event) if arg.s else None
         if arg.f:
             file = arg.f
         elif is_url(args) or is_magnet(args):
@@ -569,6 +572,8 @@ async def en_upload(event, args, client):
                 )
             await dl.delete()
             file = folder + downloaded.name
+        else:
+            file = args
         if not file_exists(file) and not dir_exists(file):
             return await event.reply("__File or folder not found__")
         if dir_exists(file):
@@ -639,7 +644,7 @@ async def en_upload(event, args, client):
                         u_cancelled().remove(_id)
                         return await event.reply(u_can_msg)
                 await asyncio.sleep(10)
-                f_jump = await f_jump.reply(
+                f_jump = arg.s or await f_jump.reply(
                     f"`All files in`:\n'`{path}`'\n`have been uploaded successfully. {enmoji()}`",
                 )
                 await asyncio.sleep(1)
@@ -657,7 +662,7 @@ async def en_upload(event, args, client):
                 await r.edit(f"`Uploading of {cap} has been cancelled.`")
         if uri:
             await asyncio.sleep(5)
-            await event.reply(
+            arg.s or await event.reply(
                 f"`{_no} file(s) have been uploaded from` `{args}` `successfully. {enmoji()}`"
             )
     except Exception:
