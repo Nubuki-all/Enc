@@ -217,7 +217,9 @@ class Downloader:
             )
 
             tmp = (
-                progress
+                "━━━━━━━━━━━━━━━━━━━\n"
+                + progress
+                + "━━━━━━━━━━━━━━━━━━━\n"
                 + "`{0} of {1}`\n**Speed:** `{2}/s`\n**ETA:** `{3}`\n**Elapsed:** `{4}`\n".format(
                     hbs(current),
                     hbs(total),
@@ -285,11 +287,11 @@ class Downloader:
             if not download.name.endswith(".torrent"):
                 self.file_name = download.name
                 ud_type = f"**Downloading:**\n`{download.name}`"
-                ud_type += "\n**Via:** "
+                ud_type += "\n**via:** "
                 if download.is_torrent:
-                    ud_type += "`Torrent.`"
+                    ud_type += "Torrent."
                 else:
-                    ud_type += "`Direct Link.`"
+                    ud_type += "Direct Link."
             remaining_size = download.total_length - download.completed_length
             total = download.total_length
             current = download.completed_length
@@ -316,7 +318,9 @@ class Downloader:
                 round(download.progress, 2),
             )
             tmp = (
-                progress
+                "━━━━━━━━━━━━━━━━━━━\n"
+                + progress
+                + "━━━━━━━━━━━━━━━━━━━\n"
                 + "`{0} of {1}`\n**Speed:** `{2}/s`\n**Remains:** `{3}`\n**ETA:** `{4}`\n**Elapsed:** `{5}`\n".format(
                     value_check(hbs(current)),
                     value_check(hbs(total)),

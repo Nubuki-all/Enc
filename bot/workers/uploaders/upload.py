@@ -39,9 +39,10 @@ class Uploader:
                     progress=self.progress_for_pyrogram,
                     progress_args=(
                         pyro,
-                        f"**{CAP_DECO} Uploading…**\n{fm}",
+                        f"**{CAP_DECO} Uploading…**",
                         reply,
                         u_start,
+                        fm,
                     ),
                 )
             decode(self.id, pop=True)
@@ -65,7 +66,7 @@ class Uploader:
             decode(self.id, pop=True)
             await logger(Exception)
 
-    async def progress_for_pyrogram(self, current, total, app, ud_type, message, start):
+    async def progress_for_pyrogram(self, current, total, app, ud_type, message, start, file_info):
         fin_str = enhearts()
         now = time.time()
         diff = now - start
@@ -90,7 +91,10 @@ class Uploader:
             )
 
             tmp = (
-                progress
+                "━━━━━━━━━━━━━━━━━━━\n"
+                + progress
+                + "━━━━━━━━━━━━━━━━━━━\n"
+                + file_info + "\n"
                 + "`{0} of {1}`\n**Speed:** `{2}/s`\n**ETA:** `{3}`\n**Elapsed:** `{4}`\n".format(
                     hbs(current),
                     hbs(total),
