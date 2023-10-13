@@ -157,7 +157,7 @@ async def dl_stat(client, query):
         q = await qparse(d.file_name, ver, fil)
         ans = f"➡️:\n{q}"
         ans += "\n\n"
-        ans += f'{"Current" if not d.uri else str()} Size:\n{ov}'
+        ans += f'{"Current " if not d.uri else str()}Size:\n{ov}'
         ans += "\n\n"
         ans += f"Elapsed time:\n" + time_formatter(time.time() - d.time)
         await query.answer(ans, cache_time=0, show_alert=True)
@@ -239,7 +239,10 @@ async def back(client, query):
         await logger(Exception)
 
 
-async def upload_button_callback(self, client, callback_query):
+#######! UPLOAD CALLBACK HANDLERS !#######
+
+
+async def upload_button_callback(client, callback_query):
     try:
         msg = callback_query.message
         if not msg:

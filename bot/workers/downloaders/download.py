@@ -120,9 +120,9 @@ class Downloader:
                 self.time = ttt = time.time()
                 media_type = str(message.media)
                 if media_type == "MessageMediaType.DOCUMENT":
-                    media_mssg = "`Downloading a file…`\n"
+                    media_mssg = "`Downloading a file…`"
                 else:
-                    media_mssg = "`Downloading a video…`\n"
+                    media_mssg = "`Downloading a video…`"
                 download_task = await pyro.download_media(
                     message=message,
                     file_name=dl,
@@ -206,6 +206,7 @@ class Downloader:
                     statusMsg = json.load(f)
                     if not statusMsg["running"]:
                         app.stop_transmission()
+            elapsed_time = time_formatter(diff)
             speed = current / diff
             time_to_completion = time_formatter(int((total - current) / speed))
 
@@ -215,12 +216,12 @@ class Downloader:
                 round(percentage, 2),
             )
 
-            tmp = progress + "`{0} of {1}`\n**Speed:** `{2}/s`\n**ETA:** `{3}`\n".format(
+            tmp = progress + "`{0} of {1}`\n**Speed:** `{2}/s`\n**ETA:** `{3}`\n**Elapsed:** `{4}`\n".format(
                 hbs(current),
                 hbs(total),
                 hbs(speed),
-                # elapsed_time if elapsed_time != '' else "0 s",
                 time_to_completion if time_to_completion else "0 s",
+                elapsed_time if elapsed_time != '' else "0 s",
             )
             try:
                 # Attach the button to the message with an inline keyboard
@@ -280,9 +281,12 @@ class Downloader:
             ud_type = "`Download Pending…`"
             if not download.name.endswith(".torrent"):
                 self.file_name = download.name
-                ud_type = f"Downloading `{download.name}`"
+                ud_type = f"**Downloading:**\n`{download.name}`"
+                ud_type += "\n**Via:** "
                 if download.is_torrent:
-                    ud_type += " via torrent."
+                    ud_type += "`Torrent.`"
+                else:
+                    ud_type += "`Direct Link.`"
             remaining_size = download.total_length - download.completed_length
             total = download.total_length
             current = download.completed_length

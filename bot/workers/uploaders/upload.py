@@ -13,6 +13,7 @@ class Uploader:
         self.is_cancelled = False
         self.id = _id
         self.canceller = None
+        self.time = None
 
     def __str__(self):
         return "#wip"
@@ -25,9 +26,11 @@ class Uploader:
                 else:
                     thum = thumb
             code(self, index=self.id)
+            fm = f"**From folder:** `{os.path.split(filepath)[0]}`"
+            fm += f"\n**File:** `{os.path.split(filepath)[1]}`"
             async with tele.action(from_user_id, "file"):
                 await reply.edit("🔺Uploading🔺")
-                u_start = time.time()
+                self.time = u_start = time.time()
                 s = await message.reply_document(
                     document=filepath,
                     quote=True,
@@ -36,7 +39,7 @@ class Uploader:
                     progress=self.progress_for_pyrogram,
                     progress_args=(
                         pyro,
-                        f"**{CAP_DECO} Uploading:** `{filepath}…`\n",
+                        f"**{CAP_DECO} Uploading…**\n{fm}",
                         reply,
                         u_start,
                     ),
@@ -76,6 +79,7 @@ class Uploader:
                     statusMsg = json.load(f)
                     if not statusMsg["running"]:
                         app.stop_transmission()
+            elapsed_time = time_formatter(diff)
             speed = current / diff
             time_to_completion = time_formatter(int((total - current) / speed))
 
@@ -85,12 +89,12 @@ class Uploader:
                 round(percentage, 2),
             )
 
-            tmp = progress + "`{0} of {1}`\n**Speed:** `{2}/s`\n**ETA:** `{3}`\n".format(
+            tmp = progress + "`{0} of {1}`\n**Speed:** `{2}/s`\n**ETA:** `{3}`\n**Elapsed:** `{4}`\n".format(
                 hbs(current),
                 hbs(total),
                 hbs(speed),
-                # elapsed_time if elapsed_time != '' else "0 s",
                 time_to_completion if time_to_completion else "0 s",
+                elapsed_time if elapsed_time != '' else "0 s",
             )
             try:
                 # Create a "Cancel" button
