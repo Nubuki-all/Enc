@@ -400,9 +400,3 @@ class Downloader:
             )
         while self.dl_info and self.display_dl_info and self.pause_on_dl_info:
             await asyncio.sleep(5)
-
-            except Exception:
-            await logger(Exception)
-
-    
-
