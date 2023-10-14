@@ -6,8 +6,8 @@ from pathlib import Path
 from subprocess import run as bashrun
 
 import anitopy
-import pymediainfo
 import psutil
+import pymediainfo
 from html_telegraph_poster import TelegraphPoster
 
 from bot import TELEGRAPH_API, TELEGRAPH_AUTHOR, signal, tele, version_file
