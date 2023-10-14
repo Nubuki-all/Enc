@@ -608,7 +608,7 @@ async def en_upload(event, args, client):
                 i = len(files)
                 t = 1
                 if arg.s and topic_id:
-                    await message.reply(f"**{path.split(" / ")[-1]}**")
+                    await message.reply(f"**{path.split('/')[-1]}**")
                 for name in sorted(files):
                     if _id in u_cancelled():
                         u_cancelled().remove(_id)
