@@ -6,6 +6,7 @@ from pathlib import Path
 from subprocess import run as bashrun
 
 import anitopy
+import pymediainfo
 import psutil
 from html_telegraph_poster import TelegraphPoster
 
@@ -56,12 +57,7 @@ async def info(file):
         # stdout=subprocess.PIPE,
         # stderr=subprocess.STDOUT,
         # )
-        cmd = "mediainfo " f'"{file}"' " --Output=HTML"
-        proc, stdout, stderr = await enshell(cmd)
-        if stderr and not stdout:
-            raise Exception(stderr)
-        else:
-            out = stdout
+        out = pymediainfo.MediaInfo.parse(file, output="HTML", full=False)
         client = TelegraphPoster(use_api=True, telegraph_api_url=TELEGRAPH_API)
         client.create_api_token("Mediainfo")
         page = client.post(
