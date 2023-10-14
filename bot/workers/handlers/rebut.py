@@ -550,12 +550,19 @@ async def en_upload(event, args, client):
     try:
         download = None
         uri = None
+        topic_id = None
         u_can_msg = "`Folder upload has been force cancelled`"
-        message = await client.get_messages(event.chat_id, int(event.id))
-        chain_msg = message
+        if getattr(event.reply_to, 'forum_topic', None):
+            topic_id = top if (top := event.reply_to.reply_to_top_id) \
+            else event.reply_to_msg_id
         arg, args = get_args(
             "-f", ["-s", "store_true"], to_parse=args, get_unknown=True
         )
+        if arg.s and topic_id:
+            message = await client.get_messages(event.chat_id, int(topic_id))
+        else:
+            message = await client.get_messages(event.chat_id, int(event.id))
+        chain_msg = message
         await try_delete(event) if arg.s else None
         if arg.f:
             file = arg.f
@@ -597,6 +604,8 @@ async def en_upload(event, args, client):
                     continue
                 i = len(files)
                 t = 1
+                if arg.s and topic_id:
+                    await message.reply(f"**{path.split("/")[-1]}**")
                 for name in sorted(files):
                     if _id in u_cancelled():
                         u_cancelled().remove(_id)
