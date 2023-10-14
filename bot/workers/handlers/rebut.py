@@ -668,7 +668,8 @@ async def en_upload(event, args, client):
             _no = 1
             r = await message.reply(f"`Uploading {file}…`", quote=True)
             _none, cap = os.path.split(file)
-            upload = uploader()
+            u_id = f"{r.chat.id}:{r.id}"
+            upload = uploader(_id=u_id)
             await upload.start(event.chat_id, file, r, "thumb.jpg", f"`{cap}`", message)
             if not upload.is_cancelled:
                 await r.edit(f"`{cap} uploaded successfully.`")
