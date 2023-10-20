@@ -388,7 +388,7 @@ async def add_multi(message, args, sender_id, flag):
         else:
             args = str(args)
         media = await message._client.get_messages(message.chat.id, message.id + 1)
-        if media.empty:
+        if media.empty or not (media.document or media.video):
             return
         await asyncio.sleep(3)
         asyncio.create_task(pencode(media, args, sender_id, flag))

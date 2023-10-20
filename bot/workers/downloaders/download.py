@@ -1,6 +1,6 @@
 from bot import *
 from bot.fun.emojis import enhearts, enmoji, enmoji2
-from bot.fun.stuff import bar
+from bot.fun.stuff import dbar, ubar, vbar
 from bot.utils.bot_utils import DISPLAY_DOWNLOAD
 from bot.utils.bot_utils import UN_FINISHED_PROGRESS_STR as unfin_str
 from bot.utils.bot_utils import (
@@ -211,10 +211,10 @@ class Downloader:
             speed = current / diff
             time_to_completion = time_formatter(int((total - current) / speed))
 
-            progress = f"{bar}\n" "{0}{1}\n{2}\n<b>Progress:</b> `{3}%`\n".format(
+            progress = f"{ubar}\n{vbar} " "{0}{1} {2}\n<b>Progress:</b> `{3}%`\n".format(
                 "".join([fin_str for i in range(math.floor(percentage / 10))]),
                 "".join([unfin_str for i in range(10 - math.floor(percentage / 10))]),
-                bar,
+                f"{vbar}\n{dbar}",
                 round(percentage, 2),
             )
 
@@ -310,12 +310,12 @@ class Downloader:
                     )
                 )
 
-            progress = f"{bar}\n" "{0}{1}\n{2}\n<b>Progress:</b> `{3}%`\n".format(
+            progress = f"{ubar}\n{vbar} " "{0}{1} {2}\n<b>Progress:</b> `{3}%`\n".format(
                 "".join([fin_str for i in range(math.floor(download.progress / 10))]),
                 "".join(
                     [unfin_str for i in range(10 - math.floor(download.progress / 10))]
                 ),
-                bar,
+                f"{vbar}\n{dbar}",
                 round(download.progress, 2),
             )
             tmp = (

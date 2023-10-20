@@ -161,6 +161,8 @@ async def get_stream_info(file):
     try:
         if not Path(file).is_file():
             return None, None
+        if Path(file + ".aria2").is_file():
+            return None, None
         out = await enshell(
             f'ffprobe -hide_banner -show_streams -print_format json """{file}"""'
         )

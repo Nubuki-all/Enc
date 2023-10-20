@@ -145,7 +145,7 @@ async def get_cus_tag(fn, rg, caption=False):
     return file_tag.strip() if not final_output else final_output
 
 
-async def get_file_tag(_infile, caption=False):
+async def get_file_tag(_infile, caption=False, audio_only=False):
     _ainfo, _sinfo = await get_stream_info(_infile)
     if not caption:
         if _ainfo:
@@ -156,7 +156,7 @@ async def get_file_tag(_infile, caption=False):
             elif len(_ainfo.split("|")) == 2:
                 out = "Dual"
             else:
-                out = None
+                out = None if not audio_only else _ainfo
         elif _ainfo is None:
             out = "TBD"
     else:
@@ -193,7 +193,7 @@ async def get_file_tag(_infile, caption=False):
                     if not __dual:
                         out += f"({_sinfo.title()}-sub)"
         else:
-            out = "(English subtitle)"
+            out = None
     return out
 
 
@@ -331,6 +331,9 @@ async def parse(
         a_con = await get_file_tag(_infile)
         a_con = await get_cus_tag(name, rg) if not a_con else a_con
         a_con = con if not a_con else a_con
+        if not a_con:
+            if ((a_con := await get_file_tag(_infile, audio_only=True)) == "?"):
+                a_con = None
         a_con = fil2 if (fil2 and fil2.casefold() != "auto") or fil2 is None else a_con
 
         a_con = cust_con if cust_con else a_con
