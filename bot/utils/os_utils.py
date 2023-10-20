@@ -205,7 +205,7 @@ async def pos_in_stm(file, lang1="eng", lang2="eng-us", get="both"):
             return None, None
         a_pos = ""
         s_pos = ""
-        _ainfo, _sinfo = await get_stream_info(Path(file))
+        _ainfo, _sinfo = await get_stream_info(file)
         i = 0
         for audio in _ainfo.split("|"):
             if audio == lang1 or audio == lang2:
