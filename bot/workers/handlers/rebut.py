@@ -136,7 +136,9 @@ async def en_download(event, args, client):
         download = downloader(_id=d_id, uri=link, folder=_dir)
         await download.start(loc, 0, message, e)
         if download.is_cancelled or download.download_error:
-            return await report_failed_download(download, e, download.file_name, event.sender_id)
+            return await report_failed_download(
+                download, e, download.file_name, event.sender_id
+            )
         f_loc = _dir + loc if not link else _dir + download.file_name
         await e.edit(f"__Saved to__ `{f_loc}` __successfully!__")
     except Exception:
@@ -644,7 +646,9 @@ async def en_upload(event, args, client):
                                 await ul.delete()
                                 _no = _no + 1
                             else:
-                                arg.s or await ul.edit(f"Uploading of `{name}` was cancelled.")
+                                arg.s or await ul.edit(
+                                    f"Uploading of `{name}` was cancelled."
+                                )
                                 chain_msg = ul
                             t = t + 1
                         except pyro_errors.FloodWait as e:
@@ -672,7 +676,9 @@ async def en_upload(event, args, client):
             upload = uploader(_id=u_id)
             await upload.start(event.chat_id, file, r, "thumb.jpg", f"`{cap}`", message)
             if not upload.is_cancelled:
-                await r.edit(f"`{cap} uploaded successfully.`") if not arg.s else await r.delete()
+                await r.edit(
+                    f"`{cap} uploaded successfully.`"
+                ) if not arg.s else await r.delete()
             else:
                 _no = 0
                 await r.edit(f"`Uploading of {cap} has been cancelled.`")

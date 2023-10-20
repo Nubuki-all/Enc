@@ -87,12 +87,17 @@ class Uploader:
             speed = current / diff
             time_to_completion = time_formatter(int((total - current) / speed))
 
-            progress = f"{ubar}\n{vbar} " "{0}{1} {2}\n{3}\n<b>Progress:</b> `{4}%`\n".format(
-                "".join([fin_str for i in range(math.floor(percentage / 10))]),
-                "".join([unfin_str for i in range(10 - math.floor(percentage / 10))]),
-                f"{vbar}\n{dbar}",
-                file_info,
-                round(percentage, 2),
+            progress = (
+                f"{ubar}\n{vbar} "
+                "{0}{1} {2}\n{3}\n<b>Progress:</b> `{4}%`\n".format(
+                    "".join([fin_str for i in range(math.floor(percentage / 10))]),
+                    "".join(
+                        [unfin_str for i in range(10 - math.floor(percentage / 10))]
+                    ),
+                    f"{vbar}\n{dbar}",
+                    file_info,
+                    round(percentage, 2),
+                )
             )
 
             tmp = (

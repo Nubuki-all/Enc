@@ -332,7 +332,7 @@ async def parse(
         a_con = await get_cus_tag(name, rg) if not a_con else a_con
         a_con = con if not a_con else a_con
         if not a_con:
-            if ((a_con := await get_file_tag(_infile, audio_only=True)) == "?"):
+            if (a_con := await get_file_tag(_infile, audio_only=True)) == "?":
                 a_con = None
         a_con = fil2 if (fil2 and fil2.casefold() != "auto") or fil2 is None else a_con
 
