@@ -136,7 +136,7 @@ async def ihelp(event):
         "\n+Easy to Use (Depends)\n"
         "-Due to your custom Settings & hosting server bot may or may not take a long time to encode"
         ".\n\nJust Forward a Video…/videos"
-        "\n\nFor available commands click the command button.",
+        "\n\nFor available commands click the Commands button below.",
         buttons=[
             [Button.inline("Commands", data="icommands")],
             [Button.inline("🔙 Back", data="beck")],
