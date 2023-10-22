@@ -177,7 +177,9 @@ def line_split(line):
 
 
 def get_args(*args, to_parse, get_unknown=False):
-    parser = ThrowingArgumentParser(description="parse command flags", exit_on_error=False, add_help=False)
+    parser = ThrowingArgumentParser(
+        description="parse command flags", exit_on_error=False, add_help=False
+    )
     for arg in args:
         if isinstance(arg, list):
             parser.add_argument(arg[0], action=arg[1], required=False)
