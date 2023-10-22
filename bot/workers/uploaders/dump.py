@@ -30,7 +30,8 @@ async def dumpdl(dl, name, thum, user, message):
             dp = await reply.reply("**File too large to dump, Aborting…**", quote=True)
             f_reply = reply
         else:
-            upload = uploader()
+            u_id = f"{reply.chat.id}:{reply.id}"
+            upload = uploader(_id=)
             dp = await upload.start(user, dmp, reply, thum, fname, message)
 
             if not upload.is_cancelled:
