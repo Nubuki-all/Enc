@@ -31,7 +31,7 @@ async def dumpdl(dl, name, thum, user, message):
             f_reply = reply
         else:
             u_id = f"{reply.chat.id}:{reply.id}"
-            upload = uploader(_id=)
+            upload = uploader(_id=u_id)
             dp = await upload.start(user, dmp, reply, thum, fname, message)
 
             if not upload.is_cancelled:
