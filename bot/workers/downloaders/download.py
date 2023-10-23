@@ -26,8 +26,7 @@ class Downloader:
         dl_info=False,
         folder="downloads/",
     ):
-        self.sender = sender
-        self.sender_is_id = False
+        self.sender = int(sender)
         self.callback_data = "cancel_download"
         self.is_cancelled = False
         self.canceller = None
@@ -41,6 +40,7 @@ class Downloader:
         self.uri_gid = None
         self.lc = lc
         self.lm = None
+        self._sender = None
         self.time = None
         self.aria2 = get_aria2()
         if DISPLAY_DOWNLOAD:
@@ -51,9 +51,6 @@ class Downloader:
             self.pause_on_dl_info = True
         else:
             self.pause_on_dl_info = False
-        if str(sender).isdigit():
-            self.sender_is_id = True
-            self.sender = int(sender)
         if self.dl_info:
             self.callback_data_i = "dl_info"
             self.callback_data_b = "back"
@@ -100,8 +97,9 @@ class Downloader:
                 if self.uri:
                     msg += " from a link"
                 message = await pyro.get_messages(self.lc.chat_id, self.lc.id)
+                self._sender = self._sender or await pyro.get_users(self.sender)
                 log = await message.edit(
-                    f"`{msg} sent by` {self.sender.mention(style='md')}\n" + dl_info,
+                    f"`{msg} sent by` {self._sender.mention(style='md')}\n" + dl_info,
                     reply_markup=reply_markup,
                 )
                 self.lm = message

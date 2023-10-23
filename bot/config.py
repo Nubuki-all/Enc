@@ -35,6 +35,7 @@ try:
     DUMP_LEECH = config("DUMP_LEECH", default=True, cast=bool)
     DYNO = config("DYNO", default=None)
     ENCODER = config("ENCODER", default=None)
+    EXT_CAP = config("EXTENDED_CAPTIONS", default=True, cast=bool)
     WORKERS = config("WORKERS", default=2, cast=int)
     FBANNER = config("FBANNER", default=False, cast=bool)
     FCHANNEL = config("FCHANNEL", default=0, cast=int)
@@ -44,10 +45,12 @@ try:
         "FFMPEG",
         default='ffmpeg -i "{}" -preset ultrafast -c:v libx265 -crf 27 -map 0:v -c:a aac -map 0:a -c:s copy -map 0:s? "{}"',
     )
+    FL_CAP = config("FILENAME_IS_CAPTION", default=False, cast=bool)
     FSTICKER = config("FSTICKER", default=None)
     LOCK_ON_STARTUP = config("LOCK_ON_STARTUP", default=False, cast=bool)
     LOG_CHANNEL = config("LOG_CHANNEL", default=0, cast=int)
     LOGS_IN_CHANNEL = config("LOGS_IN_CHANNEL", default=False, cast=bool)
+    MI_CAP = config("MI_IN_CAPTION", default=True, cast=bool)
     NO_TEMP_PM = config("NO_TEMP_PM", default=False, cast=bool)
     OVR = config("OVR", default=None)
     OWNER = config("OWNER")

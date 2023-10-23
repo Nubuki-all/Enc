@@ -49,7 +49,10 @@ if os.path.isdir("/tgenc"):
 
 if TEMP_USER:
     for t in TEMP_USER.split():
-        TEMP_USERS.append(t)
+        if t in OWNER.split():
+            continue
+        if not t in TEMP_USERS:
+            TEMP_USERS.append(t)
 
 
 def load_db(_db, _key, var, var_type=None):
@@ -66,7 +69,10 @@ def load_db(_db, _key, var, var_type=None):
 
     if var_type == "list":
         for item in out.split():
-            var.append(item)
+            if item in OWNER.split():
+                continue
+            if not item in var:
+                var.append(item)
     elif var_type == "dict":
         var.update(out)
     else:
