@@ -167,7 +167,7 @@ async def thing():
 
             sdt = time.time()
             # await mssg_r.edit("`Waiting for download to complete.`")
-            download = downloader(sender, op, _id, uri=uri, dl_info=True)
+            download = downloader(sender_id, op, _id, uri=uri, dl_info=True)
             downloaded = await download.start(name, None, message, msg_p)
             if download.is_cancelled or download.download_error:
                 f_msg = await report_failed_download(download, msg_p, name, sender_id)
