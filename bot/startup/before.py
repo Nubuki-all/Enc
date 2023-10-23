@@ -51,7 +51,7 @@ if TEMP_USER:
     for t in TEMP_USER.split():
         if t in OWNER.split():
             continue
-        if not t in TEMP_USERS:
+        if t not in TEMP_USERS:
             TEMP_USERS.append(t)
 
 
@@ -71,7 +71,7 @@ def load_db(_db, _key, var, var_type=None):
         for item in out.split():
             if item in OWNER.split():
                 continue
-            if not item in var:
+            if item not in var:
                 var.append(item)
     elif var_type == "dict":
         var.update(out)

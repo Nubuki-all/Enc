@@ -6,7 +6,16 @@ import flag
 import pycountry
 import requests
 
-from bot import C_LINK, CAP_DECO, EXT_CAP, FL_CAP, MI_CAP, parse_file, release_name, release_name_b
+from bot import (
+    C_LINK,
+    CAP_DECO,
+    EXT_CAP,
+    FL_CAP,
+    MI_CAP,
+    parse_file,
+    release_name,
+    release_name_b,
+)
 
 from .bot_utils import auto_rename, crc32, get_codec, text_filter, txt_to_str
 from .log_utils import log, logger
@@ -457,7 +466,9 @@ async def custcap(
     if FL_CAP:
         return f"`{fname}`"
     if not EXT_CAP:
-        return await simplecap(name, fname, anilist, cust_type, folder, ver, encoder, _filter, ccodec)
+        return await simplecap(
+            name, fname, anilist, cust_type, folder, ver, encoder, _filter, ccodec
+        )
     try:
         name, fil2, fil3 = await filter_name(name, _filter)
         ## Get info ##
@@ -674,7 +685,7 @@ async def simplecap(
             caption += " S"
             caption += sn
         if epi:
-            caption  += " - "
+            caption += " - "
             caption += epi
         if ver:
             caption += f"v{ver}"
@@ -704,8 +715,8 @@ async def simplecap(
     except Exception:
         await logger(Exception)
         caption = f"`{fname}`"
-    return caption 
-        
+    return caption
+
 
 async def qparse(name, ver=None, fil=None):
     return (await parse(name, v=ver, _filter=fil))[0]

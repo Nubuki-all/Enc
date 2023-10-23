@@ -16,7 +16,7 @@ def load_local_db():
         with open(local_udb, "rb") as file:
             local_users = pickle.load(file)
         for user in local_users:
-            if not user in TEMP_USERS:
+            if user not in TEMP_USERS:
                 TEMP_USERS.append(user)
 
 
