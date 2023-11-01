@@ -11,8 +11,9 @@ from bot.others.exceptions import AlreadyDl
 from bot.startup.before import entime
 from bot.utils.ani_utils import custcap, dynamicthumb, f_post, parse, qparse_t
 from bot.utils.bot_utils import CACHE_QUEUE as cached
+from bot.utils.bot_utils import E_CANCEL
 from bot.utils.bot_utils import LAST_ENCD as l_enc
-from bot.utils.bot_utils import E_CANCEL, get_queue, get_var, hbs
+from bot.utils.bot_utils import get_queue, get_var, hbs
 from bot.utils.bot_utils import time_formatter as tf
 from bot.utils.db_utils import save2db
 from bot.utils.log_utils import logger
@@ -147,7 +148,10 @@ async def thing():
             sender_id = 777000
         sender = await pyro.get_users(sender_id)
         if chat_id == log_channel:
-            await tele.send_message(log_channel, "**#WARNING: Logging disabled!**\nReason: `Encoding in log_channel`")
+            await tele.send_message(
+                log_channel,
+                "**#WARNING: Logging disabled!**\nReason: `Encoding in log_channel`",
+            )
             op = None
         elif log_channel:
             op = await tele.send_message(
@@ -215,7 +219,7 @@ async def thing():
         out = f"{_dir}/{file_name}"
         title, epi, sn, rlsgrp = await dynamicthumb(name, _filter=f)
 
-        if l_enc and l_enc[0]  == (c_n := f"{title} {sn}".strip()):
+        if l_enc and l_enc[0] == (c_n := f"{title} {sn}".strip()):
             pass
         else:
             l_enc.clear()
