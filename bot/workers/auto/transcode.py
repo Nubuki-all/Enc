@@ -11,6 +11,7 @@ from bot.others.exceptions import AlreadyDl
 from bot.startup.before import entime
 from bot.utils.ani_utils import custcap, dynamicthumb, f_post, parse, qparse_t
 from bot.utils.bot_utils import CACHE_QUEUE as cached
+from bot.utils.bot_utils import LAST_ENCD as l_enc
 from bot.utils.bot_utils import E_CANCEL, get_queue, get_var, hbs
 from bot.utils.bot_utils import time_formatter as tf
 from bot.utils.db_utils import save2db
@@ -132,6 +133,7 @@ async def thing():
             message = await pyro.get_messages(chat_id, msg_id)
         else:
             message._client = pyro
+        cached_dl = False
         uri = None
         msg_p = await message.reply("`Download Pending…`", quote=True)
         await asyncio.sleep(2)
@@ -144,7 +146,10 @@ async def thing():
         if str(sender_id).startswith("-100"):
             sender_id = 777000
         sender = await pyro.get_users(sender_id)
-        if log_channel:
+        if chat_id == log_channel:
+            await tele.send_message(log_channel, "**#WARNING: Logging disabled!**\nReason: `Encoding in log_channel`")
+            op = None
+        elif log_channel:
             op = await tele.send_message(
                 log_channel,
                 f"[{sender.first_name}](tg://user?id={sender_id}) `Currently Downloading A Video…`",
@@ -186,6 +191,7 @@ async def thing():
                 await asyncio.sleep(2)
                 return
         except AlreadyDl:
+            cached_dl = True
             msg_r = await reply_message(msg_p, "`Waiting for caching to complete.`")
             sdt = time.time()
             rslt = await get_cached(dl, sender, sender_id, msg_t, op)
@@ -209,6 +215,15 @@ async def thing():
         out = f"{_dir}/{file_name}"
         title, epi, sn, rlsgrp = await dynamicthumb(name, _filter=f)
 
+        if l_enc and l_enc[0]  == (c_n := f"{title} {sn}".strip()):
+            pass
+        else:
+            l_enc.clear()
+            l_enc.append(c_n)
+            for x in ("!", ":", "-", " "):
+                c_n = c_n.replace(x, "_")
+            await op.reply("#" + c_n) if op else None
+            await msg_p.reply("#" + c_n) if log_channel == chat_id else None
         if uri and dump is True:
             asyncio.create_task(dumpdl(dl, name, thumb2, msg_t.chat_id, message))
         if len(queue) > 1 and cache:
@@ -301,7 +316,8 @@ async def thing():
         st_msg = await up.reply(
             f"**Encode Stats:**\n\nOriginal Size: "
             f"`{hbs(org_s)}`\nEncoded Size: `{hbs(out_s)}`\n"
-            f"Encoded Percentage: `{per}`\n\nDownloaded in `{dtime}`\n"
+            f"Encoded Percentage: `{per}`\n\n"
+            f"{"Cached" if cached_dl else "Downloaded"} in `{dtime}`\n"
             f"Encoded in `{etime}`\nUploaded in `{utime}`",
             disable_web_page_preview=True,
             quote=True,

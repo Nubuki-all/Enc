@@ -45,7 +45,7 @@ try:
         "FFMPEG",
         default='ffmpeg -i "{}" -preset ultrafast -c:v libx265 -crf 27 -map 0:v -c:a aac -map 0:a -c:s copy -map 0:s? "{}"',
     )
-    FL_CAP = config("FILENAME_IS_CAPTION", default=False, cast=bool)
+    FL_CAP = config("FILENAME_AS_CAPTION", default=False, cast=bool)
     FSTICKER = config("FSTICKER", default=None)
     LOCK_ON_STARTUP = config("LOCK_ON_STARTUP", default=False, cast=bool)
     LOG_CHANNEL = config("LOG_CHANNEL", default=0, cast=int)

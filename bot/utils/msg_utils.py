@@ -5,6 +5,7 @@ from bot.config import *
 from bot.fun.emojis import enmoji, enmoji2
 from bot.fun.quips import enquip3
 from bot.fun.quotes import enquotes
+from bot.others.exceptions import ArgumentParserError
 
 from .bot_utils import is_url, var
 from .log_utils import log, logger
@@ -162,9 +163,6 @@ async def edit_message(message, text):
 
     return edited
 
-
-class ArgumentParserError(Exception):
-    pass
 
 
 class ThrowingArgumentParser(argparse.ArgumentParser):
