@@ -317,7 +317,7 @@ async def thing():
             f"**Encode Stats:**\n\nOriginal Size: "
             f"`{hbs(org_s)}`\nEncoded Size: `{hbs(out_s)}`\n"
             f"Encoded Percentage: `{per}`\n\n"
-            f"{"Cached" if cached_dl else "Downloaded"} in `{dtime}`\n"
+            f"{'Cached' if cached_dl else 'Downloaded'} in `{dtime}`\n"
             f"Encoded in `{etime}`\nUploaded in `{utime}`",
             disable_web_page_preview=True,
             quote=True,
