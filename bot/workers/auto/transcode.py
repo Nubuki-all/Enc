@@ -219,7 +219,8 @@ async def thing():
         out = f"{_dir}/{file_name}"
         title, epi, sn, rlsgrp = await dynamicthumb(name, _filter=f)
 
-        if l_enc and l_enc[0] == (c_n := f"{title} {sn}".strip()):
+        c_n = f"{title} {sn}".strip()
+        if l_enc and l_enc[0] == c_n:
             pass
         else:
             l_enc.clear()
