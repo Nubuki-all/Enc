@@ -282,7 +282,10 @@ permit{s} - add a temporary user
 unpermit{s} - removes a temporary user
 add{s} - add video to queue
 l{s} - add link to queue
+ql{s} - add torrent link to queue
+s{s} - select files from torrent to encode
 queue{s} - list queue
+batch{s} - preview batches
 forward{s} - manually forward a message to fchannel
 v{s} - turn v2,3,4… on (with message) or off
 download{s} - download a file or link to bot
