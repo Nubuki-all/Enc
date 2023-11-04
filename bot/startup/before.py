@@ -89,6 +89,7 @@ if DATABASE_URL:
     userdb = db["users"]
 
     load_db(queuedb, "queue", QUEUE, "dict")
+    load_db(queuedb, "batches", BATCH_QUEUE, "dict")
     load_db(userdb, "t_users", TEMP_USERS, "list")
     load_db(ffmpegdb, "ffmpeg", ffmpeg_file)
     load_db(filterdb, "filter", filter_file)

@@ -122,9 +122,10 @@ def kill_process(process):
 
 async def qclean():
     try:
-        os.system("rm downloads/*")
-        os.system("rm downloads2/*")
-        os.system("rm encode/*")
+        os.system("rm -rf downloads/*")
+        os.system("rm -rf downloads2/*")
+        os.system("rm -rf encode/*")
+        os.system("rm -rf mux/*")
         os.system("rm thumb/*")
         kill_process("ffmpeg")
     except Exception:

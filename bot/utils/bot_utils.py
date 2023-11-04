@@ -1,5 +1,7 @@
 import os
 import zlib
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial
 from pathlib import Path
 from re import match as re_match
 
@@ -10,9 +12,11 @@ class Var_list:
     TEMP_ONLY_IN_GROUP = []
     DOCKER_DEPLOYMENT = []
     DISPLAY_DOWNLOAD = []
+    PREVIEW_LIST = []
     QUEUE_STATUS = []
     CACHE_QUEUE = []
     TEMP_USERS = []
+    BATCH_ING = []
     LAST_ENCD = []
     PAUSEFILE = []
     USER_MAN = []
@@ -25,6 +29,8 @@ class Var_list:
     EVENT2 = []
     ARIA2 = []
 
+    PREVIEW_BATCH = {}
+    BATCH_QUEUE = {}
     E_CANCEL = {}
     QUEUE = {}
     OK = {}
@@ -76,6 +82,14 @@ def get_f():
     with open(filter_file, "r") as file:
         _f = file.read().strip()
     return _f
+
+
+def get_bqueue():
+    return BATCH_QUEUE
+
+
+def get_preview(list=False):
+    return PREVIEW_BATCH if not list else PREVIEW_LIST
 
 
 def get_queue():
@@ -130,6 +144,51 @@ def rm_temp_user(id):
     TEMP_USERS.remove(id)
 
 
+class C_qbit:
+    def __init__(self, count=None, flist=None, error=None):
+        self.file_count = count
+        self.file_list = flist
+        self.error = error
+        self.hash = None
+        self.name = None
+
+    def __str__(self):
+        return self.error
+
+
+class Encode_info:
+    def __init__(self):
+        self.reset()
+
+    def __str__(self):
+        return self.current
+
+    def reset(self):
+        self.current = None
+        self.batch = False
+        self.previous = None
+        self.cached_dl = False
+        self.qbit = False
+        self.select = None
+        self.uri = None
+        self._current = None
+
+
+encode_info = Encode_info()
+
+sdict = dict()
+sdict.update(
+    {
+        3: "Not a video.",
+        2: "DONE!",
+        1: "✅",
+        0: "❌",
+        None: "NOT SET!",
+    }
+)
+
+
+THREADPOOL = ThreadPoolExecutor(max_workers=1000)
 MAGNET_REGEX = r"magnet:\?xt=urn:[a-z0-9]+:[a-zA-Z0-9]{32}"
 URL_REGEX = r"^(https?://|ftp://)?(www\.)?[^/\s]+\.[^/\s:]+(:\d+)?(/[^?\s]*[\s\S]*)?(\?[^#\s]*[\s\S]*)?(#.*)?$"
 SIZE_UNITS = ["B", "KB", "MB", "GB", "TB", "PB"]
@@ -483,3 +542,10 @@ async def text_filter():
     else:
         rc = None
     return nf, rf, rc
+
+
+async def sync_to_async(func, *args, wait=True, **kwargs):
+    pfunc = partial(func, *args, **kwargs)
+    loop = asyncio.get_event_loop()
+    future = loop.run_in_executor(THREADPOOL, pfunc)
+    return await future if wait else future

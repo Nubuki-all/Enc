@@ -43,12 +43,14 @@ import aria2p
 from pyrogram import Client
 from pyrogram import errors as pyro_errors
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from qbittorrentapi import Client as qbClient
 from telethon import Button, TelegramClient, errors, events, functions, types
 from telethon.sessions import StringSession
 from telethon.utils import pack_bot_file_id
 
 from .config import *
 
+batch_lock = asyncio.Lock()
 bot_id = BOT_TOKEN.split(":", 1)[0]
 botStartTime = time.time()
 caption_file = "NO_CAPTION"
@@ -56,6 +58,7 @@ ffmpeg_file = "ffmpeg.txt"
 filter_file = "filter.txt"
 home_dir = os.getcwd()
 local_qdb = ".local_queue.pkl"
+local_qdb2 = ".local_bqueue.pkl"
 local_udb = ".t_users.pkl"
 log_file_name = "Logs.txt"
 parse_file = "NO_PARSE"

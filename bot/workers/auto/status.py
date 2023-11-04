@@ -1,53 +1,72 @@
 from bot import FCHANNEL as forward
 from bot import FCHANNEL_STAT as forward_id
-from bot import asyncio, glob, itertools, os, pyro, startup_, tele
+from bot import asyncio, itertools, pyro, startup_, tele
 from bot.fun.emojis import enmoji
 from bot.fun.quips import enquip4
 from bot.fun.quotes import enquotes
+from bot.fun.stuff import lvbar
 from bot.utils.ani_utils import qparse
+from bot.utils.batch_utils import get_batch_list
 from bot.utils.bot_utils import QUEUE as queue
-from bot.utils.bot_utils import get_codec, get_pause_status
+from bot.utils.bot_utils import encode_info, get_codec, get_pause_status
+from bot.utils.log_utils import logger
+
+
+async def batch_status_preview(msg, v, f):
+    blist, left = await get_batch_list(encode_info._current, v=v, f=f, get_nleft=True)
+    for name, i in zip(blist, itertools.count(start=1)):
+        msg += f"{i}. `{name}`\n"
+    if left:
+        msg += f"__+{left} more…__\n"
+    if not blist:
+        loc = await enquotes()
+        msg += f"Nothing Here; While you wait:\n\n{loc}\n"
+    return msg
+
+
+async def queue_status_preview(start, msg, queue):
+    for key, i in zip(list(queue.keys())[start:], itertools.count(start=1)):
+        if i > 6:
+            r = len(queue) - i
+            msg += f"__+{r} more…__\n"
+            break
+        out = queue.get(key)
+        v, f, m = out[2]
+        name = await qparse(out[0], v, f)
+        msg += f"{i}. `{name}`\n"
+    return msg
 
 
 async def encodestat():
     if not queue:
         msg = "**Currently Resting…😑**"
         return msg
+    single = True
     msg = str()
     try:
-        try:
-            # depreciating this method...
-            dt_ = glob.glob("encode/*")
-            data = max(dt_, key=os.path.getctime)
-            file_name = data.replace("encode/", "")
-        except Exception:
-            out = list(queue.values())[0]
-            # Backwards compatibility:
-            v, f = out[2] if isinstance(out[2], tuple) else (out[2], None)
-            file_name = await qparse(out[0], v, f)
+        i = 0
+        msg = str()
         s = "🟢" if get_pause_status() != 0 else "⏸️"
-        msg = (
-            f"{s} `{file_name}`\n\n"
-            "    **CURRRENT ITEMS ON QUEUE:**\n"
-            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-        )
-
-        for key, i in zip(list(queue.keys())[1:], itertools.count(start=1)):
-            if i > 6:
-                r = len(queue) - i
-                msg += f"__+{r} more…__\n"
-                break
-            out = queue.get(key)
-            # Backwards compatibility:
-            v, f = out[2] if isinstance(out[2], tuple) else (out[2], None)
-            name = await qparse(out[0], v, f)
-            msg += f"{i}. `{name}`\n"
-
-        if len(queue) == 1:
+        if file_name := encode_info.current:
+            i = 1
+            msg += f"{s} `{file_name}`\n\n"
+        msg += "    **CURRRENT ITEMS ON QUEUE:**\n" f"{lvbar}\n"
+        key = list(queue.keys())[0]
+        out = queue.get(key)
+        v, f, m = out[2]
+        if m[1].lower() == "batch.":
+            msg = await batch_status_preview(msg, v, f)
+            single = False
+        else:
+            msg = await queue_status_preview(i, msg, queue)
+        if len(queue) == 1 and single:
             loc = await enquotes()
             msg += f"Nothing Here; While you wait:\n\n{loc}"
+        elif not single and (r := (len(queue) - 1)):
+            msg += f"\n__(+{r} more item(s) on queue.)__ \n"
     except Exception:
-        pass
+        # pass
+        await logger(Exception)
     me = await tele.get_me()
     codec = await get_codec()
     msg += f"\n\nYours truly,\n  {enmoji()} `{me.first_name}`"

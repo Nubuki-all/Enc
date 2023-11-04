@@ -29,6 +29,10 @@ async def start_aria2p():
         # return None
 
 
+async def start_qbit():
+    os.system(f"qbittorrent-nox -d --webui-port={QBIT_PORT} --profile={os.getcwd()}")
+
+
 async def start_rpc():
     os.system(
         f"aria2c --enable-rpc=true --rpc-max-request-size=1024M --rpc-listen-port={ARIA2_PORT} --seed-time=0 --follow-torrent=mem --summary-interval=0 --daemon=true --allow-overwrite=true"
@@ -95,6 +99,7 @@ async def on_startup():
     try:
         asyncio.create_task(autostat())
         asyncio.create_task(start_rpc())
+        asyncio.create_task(start_qbit())
         loop = asyncio.get_running_loop()
         for signame in {"SIGINT", "SIGTERM", "SIGABRT"}:
             loop.add_signal_handler(

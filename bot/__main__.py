@@ -46,7 +46,16 @@ from .workers.handlers.manage import (
     version2,
     vfilter,
 )
-from .workers.handlers.queue import addqueue, clearqueue, enleech, listqueue, pencode
+from .workers.handlers.queue import (
+    addqueue,
+    clearqueue,
+    edit_batch,
+    enleech,
+    enleech2,
+    enselect,
+    listqueue,
+    pencode,
+)
 from .workers.handlers.rebut import (
     en_download,
     en_mux,
@@ -275,6 +284,16 @@ async def _(e):
     await event_handler(e, enleech, pyro)
 
 
+@tele.on(events.NewMessage(pattern=command(["qbleech", "ql"])))
+async def _(e):
+    await event_handler(e, enleech2, pyro)
+
+
+@tele.on(events.NewMessage(pattern=command(["select", "s"])))
+async def _(e):
+    await event_handler(e, enselect, pyro, require_args=True)
+
+
 @tele.on(events.NewMessage(pattern=command(["add", "releech"])))
 async def _(e):
     await event_handler(e, addqueue, pyro)
@@ -336,6 +355,11 @@ async def _(e):
 @tele.on(events.NewMessage(pattern=command(["queue"], ["/", "!"])))
 async def _(e):
     await event_handler(e, listqueue)
+
+
+@tele.on(events.NewMessage(pattern=command(["batch", "gb"])))
+async def _(e):
+    await event_handler(e, edit_batch, pyro)
 
 
 ######## DEBUG #########

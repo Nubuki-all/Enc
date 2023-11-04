@@ -7,11 +7,13 @@ from bot.startup.before import DOCKER_DEPLOYMENT as d_docker
 from bot.startup.before import entime
 from bot.utils.bot_utils import (
     get_aria2,
+    get_bqueue,
     get_pause_status,
     get_queue,
     get_var,
     list_to_str,
     split_text,
+    sync_to_async,
     time_formatter,
 )
 from bot.utils.db_utils import save2db, save2db2
@@ -33,6 +35,7 @@ from bot.utils.os_utils import (
     updater,
     x_or_66,
 )
+from bot.workers.downloaders.dl_helpers import get_qbclient
 
 
 async def nuke(event, args, client):
@@ -42,11 +45,13 @@ async def nuke(event, args, client):
     try:
         if not d_docker:
             await event.reply("`Exited.`")
+            await clean_all_qb()
             await qclean()
             return exit(1)
         rst = await event.reply("`Trying To Nuke ☣️`")
         await asyncio.sleep(1)
         await rst.edit("`☢️ Nuked!`")
+        await clean_all_qb()
         x_or_66()
     except Exception:
         await event.reply("Error Occurred")
@@ -64,6 +69,7 @@ async def restart(event, args, client):
         rst = await rst.edit(f"`{rst_msg}`")
         message = str(rst.chat_id) + ":" + str(rst.id)
         await enquoter(rst_msg, rst)
+        await clean_all_qb()
         await re_x("restart", message)
     except Exception:
         await event.reply("Error Occurred")
@@ -78,9 +84,27 @@ async def update2(client, message):
         upt_mess = "Updating…"
         reply = await message.reply(f"`{upt_mess}`", quote=True)
         await enquoter(upt_mess, reply)
+        await clean_all_qb()
         await updater(reply)
     except Exception:
         await logger(Exception)
+
+
+async def clean_all_aria2():
+    aria2 = get_aria2()
+    if aria2:
+        downloads = aria2.get_downloads()
+        await asyncio.sleep(3)
+        aria2.remove(downloads, force=True, files=True, clean=True)
+
+
+async def clean_all_qb():
+    qb = await sync_to_async(get_qbclient)
+    for torrent in await sync_to_async(qb.torrents_info):
+        print(f"{torrent.hash[-6:]}: {torrent.name} ({torrent.state})")
+        await sync_to_async(
+            qb.torrents_delete, delete_files=True, torrent_hashes=torrent.hash
+        )
 
 
 async def clean(event, args, client):
@@ -109,22 +133,28 @@ async def clean(event, args, client):
             kill_process("ffmpeg")
             return await event.reply("Killed all ffmpeg processes.")
         if args and args.casefold() == "queue":
+            get_bqueue().clear()
             get_queue().clear()
             await save2db()
+            await save2db("batches")
             return await event.reply("Cleared ALL items on queue.")
-        aria2 = get_aria2()
-        if aria2:
-            downloads = aria2.get_downloads()
-            await asyncio.sleep(3)
-            aria2.remove(downloads, force=True, files=True, clean=True)
+
         if args and args.casefold() in ("aria", "aria2"):
+            await clean_all_aria2()
             return await event.reply("Cleaned up all aria2 files.")
+        if args and args.casefold() in ("qbit", "qbittorrent", "qb"):
+            await clean_all_qb()
+            return await event.reply("Cleaned up all qbit fies.")
         await event.reply(
             "**Cleared all queued , encoding processes and cached downloads!**"
         )
+        get_bqueue().clear()
         get_queue().clear()
         await save2db()
+        await save2db("batches")
         await qclean()
+        await clean_all_qb()
+        await clean_all_aria2()
         return
     except Exception:
         await logger(Exception)

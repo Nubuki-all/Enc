@@ -290,6 +290,8 @@ async def parse(
         epi = parsed.get("episode_number")
         # season number
         sn = parsed.get("anime_season")
+        if isinstance(sn, list):
+            sn = sn[0]
         if sn and sn.startswith("0"):
             sn = str(int(sn))
         if sn == "1":
@@ -311,6 +313,7 @@ async def parse(
             raise Exception("Parsing Failed")
         title = f"{title} {yr}" if yr else title
         _file = name if not _file else _file
+        folder += "/" if not folder.endswith("/") else str()
         _infile = folder + _file
         r_is_end = True if ri == "[END]" else False
         codec = await get_codec()

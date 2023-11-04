@@ -2,7 +2,7 @@ from bot import bot_id
 from bot.config import DATABASE_URL as database
 from bot.startup.before import ffmpegdb, filterdb, pickle, queuedb, userdb
 
-from .bot_utils import QUEUE, TEMP_USERS, list_to_str
+from .bot_utils import BATCH_QUEUE, QUEUE, TEMP_USERS, list_to_str
 from .local_db_utils import save2db_lcl, save2db_lcl2
 
 # i suck at using database -_-'
@@ -13,11 +13,12 @@ from .local_db_utils import save2db_lcl, save2db_lcl2
 _filter = {"_id": bot_id}
 
 
-async def save2db():
+async def save2db(db="queue"):
     if not database:
         return save2db_lcl()
-    data = pickle.dumps(QUEUE)
-    _update = {"queue": data}
+    d = {"queue": QUEUE, "batches": BATCH_QUEUE}
+    data = pickle.dumps(d.get(db))
+    _update = {db: data}
     queuedb.update_one(_filter, {"$set": _update}, upsert=True)
 
 

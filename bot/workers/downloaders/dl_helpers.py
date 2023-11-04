@@ -1,10 +1,15 @@
-from bot import asyncio, math, os, pyro, time
+import uuid
+
+from bot import QBIT_PORT as qbit_port
+from bot import asyncio, math, os, pyro, qbClient, time
 from bot.utils.bot_utils import (
     CACHE_QUEUE,
+    C_qbit,
     get_aria2,
     get_queue,
     is_video_file,
     replace_proxy,
+    sync_to_async,
 )
 from bot.utils.log_utils import log, logger
 
@@ -30,6 +35,46 @@ def rm_leech_file(*gids):
                 download.remove(force=True, files=True)
         except Exception:
             log(Exception)
+
+
+def get_qbclient():
+    return qbClient(
+        host="localhost",
+        port=qbit_port,
+        VERIFY_WEBUI_CERTIFICATE=False,
+        REQUESTS_ARGS={"timeout": (30, 60)},
+    )
+
+
+async def rm_torrent_file(*hashes, qb=None):
+    if not qb:
+        qb = await sync_to_async(get_qbclient)
+    for hash in hashes:
+        try:
+            await sync_to_async(
+                qb.torrents_delete, delete_files=True, torrent_hashes=hash
+            )
+        except Exception:
+            log(Exception)
+
+
+async def rm_torrent_tag(*tags, qb=None):
+    if not qb:
+        qb = await sync_to_async(get_qbclient)
+    for tag in tags:
+        try:
+            await sync_to_async(qb.torrents_delete_tags, tags=tag)
+        except Exception:
+            log(Exception)
+
+
+async def get_files_from_torrent(hash):
+    # qb.login()
+    qb = await sync_to_async(get_qbclient)
+    torrent = await sync_to_async(qb.torrents_info, torrent_hash=hash)
+    files = torrent[0].files
+    file_list = [file["name"] for file in files]
+    return file_list
 
 
 async def download2(dl, file, message=None, e=None):
@@ -95,6 +140,59 @@ async def get_leech_name(url):
         return filename
     except Exception:
         await logger(Exception)
+
+
+async def get_torrent(url):
+    qinfo = C_qbit()
+    tag = "qb_dl" + str(uuid.uuid4())
+    try:
+        qb = await sync_to_async(get_qbclient)
+        op = await sync_to_async(
+            qb.torrents_add,
+            url,
+            save_path=os.getcwd() + "/temp",
+            seeding_time_limit=0,
+            is_paused=True,
+            tags=tag,
+        )
+        st = time.time()
+        if op.lower() == "ok.":
+            tor_info = await sync_to_async(qb.torrents_info, tag=tag)
+            if len(tor_info) == 0:
+                while True:
+                    tor_info = await sync_to_async(qb.torrents_info, tag=tag)
+                    if len(tor_info) > 0:
+                        break
+                    elif time.time() - st >= 120:
+                        qinfo.error = "Failed to add torrent…"
+                        return
+        else:
+            qinfo.error = "This Torrent already added or unsupported/invalid link/file"
+            return
+        if tor_info[0].state == "metaDL":
+            st = time.time()
+            while True:
+                tor_info = await sync_to_async(qb.torrents.info, tag=tag)
+                if tor_info[0].state != "metaDL":
+                    break
+                elif time.time() - st >= 360:
+                    qinfo.error = "Failed to get metadata…"
+                    return
+        if tor_info[0].state == "error":
+            qinfo.error = "An unknown error occurred."
+            return
+        qinfo.hash = tor_info[0].hash
+        qinfo.file_list = await get_files_from_torrent(qinfo.hash)
+        qinfo.count = len(qinfo.file_list)
+        qinfo.name = tor_info[0].name
+        await rm_torrent_file(qinfo.hash, qb=qb)
+        await rm_torrent_tag(tag, qb=qb)
+        return
+    except Exception as e:
+        qinfo.error = e
+        await logger(Exception)
+    finally:
+        return qinfo
 
 
 async def cache_dl(check=False):

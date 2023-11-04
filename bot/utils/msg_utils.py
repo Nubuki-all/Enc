@@ -339,7 +339,7 @@ async def report_failed_download(download, msg, file, user=None):
             else:
                 reply += download.canceller.mention()
     else:
-        reply += f"failed.\n`{download.download_error}`"
+        reply += f"failed.\n- `{download.download_error}`"
     reply += "!"
     return await msg.edit(reply)
 

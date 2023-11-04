@@ -66,14 +66,19 @@ async def get_queue_msg():
             user_id, message = u_msg
             user_id = 777000 if str(user_id).startswith("-100") else user_id
             user = await pyro.get_users(user_id)
-            # Backwards compatibility:
-            ver, fil = ver_fil if isinstance(ver_fil, tuple) else (ver_fil, None)
+            ver, fil, mode = ver_fil
 
             if fil and len(fil.split("\n")) > 2:
                 rm, ftag, ctag = fil.split("\n", maxsplit=2)
                 fil = f"[-rm: `{rm}`, -tf: `{ftag}`, -tc: `{ctag}`]"
 
-            msg += f"{_no}. `{file_name}`\n  ├**Filter:** {fil}\n  ├**Release version:** {ver}\n  └**Added by:** [{user.first_name}](tg://user?id={user_id})\n\n"
+            batch = "  ├**Batch:** Yes\n  " if mode[1].lower() == "batch." else "  "
+
+            msg += (
+                f"{_no}. `{file_name}`\n  ├**Filter:** {fil}\n  ├**Release version:** {ver}\n"
+                f"{batch}"
+                f"└**Added by:** [{user.first_name}](tg://user?id={user_id})\n\n"
+            )
 
         if not msg:
             return None, None

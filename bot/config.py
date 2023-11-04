@@ -55,6 +55,7 @@ try:
     OVR = config("OVR", default=None)
     OWNER = config("OWNER")
     PAUSE_ON_DL_INFO = config("PODI", default=True, cast=bool)
+    QBIT_PORT = config("QBIT_PORT", default=8090, cast=int)
     RELEASER = config("RELEASER", default="A-M|ANi-MiNE")
     TELEGRAPH_API = config("TELEGRAPH_API", default="https://api.telegra.ph")
     TELEGRAPH_AUTHOR = config("TELEGRAPH_AUTHOR", default=None)

@@ -8,6 +8,7 @@ from pyrogram.handlers import CallbackQueryHandler
 
 from bot import asyncio, botStartTime, pyro, time
 from bot.utils.ani_utils import qparse
+from bot.utils.batch_utils import get_batch_list
 from bot.utils.bot_utils import (
     decode,
     enc_canceller,
@@ -21,6 +22,35 @@ from bot.utils.msg_utils import clean_old_message, user_is_owner
 from bot.utils.os_utils import file_exists, s_remove
 
 #######! ENCODE CALLBACK HANDLERS !#######
+
+
+async def get_next(length, queue):
+    try:
+        if length > 1:
+            file_name, _id, v_f = list(queue.values())[1]
+            v, f, m = v_f
+            next_ = (
+                await qparse(file_name, v, f)
+                if m[1].lower() != "batch."
+                else "[Batch]: " + file_name
+            )
+            next_ = (next_[:45] + "…") if len(next_) > 45 else next_
+            if length > 2:
+                file_name, _id, v_f = list(queue.values())[2]
+                v, f, m = v_f
+                next2_ = "\n" + (
+                    await qparse(file_name, v, f)
+                    if m[1].lower() != "batch."
+                    else "[Batch]: " + file_name
+                )
+                next2_ = (next2_[:45] + "…") if len(next2_) > 45 else next2_
+                next2_ = next2_ + f" (+{length - 3})" if length > 3 else next2_
+            else:
+                next2_ = str()
+            return next_, next2_
+    except Exception:
+        log(Exception)
+    return None, None
 
 
 async def pres(e):
@@ -40,28 +70,32 @@ async def pres(e):
         ansa = str()
         if file_exists("thumb2.jpg"):
             ansa += "\n\nAnilist thumbnail:\nYes"
-        if length > 1:
-            # queue[list(queue.keys())[1]]
-            file_name, _id, v_f = list(queue.values())[1]
-            # Backwards compatibility:
-            v, f = v_f if isinstance(v_f, tuple) else (v_f, None)
-            next_ = await qparse(file_name, v, f)
-            next_ = (next_[:45] + "…") if len(next_) > 45 else next_
-            if length > 2:
-                file_name, _id, v_f = list(queue.values())[2]
-                # Backwards compatibility:
-                v, f = v_f if isinstance(v_f, tuple) else (v_f, None)
-                next2_ = "\n" + await qparse(file_name, v, f)
-                next2_ = (next2_[:45] + "…") if len(next2_) > 45 else next2_
-                next2_ = next2_ + f" (+{length - 3})" if length > 3 else next2_
+        file_name, _id, v_f = list(queue.values())[0]
+        v, f, m = v_f
+        if m[1].lower() == "batch.":
+            _dir, name_ = os.path.split(dl)
+            nxt_, left = await get_batch_list(
+                exclude=name_, limit=2, v=v, f=f, get_nleft=True
+            )
+            if len(nxt_) == 0:
+                next_, next2_ = await get_next(length, queue)
+            elif len(nxt_) == 1:
+                next_, next2_ = nxt_[0], str()
+                length = 2
             else:
-                next2_ = str()
+                next_, next2_ = nxt_
+                next_ += "\n"
+                next2_ += f" (+{left})" if left else str()
+                length = left + 3 if left else 3
+        else:
+            next_, next2_ = await get_next(length, queue)
+        if next_:
             ansa += f"\n\nNext up:\n{next_}{next2_}\n\nRemains:- {length - 1}"
         ansa = ansa or "Wow such emptiness 🐱."
         await e.answer(ansa, cache_time=0, alert=True)
-    except Exception:
+    except Exception as e:
         await logger(Exception)
-        ansa = "YIKES"
+        ansa = "YIKES:\n" + str(e)
         await e.answer(
             ansa,
         )
@@ -146,15 +180,18 @@ async def dl_stat(client, query):
         if not req_info:
             return await clean_old_message(query, True)
         d = req_info[0]
-        dl = d.dl_folder + d.file_name
+        dl = d.path
         if file_exists(dl):
             dls = dl
+        elif file_exists(dls := (dl + ".!qB")):
+            pass
         else:
             dls = f"{dl}.temp"
+        file_name = (os.path.split(d.file_name))[1]
         ov = hbs(int(Path(dls).stat().st_size))
         queue = get_queue()
-        ver, fil = (list(queue.values())[0])[2]
-        q = await qparse(d.file_name, ver, fil)
+        ver, fil, mode = (list(queue.values())[0])[2]
+        q = await qparse(file_name, ver, fil)
         ans = f"➡️:\n{q}"
         ans += "\n\n"
         ans += f'{"Current " if not d.uri else str()}Size:\n{ov}'

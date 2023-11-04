@@ -1,3 +1,6 @@
+from os.path import split as path_split
+from os.path import splitext as split_ext
+
 from bot import Path, asyncio, pyro, tele, time
 from bot.config import CACHE_DL as cache
 from bot.config import DUMP_LEECH as dump
@@ -10,10 +13,11 @@ from bot.config import LOG_CHANNEL as log_channel
 from bot.others.exceptions import AlreadyDl
 from bot.startup.before import entime
 from bot.utils.ani_utils import custcap, dynamicthumb, f_post, parse, qparse_t
+from bot.utils.batch_utils import get_downloadable_batch, mark_file_as_done
 from bot.utils.bot_utils import CACHE_QUEUE as cached
 from bot.utils.bot_utils import E_CANCEL
-from bot.utils.bot_utils import LAST_ENCD as l_enc
-from bot.utils.bot_utils import get_queue, get_var, hbs
+from bot.utils.bot_utils import encode_info as einfo
+from bot.utils.bot_utils import get_bqueue, get_queue, get_var, hbs
 from bot.utils.bot_utils import time_formatter as tf
 from bot.utils.db_utils import save2db
 from bot.utils.log_utils import logger
@@ -27,7 +31,7 @@ from bot.utils.msg_utils import (
     report_failed_download,
 )
 from bot.utils.os_utils import info, pos_in_stm, s_remove
-from bot.workers.downloaders.dl_helpers import cache_dl, rm_leech_file
+from bot.workers.downloaders.dl_helpers import cache_dl
 from bot.workers.downloaders.download import Downloader as downloader
 from bot.workers.encoders.encode import Encoder as encoder
 from bot.workers.uploaders.dump import dumpdl
@@ -101,6 +105,21 @@ async def forward_(name, out, ds, mi, f):
         await logger(Exception)
 
 
+def skip(queue_id):
+    if einfo.batch:
+        return
+    bqueue = get_bqueue()
+    queue = get_queue()
+    try:
+        bqueue.pop(queue_id)
+    except Exception:
+        pass
+    try:
+        queue.pop(queue_id)
+    except Exception:
+        pass
+
+
 async def something():
     while True:
         await thing()
@@ -122,20 +141,29 @@ async def thing():
                 break
             await asyncio.sleep(10)
         # user = int(OWNER.split()[0])
-        chat_id, msg_id = list(queue.keys())[0]
+        queue_id = list(queue.keys())[0]
+        chat_id, msg_id = queue_id
         name, u_msg, v_f = list(queue.values())[0]
-        # backward compability:
-        if not isinstance(v_f, tuple):
-            v, f = v_f, None
-        else:
-            v, f = v_f
+        v, f, m = v_f
         sender_id, message = u_msg
         if not message:
             message = await pyro.get_messages(chat_id, msg_id)
         else:
             message._client = pyro
-        cached_dl = False
-        uri = None
+
+        # Batches shenanigans
+        if m[1].lower() == "batch.":
+            einfo.batch = einfo.qbit = True
+            file_name, index, name = get_downloadable_batch(queue_id)
+            einfo.select = index
+            if name is None:
+                einfo.batch = None
+                skip(queue_id)
+                await save2db()
+                await save2db("batches")
+                await asyncio.sleep(2)
+                return
+
         msg_p = await message.reply("`Download Pending…`", quote=True)
         await asyncio.sleep(2)
         msg_t = await tele.edit_message(
@@ -164,11 +192,27 @@ async def thing():
             dl = "downloads/" + name
             if message.text:
                 if message.text.startswith("/"):
-                    uri = message.text.split(" ", maxsplit=1)[1].strip()
+                    einfo.uri = message.text.split(" ", maxsplit=1)[1].strip()
                 else:
-                    uri = message.text
-                uri = get_args(
-                    "-f", "-rm", "-tc", "-tf", "-v", to_parse=uri, get_unknown=True
+                    einfo.uri = message.text
+                if m[0] == "aria2":
+                    args_list = ["-f", "-rm", "-tc", "-tf", "-v"]
+                else:
+                    args_list = [
+                        "-f",
+                        "-n",
+                        "-rm",
+                        "-s",
+                        "-tc",
+                        "-tf",
+                        "-v",
+                        ["-b", "store_true"],
+                    ]
+                    einfo.qbit = True
+                    if m[1].split()[0].lower() == "select.":
+                        einfo.select = int(m[1].split()[1])
+                einfo.uri = (
+                    get_args(*args_list, to_parse=einfo.uri, get_unknown=True)
                 )[1]
 
             if cached:
@@ -176,9 +220,13 @@ async def thing():
 
             sdt = time.time()
             # await mssg_r.edit("`Waiting for download to complete.`")
-            download = downloader(sender_id, op, _id, uri=uri, dl_info=True)
+            download = downloader(
+                sender_id, op, _id, uri=einfo.uri, dl_info=True, qbit=einfo.qbit
+            )
             download._sender = sender
-            downloaded = await download.start(name, None, message, msg_p)
+            downloaded = await download.start(
+                name, None, message, msg_p, select=einfo.select
+            )
             if download.is_cancelled or download.download_error:
                 f_msg = await report_failed_download(download, msg_p, name, sender_id)
                 if op:
@@ -189,13 +237,14 @@ async def thing():
                         + f_msg.text.markdown,
                     )
             if not downloaded or download.is_cancelled:
-                if queue:
-                    queue.pop(list(queue.keys())[0])
+                skip(queue_id)
+                mark_file_as_done(einfo.select, queue_id)
                 await save2db()
+                await save2db("batches")
                 await asyncio.sleep(2)
                 return
         except AlreadyDl:
-            cached_dl = True
+            einfo.cached_dl = True
             msg_r = await reply_message(msg_p, "`Waiting for caching to complete.`")
             sdt = time.time()
             rslt = await get_cached(dl, sender, sender_id, msg_t, op)
@@ -206,30 +255,34 @@ async def thing():
                 return
         except Exception:
             await logger(Exception)
-            queue.pop(list(queue.keys())[0])
+            skip(queue_id)
+            mark_file_as_done(einfo.select, queue_id)
             await save2db()
+            await save2db("batches")
             return
         edt = time.time()
         dtime = tf(edt - sdt)
 
-        kk = dl.split("/")[-1]
-        aa = kk.split(".")[-1]
+        dl = download.path
+        d_folder, d_fname = path_split(dl)
+        d_ext = split_ext(d_fname)[-1]
         _dir = "encode"
-        file_name, metadata_name = await parse(name, kk, aa, v=v, _filter=f)
+        file_name, metadata_name = await parse(
+            name, d_fname, d_ext, v=v, folder=d_folder, _filter=f
+        )
         out = f"{_dir}/{file_name}"
         title, epi, sn, rlsgrp = await dynamicthumb(name, _filter=f)
 
         c_n = f"{title} {sn}".strip()
-        if l_enc and l_enc[0] == c_n:
+        if einfo.previous and einfo.previous == c_n:
             pass
         else:
-            l_enc.clear()
-            l_enc.append(c_n)
+            einfo.previous = c_n
             for x in ("!", ":", "-", " "):
                 c_n = c_n.replace(x, "_")
             await op.reply("#" + c_n) if op else None
             await msg_p.reply("#" + c_n) if log_channel == chat_id else None
-        if uri and dump is True:
+        if einfo.uri and dump is True:
             asyncio.create_task(dumpdl(dl, name, thumb2, msg_t.chat_id, message))
         if len(queue) > 1 and cache:
             await cache_dl()
@@ -238,6 +291,8 @@ async def thing():
         ffmpeg = await another(nani, title, epi, sn, metadata_name, dl)
 
         _set = time.time()
+        einfo.current = file_name
+        einfo._current = name
         cmd = ffmpeg.format(dl, out)
         encode = encoder(_id, sender, msg_t, op)
         # await mssg_r.edit("`Waiting For Encoding To Complete`")
@@ -254,15 +309,13 @@ async def thing():
             log_msg=op,
         )
         if encode.process.returncode != 0:
-            if uri:
-                rm_leech_file(download.uri_gid)
-            else:
-                s_remove(dl)
+            await download.clean_download()
             s_remove(out)
-            if queue:
-                queue.pop(list(queue.keys())[0])
+            skip(queue_id)
+            mark_file_as_done(einfo.select, queue_id)
             E_CANCEL.pop(_id) if E_CANCEL.get(_id) else None
             await save2db()
+            await save2db("batches")
             return
         eet = time.time()
         etime = tf(eet - _set)
@@ -271,7 +324,7 @@ async def thing():
         await enpause(msg_p)
 
         sut = time.time()
-        fname = out.split("/")[1]
+        fname = path_split(out)[1]
         pcap = await custcap(name, fname, ver=v, encoder=ENCODER, _filter=f)
         await op.edit(f"`Uploading…` `{out}`") if op else None
         upload = uploader(sender_id, _id)
@@ -286,10 +339,11 @@ async def thing():
             await msg_p.edit(m)
             if op:
                 await op.edit(m)
-            queue.pop(list(queue.keys())[0])
+            skip(queue_id)
+            mark_file_as_done(einfo.select, queue_id)
             await save2db()
-            if uri:
-                rm_leech_file(download.uri_gid)
+            await save2db("batches")
+            await download.clean_download()
             s_remove(thumb2, dl, out)
             return
         eut = time.time()
@@ -322,18 +376,19 @@ async def thing():
             f"**Encode Stats:**\n\nOriginal Size: "
             f"`{hbs(org_s)}`\nEncoded Size: `{hbs(out_s)}`\n"
             f"Encoded Percentage: `{per}`\n\n"
-            f"{'Cached' if cached_dl else 'Downloaded'} in `{dtime}`\n"
+            f"{'Cached' if einfo.cached_dl else 'Downloaded'} in `{dtime}`\n"
             f"Encoded in `{etime}`\nUploaded in `{utime}`",
             disable_web_page_preview=True,
             quote=True,
         )
         await st_msg.copy(chat_id=log_channel) if op else None
 
-        queue.pop(list(queue.keys())[0])
+        skip(queue_id)
+        mark_file_as_done(einfo.select, queue_id)
         await save2db()
+        await save2db("batches")
         s_remove(thumb2)
-        if uri:
-            rm_leech_file(download.uri_gid)
+        await download.clean_download()
         s_remove(dl, out)
 
     except Exception:
@@ -347,4 +402,5 @@ async def thing():
         entime.pause_indefinitely(l_msg)
 
     finally:
+        einfo.reset()
         await asyncio.sleep(5)

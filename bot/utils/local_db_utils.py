@@ -1,8 +1,8 @@
 import pickle
 
-from bot import local_qdb, local_udb
+from bot import local_qdb, local_qdb2, local_udb
 
-from .bot_utils import QUEUE, TEMP_USERS, list_to_str
+from .bot_utils import BATCH_QUEUE, QUEUE, TEMP_USERS, list_to_str
 from .os_utils import file_exists
 
 
@@ -11,6 +11,11 @@ def load_local_db():
         with open(local_qdb, "rb") as file:
             local_queue = pickle.load(file)
         QUEUE.update(local_queue)
+
+    if file_exists(local_qdb2):
+        with open(local_qdb2, "rb") as file:
+            local_queue = pickle.load(file)
+        BATCH_QUEUE.update(local_queue)
 
     if file_exists(local_udb):
         with open(local_udb, "rb") as file:
@@ -23,6 +28,8 @@ def load_local_db():
 def save2db_lcl():
     with open(local_qdb, "wb") as file:
         pickle.dump(QUEUE, file)
+    with open(local_qdb2, "wb") as file:
+        pickle.dump(BATCH_QUEUE, file)
 
 
 def save2db_lcl2():
