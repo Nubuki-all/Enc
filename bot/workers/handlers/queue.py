@@ -371,7 +371,7 @@ async def enleech2(event, args, client):
     user_id = event.sender_id
     if not user_is_allowed(user_id):
         return
-    cust_fil = cust_v = str()
+    cust_fil = cust_v = flag = str()
     queue = get_queue()
     invalid_msg = "`Invalid torrent/direct link`"
     no_uri_msg = (
@@ -499,10 +499,10 @@ async def enleech2(event, args, client):
         file = await get_torrent(uri)
         if file.error:
             return await event.reply(f"`{file.error}`")
-        if args and flag.b and file.count > 1:
+        if flag and flag.b and file.count > 1:
             file.name = flag.n or file.name
             mode = "Batch."
-        elif args and flag.s and file.count > 1:
+        elif flag and flag.s and file.count > 1:
             if (ind := int(flag.s)) > (file.count - 1):
                 return await event.reply(
                     f"'-s': `{flag.s} is more than total files in folder :- {file.count}`"
@@ -520,7 +520,7 @@ async def enleech2(event, args, client):
                 return await event.reply(
                     "**THIS TORRENT HAS ALREADY BEEN ADDED TO QUEUE**"
                 )
-        if file.count > 1 and (args and flag.b):
+        if file.count > 1 and (flag and flag.b):
             result = await batch_preview(
                 event,
                 file,
