@@ -569,11 +569,26 @@ async def enselect(event, args, client):
     if not preview_list:
         return await event.reply("`Nothing to Select.`")
     try:
-        flag, args = get_args("-e", "-d", to_parse=args, get_unknown=True)
-        if not (flag.d or flag.e):
+        flag, args = get_args("-e", "-d", "--all", to_parse=args, get_unknown=True)
+        if not (flag.d or flag.e or flag.all):
             return await event.reply(f"`{enselect.__doc__}`")
         err = str()
         msg = str()
+        sall = None
+        if flag.all:
+            if flag.all.casefold() == "disable":
+                msg = "`Unselected all files.`"
+                sall = 0
+            elif flag.all.casefold() == "enable":
+                msg = "`Selected all files`"
+                sall = 1
+            else:
+                return await event.reply(f"`Invalid argument '{flag.all}' for --all.`")
+            for i in list(preview_queue.keys()):
+                v = preview_queue.get(i)
+                if v != 3:
+                    preview_queue.update({i: sall})
+            return await event.reply(msg)
         if flag.e:
             msg += "**Will Encode:**\n"
             for (i,) in flag.e.split():
@@ -900,6 +915,8 @@ async def edit_queue(event, args, client):
         queue.update(
             {key: [flag.n or file_name, s_msg, (cust_v or v, cust_fil or f, m)]}
         )
+        await save2db()
+        await save2db("batches")
         await event.reply("`Edited queued item successfully.`")
     except Exception as e:
         await event.reply(f"An error occurred\n  - {str(e)}")
