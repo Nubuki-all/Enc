@@ -592,7 +592,8 @@ async def enselect(event, args, client):
                     preview_queue.update({i: sall})
             reply = await event.reply(msg)
             await asyncio.sleep(10)
-            return await event.delete()
+            await reply.delete()
+            return await try_delete(event)
         if flag.e:
             msg += "**Will Encode:**\n"
             for (i,) in flag.e.split():
