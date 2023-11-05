@@ -573,6 +573,10 @@ async def en_upload(event, args, client):
         - direct link
         - torrent/magnet link
         -
+            --ext (optional argument) [Low priority]
+                changes the extension of a single file while uploading
+            --mkv (optional argument) [High priority]
+                same as above but only changes to 'mkv' same as passing --ext ".mkv"
             -s (optional argument)
                 cleans command and remits no message as to what or how many files were uploaded.
             -qb (optional argument)
@@ -585,6 +589,7 @@ async def en_upload(event, args, client):
         return await event.delete()
     try:
         download = None
+        ext = None
         qb = select = None
         uri = None
         topic_id = None
@@ -596,7 +601,9 @@ async def en_upload(event, args, client):
                 else event.reply_to_msg_id
             )
         arg, args = get_args(
+            "--ext",
             "-f",
+            "--mkv",
             "-qs",
             ["-qb", "store_true"],
             ["-s", "store_true"],
@@ -643,6 +650,10 @@ async def en_upload(event, args, client):
             file = download.path
         else:
             file = args
+        if arg.mkv:
+            ext = ".mkv"
+        elif arg.ext:
+            ext = arg.ext if arg.ext.startswith(".") else ("." + arg.ext)
         if not file_exists(file) and not dir_exists(file):
             return await event.reply("__File or folder not found__")
         if dir_exists(file):
@@ -728,8 +739,16 @@ async def en_upload(event, args, client):
             r = await message.reply(f"`Uploading {file}…`", quote=True)
             _none, cap = os.path.split(file)
             u_id = f"{r.chat.id}:{r.id}"
+            if ext:
+                fname = check_ext(cap, ext=ext, overide=True)
+                await asyncio.sleep(3)
+                await r.edit(f"Renaming:\n`{_or}`\n >>>\n`{fname}`…")
+                out = work_folder + fname
+                shutil.copy2(file, out)
+                file = out
             upload = uploader(_id=u_id)
             await upload.start(event.chat_id, file, r, "thumb.jpg", f"`{cap}`", message)
+            s_remove(file) if ext else None
             if not upload.is_cancelled:
                 await r.edit(
                     f"`{cap} uploaded successfully.`"

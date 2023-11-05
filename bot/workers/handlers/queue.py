@@ -559,6 +559,8 @@ async def enselect(event, args, client):
     """
     Select files in batch to encode or skip;
     flags:
+        --all "enable" or "disable"
+            select or deselect all files in a batch respectively.
         -e with a list of file_ids to encode
         -d with a list of file_ids to skip
     file_ids:- numbers next to the files in batch preview
