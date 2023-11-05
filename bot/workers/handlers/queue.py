@@ -51,13 +51,14 @@ async def listqueue(event, args, client, deletable=True):
        for additional help send without additional arguments
     """
     if args:
+        or_args = args
         flag, args = get_args(
             ["-e", "store_true"], ["-p", "store_true"], to_parse=args, get_unknown=True
         )
         if flag.e:
             if not args:
                 return await event.reply(f"`{edit_queue.__doc__}`")
-            return await edit_queue(event, args, client)
+            return await edit_queue(event, or_args, client)
         if flag.p:
             if not args:
                 return await event.reply(f"`{listqueuep.__doc__}`")
@@ -893,7 +894,7 @@ async def edit_queue(event, args, client):
     try:
         cust_fil = cust_v = str()
         flag, args = get_args(
-            "-f", "-n", "-q", "-rm", "-tc", "-tf", "-v", to_parse=args, get_unknown=True
+            "-e", "-f", "-n", "-q", "-rm", "-tc", "-tf", "-v", to_parse=args, get_unknown=True
         )
         args = flag.q or args
         if not args.isdigit():
