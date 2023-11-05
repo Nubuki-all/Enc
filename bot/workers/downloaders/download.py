@@ -260,6 +260,9 @@ class Downloader:
             length = len(file_list)
             x = str()
             if s is not None:
+                if s > (length -1):
+                    self.download_error = "qbittorrent: file_id not found."
+                    raise Exception(self.download_error)
                 for i in range(length):
                     if i != s:
                         x += str(i) + "|"

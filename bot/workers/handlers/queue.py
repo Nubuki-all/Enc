@@ -374,12 +374,13 @@ async def enleech2(event, args, client):
     cust_fil = cust_v = flag = str()
     queue = get_queue()
     invalid_msg = "`Invalid torrent/direct link`"
+    mode = "None"
     no_uri_msg = (
         "`uhm you need to reply to or send command alongside a uri/direct link`"
     )
     no_bt_spt_msg = "`Torrent is a batch torrent.\nTo add to queue use -b`"
     no_fl_spt_msg = "`File is not a video.`"
-    mode = "None"
+    or_event = event
     ukn_err_msg = "`An unknown error occurred, might an internal issue with aria2.\nCheck logs for more info`"
     if args:
         flag, args = get_args(
@@ -505,7 +506,8 @@ async def enleech2(event, args, client):
         elif flag and flag.s and file.count > 1:
             if (ind := int(flag.s)) > (file.count - 1):
                 return await event.reply(
-                    f"'-s': `{flag.s} is more than total files in folder :- {file.count}`"
+                    f"'-s': `{flag.s} is more than last file_id :- {file.count - 1}\n"
+                    f"Total files in folder :- {file.count}`"
                 )
             if not is_video_file(file.file_list[ind]):
                 return await event.reply("'-s': " + no_fl_spt_msg)
@@ -530,7 +532,7 @@ async def enleech2(event, args, client):
                 cust_fil or get_f(),
             )
             if not result:
-                return
+                return await or_event.delete()
         queue.update(
             {
                 (chat_id, event.id): [
@@ -588,7 +590,9 @@ async def enselect(event, args, client):
                 v = preview_queue.get(i)
                 if v != 3:
                     preview_queue.update({i: sall})
-            return await event.reply(msg)
+            reply = await event.reply(msg)
+            await asyncio.sleep(10)
+            return await event.delete()
         if flag.e:
             msg += "**Will Encode:**\n"
             for (i,) in flag.e.split():

@@ -58,6 +58,7 @@ from .workers.handlers.queue import (
 )
 from .workers.handlers.rebut import (
     en_download,
+    en_list,
     en_mux,
     en_rename,
     en_upload,
@@ -287,6 +288,11 @@ async def _(e):
 @tele.on(events.NewMessage(pattern=command(["qbleech", "ql"])))
 async def _(e):
     await event_handler(e, enleech2, pyro)
+
+
+@tele.on(events.NewMessage(pattern=command(["list"], ["/", "!"])))
+async def _(e):
+    await event_handler(e, en_list, pyro, require_args=True)
 
 
 @tele.on(events.NewMessage(pattern=command(["select", "s"])))

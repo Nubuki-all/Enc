@@ -191,9 +191,7 @@ def get_args(*args, to_parse, get_unknown=False):
 
 async def reply_message(message, text, quote=True):
     """A function to reply messages with a loop in the event of FloodWait"""
-    pyro = True if isinstance(message, pyrogram.types.Message) else False
-
-    if pyro:
+    if isinstance(message, pyrogram.types.Message):
         try:
             replied = await message.reply(text, quote=quote)
         except pyro_errors.FloodWait as e:

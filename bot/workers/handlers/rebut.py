@@ -19,6 +19,8 @@ from bot.utils.bot_utils import (
     get_filename,
     is_magnet,
     is_url,
+    is_video_file,
+    split_text,
     u_cancelled,
     video_mimetype,
 )
@@ -26,6 +28,7 @@ from bot.utils.log_utils import logger
 from bot.utils.msg_utils import (
     get_args,
     get_message_from_link,
+    reply_message,
     report_encode_status,
     report_failed_download,
     try_delete,
@@ -44,13 +47,14 @@ from bot.utils.os_utils import (
     s_remove,
     size_of,
 )
-from bot.workers.downloaders.dl_helpers import get_leech_name, rm_leech_file
+from bot.workers.downloaders.dl_helpers import get_leech_name, get_torrent, rm_leech_file
 from bot.workers.downloaders.download import Downloader as downloader
 from bot.workers.encoders.encode import Encoder as encoder
 from bot.workers.uploaders.upload import Uploader as uploader
 
 thumb3 = "thumb3.jpg"
 aria2_err_msg = "`An error with aria2 occurred`"
+no_fl_spt_msg = "`File is not a video.`"
 not_vid_msg = "`Batches and Non-videos not supported`"
 
 
@@ -319,7 +323,7 @@ async def en_mux(event, args, client):
         download = download2 = None
         flags = None
         input_2 = None
-        link = None
+        link = qb = select = None
         ver = None
         work_folder = "mux/"
         cap_tag = file_tag = force_ext = None
@@ -339,14 +343,6 @@ async def en_mux(event, args, client):
             return await event.reply(
                 "__ffmpeg muxing parameters are required as arguments__"
             )
-
-        name = get_filename(message) if not link else await get_leech_name(link)
-        if not name:
-            error = aria2_err_msg if name is None else not_vid_msg
-            return await rep_event.reply(error)
-        if name.startswith("aria2_error"):
-            error = input_2.split("aria2_error")[1].strip()
-            return await rep_event.reply(f"{error}")
         if "\n" in args:
             args, flags = args.split("\n", maxsplit=1)
             flag = get_args(
@@ -358,11 +354,39 @@ async def en_mux(event, args, client):
                 "-i",
                 ["-np", "store_true"],
                 "-q",
+                "-qs",
                 "-tag_c",
                 "-tag_f",
                 "-v",
                 to_parse=flags,
             )
+        if not link:
+            name = get_filename(message)
+        elif flags and flag.qs:
+            if not flag.qs.isdigit():
+                return await event.reply("Parameter '-qs' requires digits <int> as argument.")
+            file = await get_torrent(link)
+            if file.error:
+                return await event.reply(f"`{file.error}`")
+            if (ind := int(flag.qs)) > (file.count - 1):
+                return await event.reply(
+                    f"'-qs': `{flag.qs} is more than last file_id :- {file.count - 1}\n"
+                    f"Total files in folder :- {file.count}`"
+                )
+            if not is_video_file(file.file_list[ind]):
+                return await event.reply("'-qs': " + no_fl_spt_msg)
+            name = (file.file_list[ind].split("/"))[-1]
+            qb = True
+            select = ind
+        else:
+            await get_leech_name(link)
+        if not name:
+            error = aria2_err_msg if name is None else not_vid_msg
+            return await rep_event.reply(error)
+        if name.startswith("aria2_error"):
+            error = input_2.split("aria2_error")[1].strip()
+            return await rep_event.reply(f"{error}")
+        if flags:
             if flag.np:
                 ani_parse = False
             if flag.i and (is_url(flag.i) or is_magnet(flag.i)):
@@ -395,28 +419,27 @@ async def en_mux(event, args, client):
             default_sub = flag.default_s
             file_tag = flag.tag_f
             force_ext = flag.ext
-            name = flag.d or name
             ver = flag.v
 
-        name, root, ext = check_ext(name, get_split=True)
+        __loc = flag.d if flags and flag.d else name
+        __loc, root, ext = check_ext(__loc, get_split=True)
         _f = get_f()
         ext = force_ext or ext
-        __loc = name
-        dl = work_folder + name
         turn().append(turn_id)
         if waiting_for_turn():
             w_msg = await message.reply(
                 "`Waiting for previous process to complete.`", quote=True
             )
             await wait_for_turn(turn_id, w_msg)
-        e = await message.reply(f"{enmoji()} `Downloading to {dl}…`", quote=True)
+        e = await message.reply(f"{enmoji()} **Downloading:-** `{name}`…", quote=True)
         await asyncio.sleep(5)
         d_id = f"{e.chat.id}:{e.id}"
-        download = downloader(_id=d_id, uri=link, folder=work_folder)
-        downloaded = await download.start(name, 0, message, e)
+        download = downloader(_id=d_id, uri=link, folder=work_folder, qbit=qb)
+        downloaded = await download.start(name, 0, message, e, select=select)
         if download.is_cancelled or download.download_error:
-            s_remove(dl)
+            await download.clean_download()
             return await report_failed_download(download, e, name, user)
+        dl = download.path
         await e.edit(f"Download to `{dl}` completed.")
         if input_2:
             await asyncio.sleep(3)
@@ -425,7 +448,7 @@ async def en_mux(event, args, client):
             download2 = downloader(_id=d_id, uri=link2, folder=work_folder)
             downloaded2 = await download2.start(name_2, 0, message_2, e)
             if download2.is_cancelled or download2.download_error:
-                s_remove(dl)
+                await download2.clean_download()
                 return await report_failed_download(download2, e, name_2, user)
             await e.edit(f"Download to `{input_2}` completed.")
 
@@ -447,10 +470,10 @@ async def en_mux(event, args, client):
             encode.process, e_id, stderr, e, user, t_file, _is="Muxing"
         )
         if encode.process.returncode != 0:
-            s_remove(dl, t_file)
+            s_remove(t_file)
             return
         __out, __out1 = await parse(
-            name,
+            __loc,
             t_file.split("/")[-1],
             anilist=ani_parse,
             cust_con=file_tag,
@@ -495,8 +518,9 @@ async def en_mux(event, args, client):
             encode.process, e_id, stderr, e, user, loc, _is="Editing metadata"
         )
         if encode.process.returncode != 0:
-            s_remove(dl, t_file, loc)
+            s_remove(t_file, loc)
             return
+        s_remove(t_file)
         cap = await custcap(
             __loc,
             __out,
@@ -519,16 +543,16 @@ async def en_mux(event, args, client):
             await e.edit(f"__Upload of__ `{__out}` __was cancelled.__")
         if flags and flag.c:
             await try_delete(event)
-        s_remove(dl, t_file, loc)
+        s_remove(t_file, loc)
     except Exception:
         await logger(Exception)
     finally:
         if turn(turn_id):
             turn().pop(0)
         if download and downloaded:
-            rm_leech_file(download.uri_gid)
+            await download.clean_download()
         if download2 and downloaded2:
-            rm_leech_file(download2.uri_gid)
+            await download2.clean_download()
         if input_2:
             s_remove(input_2)
         s_remove(thumb3)
@@ -544,13 +568,18 @@ async def en_upload(event, args, client):
         - torrent/magnet link
         -
             -s (optional argument)
-            cleans command and remits no message as to what or how many files were uploaded.
-        as argument.
+                cleans command and remits no message as to what or how many files were uploaded.
+            -qb (optional argument)
+                forces downloading using qbtorrent (Only for torrent or magnetic links)
+            -qs (optional argument)
+                <int>: selects file to upload from batch torrent using qbittorrent
+    __as an argument.
     """
     if not user_is_owner(event.sender_id):
         return await event.delete()
     try:
         download = None
+        qb = select = None
         uri = None
         topic_id = None
         u_can_msg = "`Folder upload has been force cancelled`"
@@ -561,31 +590,46 @@ async def en_upload(event, args, client):
                 else event.reply_to_msg_id
             )
         arg, args = get_args(
-            "-f", ["-s", "store_true"], to_parse=args, get_unknown=True
+            "-f", "-qs", ["-qb", "store_true"], ["-s", "store_true"], to_parse=args, get_unknown=True
         )
+        if arg.qs and not arg.qs.isdigit():
+            return await event.reply("'-qs': `param accepts only digits`")
         if arg.s and topic_id:
             message = await client.get_messages(event.chat_id, int(topic_id))
         else:
             message = await client.get_messages(event.chat_id, int(event.id))
         chain_msg = message
         await try_delete(event) if arg.s else None
+        
         if arg.f:
             file = arg.f
         elif is_url(args) or is_magnet(args):
+            if arg.qs:
+                file = await get_torrent(args)
+                if file.error:
+                    return await event.reply(f"`{file.error}`")
+                if (ind := int(arg.qs)) > (file.count - 1):
+                    return await event.reply(
+                        f"'-qs': `{arg.qs} is more than last file_id :- {file.count - 1}\n"
+                        f"Total files in folder :- {file.count}`"
+                    )
+                qb = True
+                select = ind
+            qb = arg.qb or qb
             folder, uri = "downloads2/", True
             dl = await message.reply(
                 "`Preparing to download file from link…`",
                 quote=True,
             )
             d_id = f"{dl.chat.id}:{dl.id}"
-            download = downloader(_id=d_id, uri=args, folder=folder)
-            downloaded = await download.start(None, None, True, dl)
+            download = downloader(_id=d_id, uri=args, folder=folder, qbit=qb)
+            downloaded = await download.start(None, None, True, dl, select=select)
             if download.is_cancelled or download.download_error:
                 return await report_failed_download(
                     download, dl, download.file_name, event.sender_id
                 )
             await dl.delete()
-            file = folder + downloaded.name
+            file = download.path
         else:
             file = args
         if not file_exists(file) and not dir_exists(file):
@@ -690,5 +734,36 @@ async def en_upload(event, args, client):
     except Exception:
         await logger(Exception)
     finally:
-        if download and downloaded:
-            rm_leech_file(download.uri_gid)
+        if download:
+            await download.clean_download()
+
+
+async def en_list(event, args, client):
+    """
+    List items in a torrent along with their file_ids
+    Arguments:
+        torrent/magnetic link (Required)
+
+    *Will fail if the same torrent link is being in use by qbittorrent in bot.
+    """
+    try:
+        if not (is_url(args) or is_magnet(args)):
+            return await event.reply("Please pass a valid torrent/magnetic link as argument. ")
+        file = await get_torrent(args)
+        if file.error:
+            return await event.reply(f"`{file.error}`")
+        msg = str()
+        for item, no in zip(file.file_list, itertools.count()):
+            msg += f"{no}. `{item}`"
+            msg += "\n\n"
+        msg += f"**Total files:** {file.count}"
+        pre_event = event
+        for smsg in await split_text(msg):
+            pre_event = await reply_message(pre_event, smsg, quote=True)
+    except Exception as e:
+        await logger(Exception)
+        await event.reply(
+            "An error occurred:\n" f"- `{str(e)}`"
+        )
+            
+        

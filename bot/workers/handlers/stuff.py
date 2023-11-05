@@ -286,6 +286,7 @@ ql{s} - add torrent link to queue
 s{s} - select files from torrent to encode
 queue{s} - list queue
 batch{s} - preview batches
+list{s} - list all files in a torrent
 forward{s} - manually forward a message to fchannel
 v{s} - turn v2,3,4… on (with message) or off
 download{s} - download a file or link to bot
