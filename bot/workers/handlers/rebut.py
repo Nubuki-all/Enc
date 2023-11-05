@@ -748,6 +748,7 @@ async def en_upload(event, args, client):
                 if file_exists(out):
                     return await r.edit(f"`{out}` already exists;\nWill not overwrite!")
                 shutil.copy2(file, out)
+                cap = fname
                 file = out
             upload = uploader(_id=u_id)
             await upload.start(event.chat_id, file, r, "thumb.jpg", f"`{cap}`", message)
