@@ -590,6 +590,7 @@ async def en_upload(event, args, client):
     try:
         download = None
         ext = None
+        folder = "downloads2/"
         qb = select = None
         uri = None
         topic_id = None
@@ -634,7 +635,7 @@ async def en_upload(event, args, client):
                 qb = True
                 select = ind
             qb = arg.qb or qb
-            folder, uri = "downloads2/", True
+            uri = True
             dl = await message.reply(
                 "`Preparing to download file from link…`",
                 quote=True,
@@ -743,7 +744,9 @@ async def en_upload(event, args, client):
                 fname = check_ext(cap, ext=ext, overide=True)
                 await asyncio.sleep(3)
                 await r.edit(f"Renaming:\n`{cap}`\n >>>\n`{fname}`…")
-                out = work_folder + fname
+                out = folder + fname
+                if file_exists(out):
+                    return await r.edit(f"`{out}` already exists;\nWill not overwrite!")
                 shutil.copy2(file, out)
                 file = out
             upload = uploader(_id=u_id)
