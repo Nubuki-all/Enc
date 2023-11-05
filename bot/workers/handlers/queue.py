@@ -894,7 +894,16 @@ async def edit_queue(event, args, client):
     try:
         cust_fil = cust_v = str()
         flag, args = get_args(
-            "-e", "-f", "-n", "-q", "-rm", "-tc", "-tf", "-v", to_parse=args, get_unknown=True
+            "-e",
+            "-f",
+            "-n",
+            "-q",
+            "-rm",
+            "-tc",
+            "-tf",
+            "-v",
+            to_parse=args,
+            get_unknown=True,
         )
         args = flag.q or args
         if not args.isdigit():
