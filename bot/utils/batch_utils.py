@@ -140,9 +140,9 @@ async def batch_preview(event, torrent, chat_id, e_id, v, f):
         await asyncio.sleep(3)
         while True:
             if not BATCH_ING:
+                if not preview_queue:
+                    return
                 break
-            if not preview_queue:
-                return
             async with batch_lock:
                 msg, button = await get_preview_msg(
                     torrent.file_list, preview_queue, v, f
