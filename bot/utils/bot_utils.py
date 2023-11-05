@@ -158,6 +158,7 @@ class C_qbit:
 
 class Encode_info:
     def __init__(self):
+        self.previous = None
         self.reset()
 
     def __str__(self):
@@ -166,7 +167,6 @@ class Encode_info:
     def reset(self):
         self.current = None
         self.batch = False
-        self.previous = None
         self.cached_dl = False
         self.qbit = False
         self.select = None
