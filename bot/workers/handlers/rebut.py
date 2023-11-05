@@ -47,7 +47,11 @@ from bot.utils.os_utils import (
     s_remove,
     size_of,
 )
-from bot.workers.downloaders.dl_helpers import get_leech_name, get_torrent, rm_leech_file
+from bot.workers.downloaders.dl_helpers import (
+    get_leech_name,
+    get_torrent,
+    rm_leech_file,
+)
 from bot.workers.downloaders.download import Downloader as downloader
 from bot.workers.encoders.encode import Encoder as encoder
 from bot.workers.uploaders.upload import Uploader as uploader
@@ -364,7 +368,9 @@ async def en_mux(event, args, client):
             name = get_filename(message)
         elif flags and flag.qs:
             if not flag.qs.isdigit():
-                return await event.reply("Parameter '-qs' requires digits <int> as argument.")
+                return await event.reply(
+                    "Parameter '-qs' requires digits <int> as argument."
+                )
             file = await get_torrent(link)
             if file.error:
                 return await event.reply(f"`{file.error}`")
@@ -590,7 +596,12 @@ async def en_upload(event, args, client):
                 else event.reply_to_msg_id
             )
         arg, args = get_args(
-            "-f", "-qs", ["-qb", "store_true"], ["-s", "store_true"], to_parse=args, get_unknown=True
+            "-f",
+            "-qs",
+            ["-qb", "store_true"],
+            ["-s", "store_true"],
+            to_parse=args,
+            get_unknown=True,
         )
         if arg.qs and not arg.qs.isdigit():
             return await event.reply("'-qs': `param accepts only digits`")
@@ -600,7 +611,7 @@ async def en_upload(event, args, client):
             message = await client.get_messages(event.chat_id, int(event.id))
         chain_msg = message
         await try_delete(event) if arg.s else None
-        
+
         if arg.f:
             file = arg.f
         elif is_url(args) or is_magnet(args):
@@ -748,7 +759,9 @@ async def en_list(event, args, client):
     """
     try:
         if not (is_url(args) or is_magnet(args)):
-            return await event.reply("Please pass a valid torrent/magnetic link as argument. ")
+            return await event.reply(
+                "Please pass a valid torrent/magnetic link as argument. "
+            )
         file = await get_torrent(args)
         if file.error:
             return await event.reply(f"`{file.error}`")
@@ -762,8 +775,4 @@ async def en_list(event, args, client):
             pre_event = await reply_message(pre_event, smsg, quote=True)
     except Exception as e:
         await logger(Exception)
-        await event.reply(
-            "An error occurred:\n" f"- `{str(e)}`"
-        )
-            
-        
+        await event.reply("An error occurred:\n" f"- `{str(e)}`")
