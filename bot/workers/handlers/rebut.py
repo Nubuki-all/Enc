@@ -603,7 +603,7 @@ async def en_upload(event, args, client):
         arg, args = get_args(
             "--ext",
             "-f",
-            "--mkv",
+            ["--mkv", "store_true"],
             "-qs",
             ["-qb", "store_true"],
             ["-s", "store_true"],
@@ -742,7 +742,7 @@ async def en_upload(event, args, client):
             if ext:
                 fname = check_ext(cap, ext=ext, overide=True)
                 await asyncio.sleep(3)
-                await r.edit(f"Renaming:\n`{_or}`\n >>>\n`{fname}`…")
+                await r.edit(f"Renaming:\n`{cap}`\n >>>\n`{fname}`…")
                 out = work_folder + fname
                 shutil.copy2(file, out)
                 file = out
