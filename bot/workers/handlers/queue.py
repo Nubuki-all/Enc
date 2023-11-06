@@ -894,7 +894,7 @@ async def edit_queue(event, args, client):
     try:
         cust_fil = cust_v = str()
         flag, args = get_args(
-            "-e",
+           ["-e", "store_true"], 
             "-f",
             "-n",
             "-q",
