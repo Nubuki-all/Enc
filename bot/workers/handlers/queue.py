@@ -850,7 +850,7 @@ async def edit_batch(event, args, client):
                 f"There are `{len(batch_queue)}` queued batches."
                 "\nTo view, pass the queue number of the batch on the original queue."
             )
-        if not args.isdigit() and int(args) > (len(queue) - 1):
+        if not (args.isdigit() and int(args) <= (len(queue) - 1)):
             return await event.reply(f"`{edit_batch.__doc__}`")
         args = int(args)
         key = list(queue.keys())[args]
