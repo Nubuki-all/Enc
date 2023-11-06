@@ -243,6 +243,7 @@ async def thing():
                 await save2db("batches")
                 await asyncio.sleep(2)
                 return
+            dl = download.path
         except AlreadyDl:
             einfo.cached_dl = True
             msg_r = await reply_message(msg_p, "`Waiting for caching to complete.`")
@@ -263,7 +264,6 @@ async def thing():
         edt = time.time()
         dtime = tf(edt - sdt)
 
-        dl = download.path
         d_folder, d_fname = path_split(dl)
         d_ext = split_ext(d_fname)[-1]
         _dir = "encode"
