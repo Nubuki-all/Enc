@@ -503,13 +503,11 @@ class Downloader:
             if self.is_cancelled:
                 await self.clean_download()
                 return
-            ud_type = "`Download Pending…`"
+            ud_type = "`..................`"
             if download.state == "pausedUP":
                 return download
-            elif download.state == "checkingUP":
-                ud_type = "`Download completed.`"
             elif download.state == "checkingResumeData":
-                ud_type = "`Resuming Download…`"
+                ud_type = "`Starting Download…`"
             elif download.state == "stalledDL":
                 ud_type = "`Download stalled…`"
             elif download.state == "downloading":

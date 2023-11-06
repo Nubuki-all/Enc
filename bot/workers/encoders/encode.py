@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 from bot import ALLOW_ACTION, Button
 from bot.fun.emojis import enmoji
@@ -35,7 +36,7 @@ class Encoder:
         try:
             self.req_clean = True
             code(self.process, dl, en, user, stime, self.enc_id)
-            out = en.split("/", maxsplit=1)[-1]
+            out = (os.path.split(en))[1]
             wah = 0
             e_msg = await event.edit(
                 text.format(enmoji(), out),
@@ -50,7 +51,7 @@ class Encoder:
             )
             if self.log_msg and self.sender:
                 code(self.process, dl, en, user, stime, self.log_enc_id)
-                sau = dl.split("/", maxsplit=1)[-1]
+                sau = (os.path.split(dl))[1]
                 e_log = await self.log_msg.edit(
                     f"**User:**\n└[{self.sender.first_name}](tg://user?id={user})\n\n**Currently Encoding:**\n└`{out}`\n\n**Source File:**\n└`{sau}`",
                     buttons=[
