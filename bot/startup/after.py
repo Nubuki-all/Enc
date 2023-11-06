@@ -35,7 +35,9 @@ async def start_qbit():
 
 async def start_rpc():
     os.system(
-        f"aria2c --enable-rpc=true --rpc-max-request-size=1024M --rpc-listen-port={ARIA2_PORT} --seed-time=0 --follow-torrent=mem --summary-interval=0 --daemon=true --allow-overwrite=true"
+        f"aria2c --enable-rpc=true --rpc-max-request-size=1024M --rpc-listen-port={ARIA2_PORT} "
+        "--seed-time=0 --follow-torrent=mem --summary-interval=0 --daemon=true --allow-overwrite=true "
+        "--user-agent=Wget/1.12"
     )
     await asyncio.sleep(3)
     await start_aria2p()

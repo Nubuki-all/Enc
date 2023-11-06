@@ -217,7 +217,7 @@ class Downloader:
                 self.uri,
                 save_path=f"{os.getcwd()}/{self.dl_folder}",
                 seeding_time_limit=0,
-                is_paused=True,
+                is_paused=False,
                 tags=self.id,
             )
             self.time = ttt = time.time()

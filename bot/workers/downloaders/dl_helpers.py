@@ -152,7 +152,7 @@ async def get_torrent(url):
             url,
             save_path=os.getcwd() + "/temp",
             seeding_time_limit=0,
-            is_paused=True,
+            is_paused=False,
             tags=tag,
         )
         st = time.time()
@@ -182,6 +182,7 @@ async def get_torrent(url):
             qinfo.error = "An unknown error occurred."
             return
         qinfo.hash = tor_info[0].hash
+        await sync_to_async(qb.torrents_pause, torrent_hashes=qinfo.hash)
         qinfo.file_list = await get_files_from_torrent(qinfo.hash)
         qinfo.count = len(qinfo.file_list)
         qinfo.name = tor_info[0].name

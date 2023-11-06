@@ -146,7 +146,7 @@ def rm_temp_user(id):
 
 class C_qbit:
     def __init__(self, count=None, flist=None, error=None):
-        self.file_count = count
+        self.count = count
         self.file_list = flist
         self.error = error
         self.hash = None
