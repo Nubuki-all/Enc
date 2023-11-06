@@ -506,7 +506,7 @@ class Downloader:
             ud_type = "`Download Pending…`"
             if download.state == "pausedUP":
                 return download
-            elif download.state == "stalledUP":
+            elif download.state == "checkingUP":
                 ud_type = "`Download completed.`"
             elif download.state == "checkingResumeData":
                 ud_type = "`Resuming Download…`"
