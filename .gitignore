@@ -2,6 +2,7 @@
 *.jpg
 *.pkl
 *.png
+*.session
 ffmpeg.txt
 filter.txt
 replace_proxy.txt

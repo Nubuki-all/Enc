@@ -109,9 +109,9 @@ if sys.version_info < (3, 8):
 
 
 try:
-    tele = TelegramClient(None, APP_ID, API_HASH, catch_up=True)
+    tele = TelegramClient("tele", APP_ID, API_HASH, catch_up=True)
     pyro = Client(
-        "Enc",
+        "pyro",
         api_id=APP_ID,
         api_hash=API_HASH,
         bot_token=BOT_TOKEN,

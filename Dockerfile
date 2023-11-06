@@ -9,7 +9,7 @@ ENV TZ=Africa/Lagos
 ENV TERM=xterm
 
 # Install Dependencies
-RUN dnf -qq -y update && dnf -qq -y install git aria2 bash xz wget curl pv jq python3-pip mediainfo procps-ng qbittorrent-nox && python3 -m pip install --upgrade pip
+RUN dnf -qq -y update && dnf -qq -y install git aria2 bash xz wget curl pv jq python3-pip mediainfo psmisc procps-ng qbittorrent-nox && python3 -m pip install --upgrade pip
 
 # Install latest ffmpeg
 RUN wget https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n6.0-latest-linux64-gpl-6.0.tar.xz && tar -xvf *xz && cp *6.0/bin/* /usr/bin && rm -rf *xz && rm -rf *6.0
