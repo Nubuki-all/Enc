@@ -173,7 +173,9 @@ async def batch_preview(event, torrent, chat_id, e_id, v, f):
         return result
 
 
-async def get_batch_list(exclude=None, limit=6, v=None, f=None, get_nleft=False, parse=True):
+async def get_batch_list(
+    exclude=None, limit=6, v=None, f=None, get_nleft=False, parse=True
+):
     try:
         bqueue = get_bqueue()
         q_batch = list(bqueue.values())[0][1]
