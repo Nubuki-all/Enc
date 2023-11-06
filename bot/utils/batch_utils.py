@@ -173,7 +173,7 @@ async def batch_preview(event, torrent, chat_id, e_id, v, f):
         return result
 
 
-async def get_batch_list(exclude=None, limit=6, v=None, f=None, get_nleft=False):
+async def get_batch_list(exclude=None, limit=6, v=None, f=None, get_nleft=False, parse=True):
     try:
         bqueue = get_bqueue()
         q_batch = list(bqueue.values())[0][1]
@@ -186,7 +186,7 @@ async def get_batch_list(exclude=None, limit=6, v=None, f=None, get_nleft=False)
                     allwd_list.append(file_name)
         length = len(allwd_list)
         for name in allwd_list[:limit]:
-            q = await qparse(name, ver=v, fil=f)
+            q = await qparse(name, ver=v, fil=f) if parse else name
             rtn_list.append(q)
         if get_nleft:
             nleft = (length - limit) if length > limit else None
