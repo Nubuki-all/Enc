@@ -242,7 +242,7 @@ class Downloader:
                 st = time.time()
                 await e.edit_text("`Getting torrent's metadata. Please wait…`")
                 while True:
-                    tor_info = await sync_to_async(self.qb.torrents.info, tag=tag)
+                    tor_info = await sync_to_async(self.qb.torrents.info, tag=self.id)
                     if tor_info[0].state != "metaDL":
                         break
                     elif time.time() - st >= 360:
