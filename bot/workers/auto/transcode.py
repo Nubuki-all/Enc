@@ -13,7 +13,7 @@ from bot.config import LOG_CHANNEL as log_channel
 from bot.others.exceptions import AlreadyDl
 from bot.startup.before import entime
 from bot.utils.ani_utils import custcap, dynamicthumb, f_post, parse, qparse_t
-from bot.utils.batch_utils import get_downloadable_batch, mark_file_as_done
+from bot.utils.batch_utils import get_batch_list, get_downloadable_batch, mark_file_as_done
 from bot.utils.bot_utils import CACHE_QUEUE as cached
 from bot.utils.bot_utils import E_CANCEL
 from bot.utils.bot_utils import encode_info as einfo
@@ -99,7 +99,8 @@ async def forward_(name, out, ds, mi, f):
                 _pname2 = await qparse_t(blist[0], v_f[0], v_f[1])
                 if _pname == _pname2:
                     return
-
+        
+            
         if len(queue) > 1:
             name, _none, v_f = list(queue.values())[0]
             name2, _none, v_f2 = list(queue.values())[1]
