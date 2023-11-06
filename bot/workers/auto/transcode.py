@@ -143,6 +143,7 @@ async def thing():
         # user = int(OWNER.split()[0])
         queue_id = list(queue.keys())[0]
         chat_id, msg_id = queue_id
+        download = None
         name, u_msg, v_f = list(queue.values())[0]
         v, f, m = v_f
         sender_id, message = u_msg
@@ -309,7 +310,8 @@ async def thing():
             log_msg=op,
         )
         if encode.process.returncode != 0:
-            await download.clean_download()
+            if download:
+                await download.clean_download()
             s_remove(out)
             skip(queue_id)
             mark_file_as_done(einfo.select, queue_id)
@@ -343,7 +345,8 @@ async def thing():
             mark_file_as_done(einfo.select, queue_id)
             await save2db()
             await save2db("batches")
-            await download.clean_download()
+            if download:
+                await download.clean_download()
             s_remove(thumb2, dl, out)
             return
         eut = time.time()
@@ -388,7 +391,8 @@ async def thing():
         await save2db()
         await save2db("batches")
         s_remove(thumb2)
-        await download.clean_download()
+        if download:
+            await download.clean_download()
         s_remove(dl, out)
 
     except Exception:
