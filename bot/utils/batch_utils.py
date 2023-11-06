@@ -27,11 +27,10 @@ async def clean_batch(args=None, key=None):
     batch_queue = get_bqueue()
     if not (args or key):
         return
-    if not batch_queue.get(key):
-        return
     if key:
-        async with batch_lock:
-            batch_queue.pop(key)
+        if batch_queue.get(key):
+            async with batch_lock:
+                batch_queue.pop(key)
         return
     args = int(args)
     queue = get_queue()
