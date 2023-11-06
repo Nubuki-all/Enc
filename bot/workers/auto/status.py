@@ -27,7 +27,7 @@ async def batch_status_preview(msg, v, f):
 async def queue_status_preview(start, msg, queue):
     for key, i in zip(list(queue.keys())[start:], itertools.count(start=1)):
         if i > 6:
-            r = len(queue) - i
+            r = len(queue) - i if start else (len(queue) + 1) - i
             msg += f"__+{r} more…__\n"
             break
         out = queue.get(key)
