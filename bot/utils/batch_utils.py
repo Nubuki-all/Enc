@@ -27,6 +27,8 @@ async def clean_batch(args=None, key=None):
     batch_queue = get_bqueue()
     if not (args or key):
         return
+    if not batch_queue.get(key):
+        return
     if key:
         async with batch_lock:
             batch_queue.pop(key)
@@ -34,6 +36,9 @@ async def clean_batch(args=None, key=None):
     args = int(args)
     queue = get_queue()
     if args > (len(queue) - 1):
+        return
+    _none, none_, vfm = list(queue.values())[args]
+    if (vfm[2])[1].lower() != "batch.":
         return
     key = list(queue.keys())[args]
     await clean_batch(key=key)
