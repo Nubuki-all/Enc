@@ -1,6 +1,8 @@
 import asyncio
 import shutil
 
+from os.path import split as path_split
+
 from bot import Path, pyro, pyro_errors
 from bot.config import DUMP_CHANNEL, LOG_CHANNEL
 from bot.utils.log_utils import logger
@@ -12,8 +14,8 @@ sticker = "CAACAgEAAxkBAAI0aWKx36P2GY9Fq6xvN0SBU1V2xZYIAAKXAgACJ_hhR9HcWzoditT7H
 
 
 async def dumpdl(dl, name, thum, user, message):
+    dmp = "dump/" + (path_split(dl))[1]
     try:
-        dmp = "dump/" + name
         shutil.copy2(dl, dmp)
         _dmp = Path(dmp)
         fname = f"`{name}`"
