@@ -182,13 +182,14 @@ class Downloader:
             if not self.aria2:
                 self.download_error = "E404: Aria2 is currently not available."
                 raise Exception(self.download_error)
-            downloads = self.aria2.add(
+            downloads = await sync_to_async(self.aria2.add,
                 self.uri, {"dir": f"{os.getcwd()}/{self.dl_folder}"}
             )
             self.uri_gid = downloads[0].gid
+            download = await sync_to_async(self.aria2.get_download, self.uri_gid)
             while True:
                 if message:
-                    download = await self.progress_for_aria2(downloads[0].gid, ttt, e)
+                    download = await self.progress_for_aria2(download, ttt, e)
                 else:
                     download = await self.progress_for_aria2(
                         downloads[0].gid, ttt, e, silent=True
@@ -366,13 +367,12 @@ class Downloader:
                 await logger(Exception)
                 # debug
 
-    async def progress_for_aria2(self, gid, start, message, silent=False):
+    async def progress_for_aria2(self, download, start, message, silent=False):
         try:
-            download = self.aria2.get_download(gid)
             download = download.live
             if download.followed_by_ids:
                 gid = download.followed_by_ids[0]
-                download = self.aria2.get_download(gid)
+                download = await sync_to_async(self.aria2.get_download, gid)
             if download.status == "error" or self.is_cancelled:
                 if download.status == "error":
                     self.download_error = (
