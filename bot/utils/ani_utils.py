@@ -633,8 +633,8 @@ async def simplecap(
         yr = parsed.get("anime_year")
         # episode title
         et = parsed.get("episode_title")
-        not_allowed = "END", "MULTi", "WEB"
-        et = None if et in not_allowed else et
+        not_allowed = "END", "MULTi", "WEB", "WEB-DL", "DDP5.1"
+        et = None if any(nall in et for nall in not_allowed) else et
         # source
         sor = parsed.get("source")
 
