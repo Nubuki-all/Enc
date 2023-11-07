@@ -479,6 +479,7 @@ async def en_mux(event, args, client):
         if encode.process.returncode != 0:
             s_remove(t_file)
             return
+        s_remove(dl)
         __out, __out1 = await parse(
             __loc,
             t_file.split("/")[-1],
