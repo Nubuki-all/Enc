@@ -13,6 +13,7 @@ from bot.utils.log_utils import logger
 
 
 async def batch_status_preview(msg, v, f):
+    msg += "    **CURRRENT QUEUED ITEMS ON BATCH:**\n" f"{lvbar}\n"
     blist, left = await get_batch_list(encode_info._current, v=v, f=f, get_nleft=True)
     for name, i in zip(blist, itertools.count(start=1)):
         msg += f"{i}. `{name}`\n"
@@ -25,6 +26,7 @@ async def batch_status_preview(msg, v, f):
 
 
 async def queue_status_preview(start, msg, queue):
+    msg += "    **CURRRENT ITEMS ON QUEUE:**\n" f"{lvbar}\n"
     for key, i in zip(list(queue.keys())[start:], itertools.count(start=1)):
         if i > 6:
             r = len(queue) - i if start else (len(queue) + 1) - i
@@ -50,7 +52,6 @@ async def encodestat():
         if file_name := encode_info.current:
             i = 1
             msg += f"{s} `{file_name}`\n\n"
-        msg += "    **CURRRENT ITEMS ON QUEUE:**\n" f"{lvbar}\n"
         key = list(queue.keys())[0]
         out = queue.get(key)
         v, f, m = out[2]
