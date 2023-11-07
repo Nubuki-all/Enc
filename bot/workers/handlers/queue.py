@@ -859,7 +859,7 @@ async def edit_batch(event, args, client):
         v, f, m = vfm
         if not (value := batch_queue.get(key)):
             return await event.reply(f"'{args}' - not a batch queue item")
-        result = await batch_preview(event, value[0], key[0], key[1], v, f)
+        result = await batch_preview(event, value[0], key[0], key[1], v, f, reuse=True)
         if result:
             return await event.reply(f"Edited batch:- `{name}` successfully!")
         else:

@@ -129,7 +129,7 @@ async def preview_actions(event):
         await logger(Exception)
 
 
-async def batch_preview(event, torrent, chat_id, e_id, v, f):
+async def batch_preview(event, torrent, chat_id, e_id, v, f, reuse=False):
     if BATCH_ING:
         await event.reply("`Cannot edit two batches simultaneously.`")
         return
@@ -140,8 +140,14 @@ async def batch_preview(event, torrent, chat_id, e_id, v, f):
     result = None
     try:
         preview_list.extend(torrent.file_list)
-        for file, no in zip(torrent.file_list, itertools.count()):
-            preview_queue.update({no: None if is_video_file(file) else 3})
+        if not reuse:
+            for file, no in zip(torrent.file_list, itertools.count()):
+                preview_queue.update({no: None if is_video_file(file) else 3})
+        else:
+            batch_db = get_bqueue().get((chat_id, e_id))
+            if not batch_db:
+                return
+            preview_queue.update(batch_db[1])
         await asyncio.sleep(3)
         while True:
             if not BATCH_ING:
