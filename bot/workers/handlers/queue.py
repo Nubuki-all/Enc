@@ -600,7 +600,7 @@ async def enselect(event, args, client):
             return await try_delete(event)
         if flag.e:
             msg += "**Will Encode:**\n"
-            for (i,) in flag.e.split():
+            for i in flag.e.split():
                 i = int(i) if i.isdigit() else i
                 v = preview_queue.get(i, False)
                 if v is False:
