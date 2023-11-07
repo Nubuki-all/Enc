@@ -182,8 +182,8 @@ class Downloader:
             if not self.aria2:
                 self.download_error = "E404: Aria2 is currently not available."
                 raise Exception(self.download_error)
-            downloads = await sync_to_async(self.aria2.add,
-                self.uri, {"dir": f"{os.getcwd()}/{self.dl_folder}"}
+            downloads = await sync_to_async(
+                self.aria2.add, self.uri, {"dir": f"{os.getcwd()}/{self.dl_folder}"}
             )
             self.uri_gid = downloads[0].gid
             download = await sync_to_async(self.aria2.get_download, self.uri_gid)
