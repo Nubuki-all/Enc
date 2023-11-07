@@ -302,6 +302,7 @@ async def en_mux(event, args, client):
         -c to delete command after muxing - needs no argument.
         -v tag files with versions.
         -q custom caption codec
+        -qs {file_id} select file in a torrent; get file_id with /list
         -default_a {lang_iso3} iso3 of the audio language to default.
             if there are multiple matching languages the first is selected.
         -default_s {lang_iso3} same as above but for subtitles.

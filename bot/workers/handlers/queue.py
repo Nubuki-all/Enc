@@ -46,6 +46,7 @@ async def listqueue(event, args, client, deletable=True):
     with 10 items per page.
 
     Argument:
+     -e (to edit configurations for queued items)
      -p (for parsed queue)
        Not live (Doesn't reflect changes to actual queue)
        for additional help send without additional arguments
@@ -62,7 +63,7 @@ async def listqueue(event, args, client, deletable=True):
         if flag.p:
             if not args:
                 return await event.reply(f"`{listqueuep.__doc__}`")
-            return await listqueuep(event, args, client)
+            return await listqueuep(event, or_args, client)
         return await event.reply(f"Unknown args: {args}")
     if deletable:
         if not (user_is_allowed(event.sender_id) or not deletable):

@@ -102,7 +102,6 @@ async def get_queue_msg():
 async def turn_page(event):
     try:
         data = event.pattern_match.group(1).decode().strip()
-        await event.answer(f"{data}…")
         global STATUS_START, PAGE_NO, PAGES
         async with queue_lock:
             if data == "next":
@@ -119,6 +118,9 @@ async def turn_page(event):
                 else:
                     STATUS_START -= STATUS_LIMIT
                     PAGE_NO -= 1
+
+        await event.answer(f"{data}…")
+
     except Exception:
         await logger(Exception)
 

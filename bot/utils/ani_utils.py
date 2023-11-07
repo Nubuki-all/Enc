@@ -403,6 +403,8 @@ async def dynamicthumb(name, thum="thumb2.jpg", anilist=True, _filter=None):
         epi = parsed.get("episode_number")
         # season number
         sn = parsed.get("anime_season")
+        if isinstance(sn, list):
+            sn = sn[0]
         if sn and sn.startswith("0"):
             sn = str(int(sn))
         if sn == "1":
@@ -482,6 +484,8 @@ async def custcap(
         epi = parsed.get("episode_number")
         # season number
         sn = parsed.get("anime_season")
+        if isinstance(sn, list):
+            sn = sn[0]
         if sn and sn.startswith("0"):
             sn = str(int(sn))
         if sn == "1":
@@ -614,6 +618,8 @@ async def simplecap(
         epi = parsed.get("episode_number")
         # season number
         sn = parsed.get("anime_season")
+        if isinstance(sn, list):
+            sn = sn[0]
         if sn and sn.startswith("0"):
             sn = str(int(sn))
         if sn == "1":
@@ -745,6 +751,8 @@ async def f_post(name, out, fcodec=None, mi=None, _filter=None):
         sn = parsed.get("anime_season")
         # release group
         rg = parsed.get("release_group")
+        if isinstance(sn, list):
+            sn = sn[0]
         if sn and sn.startswith("0"):
             sn = str(int(sn))
         if sn == "1":

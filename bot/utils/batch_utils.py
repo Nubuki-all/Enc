@@ -98,7 +98,6 @@ async def get_preview_msg(file_list, batch_queue, ver=None, fil=None):
 async def preview_actions(event):
     try:
         data = event.pattern_match.group(1).decode().strip()
-        await event.answer(f"{data}…")
         global STATUS_START, PAGE_NO, PAGES, PARSE_STATUS
         async with batch_lock:
             if data == "next":
@@ -123,6 +122,8 @@ async def preview_actions(event):
                 BATCH_ING.clear()
             elif data == "parse":
                 PARSE_STATUS = not PARSE_STATUS
+
+        await event.answer(f"{data}…")
 
     except Exception:
         await logger(Exception)
