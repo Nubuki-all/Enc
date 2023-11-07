@@ -13,7 +13,7 @@ from bot.utils.log_utils import logger
 
 
 async def batch_status_preview(msg, v, f):
-    msg += "    **CURRRENT QUEUED ITEMS ON BATCH:**\n" f"{lvbar}\n"
+    msg += "    **CURRENTLY QUEUED ITEMS IN BATCH:**\n" f"{lvbar}\n"
     blist, left = await get_batch_list(encode_info._current, v=v, f=f, get_nleft=True)
     for name, i in zip(blist, itertools.count(start=1)):
         msg += f"{i}. `{name}`\n"
