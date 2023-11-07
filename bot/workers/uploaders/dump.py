@@ -1,6 +1,5 @@
 import asyncio
 import shutil
-
 from os.path import split as path_split
 
 from bot import Path, pyro, pyro_errors
