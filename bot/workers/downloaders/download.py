@@ -372,7 +372,10 @@ class Downloader:
             download = download.live
             if download.followed_by_ids:
                 gid = download.followed_by_ids[0]
-                download = await sync_to_async(self.aria2.get_download, gid)
+                try:
+                    download = self.aria2.get_download(gid)
+                except Exception:
+                    log(Exception)
             if download.status == "error" or self.is_cancelled:
                 if download.status == "error":
                     self.download_error = (
