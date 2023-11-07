@@ -68,10 +68,10 @@ async def rm_torrent_tag(*tags, qb=None):
             log(Exception)
 
 
-async def get_files_from_torrent(hash):
+async def get_files_from_torrent(hash, tag=None):
     # qb.login()
     qb = await sync_to_async(get_qbclient)
-    torrent = await sync_to_async(qb.torrents_info, torrent_hash=hash)
+    torrent = await sync_to_async(qb.torrents_info, torrent_hash=hash, tag=tag)
     files = torrent[0].files
     file_list = [file["name"] for file in files]
     return file_list
@@ -183,7 +183,7 @@ async def get_torrent(url):
             return
         qinfo.hash = tor_info[0].hash
         await sync_to_async(qb.torrents_pause, torrent_hashes=qinfo.hash)
-        qinfo.file_list = await get_files_from_torrent(qinfo.hash)
+        qinfo.file_list = await get_files_from_torrent(qinfo.hash, tag)
         qinfo.count = len(qinfo.file_list)
         qinfo.name = tor_info[0].name
         await rm_torrent_file(qinfo.hash, qb=qb)

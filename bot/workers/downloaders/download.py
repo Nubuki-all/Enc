@@ -253,7 +253,7 @@ class Downloader:
                 raise Exception(self.download_error)
             self.uri_gid = tor_info[0].hash
             await sync_to_async(self.qb.torrents_pause, torrent_hashes=self.uri_gid)
-            file_list = await get_files_from_torrent(self.uri_gid)
+            file_list = await get_files_from_torrent(self.uri_gid, self.id)
             self.file_name = file_list[s] if s is not None else tor_info[0].name
             self.path = self.dl_folder + self.file_name
 

@@ -24,6 +24,7 @@ async def dumpdl(dl, name, thum, user, message):
             )
             await asyncio.sleep(5)
             reply = await message.reply(f"__Dumping:__\n {fname}__…__", quote=True)
+            user = dump_
         elif message:
             reply = await message.reply(f"`Dumping` {fname}`…`", quote=True)
         await asyncio.sleep(2)
@@ -56,4 +57,4 @@ async def dumpdl(dl, name, thum, user, message):
         s_remove(dmp)
         await asyncio.sleep(5)
         if dump_:
-            await message.reply_sticker(sticker)
+            await message.reply_sticker(sticker, quote=False)
