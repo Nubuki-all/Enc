@@ -59,7 +59,10 @@ async def info(file):
         # )
         out = pymediainfo.MediaInfo.parse(file, output="HTML", full=False)
         if len(out) > 65536:
-            out = out[:65430] + "<strong>...<strong><br><br><strong>(TRUNCATED DUE TO CONTENT EXCEEDING MAX LENGTH)<strong>"
+            out = (
+                out[:65430]
+                + "<strong>...<strong><br><br><strong>(TRUNCATED DUE TO CONTENT EXCEEDING MAX LENGTH)<strong>"
+            )
         client = TelegraphPoster(use_api=True, telegraph_api_url=TELEGRAPH_API)
         client.create_api_token("Mediainfo")
         page = client.post(
