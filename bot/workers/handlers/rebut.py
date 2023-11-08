@@ -91,7 +91,6 @@ async def getlogs(event, args, client):
             await asyncio.sleep(2)
     else:
         return await getlogs(event, None, client)
-        
 
 
 async def getthumb(event, args, client):
