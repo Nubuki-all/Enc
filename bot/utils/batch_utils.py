@@ -50,9 +50,9 @@ async def get_preview_msg(file_list, batch_queue, ver=None, fil=None):
     qn = sum(1 for st in batch_queue.values() if st == 1)
     try:
         i = len(batch_queue)
-        globals()["PAGES"] = (i + STATUS_LIMIT - 2) // STATUS_LIMIT
+        globals()["PAGES"] = (i + STATUS_LIMIT - 1) // STATUS_LIMIT
         if PAGE_NO > PAGES and PAGES != 0:
-            globals()["STATUS_START"] = (STATUS_LIMIT * PAGES) - 9
+            globals()["STATUS_START"] = (STATUS_LIMIT * PAGES) - 12
             globals()["PAGE_NO"] = PAGES
 
         for index_no, _no in zip(
