@@ -679,14 +679,15 @@ async def en_upload(event, args, client):
                 i = len(files)
                 t = 1
                 if arg.s and topic_id:
-                    await message.reply(f"**{path.split('/')[-1]}**")
+                    await reply_message(message, f"**{path.split('/')[-1]}**", quote=True)
                 for name in sorted(files):
                     if _id in u_cancelled():
                         u_cancelled().remove(_id)
-                        return arg.s or await event.reply(u_can_msg)
+                        return arg.s or await reply_message(event, u_can_msg, quote=True)
                     file = os.path.join(path, name)
                     if size_of(file) > 2126000000:
-                        chain_msg = await chain_msg.reply(
+                        chain_msg = await reply_message(
+                            chain_msg,
                             f"Uploading of `{name}` failed because file was larger than 2GB",
                             quote=True,
                         )
@@ -731,7 +732,8 @@ async def en_upload(event, args, client):
                         u_cancelled().remove(_id)
                         return arg.s or await event.reply(u_can_msg)
                 await asyncio.sleep(10)
-                f_jump = arg.s or await f_jump.reply(
+                f_jump = arg.s or await reply_message(
+                    f_jump,
                     f"`All files in`:\n'`{path}`'\n`have been uploaded successfully. {enmoji()}`",
                 )
                 await asyncio.sleep(1)
@@ -739,16 +741,16 @@ async def en_upload(event, args, client):
 
         else:
             _no = 1
-            r = await message.reply(f"`Uploading {file}…`", quote=True)
+            r = await reply_message(message, f"`Uploading {file}…`", quote=True)
             _none, cap = os.path.split(file)
             u_id = f"{r.chat.id}:{r.id}"
             if ext:
                 fname = check_ext(cap, ext=ext, overide=True)
                 await asyncio.sleep(3)
-                await r.edit(f"Renaming:\n`{cap}`\n >>>\n`{fname}`…")
+                await edit_message(r ,f"Renaming:\n`{cap}`\n >>>\n`{fname}`…")
                 out = folder + fname
                 if file_exists(out):
-                    return await r.edit(f"`{out}` already exists;\nWill not overwrite!")
+                    return await edit_message(r, f"`{out}` already exists;\nWill not overwrite!")
                 shutil.copy2(file, out)
                 cap = fname
                 file = out
@@ -756,19 +758,22 @@ async def en_upload(event, args, client):
             await upload.start(event.chat_id, file, r, "thumb.jpg", f"`{cap}`", message)
             s_remove(file) if ext else None
             if not upload.is_cancelled:
-                await r.edit(
+                await edit_message(
+                    r,
                     f"`{cap} uploaded successfully.`"
                 ) if not arg.s else await r.delete()
             else:
                 _no = 0
-                await r.edit(f"`Uploading of {cap} has been cancelled.`")
+                await edit_message(r, f"`Uploading of {cap} has been cancelled.`")
         if uri:
             await asyncio.sleep(5)
-            arg.s or await event.reply(
+            arg.s or await reply_message(
+                event,
                 f"`{_no} file(s) have been uploaded from` `{args}` `successfully. {enmoji()}`"
             )
-    except Exception:
+    except Exception as e:
         await logger(Exception)
+        await reply_message(event, str(e) quote=True)
     finally:
         if download:
             await download.clean_download()
