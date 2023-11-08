@@ -78,7 +78,7 @@ async def getlogs(event, args, client):
         return await event.reply(file=log_file_name, force_document=True)
     arg = get_args("-t", to_parse=args)
     if arg.t and arg.t.isdigit() and (ind := int(arg.t)):
-        msg, amsg = f"{enmoji()} **Truncated logs:**", str()
+        msg, amsg = f"{enmoji()} **Truncated logs:**\n", str()
         for i in reversed(range(1, ind)):
             amsg += read_n_to_last_line(log_file_name, i)
             amsg += "\n"
