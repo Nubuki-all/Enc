@@ -679,11 +679,15 @@ async def en_upload(event, args, client):
                 i = len(files)
                 t = 1
                 if arg.s and topic_id:
-                    await reply_message(message, f"**{path.split('/')[-1]}**", quote=True)
+                    await reply_message(
+                        message, f"**{path.split('/')[-1]}**", quote=True
+                    )
                 for name in sorted(files):
                     if _id in u_cancelled():
                         u_cancelled().remove(_id)
-                        return arg.s or await reply_message(event, u_can_msg, quote=True)
+                        return arg.s or await reply_message(
+                            event, u_can_msg, quote=True
+                        )
                     file = os.path.join(path, name)
                     if size_of(file) > 2126000000:
                         chain_msg = await reply_message(
@@ -747,10 +751,12 @@ async def en_upload(event, args, client):
             if ext:
                 fname = check_ext(cap, ext=ext, overide=True)
                 await asyncio.sleep(3)
-                await edit_message(r ,f"Renaming:\n`{cap}`\n >>>\n`{fname}`…")
+                await edit_message(r, f"Renaming:\n`{cap}`\n >>>\n`{fname}`…")
                 out = folder + fname
                 if file_exists(out):
-                    return await edit_message(r, f"`{out}` already exists;\nWill not overwrite!")
+                    return await edit_message(
+                        r, f"`{out}` already exists;\nWill not overwrite!"
+                    )
                 shutil.copy2(file, out)
                 cap = fname
                 file = out
@@ -759,8 +765,7 @@ async def en_upload(event, args, client):
             s_remove(file) if ext else None
             if not upload.is_cancelled:
                 await edit_message(
-                    r,
-                    f"`{cap} uploaded successfully.`"
+                    r, f"`{cap} uploaded successfully.`"
                 ) if not arg.s else await r.delete()
             else:
                 _no = 0
@@ -769,7 +774,7 @@ async def en_upload(event, args, client):
             await asyncio.sleep(5)
             arg.s or await reply_message(
                 event,
-                f"`{_no} file(s) have been uploaded from` `{args}` `successfully. {enmoji()}`"
+                f"`{_no} file(s) have been uploaded from` `{args}` `successfully. {enmoji()}`",
             )
     except Exception as e:
         await logger(Exception)
