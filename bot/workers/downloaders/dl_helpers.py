@@ -145,6 +145,7 @@ async def get_leech_name(url):
 async def get_torrent(url):
     qinfo = C_qbit()
     tag = "qb_dl" + str(uuid.uuid4())
+    url = replace_proxy(url)
     try:
         qb = await sync_to_async(get_qbclient)
         op = await sync_to_async(
