@@ -45,6 +45,7 @@ from bot.utils.os_utils import (
     dir_exists,
     file_exists,
     pos_in_stm,
+    read_n_to_last_line,
     s_remove,
     size_of,
 )
@@ -64,11 +65,33 @@ not_vid_msg = "`Batches and Non-videos not supported`"
 
 
 async def getlogs(event, args, client):
-    """Upload bots logs in txt format."""
+    """
+    Upload bots logs in txt format.
+    Or as a message if '-t' *Number is used
+
+    *Number is the line number to begin from in log file except '0'
+    """
     user = event.sender_id
     if not (user_is_dev(user) or user_is_owner(user)):
         return await event.delete()
-    await event.reply(file=log_file_name, force_document=True)
+    if not args:
+        return await event.reply(file=log_file_name, force_document=True)
+    arg = get_args("-t", to_parse=args)
+    if arg.t and arg.t.isdigit() and ind := int(arg.t):
+        msg, amsg = f"{enmoji()} **Truncated logs:**", str()
+        for i in reversed(range(1, ind)):
+            amsg += read_n_to_last_line("Logs.txt", x)
+            amsg += "\n"
+        amsg = "**Nothing Here.\nTry with a higher number" if not amsg else amsg
+        amsg = f"`{amsg}`"
+        msg += amsg
+        pre_event = event
+        for smsg in await split_text(msg):
+            pre_event = await reply_message(pre_event, smsg, quote=True)
+            await asyncio.sleep(2)
+    else:
+        return await getlogs(event, None, client)
+        
 
 
 async def getthumb(event, args, client):
