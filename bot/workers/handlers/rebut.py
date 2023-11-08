@@ -773,7 +773,7 @@ async def en_upload(event, args, client):
             )
     except Exception as e:
         await logger(Exception)
-        await reply_message(event, str(e) quote=True)
+        await reply_message(event, str(e), quote=True)
     finally:
         if download:
             await download.clean_download()
