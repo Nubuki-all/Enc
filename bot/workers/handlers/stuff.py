@@ -191,7 +191,7 @@ async def temp_unauth(event, args, client):
     else:
         if args is not None:
             args = args.strip()
-            if args.isdigit():
+            if args.lstrip("-").isdigit():
                 new_id = int(args)
             else:
                 return await event.reply(
@@ -236,7 +236,7 @@ async def temp_auth(event, args, client):
     else:
         if args is not None:
             args = args.strip()
-            if args.isdigit():
+            if args.lstrip("-").isdigit():
                 new_id = args
             else:
                 return await event.reply(
