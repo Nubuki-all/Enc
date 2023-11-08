@@ -50,7 +50,7 @@ class Downloader:
         self.uri_gid = None
         self.lc = lc
         self.lm = None
-        self.log_id = None 
+        self.log_id = None
         self._sender = None
         self.time = None
         self.aria2 = get_aria2()
