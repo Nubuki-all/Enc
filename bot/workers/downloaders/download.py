@@ -50,6 +50,7 @@ class Downloader:
         self.uri_gid = None
         self.lc = lc
         self.lm = None
+        self.log_id = None 
         self._sender = None
         self.time = None
         self.aria2 = get_aria2()
@@ -122,7 +123,7 @@ class Downloader:
     async def start(self, dl, file, message="", e="", select=None):
         try:
             self.file_name = dl
-            code(self, index=self.id)
+            self.register()
             if self.qbit:
                 return await self.start3(dl, file, message, e, select)
             elif self.uri:
@@ -151,7 +152,7 @@ class Downloader:
             await self.wait()
             if self.is_cancelled:
                 await self.clean_download()
-            decode(self.id, pop=True)
+            self.un_register()
             return download_task
 
         except pyro_errors.BadRequest:
@@ -170,7 +171,7 @@ class Downloader:
             return dl_task
 
         except Exception:
-            decode(self.id, pop=True)
+            self.un_register()
             await logger(Exception)
             return None
 
@@ -199,11 +200,11 @@ class Downloader:
                 if download.is_complete:
                     break
             await self.wait()
-            decode(self.id, pop=True)
+            self.un_register()
             return download
 
         except Exception:
-            decode(self.id, pop=True)
+            self.un_register()
             await logger(Exception)
             return None
 
@@ -282,11 +283,11 @@ class Downloader:
                 if download.state == "pausedUP":
                     break
             await self.wait()
-            decode(self.id, pop=True)
+            self.un_register()
             return download
 
         except Exception:
-            decode(self.id, pop=True)
+            self.un_register()
             await logger(Exception)
             return None
 
@@ -602,6 +603,23 @@ class Downloader:
             await logger(Exception)
             await self.clean_download()
             return None
+
+    def register(self):
+        try:
+            code(self, index=self.id)
+            if self.lc:
+                self.log_id = f"{self.lc.chat_id}:{self.lc.id}"
+                code(self, index=self.log_id)
+        except Exception:
+            log(Exception)
+
+    def un_register(self):
+        try:
+            decode(self.id, pop=True)
+            if self.log_id:
+                decode(self.log_id, pop=True)
+        except Exception:
+            log(Exception)
 
     async def clean_download(self):
         try:
