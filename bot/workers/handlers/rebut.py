@@ -80,7 +80,7 @@ async def getlogs(event, args, client):
     if arg.t and arg.t.isdigit() and ind := int(arg.t):
         msg, amsg = f"{enmoji()} **Truncated logs:**", str()
         for i in reversed(range(1, ind)):
-            amsg += read_n_to_last_line("Logs.txt", x)
+            amsg += read_n_to_last_line(log_file_name, i)
             amsg += "\n"
         amsg = "**Nothing Here.\nTry with a higher number" if not amsg else amsg
         amsg = f"`{amsg}`"
