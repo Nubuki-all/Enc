@@ -26,7 +26,7 @@ from bot.utils.bot_utils import (
 )
 from bot.utils.log_utils import logger
 from bot.utils.msg_utils import (
-    edit_message
+    edit_message,
     get_args,
     get_message_from_link,
     reply_message,
