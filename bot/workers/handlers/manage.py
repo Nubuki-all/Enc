@@ -13,6 +13,7 @@ from bot.utils.bot_utils import (
     get_var,
     list_to_str,
     split_text,
+    string_escape,
     sync_to_async,
     time_formatter,
 )
@@ -496,6 +497,7 @@ async def filter(event, args, client):
     Another filter command. (Not to be confused with namefilter)
     Unlike namefilter this targets the file_name and is universal.
     Requires the Following arguments:
+        -f  *(raw filter} [High priority]
         -rm {what to remove} removes the specified string from all filenames
             can be used with multiple items each separated/delimited with '|'
         -tf {filetag}
@@ -514,6 +516,7 @@ async def filter(event, args, client):
 
     Note: Each usage of this command will overwrite the previous even if the argument wasn't specified
     so always specify the argument you want to use each time you send the command.
+    *raw format:- 'what_to_remove\\ntag_file_as\\ntag_caption_as'
     *must specify an argument.
 
     Related commands:
@@ -522,14 +525,14 @@ async def filter(event, args, client):
     if not user_is_owner(event.sender_id):
         return await event.delete()
     try:
-        arg = get_args("-rm", "-tc", "-tf", to_parse=args)
-        if not arg.f and not arg.t and not arg.c:
+        arg = get_args("-f", "-rm", "-tc", "-tf", to_parse=args)
+        if not arg.f and not arg.rm and not arg.tc and not arg.tf:
             return await event.reply(f"`{filter.__doc__}`")
 
         f = arg.rm or "__disabled."
         t = arg.tf or "auto"
         c = arg.tc or "auto"
-        temp = f"{f}\n{t}\n{c}"
+        temp = string_escape(arg.f) or f"{f}\n{t}\n{c}"
         with open(filter_file, "w") as file:
             file.write(temp)
         await save2db2(temp, "filter")
