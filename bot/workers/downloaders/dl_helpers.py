@@ -186,7 +186,8 @@ async def get_torrent(url):
         await sync_to_async(qb.torrents_pause, torrent_hashes=qinfo.hash)
         qinfo.file_list = await get_files_from_torrent(qinfo.hash, tag)
         qinfo.count = len(qinfo.file_list)
-        qinfo.name = tor_info[0].name
+        name = (os.path.split(qinfo.file_list[0]))[1] if qinfo.count == 1 else None
+        qinfo.name = name or tor_info[0].name
         await rm_torrent_file(qinfo.hash, qb=qb)
         await rm_torrent_tag(tag, qb=qb)
         return
