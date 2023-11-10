@@ -489,13 +489,13 @@ class Downloader:
             return download
         except pyro_errors.BadRequest:
             await asyncio.sleep(10)
-            dl = await self.progress_for_aria2(gid, start, message, silent)
+            dl = await self.progress_for_aria2(download, start, message, silent)
             return dl
 
         except pyro_errors.FloodWait as e:
             await asyncio.sleep(e.value)
             await asyncio.sleep(2)
-            dl = await self.progress_for_aria2(gid, start, message, silent)
+            dl = await self.progress_for_aria2(download, start, message, silent)
             return dl
 
         except Exception:
