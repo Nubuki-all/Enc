@@ -257,7 +257,9 @@ class Downloader:
             await sync_to_async(self.qb.torrents_pause, torrent_hashes=self.uri_gid)
             file_list = await get_files_from_torrent(self.uri_gid, self.id)
             name = file_list[0] if len(file_list) == 1 else None
-            self.file_name = file_list[s] if s is not None else (name or tor_info[0].name)
+            self.file_name = (
+                file_list[s] if s is not None else (name or tor_info[0].name)
+            )
             self.path = self.dl_folder + self.file_name
 
             length = len(file_list)
