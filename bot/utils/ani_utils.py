@@ -304,8 +304,8 @@ async def parse(
         yr = parsed.get("anime_year")
         # episode title
         et = parsed.get("episode_title")
-        not_allowed = "END", "MULTi"
-        et = None if et in not_allowed else et
+        not_allowed = "END", "MULTi", "WEB", "WEB-DL", "DDP5.1", "DDP2.0"
+        et = None if any(nall in et for nall in not_allowed) else et
         # source
         sor = parsed.get("source")
 
@@ -377,6 +377,7 @@ async def parse(
             file_name += f" [{a_con}]"
         file_name2 = file_name.replace(f_title, title)
         file_name2 = file_name2.replace(release_name, release_name_b)
+        file_name2 = file_name2.replace(f"[{a_con}]", f"- {et} [{a_con}]") if et and a_con else file_name2
         if codec:
             file_name2 += " "
             file_name2 += codec
@@ -499,8 +500,8 @@ async def custcap(
         yr = parsed.get("anime_year")
         # episode title
         et = parsed.get("episode_title")
-        not_allowed = "END", "MULTi", "WEB"
-        et = None if et in not_allowed else et
+        not_allowed = "END", "MULTi", "WEB", "WEB-DL", "DDP5.1", "DDP2.0"
+        et = None if any(nall in et for nall in not_allowed) else et
         # source
         sor = parsed.get("source")
 
@@ -633,7 +634,7 @@ async def simplecap(
         yr = parsed.get("anime_year")
         # episode title
         et = parsed.get("episode_title")
-        not_allowed = "END", "MULTi", "WEB", "WEB-DL", "DDP5.1"
+        not_allowed = "END", "MULTi", "WEB", "WEB-DL", "DDP5.1", "DDP2.0"
         et = None if any(nall in et for nall in not_allowed) else et
         # source
         sor = parsed.get("source")
