@@ -83,10 +83,10 @@ async def getlogs(event, args, client):
             amsg += read_n_to_last_line(log_file_name, i)
             amsg += "\n"
         amsg = "**Nothing Here.\nTry with a higher number" if not amsg else amsg
-        amsg = f"`{amsg}`"
         msg += amsg
         pre_event = event
         for smsg in await split_text(msg):
+            smsg = f"```\n{smsg}\n```"
             pre_event = await reply_message(pre_event, smsg, quote=True)
             await asyncio.sleep(2)
     else:
