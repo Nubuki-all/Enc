@@ -63,14 +63,23 @@ async def info(file):
                 out[:65430]
                 + "<strong>...<strong><br><br><strong>(TRUNCATED DUE TO CONTENT EXCEEDING MAX LENGTH)<strong>"
             )
-        client = TelegraphPoster(use_api=True, telegraph_api_url=TELEGRAPH_API)
-        client.create_api_token("Mediainfo")
-        page = client.post(
-            title="Mediainfo",
-            author=author,
-            author_url=author_url,
-            text=out,
-        )
+        retries = 10
+        while retries:
+            try:
+                client = TelegraphPoster(use_api=True, telegraph_api_url=TELEGRAPH_API)
+                client.create_api_token("Mediainfo")
+                page = client.post(
+                    title="Mediainfo",
+                    author=author,
+                    author_url=author_url,
+                    text=out,
+                )
+                break
+            except ConnectionError as e:
+                retries -= 1
+                if not retries:
+                    raise e
+                await asyncio.sleep(1)
         return page["url"]
     except Exception:
         await logger(Exception)
