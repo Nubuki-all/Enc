@@ -85,7 +85,10 @@ async def update2(client, message):
         upt_mess = "Updating…"
         reply = await message.reply(f"`{upt_mess}`", quote=True)
         await enquoter(upt_mess, reply)
-        await clean_all_qb()
+        try:
+            await clean_all_qb()
+        except Exception:
+            pass
         await updater(reply)
     except Exception:
         await logger(Exception)
@@ -154,11 +157,15 @@ async def clean(event, args, client):
         await save2db()
         await save2db("batches")
         await qclean()
-        await clean_all_qb()
         await clean_all_aria2()
+        try:
+            await clean_all_qb()
+        except Exception:
+            pass
         return
-    except Exception:
+    except Exception as e:
         await logger(Exception)
+        await event.reply(f"```\n{str(e)}\n```")
 
 
 async def allowgroupenc(event, args, client):
