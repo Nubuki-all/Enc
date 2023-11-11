@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import requests
 import sys
 from pathlib import Path
 from subprocess import run as bashrun
@@ -75,7 +76,7 @@ async def info(file):
                     text=out,
                 )
                 break
-            except ConnectionError as e:
+            except (requests.exceptions.ConnectionError, ConnectionError) as e:
                 retries -= 1
                 if not retries:
                     raise e
