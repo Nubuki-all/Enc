@@ -1,7 +1,6 @@
 import asyncio
 import json
 import os
-import requests
 import sys
 from pathlib import Path
 from subprocess import run as bashrun
@@ -9,6 +8,7 @@ from subprocess import run as bashrun
 import anitopy
 import psutil
 import pymediainfo
+import requests
 from html_telegraph_poster import TelegraphPoster
 
 from bot import TELEGRAPH_API, TELEGRAPH_AUTHOR, signal, tele, version_file
