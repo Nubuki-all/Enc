@@ -743,7 +743,7 @@ async def qparse_t(name, ver=None, fil=None):
     )
 
 
-async def f_post(name, out, fcodec=None, mi=None, _filter=None):
+async def f_post(name, out, fcodec=None, mi=None, _filter=None, evt=True):
     try:
         name = (await filter_name(name, _filter))[0]
         ## Get info ##
@@ -752,6 +752,11 @@ async def f_post(name, out, fcodec=None, mi=None, _filter=None):
         title = parsed.get("anime_title")
         # episode number
         epi = parsed.get("episode_number")
+        if not evt:
+            if epi in ("1", "01", "001"):
+                epi = None
+            else:
+                return None, None
         # season number
         sn = parsed.get("anime_season")
         # release group
