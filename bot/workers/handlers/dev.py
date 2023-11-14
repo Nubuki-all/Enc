@@ -57,7 +57,7 @@ async def eval(event, cmd, client):
             )
             await event.delete()
     else:
-        final_output = "**EVAL**: `{}` \n\n **OUTPUT**: \n`{}` \n".format(
+        final_output = "```EVAL:\n{}``` \n\n ```OUTPUT:\n{}``` \n".format(
             cmd, evaluation
         )
         await msg.edit(final_output)
@@ -90,11 +90,8 @@ async def bash(event, cmd, client):
     o = stdout.decode()
     if not o:
         o = "**Tip**: \n`If you want to see the results of your code, I suggest printing them to stdout.`"
-    else:
-        _o = o.split("\n")
-        o = "`\n".join(_o)
-    OUTPUT = f"**QUERY:**\n__Command:__\n`{cmd}` \n__PID:__\n`{process.pid}`\n\n**stderr:** \n`{e}`\n**Output:**\n{o}"
-    if len(OUTPUT) > 4095:
+    OUTPUT = f"QUERY:\n__Command:__\n{cmd} \n__PID:__\n{process.pid}\n\nstderr: \n{e}\nOutput:\n{o}"
+    if len(OUTPUT) > 4000:
         with io.BytesIO(str.encode(OUTPUT)) as out_file:
             out_file.name = "exec.text"
             await event.client.send_file(
@@ -105,7 +102,9 @@ async def bash(event, cmd, client):
                 caption=cmd,
             )
             return await event.delete()
-    await event.reply(OUTPUT)
+    else:
+        OUTPUT = f"```ShellCommand:\n{cmd}```\n__PID:__\n`{process.pid}`\n\n```Stderr:\n{e}```\n```Output:\n{o}```"
+        await event.reply(OUTPUT)
 
 
 async def aexec2(code, client, message):
