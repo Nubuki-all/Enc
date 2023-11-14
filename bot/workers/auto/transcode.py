@@ -369,7 +369,7 @@ async def thing():
 
         await msg_p.delete()
         await op.delete() if op else None
-        await up.copy(chat_id=log_channel) if log_channel else None
+        await up.copy(chat_id=log_channel) if op else None
 
         org_s = int(Path(dl).stat().st_size)
         out_s = int(Path(out).stat().st_size)
