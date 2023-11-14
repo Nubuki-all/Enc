@@ -222,7 +222,10 @@ def get_flag(lang_t):
             lang_t = "ind"
         elif lang_t.casefold() == "ind":
             lang_t = "Indonesia"
-        lang_t = pycountry.countries.search_fuzzy(lang_t)
+        try:
+            lang_t = pycountry.countries.search_fuzzy(lang_t)
+        except Exception:
+            return " 🇱🇱͜ "
         lang_t = lang_t[0].alpha_2
         lang_t = flag.flag(lang_t)
     return lang_t
