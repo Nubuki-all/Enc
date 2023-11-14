@@ -82,12 +82,12 @@ async def another(text, title, epi, sea, metadata, dl):
 async def forward_(name, out, ds, mi, f):
     if not fc:
         return
-    if fb:
-        try:
-            pic_id, f_msg = await f_post(name, out, FCODEC, mi, _filter=f)
+    try:
+        pic_id, f_msg = await f_post(name, out, FCODEC, mi, _filter=f, evt=fc)
+        if pic_id:
             await pyro.send_photo(photo=pic_id, caption=f_msg, chat_id=fc)
-        except Exception:
-            await logger(Exception)
+    except Exception:
+        await logger(Exception)
     await ds.copy(chat_id=fc)
     if not fs:
         return
