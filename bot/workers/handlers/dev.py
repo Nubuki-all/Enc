@@ -57,7 +57,7 @@ async def eval(event, cmd, client):
             )
             await event.delete()
     else:
-        final_output = "<pre>\n<code class='language-python:'>{}</code>\n</pre>\n\n<pre>\n<code class='language-Output:'>{}</code>\n</pre>\n".format(
+        final_output = "<pre>\n<code class='language-python'>{}</code>\n</pre>\n\n<pre>\n<code class='language-Output:'>{}</code>\n</pre>\n".format(
             cmd, evaluation
         )
         await msg.edit(final_output, parse_mode="html")
@@ -103,7 +103,7 @@ async def bash(event, cmd, client):
             )
             return await event.delete()
     else:
-        OUTPUT = f"<pre>\n<code class='language-bash:'>{cmd}</code>\n</pre>\n<i>PID:</i>\n{process.pid}\n\n<pre>\n<code class='language-Stderr:'>{e}</code>\n</pre>\n<pre>\n<code class='language-Output:'>{o}</code>\n</pre>"
+        OUTPUT = f"<pre>\n<code class='language-bash'>{cmd}</code>\n</pre>\n<i>PID:</i>\n{process.pid}\n\n<pre>\n<code class='language-Stderr:'>{e}</code>\n</pre>\n<pre>\n<code class='language-Output:'>{o}</code>\n</pre>"
         await event.reply(OUTPUT, parse_mode="html")
 
 
@@ -160,7 +160,7 @@ async def eval_message_p(message, cmd, client):
     else:
         evaluation = "Success"
 
-    final_output = "<pre>\n<code class='language-python:'>{}</code>\n</pre>\n\n<pre>\n<code class='language-Output:'>{}</code>\n</pre>\n".format(
+    final_output = "<pre>\n<code class='language-python'>{}</code>\n</pre>\n\n<pre>\n<code class='language-Output:'>{}</code>\n</pre>\n".format(
         cmd, evaluation.strip()
     )
 
