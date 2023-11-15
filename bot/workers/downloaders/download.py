@@ -313,13 +313,11 @@ class Downloader:
             time_to_completion = time_formatter(int((total - current) / speed))
 
             progress = (
-                f"{ubar}\n{vbar} "
-                "{0}{1}  {2}\n<b>Progress:</b> `{3}%`\n".format(
+                "```\n{0}{1}```\n<b>Progress:</b> `{2}%`\n".format(
                     "".join([fin_str for i in range(math.floor(percentage / 10))]),
                     "".join(
                         [unfin_str for i in range(10 - math.floor(percentage / 10))]
                     ),
-                    f"{vbar}\n{dbar}",
                     round(percentage, 2),
                 )
             )
@@ -420,8 +418,7 @@ class Downloader:
                 )
 
             progress = (
-                f"{ubar}\n{vbar} "
-                "{0}{1}  {2}\n<b>Progress:</b> `{3}%`\n".format(
+                "```\n{0}{1}```\n<b>Progress:</b> `{2}%`\n".format(
                     "".join(
                         [fin_str for i in range(math.floor(download.progress / 10))]
                     ),
@@ -431,7 +428,6 @@ class Downloader:
                             for i in range(10 - math.floor(download.progress / 10))
                         ]
                     ),
-                    f"{vbar}\n{dbar}",
                     round(download.progress, 2),
                 )
             )
@@ -533,13 +529,11 @@ class Downloader:
             d_progress = (current / total) * 100
 
             progress = (
-                f"{ubar}\n{vbar} "
-                "{0}{1}  {2}\n<b>Progress:</b> `{3}%`\n".format(
+                "```\n{0}{1}```\n<b>Progress:</b> `{2}%`\n".format(
                     "".join([fin_str for i in range(math.floor(d_progress / 10))]),
                     "".join(
                         [unfin_str for i in range(10 - math.floor(d_progress / 10))]
                     ),
-                    f"{vbar}\n{dbar}",
                     round(d_progress, 2),
                 )
             )

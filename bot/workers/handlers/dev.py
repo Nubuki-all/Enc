@@ -57,10 +57,10 @@ async def eval(event, cmd, client):
             )
             await event.delete()
     else:
-        final_output = "```EVAL:\n{}``` \n\n ```OUTPUT:\n{}``` \n".format(
+        final_output = "<pre>\n<code class='language-python:'>{}</code>\n</pre>\n\n<pre>\n<code class='language-Output:'>{}</code>\n</pre>\n".format(
             cmd, evaluation
         )
-        await msg.edit(final_output)
+        await msg.edit(final_output, parse_mode="html")
 
 
 async def aexec(code, event):
@@ -89,7 +89,7 @@ async def bash(event, cmd, client):
         e = "No Error"
     o = stdout.decode()
     if not o:
-        o = "**Tip**: \n`If you want to see the results of your code, I suggest printing them to stdout.`"
+        o = "<strong>Tip</strong>: \n<code>If you want to see the results of your code, I suggest printing them to stdout.</code>"
     OUTPUT = f"QUERY:\n__Command:__\n{cmd} \n__PID:__\n{process.pid}\n\nstderr: \n{e}\nOutput:\n{o}"
     if len(OUTPUT) > 4000:
         with io.BytesIO(str.encode(OUTPUT)) as out_file:
@@ -103,8 +103,8 @@ async def bash(event, cmd, client):
             )
             return await event.delete()
     else:
-        OUTPUT = f"```ShellCommand:\n{cmd}```\n__PID:__\n`{process.pid}`\n\n```Stderr:\n{e}```\n```Output:\n{o}```"
-        await event.reply(OUTPUT)
+        OUTPUT = f"<pre>\n<code class='language-bash:'>{cmd}</code>\n</pre>\n<i>PID:</i>\n{process.pid}\n\n<pre>\n<code class='language-Stderr:'>{e}</code>\n</pre>\n<pre>\n<code class='language-Output:'>{o}</code>\n</pre>"
+        await event.reply(OUTPUT, parse_mode="html")
 
 
 async def aexec2(code, client, message):
@@ -161,12 +161,13 @@ async def eval_message_p(message, cmd, client):
         evaluation = "Success"
 
     final_output = (
-        "**EVAL**: <code>{}</code>\n\n**OUTPUT**:\n<code>{}</code> \n".format(
+        "<pre>\n<code class='language-python:'>{}</code>\n</pre>\n\n<pre>\n<code class='language-Output:'>{}</code>\n</pre>\n".format(
             cmd, evaluation.strip()
         )
     )
 
     if len(final_output) > MAX_MESSAGE_LENGTH:
+        final_output = "Evaluated:\n{}\n\nOutput:\n{}".format(cmd, evaluation.strip())
         with open("eval.text", "w+", encoding="utf8") as out_file:
             out_file.write(str(final_output))
         await message.reply_document(

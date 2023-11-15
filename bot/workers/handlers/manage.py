@@ -224,7 +224,9 @@ async def change(event, args, client):
             file.write(str(args) + "\n")
 
         await save2db2(args, "ffmpeg")
-        await event.reply(f"```Changed ffmpeg CLI parameters to:\n{args}```")
+        await event.reply(
+            f"<pre>\n<code class='language-Changed ffmpeg CLI parameters to:'>{args}</code>\n</pre>",
+            parse_mode="html")
     except Exception:
         await logger(Exception)
 
@@ -239,7 +241,9 @@ async def check(event, args, client):
     with open(ffmpeg_file, "r") as file:
         ffmpeg = file.read().rstrip()
 
-    await event.reply(f"```Current ffmpeg CLI parameters:\n{ffmpeg}```")
+    await event.reply(
+        f"<pre>\n<code class='language-Current ffmpeg CLI parameters:'>{ffmpeg}</code>\n</pre>",
+        parse_mode="html")
 
 
 async def reffmpeg(event, args, client):
@@ -255,7 +259,9 @@ async def reffmpeg(event, args, client):
             file.write(str(FFMPEG) + "\n")
 
         await save2db2(FFMPEG, "ffmpeg")
-        await event.reply(f"```Reseted ffmpeg CLI parameters to:\n{FFMPEG}```")
+        await event.reply(
+            f"<pre>\n<code class='Reseted ffmpeg CLI parameters to:'>{FFMPEG}</code>\n</pre>",
+            parse_mode="html")
     except Exception:
         await logger(Exception)
 
