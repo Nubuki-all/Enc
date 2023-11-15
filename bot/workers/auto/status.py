@@ -48,10 +48,10 @@ async def encodestat():
     try:
         i = 0
         msg = str()
-        s = "🟢" if get_pause_status() != 0 else "⏸️"
+        s = "🟢 Currently Encoding:" if get_pause_status() != 0 else "⏸️ Paused:"
         if file_name := encode_info.current:
             i = 1
-            msg += f"{s} `{file_name}`\n\n"
+            msg += f"```{s}\n{file_name}```\n\n"
         key = list(queue.keys())[0]
         out = queue.get(key)
         v, f, m = out[2]
