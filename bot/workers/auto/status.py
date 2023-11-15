@@ -9,7 +9,7 @@ from bot.utils.ani_utils import qparse
 from bot.utils.batch_utils import get_batch_list
 from bot.utils.bot_utils import QUEUE as queue
 from bot.utils.bot_utils import encode_info, get_codec, get_pause_status
-from bot.utils.log_utils import logger
+from bot.utils.log_utils import log, logger
 
 
 async def batch_status_preview(msg, v, f):
@@ -80,7 +80,7 @@ async def stateditor(x, channel, id):
         return await pyro.edit_message_text(channel, id, x)
 
     except Exception:
-        pass
+        log(Exception)
 
 
 async def autostat():

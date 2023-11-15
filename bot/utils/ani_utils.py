@@ -755,7 +755,7 @@ async def f_post(name, out, fcodec=None, mi=None, _filter=None, evt=True):
         title = parsed.get("anime_title")
         # episode number
         epi = parsed.get("episode_number")
-        if not evt:
+        if epi and not evt:
             if epi in ("1", "01", "001"):
                 epi = None
             else:
