@@ -216,7 +216,7 @@ async def enleech(event, args, client):
     try:
         if event.is_reply:
             rep_event = await event.get_reply_message()
-            if rep_event.media:
+            if rep_event.file:
                 await event.reply("**Warning:** `Use /add for files instead.`")
                 return await addqueue(event, o_args, client)
             if args:
@@ -410,7 +410,7 @@ async def enleech2(event, args, client):
     try:
         if event.is_reply:
             rep_event = await event.get_reply_message()
-            if rep_event.media:
+            if rep_event.file:
                 return await event.reply("**Error:** `Use /add for files instead.`")
             if args:
                 if not args.isdigit():
@@ -732,7 +732,7 @@ async def addqueue(event, args, client):
         return event.reply("Command needs to be a replied message.")
     try:
         event_2 = await event.get_reply_message()
-        if event_2.media:
+        if event_2.file:
             media = await client.get_messages(event.chat_id, event_2.id)
             if media.empty:
                 return await event.reply("Try again!")
