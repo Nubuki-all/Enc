@@ -129,6 +129,9 @@ async def listqueuep(event, args, client):
         if not queue:
             await msg_sleep_delete(event, empty_queue_msg, time=3)
             return await try_delete(event)
+        flag, args = get_args(
+            ["-p", "store_true"], to_parse=args, get_unknown=True
+        )
         try:
             if args.isdigit() and ((args := int(args)) <= (len(queue) - 1)):
                 file = list(queue.values())[args]
