@@ -160,7 +160,7 @@ async def eval_message_p(message, cmd, client):
     else:
         evaluation = "Success"
 
-    final_output = "<pre>\n<code class='language-python'>{}</code>\n</pre>\n\n<pre>\n<code class='language-Output:'>{}</code>\n</pre>\n".format(
+    final_output = "```python\n{}```\n\n```Output:\n{}```\n".format(
         cmd, evaluation.strip()
     )
 

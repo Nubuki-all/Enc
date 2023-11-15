@@ -608,7 +608,7 @@ async def save_thumb(event, args, client):
             "`/groupenc on` to enable setting thumbnails in groups.\n"
             "__This message shall self-destruct in 20 seconds.__"
         )
-        await msg_sleep_delete(event, rply, time=20)
+        return await msg_sleep_delete(event, rply, time=20)
     s_remove(thumb)
     await event.client.download_media(event.media, file=thumb)
     await event.reply("**Thumbnail Saved Successfully.**")
