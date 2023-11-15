@@ -1,6 +1,5 @@
 from bot import *
 from bot.fun.emojis import enhearts, enmoji, enmoji2
-from bot.fun.stuff import dbar, ubar, vbar
 from bot.utils.bot_utils import UN_FINISHED_PROGRESS_STR as unfin_str
 from bot.utils.bot_utils import code, decode, hbs, time_formatter
 from bot.utils.log_utils import logger
@@ -87,15 +86,11 @@ class Uploader:
             speed = current / diff
             time_to_completion = time_formatter(int((total - current) / speed))
 
-            progress = (
-                "```\n{0}{1}```\n{2}\n<b>Progress:</b> `{3}%`\n".format(
-                    "".join([fin_str for i in range(math.floor(percentage / 10))]),
-                    "".join(
-                        [unfin_str for i in range(10 - math.floor(percentage / 10))]
-                    ),
-                    file_info,
-                    round(percentage, 2),
-                )
+            progress = "```\n{0}{1}```\n{2}\n<b>Progress:</b> `{3}%`\n".format(
+                "".join([fin_str for i in range(math.floor(percentage / 10))]),
+                "".join([unfin_str for i in range(10 - math.floor(percentage / 10))]),
+                file_info,
+                round(percentage, 2),
             )
 
             tmp = (

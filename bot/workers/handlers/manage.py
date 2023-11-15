@@ -226,7 +226,8 @@ async def change(event, args, client):
         await save2db2(args, "ffmpeg")
         await event.reply(
             f"<pre>\n<code class='language-Changed ffmpeg CLI parameters to:'>{args}</code>\n</pre>",
-            parse_mode="html")
+            parse_mode="html",
+        )
     except Exception:
         await logger(Exception)
 
@@ -243,7 +244,8 @@ async def check(event, args, client):
 
     await event.reply(
         f"<pre>\n<code class='language-Current ffmpeg CLI parameters:'>{ffmpeg}</code>\n</pre>",
-        parse_mode="html")
+        parse_mode="html",
+    )
 
 
 async def reffmpeg(event, args, client):
@@ -261,7 +263,8 @@ async def reffmpeg(event, args, client):
         await save2db2(FFMPEG, "ffmpeg")
         await event.reply(
             f"<pre>\n<code class='Reseted ffmpeg CLI parameters to:'>{FFMPEG}</code>\n</pre>",
-            parse_mode="html")
+            parse_mode="html",
+        )
     except Exception:
         await logger(Exception)
 

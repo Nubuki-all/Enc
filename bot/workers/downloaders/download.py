@@ -1,6 +1,5 @@
 from bot import *
 from bot.fun.emojis import enhearts, enmoji, enmoji2
-from bot.fun.stuff import dbar, ubar, vbar
 from bot.utils.bot_utils import DISPLAY_DOWNLOAD
 from bot.utils.bot_utils import UN_FINISHED_PROGRESS_STR as unfin_str
 from bot.utils.bot_utils import (
@@ -312,14 +311,10 @@ class Downloader:
             speed = current / diff
             time_to_completion = time_formatter(int((total - current) / speed))
 
-            progress = (
-                "```\n{0}{1}```\n<b>Progress:</b> `{2}%`\n".format(
-                    "".join([fin_str for i in range(math.floor(percentage / 10))]),
-                    "".join(
-                        [unfin_str for i in range(10 - math.floor(percentage / 10))]
-                    ),
-                    round(percentage, 2),
-                )
+            progress = "```\n{0}{1}```\n<b>Progress:</b> `{2}%`\n".format(
+                "".join([fin_str for i in range(math.floor(percentage / 10))]),
+                "".join([unfin_str for i in range(10 - math.floor(percentage / 10))]),
+                round(percentage, 2),
             )
 
             tmp = (
@@ -417,19 +412,12 @@ class Downloader:
                     )
                 )
 
-            progress = (
-                "```\n{0}{1}```\n<b>Progress:</b> `{2}%`\n".format(
-                    "".join(
-                        [fin_str for i in range(math.floor(download.progress / 10))]
-                    ),
-                    "".join(
-                        [
-                            unfin_str
-                            for i in range(10 - math.floor(download.progress / 10))
-                        ]
-                    ),
-                    round(download.progress, 2),
-                )
+            progress = "```\n{0}{1}```\n<b>Progress:</b> `{2}%`\n".format(
+                "".join([fin_str for i in range(math.floor(download.progress / 10))]),
+                "".join(
+                    [unfin_str for i in range(10 - math.floor(download.progress / 10))]
+                ),
+                round(download.progress, 2),
             )
             tmp = (
                 progress
@@ -528,14 +516,10 @@ class Downloader:
             fin_str = enhearts()
             d_progress = (current / total) * 100
 
-            progress = (
-                "```\n{0}{1}```\n<b>Progress:</b> `{2}%`\n".format(
-                    "".join([fin_str for i in range(math.floor(d_progress / 10))]),
-                    "".join(
-                        [unfin_str for i in range(10 - math.floor(d_progress / 10))]
-                    ),
-                    round(d_progress, 2),
-                )
+            progress = "```\n{0}{1}```\n<b>Progress:</b> `{2}%`\n".format(
+                "".join([fin_str for i in range(math.floor(d_progress / 10))]),
+                "".join([unfin_str for i in range(10 - math.floor(d_progress / 10))]),
+                round(d_progress, 2),
             )
             tmp = (
                 progress
