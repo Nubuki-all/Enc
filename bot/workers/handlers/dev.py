@@ -1,4 +1,5 @@
 import asyncio
+import html
 import io
 import sys
 import traceback
@@ -58,7 +59,7 @@ async def eval(event, cmd, client):
             await event.delete()
     else:
         final_output = "<pre>\n<code class='language-python'>{}</code>\n</pre>\n\n<pre>\n<code class='language-Output:'>{}</code>\n</pre>\n".format(
-            cmd, evaluation
+            html.escape(cmd), html.escape(evaluation)
         )
         await msg.edit(final_output, parse_mode="html")
 
@@ -103,7 +104,7 @@ async def bash(event, cmd, client):
             )
             return await event.delete()
     else:
-        OUTPUT = f"<pre>\n<code class='language-bash'>{cmd}</code>\n</pre>\n<i>PID:</i>\n{process.pid}\n\n<pre>\n<code class='language-Stderr:'>{e}</code>\n</pre>\n<pre>\n<code class='language-Output:'>{o}</code>\n</pre>"
+        OUTPUT = f"<pre>\n<code class='language-bash'>{html.escape(cmd)}</code>\n</pre>\n<i>PID:</i>\n{process.pid}\n\n<pre>\n<code class='language-Stderr:'>{e}</code>\n</pre>\n<pre>\n<code class='language-Output:'>{html.escape(o)}</code>\n</pre>"
         await event.reply(OUTPUT, parse_mode="html")
 
 
