@@ -34,7 +34,7 @@ async def queue_status_preview(start, msg, queue):
             break
         out = queue.get(key)
         v, f, m = out[2]
-        name = await qparse(out[0], v, f)
+        name = await qparse(out[0], v, f) if m[1].lower() != "batch." else f"[Batch]:- {out[1]}"
         msg += f"{i}. `{name}`\n"
     return msg
 
