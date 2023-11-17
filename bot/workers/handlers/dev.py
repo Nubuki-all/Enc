@@ -90,7 +90,7 @@ async def bash(event, cmd, client):
         e = "No Error"
     o = stdout.decode()
     if not o:
-        o = "<strong>Tip</strong>: \n<code>If you want to see the results of your code, I suggest printing them to stdout.</code>"
+        o = "Tip:\nIf you want to see the results of your code, I suggest printing them to stdout."
     OUTPUT = f"QUERY:\n__Command:__\n{cmd} \n__PID:__\n{process.pid}\n\nstderr: \n{e}\nOutput:\n{o}"
     if len(OUTPUT) > 4000:
         with io.BytesIO(str.encode(OUTPUT)) as out_file:
