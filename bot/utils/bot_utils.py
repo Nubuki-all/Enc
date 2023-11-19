@@ -95,6 +95,7 @@ def get_preview(list=False):
 def get_previewer():
     return BATCH_ING[0] if BATCH_ING else None
 
+
 def get_queue():
     return QUEUE
 
