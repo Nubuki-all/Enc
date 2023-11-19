@@ -605,8 +605,13 @@ async def enselect(event, args, client):
             await reply.delete()
             return await try_delete(event)
         if flag.e:
+            if valid_range(flag.e):
+                _start, _end = map(int, flag.e.split("-"))
+                enable_list = [str(x) for x in range(_start, (_end + 1))]
+            else:
+                enable_list = flag.e.split()
             msg += "**Will Encode:**\n"
-            for i in flag.e.split():
+            for i in enable_list:
                 i = int(i) if i.isdigit() else i
                 v = preview_queue.get(i, False)
                 if v is False:
@@ -622,8 +627,13 @@ async def enselect(event, args, client):
                     msg += "\n\n"
             msg += "\n"
         if flag.d:
+            if valid_range(flag.d):
+                _start, _end = map(int, flag.d.split("-"))
+                disable_list = [str(x) for x in range(_start, (_end + 1))]
+            else:
+                disable_list = flag.d.split()
             msg += "**Will Skip:-**\n"
-            for i in flag.d.split():
+            for i in disable_list:
                 i = int(i) if i.isdigit() else i
                 v = preview_queue.get(i, False)
                 if v is False:
