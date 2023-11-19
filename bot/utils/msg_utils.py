@@ -121,12 +121,13 @@ async def get_cached(dl, sender, user, e, op):
 
 
 def valid_range(args):
-    return (
-        len(args.split("-")) == 2
-        and (args.split("-")[0].strip()).isdigit()
-        and (args.split("-")[1].strip()).isdigit()
-        and args.split("-")[0].strip() != args.split("-")[1].strip()
-    )
+    if isinstance(args, str):
+        return (
+            len(args.split("-")) == 2
+            and (args.split("-")[0].strip()).isdigit()
+            and (args.split("-")[1].strip()).isdigit()
+            and args.split("-")[0].strip() != args.split("-")[1].strip()
+        )
 
 
 async def enpause(message):

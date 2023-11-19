@@ -92,6 +92,9 @@ def get_preview(list=False):
     return PREVIEW_BATCH if not list else PREVIEW_LIST
 
 
+def get_previewer():
+    return BATCH_ING[0] if BATCH_ING else None
+
 def get_queue():
     return QUEUE
 
@@ -131,7 +134,7 @@ def pause(unpause=False, status=1):
 
 
 async def rm_pause(match=None, time=0):
-    if bot_is_paused:
+    if bot_is_paused():
         if match and match == get_pause_status():
             await asyncio.sleep(time)
             pause(unpause=True)

@@ -11,6 +11,7 @@ from bot.utils.bot_utils import (
     get_filename,
     get_pause_status,
     get_preview,
+    get_previewer,
     get_queue,
     get_v,
     get_var,
@@ -533,6 +534,7 @@ async def enleech2(event, args, client):
                 event.id,
                 cust_v or get_v(),
                 cust_fil or get_f(),
+                user=user_id,
             )
             if not result:
                 return await or_event.delete()
@@ -571,6 +573,9 @@ async def enselect(event, args, client):
     *Requires a batch preview to be active.
     */batch
     """
+    user = event.sender_id
+    if not (user_is_owner(user) or user == get_previewer()):
+        return await try_delete(event)
     preview_list = get_preview(list=True)
     preview_queue = get_preview()
     if not preview_list:
@@ -764,7 +769,7 @@ async def clearqueue(event, args, client):
     """
     user = event.sender_id
     if not user_is_allowed(user):
-        return await event.delete()
+        return await try_delete(event)
 
     btch_clr_msg = "**Cleared the following files from queue:**\n"
     queue = get_queue()
@@ -842,6 +847,9 @@ async def edit_batch(event, args, client):
         queue number (id) of the batch :- check with /queue
             - enables live preview for the batch.
     """
+    user = event.sender_id
+    if not user_is_allowed(user):
+        return await try_delete(event)
     batch_queue = get_bqueue()
     queue = get_queue()
     try:
@@ -856,7 +864,9 @@ async def edit_batch(event, args, client):
             return await event.reply(f"`{edit_batch.__doc__}`")
         args = int(args)
         key = list(queue.keys())[args]
-        name, _none, vfm = queue.get(key)
+        name, s_msg, vfm = queue.get(key)
+        if not (user_is_owner(user) or user == s_msg[0]):
+            return await event.reply("`This batch wasn't added to queue by you.`")
         v, f, m = vfm
         if not (value := batch_queue.get(key)):
             return await event.reply(f"'{args}' - not a batch queue item")
@@ -890,6 +900,9 @@ async def edit_queue(event, args, client):
 
     *passing 'off' and 'disable' also serve as a method to disable
     """
+    user = event.sender_id
+    if not user_is_allowed(user):
+        return
     queue = get_queue()
     if not queue:
         return await event.reply("`No items on queue.`")
@@ -925,6 +938,8 @@ async def edit_queue(event, args, client):
             cust_fil = str_esc(flag.f)
         cust_v = flag.v
         file_name, s_msg, v_f_m = list(queue.values())[args]
+        if not (user_is_owner(user) or user == s_msg[0]):
+            return await event.reply("`This item wasn't added to queue by you.`")
         key = list(queue.keys())[args]
         v, f, m = v_f_m
         if flag.f and flag.f.casefold() in ("none", "disable", "off"):

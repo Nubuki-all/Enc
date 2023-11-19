@@ -129,11 +129,12 @@ async def preview_actions(event):
         await logger(Exception)
 
 
-async def batch_preview(event, torrent, chat_id, e_id, v, f, reuse=False):
+async def batch_preview(event, torrent, chat_id, e_id, v, f, reuse=False, user=None):
     if BATCH_ING:
         await event.reply("`Cannot edit two batches simultaneously.`")
         return
-    BATCH_ING.append(0)
+    user = user or event.sender_id
+    BATCH_ING.append(user)
     event2 = await event.reply("…")
     preview_queue = get_preview()
     preview_list = get_preview(list=True)
