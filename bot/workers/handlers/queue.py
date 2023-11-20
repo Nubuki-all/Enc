@@ -646,7 +646,7 @@ async def enselect(event, args, client):
                     msg += f"{i} - `{preview_list[i].split('/')[-1]}`\n    **Changed from:** '{sdict.get(v)}'"
                     msg += "\n\n"
         if err:
-            msg += "\n**Erros:**\n"
+            msg += "\n**Errors:**\n"
             msg += err
 
         replies = []
