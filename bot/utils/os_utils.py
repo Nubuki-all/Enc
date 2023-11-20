@@ -10,7 +10,7 @@ import psutil
 import pymediainfo
 import requests
 
-from bot import tgp_author, tgp_author_url, signal, tele, tgp_client, version_file
+from bot import signal, tele, tgp_author, tgp_author_url, tgp_client, version_file
 
 from .bot_utils import is_url
 from .log_utils import log, logger
