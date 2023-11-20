@@ -69,13 +69,13 @@ startup_ = []
 thumb = "thumb.jpg"
 version_file = "version.txt"
 
-author = author_url = None
+tgp_author = tgp_author_url = None
 if TELEGRAPH_AUTHOR and TELEGRAPH_AUTHOR.split("|")[0].casefold() != "auto":
-    author = TELEGRAPH_AUTHOR.split("|")[0]
+    tgp_author = TELEGRAPH_AUTHOR.split("|")[0]
 
 if TELEGRAPH_AUTHOR and len(TELEGRAPH_AUTHOR.split("|")) > 1:
-    if (author_url := TELEGRAPH_AUTHOR.split("|")[1]).casefold() == "auto":
-        author_url = None
+    if (tgp_author_url := TELEGRAPH_AUTHOR.split("|")[1]).casefold() == "auto":
+        tgp_author_url = None
 
 
 if "|" in RELEASER:

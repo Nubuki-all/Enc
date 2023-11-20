@@ -10,7 +10,7 @@ import psutil
 import pymediainfo
 import requests
 
-from bot import author, author_url, signal, tele, tgp_client, version_file
+from bot import tgp_author, tgp_author_url, signal, tele, tgp_client, version_file
 
 from .bot_utils import is_url
 from .log_utils import log, logger
@@ -36,11 +36,11 @@ async def is_running(proc):
 
 async def info(file):
     try:
-        author = ((await tele.get_me()).first_name) if not author else author
+        author = tgp_author or ((await tele.get_me()).first_name)
         author_url = (
             f"https://t.me/{((await tele.get_me()).username)}"
-            if not (author_url and is_url(author_url))
-            else author_url
+            if not (tgp_author_url and is_url(tgp_author_url))
+            else tgp_author_url
         )
 
         # process = subprocess.Popen(
