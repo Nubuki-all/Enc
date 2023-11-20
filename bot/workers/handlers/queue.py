@@ -297,9 +297,7 @@ async def enleech(event, args, client):
                         )
                         await asyncio.sleep(5)
                     if len(queue) > 1:
-                        asyncio.create_task(
-                            listqueue(msg, None, event.client, False)
-                        )
+                        asyncio.create_task(listqueue(msg, None, event.client, False))
                     return await rm_pause(dl_pause)
             else:
                 uri = rep_event.text
@@ -488,9 +486,7 @@ async def enleech2(event, args, client):
                         )
                         await asyncio.sleep(5)
                     if len(queue) > 1:
-                        asyncio.create_task(
-                            listqueue(msg, None, event.client, False)
-                        )
+                        asyncio.create_task(listqueue(msg, None, event.client, False))
                     return await rm_pause(dl_pause)
             else:
                 uri = rep_event.text
