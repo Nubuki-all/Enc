@@ -12,6 +12,7 @@ from bot import (
     EXT_CAP,
     FL_CAP,
     MI_CAP,
+    NO_BANNER,
     parse_file,
     release_name,
     release_name_b,
@@ -747,6 +748,8 @@ async def qparse_t(name, ver=None, fil=None):
 
 
 async def f_post(name, out, fcodec=None, mi=None, _filter=None, evt=True):
+    if NO_BANNER:
+        return None, None
     try:
         name = (await filter_name(name, _filter))[0]
         ## Get info ##

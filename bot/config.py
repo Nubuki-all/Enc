@@ -51,6 +51,7 @@ try:
     LOG_CHANNEL = config("LOG_CHANNEL", default=0, cast=int)
     LOGS_IN_CHANNEL = config("LOGS_IN_CHANNEL", default=False, cast=bool)
     MI_CAP = config("MI_IN_CAPTION", default=True, cast=bool)
+    NO_BANNER= config("NO_BANNER", default=False, cast=bool)
     NO_TEMP_PM = config("NO_TEMP_PM", default=False, cast=bool)
     OVR = config("OVR", default=None)
     OWNER = config("OWNER")
