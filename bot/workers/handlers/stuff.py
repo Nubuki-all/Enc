@@ -12,7 +12,9 @@ from bot.utils.bot_utils import add_temp_user, get_readable_file_size, rm_temp_u
 from bot.utils.bot_utils import time_formatter as tf
 from bot.utils.db_utils import save2db2
 from bot.utils.msg_utils import (
+    edit_message,
     pm_is_allowed,
+    reply_message,
     temp_is_allowed,
     user_is_allowed,
     user_is_owner,
@@ -21,15 +23,15 @@ from bot.utils.os_utils import file_exists
 
 
 async def up(event, args, client):
-    """ping function (deprecated)"""
+    """ping bot!"""
     if not user_is_allowed(event.sender_id):
         return await event.delete()
-    stt = dt.now()
+    msg = await reply_message(event, "…")
+    st = dt.now()
+    await edit_message(msg, "`Ping…`")
     ed = dt.now()
-    v = tf(time.time() - botStartTime)
-    ms = (ed - stt).microseconds / 1000
-    p = f"🌋Pɪɴɢ = {ms}ms"
-    await event.reply(v + "\n" + p)
+    ms = (ed - st).microseconds / 1000
+    await edit_message(msg,"**Pong!**\n`{}` __ms__".format(ms))
 
 
 async def status(event, args, client):
