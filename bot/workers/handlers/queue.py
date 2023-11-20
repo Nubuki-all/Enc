@@ -295,11 +295,11 @@ async def enleech(event, args, client):
                             f"**Link added to queue ⏰, POS:** `{len(queue)-1}`\n`Please Wait , Encode will start soon`",
                             quote=True,
                         )
-                        if len(queue) > 1:
-                            asyncio.create_task(
-                                listqueue(msg, None, event.client, False)
-                            )
                         await asyncio.sleep(5)
+                    if len(queue) > 1:
+                        asyncio.create_task(
+                            listqueue(msg, None, event.client, False)
+                        )
                     return await rm_pause(dl_pause)
             else:
                 uri = rep_event.text
@@ -328,16 +328,17 @@ async def enleech(event, args, client):
                 return await event.reply(
                     "**THIS TORRENT HAS ALREADY BEEN ADDED TO QUEUE**"
                 )
-        queue.update(
-            {
-                (chat_id, event.id): [
-                    file_name,
-                    (user_id, None),
-                    (cust_v or get_v(), cust_fil or get_f(), ("aria2", mode)),
-                ]
-            }
-        )
-        await save2db()
+        async with queue_lock:
+            queue.update(
+                {
+                    (chat_id, event.id): [
+                        file_name,
+                        (user_id, None),
+                        (cust_v or get_v(), cust_fil or get_f(), ("aria2", mode)),
+                    ]
+                }
+            )
+            await save2db()
         if len(queue) > 1 or bot_is_paused():
             msg = await event.reply(
                 f"**Torrent added To Queue ⏰, POS:** `{len(queue)-1}`\n`Please Wait , Encode will start soon`"
@@ -485,11 +486,11 @@ async def enleech2(event, args, client):
                             f"**Link added to queue ⏰, POS:** `{len(queue)-1}`\n`Please Wait , Encode will start soon`",
                             quote=True,
                         )
-                        if len(queue) > 1:
-                            asyncio.create_task(
-                                listqueue(msg, None, event.client, False)
-                            )
                         await asyncio.sleep(5)
+                    if len(queue) > 1:
+                        asyncio.create_task(
+                            listqueue(msg, None, event.client, False)
+                        )
                     return await rm_pause(dl_pause)
             else:
                 uri = rep_event.text
@@ -538,16 +539,17 @@ async def enleech2(event, args, client):
             )
             if not result:
                 return await or_event.delete()
-        queue.update(
-            {
-                (chat_id, event.id): [
-                    file.name,
-                    (user_id, None),
-                    (cust_v or get_v(), cust_fil or get_f(), ("qbit", mode)),
-                ]
-            }
-        )
-        await save2db()
+        async with queue_lock:
+            queue.update(
+                {
+                    (chat_id, event.id): [
+                        file.name,
+                        (user_id, None),
+                        (cust_v or get_v(), cust_fil or get_f(), ("qbit", mode)),
+                    ]
+                }
+            )
+            await save2db()
         if len(queue) > 1 or bot_is_paused():
             msg = await event.reply(
                 f"**Torrent added To Queue ⏰, POS:** `{len(queue)-1}`\n`Please Wait , Encode will start soon`"

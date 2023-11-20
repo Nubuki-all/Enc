@@ -1,6 +1,7 @@
 import uuid
 
 from bot import QBIT_PORT as qbit_port
+from bot import QBIT_TIMEOUT as q_timeout
 from bot import asyncio, math, os, pyro, qbClient, time
 from bot.utils.bot_utils import (
     CACHE_QUEUE,
@@ -164,7 +165,7 @@ async def get_torrent(url):
                     tor_info = await sync_to_async(qb.torrents_info, tag=tag)
                     if len(tor_info) > 0:
                         break
-                    elif time.time() - st >= 120:
+                    elif time.time() - st >= q_timeout:
                         qinfo.error = "Failed to add torrent…"
                         return
         else:

@@ -56,6 +56,7 @@ try:
     OWNER = config("OWNER")
     PAUSE_ON_DL_INFO = config("PODI", default=True, cast=bool)
     QBIT_PORT = config("QBIT_PORT", default=8090, cast=int)
+    QBIT_TIMEOUT = config("QBIT_TIMEOUT", default=20, cast=int)
     RELEASER = config("RELEASER", default="A-M|ANi-MiNE")
     TELEGRAPH_API = config("TELEGRAPH_API", default="https://api.telegra.ph")
     TELEGRAPH_AUTHOR = config("TELEGRAPH_AUTHOR", default=None)
@@ -64,7 +65,7 @@ try:
     TG_UL_CLIENT = config("TG_UL_CLIENT", default="pyrogram")
     THUMB = config("THUMBNAIL", default=None)
 except Exception:
-    print("Environment vars Missing")
+    print("Environment vars Missing; or")
     print("something went wrong")
     print(traceback.format_exc())
     exit()
