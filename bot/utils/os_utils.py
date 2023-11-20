@@ -9,10 +9,10 @@ import anitopy
 import psutil
 import pymediainfo
 import requests
-from html_telegraph_poster import TelegraphPoster
 
-from bot import TELEGRAPH_API, TELEGRAPH_AUTHOR, signal, tele, version_file
 
+from bot import author, author_url, signal, tele, tgp_client, version_file
+from .bot_utils import is_url
 from .log_utils import log, logger
 
 
@@ -36,20 +36,10 @@ async def is_running(proc):
 
 async def info(file):
     try:
-        author = (
-            TELEGRAPH_AUTHOR.split("|")[0]
-            if TELEGRAPH_AUTHOR and TELEGRAPH_AUTHOR.casefold != "auto"
-            else None
-        )
-        author_url = (
-            TELEGRAPH_AUTHOR.split("|")[1]
-            if TELEGRAPH_AUTHOR and len(TELEGRAPH_AUTHOR.split("|")) > 1
-            else None
-        )
         author = ((await tele.get_me()).first_name) if not author else author
         author_url = (
             f"https://t.me/{((await tele.get_me()).username)}"
-            if not author_url
+            if not (author_url and is_url(author_url))
             else author_url
         )
 
@@ -67,9 +57,7 @@ async def info(file):
         retries = 10
         while retries:
             try:
-                client = TelegraphPoster(use_api=True, telegraph_api_url=TELEGRAPH_API)
-                client.create_api_token("Mediainfo")
-                page = client.post(
+                page = tgp_client.post(
                     title="Mediainfo",
                     author=author,
                     author_url=author_url,

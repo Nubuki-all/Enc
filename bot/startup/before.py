@@ -1,4 +1,5 @@
 import pickle
+import requests
 
 from pymongo import MongoClient
 
@@ -102,6 +103,20 @@ else:
 
 No_Flood = {}
 
+retries = 10
+telgrph_tkn_err_msg = (
+    "Couldn't not successfully create api token required by telegraph to work"
+    "\nAs such telegraph is therefore disabled!"
+)
+while retries:
+    try:
+        tgp_client.create_api_token("Mediainfo")
+        break
+    except (requests.exceptions.ConnectionError, ConnectionError) as e:
+        retries -= 1
+        if not retries:
+            LOGS.info(telgrph_tkn_err_msg)
+            break
 
 class EnTimer:
     def __init__(self):

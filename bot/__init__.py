@@ -40,6 +40,7 @@ from pathlib import Path
 
 import aiohttp
 import aria2p
+from html_telegraph_poster import TelegraphPoster
 from pyrogram import Client
 from pyrogram import errors as pyro_errors
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -67,6 +68,15 @@ rename_file = "Auto-rename.txt"
 startup_ = []
 thumb = "thumb.jpg"
 version_file = "version.txt"
+
+author = author_url = None
+if TELEGRAPH_AUTHOR and TELEGRAPH_AUTHOR.split("|")[0].casefold() != "auto":
+    author = TELEGRAPH_AUTHOR.split("|")[0]
+
+if TELEGRAPH_AUTHOR and len(TELEGRAPH_AUTHOR.split("|")) > 1:
+    if (author_url := TELEGRAPH_AUTHOR.split("|")[1]).casefold() == "auto":
+        author_url = None
+
 
 if "|" in RELEASER:
     release_name = RELEASER.split("|")[0]
@@ -106,6 +116,9 @@ id_pause = "id_pause"
 if sys.version_info < (3, 8):
     LOGS.critical("Please use Python 3.8+")
     exit(1)
+
+
+tgp_client = TelegraphPoster(use_api=True, telegraph_api_url=TELEGRAPH_API)
 
 
 try:
