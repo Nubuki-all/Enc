@@ -117,6 +117,7 @@ while retries:
         if not retries:
             LOGS.info(telgrph_tkn_err_msg)
             break
+        time.sleep(1)
 
 
 class EnTimer:
