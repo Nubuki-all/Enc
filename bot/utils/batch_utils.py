@@ -15,6 +15,7 @@ from .bot_utils import (
 )
 from .db_utils import save2db
 from .log_utils import logger
+from .msg_utils import edit_message
 
 STATUS_START = 0
 PAGES = 1
@@ -151,6 +152,12 @@ async def batch_preview(event, torrent, chat_id, e_id, v, f, reuse=False, user=N
             preview_queue.update(batch_db[1])
         await asyncio.sleep(3)
         while True:
+            if not get_queue().get((chat_id, e_id)):
+                await edit_message(event2, "`Batch no longer present in queue, exiting…`")
+                get_preview().clear()
+                get_preview(list=True).clear()
+                BATCH_ING.clear()
+                return
             if not BATCH_ING:
                 if not preview_queue:
                     return
