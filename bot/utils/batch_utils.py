@@ -153,7 +153,9 @@ async def batch_preview(event, torrent, chat_id, e_id, v, f, reuse=False, user=N
         await asyncio.sleep(3)
         while True:
             if not get_queue().get((chat_id, e_id)):
-                await edit_message(event2, "`Batch no longer present in queue, exiting…`")
+                await edit_message(
+                    event2, "`Batch no longer present in queue, exiting…`"
+                )
                 get_preview().clear()
                 get_preview(list=True).clear()
                 BATCH_ING.clear()
