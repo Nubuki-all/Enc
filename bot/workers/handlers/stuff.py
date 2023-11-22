@@ -39,12 +39,14 @@ async def status(event, args, client):
     Requires no arguments."""
     if not user_is_allowed(event.sender_id):
         return await event.delete()
+    last_commit = "UNAVAILABLE!"
     if os.path.exists(".git"):
-        last_commit = subprocess.check_output(
-            ["git log -1 --date=short --pretty=format:'%cd || %cr'"], shell=True
-        ).decode()
-    else:
-        last_commit = "UNAVAILABLE!"
+        try:
+            last_commit = subprocess.check_output(
+                ["git log -1 --date=short --pretty=format:'%cd || %cr'"], shell=True
+            ).decode()
+        except Exception:
+            pass
 
     if file_exists(version_file):
         with open(version_file, "r") as file:
