@@ -380,7 +380,9 @@ class Downloader:
                     )
                 await sync_to_async(download.remove, force=True, files=True)
                 if download.following_id:
-                    download = await sync_to_async(self.aria2.get_download, download.following_id)
+                    download = await sync_to_async(
+                        self.aria2.get_download, download.following_id
+                    )
                     await sync_to_async(download.remove, force=True, files=True)
                 return None
 
