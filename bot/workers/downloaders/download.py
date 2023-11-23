@@ -370,7 +370,7 @@ class Downloader:
             if download.followed_by_ids:
                 gid = download.followed_by_ids[0]
                 try:
-                    download = self.aria2.get_download(gid)
+                    download = await sync_to_async(self.aria2.get_download, gid)
                 except Exception:
                     log(Exception)
             if download.status == "error" or self.is_cancelled:
@@ -378,10 +378,10 @@ class Downloader:
                     self.download_error = (
                         "E" + download.error_code + ": " + download.error_message
                     )
-                download.remove(force=True, files=True)
+                await sync_to_async(download.remove, force=True, files=True)
                 if download.following_id:
-                    download = self.aria2.get_download(download.following_id)
-                    download.remove(force=True, files=True)
+                    download = await sync_to_async(self.aria2.get_download, download.following_id)
+                    await sync_to_async(download.remove, force=True, files=True)
                 return None
 
             ud_type = "`Download Pending…`"
