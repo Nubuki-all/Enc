@@ -1,5 +1,6 @@
 import asyncio
 import time
+
 from quote import quote
 from random_word import RandomWords
 
