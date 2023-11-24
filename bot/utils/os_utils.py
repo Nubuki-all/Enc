@@ -10,9 +10,9 @@ import psutil
 import pymediainfo
 import requests
 
-from bot import signal, tele, tgp_author, tgp_author_url, tgp_client, version_file
+from bot import ffmpeg_file, signal, tele, tgp_author, tgp_author_url, tgp_client, version_file
 
-from .bot_utils import is_url
+from .bot_utils import is_url, sync_to_async
 from .log_utils import log, logger
 
 
@@ -48,7 +48,7 @@ async def info(file):
         # stdout=subprocess.PIPE,
         # stderr=subprocess.STDOUT,
         # )
-        out = pymediainfo.MediaInfo.parse(file, output="HTML", full=False)
+        out = await sync_to_async(pymediainfo.MediaInfo.parse, file, output="HTML", full=False)
         if len(out) > 65536:
             out = (
                 out[:65430]
@@ -57,7 +57,8 @@ async def info(file):
         retries = 10
         while retries:
             try:
-                page = tgp_client.post(
+                page = await sync_to_async(
+                    tgp_client.post,
                     title="Mediainfo",
                     author=author,
                     author_url=author_url,
@@ -130,7 +131,12 @@ async def qclean():
         os.system("rm -rf encode/*")
         os.system("rm -rf mux/*")
         os.system("rm thumb/*")
-        kill_process("ffmpeg")
+        try:
+            with open(ffmpeg_file, "r") as file:
+                ffmpeg = file.read().rstrip().split()[0]
+            await sync_to_async(kill_process, ffmpeg)
+        except Exception:
+            await logger(Exception)
     except Exception:
         pass
 

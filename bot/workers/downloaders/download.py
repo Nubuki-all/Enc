@@ -45,7 +45,7 @@ class Downloader:
         self.message = None
         self.dl_folder = folder
         self.id = _id
-        self.uri = await sync_to_async(replace_proxy, uri)
+        self.uri = replace_proxy(uri)
         self.uri_gid = None
         self.lc = lc
         self.lm = None

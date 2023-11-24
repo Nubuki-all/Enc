@@ -110,14 +110,14 @@ async def get_leech_name(url):
     aria2 = get_aria2()
     try:
         url = replace_proxy(url)
-        downloads = aria2.add(url, {"dir": f"{os.getcwd()}/temp"})
+        downloads = await sync_to_async(aria2.add, url, {"dir": f"{os.getcwd()}/temp"})
         c_time = time.time()
         while True:
-            download = aria2.get_download(downloads[0].gid)
+            download = await sync_to_async(aria2.get_download,downloads[0].gid)
             download = download.live
             if download.followed_by_ids:
                 gid = download.followed_by_ids[0]
-                download = aria2.get_download(gid)
+                download = await sync_to_async(aria2.get_download, gid)
             if time.time() - c_time > 300:
                 filename = "aria2_error E408: Getting filename timed out."
                 break
@@ -137,7 +137,7 @@ async def get_leech_name(url):
                     download.name if is_video_file(download.name) is True else str()
                 )
                 break
-        clean_aria_dl(download)
+        await sync_to_async(clean_aria_dl, download)
         return filename
     except Exception:
         await logger(Exception)
