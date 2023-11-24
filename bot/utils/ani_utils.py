@@ -1,11 +1,10 @@
-import aiohttp
 import string
 
+import aiohttp
 import anitopy
 import country_converter as coco
 import flag
 import pycountry
-import requests
 
 from bot import (
     C_LINK,
@@ -19,7 +18,14 @@ from bot import (
     release_name_b,
 )
 
-from .bot_utils import auto_rename, crc32, get_codec, sync_to_async, text_filter, txt_to_str
+from .bot_utils import (
+    auto_rename,
+    crc32,
+    get_codec,
+    sync_to_async,
+    text_filter,
+    txt_to_str,
+)
 from .log_utils import log, logger
 from .os_utils import check_ext, file_exists, get_stream_info, info, p_dl
 
@@ -92,12 +98,16 @@ query ($id: Int, $idMal:Int, $search: String, $type: MediaType, $asHtml: Boolean
 }
 """
 
+
 async def get_ani_info(title):
     variables = {"search": title, "type": "ANIME"}
     async with aiohttp.ClientSession() as requests:
-        result= await requests.post(url, json={"query": anime_query, "variables": variables})
+        result = await requests.post(
+            url, json={"query": anime_query, "variables": variables}
+        )
         info = (await result.json())["data"].get("Media")
     return info
+
 
 async def get_cus_tag(fn, rg, caption=False):
     release_tag, file_tag, caption_tag = None, str(), None
