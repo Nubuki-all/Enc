@@ -1,9 +1,8 @@
 import asyncio
 import time
+
 from quote import quote
 from random_word import RandomWords
-
-from .emojis import enmoji
 
 
 async def enquotes():
