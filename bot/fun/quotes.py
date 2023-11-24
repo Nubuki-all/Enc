@@ -1,5 +1,5 @@
 import asyncio
-
+import time
 from quote import quote
 from random_word import RandomWords
 
@@ -7,11 +7,13 @@ from .emojis import enmoji
 
 
 async def enquotes():
+    em = emoji()
     res = str()
-    em = enmoji()
-    return f"{em} **Nubuki-all:** `The feature 'quote' is currently broken, and has therefore been disabled.`"
+    start = time.time()
     while not res:
         try:
+            if (time.time() - start) >= 20:
+                return f"{em} **Nubuki-all:** `The feature 'quote' is currently broken, and has therefore been temporarily disabled.`"
             r = RandomWords()
             w = r.get_random_word()
             res = quote(w, limit=1)
