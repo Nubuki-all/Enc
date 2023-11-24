@@ -115,7 +115,7 @@ async def autostat():
             check.batch.clear(), check.batch.update(bqueue)
             check.queue.clear(), check.queue.update(queue)
             check.file = encode_info._current
-            check.state = (get_pause_status() == 0)
+            check.state = get_pause_status() == 0
             return False
 
         while forward_id:
