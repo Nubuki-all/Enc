@@ -45,7 +45,7 @@ class Downloader:
         self.message = None
         self.dl_folder = folder
         self.id = _id
-        self.uri = replace_proxy(uri)
+        self.uri = await sync_to_async(replace_proxy, uri)
         self.uri_gid = None
         self.lc = lc
         self.lm = None
@@ -597,6 +597,8 @@ class Downloader:
             log(Exception)
 
     def un_register(self):
+        if self.dl_info:
+            return
         try:
             decode(self.id, pop=True)
             if self.log_id:
