@@ -643,7 +643,7 @@ async def pause(event, args, client):
                 reply = "**Bot was not paused**"
             return await event.reply(reply)
         elif not args.isdigit():
-            return await event.reply("No clue as to what " f"`{args}` means.")
+            return await event.reply("No clue as to what " f"'`{args}`' means.")
         args = int(args)
         if args == 0:
             reply = "**Bot has been paused indefinitely.**"

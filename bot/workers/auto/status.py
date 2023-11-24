@@ -90,26 +90,34 @@ async def stateditor(x, channel, id):
 
 async def autostat():
     if forward and forward_id:
-        check = []
-        check_queue = {}
-        check_batch = {}
-
+        class Check:
+            def __init__(self):
+                self.batch = {}
+                self.done = False
+                self.file = None
+                self.queue = {}
+                self.state = None
+        check = Check()
+        def conditions():
+            return (queue == check.queue and bqueue == check.batch and check.file == encode_info._current and check.state == bool(get_pause_status()))
         def wait():
-            if queue == check_queue and bqueue == check_batch:
+            if conditions():
                 return True
-            check_queue.clear(), check_queue.update(queue)
-            check_batch.clear(), check_batch.update(bqueue)
+            check.batch.clear(), check.batch.update(bqueue)
+            check.queue.clear(), check.queue.update(queue)
+            check.file = encode_info._current
+            check.state = bool(get_pause_status())
             return False
-
         while forward_id:
             if not queue:
-                if check:
+                if check.done:
                     await asyncio.sleep(60)
                     continue
-                check.append(1)
+                check.done = True
 
             else:
-                check.clear() if check else None
+                if check.done:
+                    check.done = False
             if startup_:
                 if not wait():
                     estat = await encodestat()
