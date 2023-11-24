@@ -8,6 +8,7 @@ from bot.fun.stuff import lvbar
 from bot.utils.ani_utils import qparse
 from bot.utils.batch_utils import get_batch_list
 from bot.utils.bot_utils import QUEUE as queue
+from bot.utils.bot_utils import BATCH_QUEUE as bqueue
 from bot.utils.bot_utils import encode_info, get_codec, get_pause_status
 from bot.utils.log_utils import logger
 
@@ -90,6 +91,14 @@ async def stateditor(x, channel, id):
 async def autostat():
     if forward and forward_id:
         check = []
+        check_queue = {}
+        check_batch = {}
+        def wait():
+            if queue == check_queue and bqueue == check_batch:
+                return True
+            check_queue.clear(), check_queue.update(queue)
+            check_batch.clear(), check_batch.update(bqueue)
+            return False
         while forward_id:
             if not queue:
                 if check:
@@ -100,7 +109,8 @@ async def autostat():
             else:
                 check.clear() if check else None
             if startup_:
-                estat = await encodestat()
+                if not wait():
+                    estat = await encodestat()
             else:
                 estat = f"**{enquip4()} {enmoji()}**"
             await stateditor(estat, forward, forward_id)
