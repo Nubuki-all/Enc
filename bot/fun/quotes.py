@@ -1,3 +1,4 @@
+import asyncio
 from quote import quote
 from random_word import RandomWords
 
@@ -5,7 +6,9 @@ from .emojis import enmoji
 
 
 async def enquotes():
-    res = ""
+    res = str()
+    em = enmoji()
+    return f"{em} **Nubuki-all:** `The feature 'quote' is currently broken, and has therefore been disabled.`"
     while not res:
         try:
             r = RandomWords()
@@ -14,9 +17,8 @@ async def enquotes():
             for i in range(len(res)):
                 result = res[i]["quote"]
                 result2 = res[i]["author"]
-                y = enmoji()
                 output = (result[:2045] + "…") if len(result) > 2046 else result
-                output = f"{y} **{result2}:** `{output}`"
+                output = f"{em} **{result2}:** `{output}`"
         except Exception:
-            pass
+            await asyncio.sleep(0.5)
     return output
