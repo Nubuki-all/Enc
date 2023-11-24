@@ -1,3 +1,4 @@
+import aiohttp
 import string
 
 import anitopy
@@ -18,7 +19,7 @@ from bot import (
     release_name_b,
 )
 
-from .bot_utils import auto_rename, crc32, get_codec, text_filter, txt_to_str
+from .bot_utils import auto_rename, crc32, get_codec, sync_to_async, text_filter, txt_to_str
 from .log_utils import log, logger
 from .os_utils import check_ext, file_exists, get_stream_info, info, p_dl
 
@@ -91,6 +92,12 @@ query ($id: Int, $idMal:Int, $search: String, $type: MediaType, $asHtml: Boolean
 }
 """
 
+async def get_ani_info(title):
+    variables = {"search": title, "type": "ANIME"}
+    async with aiohttp.ClientSession() as requests:
+        result= await requests.post(url, json={"query": anime_query, "variables": variables})
+        info = (await result.json())["data"].get("Media")
+    return info
 
 async def get_cus_tag(fn, rg, caption=False):
     release_tag, file_tag, caption_tag = None, str(), None
@@ -261,7 +268,7 @@ async def filter_name(name, _filter):
     return name, fil2, fil3
 
 
-async def conconvert(iso2_codes):
+def conconvert(iso2_codes):
     try:
         iso3_codes = coco.convert(names=iso2_codes, to="ISO3").capitalize()
     except Exception:
@@ -327,16 +334,11 @@ async def parse(
         try:
             if file_exists(parse_file) or not anilist:
                 raise Exception("Anilist parsing Turned off")
-            variables = {"search": title, "type": "ANIME"}
-            json = (
-                requests.post(url, json={"query": anime_query, "variables": variables})
-                .json()["data"]
-                .get("Media")
-            )
+            json = await get_ani_info(title)
             title = json["title"]["english"]
             title = json["title"]["romaji"] if not title else title
             con = f"{json['countryOfOrigin']}"
-            con = await conconvert(con)
+            con = await sync_to_async(conconvert, con)
             te = f"{json.get('episodes')}"
             te = "0" + str(te) if epi.startswith("0") else te
             title = string.capwords(title)
@@ -423,12 +425,7 @@ async def dynamicthumb(name, thum="thumb2.jpg", anilist=True, _filter=None):
         if file_exists(parse_file) or not anilist:
             raise Exception("Parsing turned off")
         try:
-            variables = {"search": title, "type": "ANIME"}
-            json = (
-                requests.post(url, json={"query": anime_query, "variables": variables})
-                .json()["data"]
-                .get("Media")
-            )
+            json = await get_ani_info(title)
             t_title = json["title"]["english"]
             t_title = json["title"]["romaji"] if not t_title else t_title
         except Exception:
@@ -437,28 +434,16 @@ async def dynamicthumb(name, thum="thumb2.jpg", anilist=True, _filter=None):
         if sn:
             s_title += " " + sn
         try:
-            variables = {"search": s_title, "type": "ANIME"}
-            json = (
-                requests.post(url, json={"query": anime_query, "variables": variables})
-                .json()["data"]
-                .get("Media")
-            )
+            json = await get_ani_info(s_title)
             link = json.get("coverImage")["extraLarge"]
         except Exception:
             try:
-                variables = {"search": title, "type": "ANIME"}
-                json = (
-                    requests.post(
-                        url, json={"query": anime_query, "variables": variables}
-                    )
-                    .json()["data"]
-                    .get("Media")
-                )
+                json = await get_ani_info(title)
                 link = json.get("coverImage")["extraLarge"]
             except Exception:
                 pass
                 # await logger(Exception)
-        p_dl(link, thum)
+        await sync_to_async(p_dl, link, thum)
     except Exception:
         pass
         # log(Exception)
@@ -533,23 +518,11 @@ async def custcap(
         try:
             if file_exists(parse_file) or not anilist:
                 raise Exception("Parsing turned off")
-            variables = {"search": title, "type": "ANIME"}
-            json = (
-                requests.post(url, json={"query": anime_query, "variables": variables})
-                .json()["data"]
-                .get("Media")
-            )
+            json = await get_ani_info(title)
             title = json["title"]["english"]
             title = json["title"]["romaji"] if not title else title
             if sn:
-                variables = {"search": f"{title} {sn}", "type": "ANIME"}
-                json = (
-                    requests.post(
-                        url, json={"query": anime_query, "variables": variables}
-                    )
-                    .json()["data"]
-                    .get("Media")
-                )
+                json = await get_ani_info(f"{title} {sn}")
             te = str(json.get("episodes"))
             te = "0" + str(te) if epi.startswith("0") else te
         except Exception:
@@ -666,23 +639,11 @@ async def simplecap(
         try:
             if file_exists(parse_file) or not anilist:
                 raise Exception("Parsing turned off")
-            variables = {"search": title, "type": "ANIME"}
-            json = (
-                requests.post(url, json={"query": anime_query, "variables": variables})
-                .json()["data"]
-                .get("Media")
-            )
+            json = await get_ani_info(title)
             title = json["title"]["english"]
             title = json["title"]["romaji"] if not title else title
             if sn:
-                variables = {"search": f"{title} {sn}", "type": "ANIME"}
-                json = (
-                    requests.post(
-                        url, json={"query": anime_query, "variables": variables}
-                    )
-                    .json()["data"]
-                    .get("Media")
-                )
+                json = await get_ani_info(f"{title} {sn}")
             te = str(json.get("episodes"))
             te = "0" + str(te) if epi.startswith("0") else te
         except Exception:
@@ -779,21 +740,12 @@ async def f_post(name, out, fcodec=None, mi=None, _filter=None, evt=True):
         try:
             if file_exists(parse_file):
                 raise Exception("Parsing turned off")
-            s_title = title
+            json = await get_ani_info(title)
             if sn:
                 s_title = title + " " + sn
-            variables = {"search": title, "type": "ANIME"}
-            json = (
-                requests.post(url, json={"query": anime_query, "variables": variables})
-                .json()["data"]
-                .get("Media")
-            )
-            variables = {"search": s_title, "type": "ANIME"}
-            json2 = (
-                requests.post(url, json={"query": anime_query, "variables": variables})
-                .json()["data"]
-                .get("Media")
-            )
+                json2 = await get_ani_info(s_title)
+            else:
+                json2 = json
             title = json["title"]["english"]
             title = json["title"]["romaji"] if title is None else title
             title_r = json["title"]["romaji"]
@@ -817,7 +769,7 @@ async def f_post(name, out, fcodec=None, mi=None, _filter=None, evt=True):
         _ainfo, _sinfo = await get_stream_info(out)
         if _ainfo:
             for a_lang_t in _ainfo.split("|"):
-                a_lang += get_flag(a_lang_t)
+                a_lang += await sync_to_async(get_flag, a_lang_t)
                 a_lang += ", "
             a_lang = a_lang.strip(", ")
         else:
