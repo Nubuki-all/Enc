@@ -10,7 +10,15 @@ import psutil
 import pymediainfo
 import requests
 
-from bot import ffmpeg_file, signal, tele, tgp_author, tgp_author_url, tgp_client, version_file
+from bot import (
+    ffmpeg_file,
+    signal,
+    tele,
+    tgp_author,
+    tgp_author_url,
+    tgp_client,
+    version_file,
+)
 
 from .bot_utils import is_url, sync_to_async
 from .log_utils import log, logger
@@ -48,7 +56,9 @@ async def info(file):
         # stdout=subprocess.PIPE,
         # stderr=subprocess.STDOUT,
         # )
-        out = await sync_to_async(pymediainfo.MediaInfo.parse, file, output="HTML", full=False)
+        out = await sync_to_async(
+            pymediainfo.MediaInfo.parse, file, output="HTML", full=False
+        )
         if len(out) > 65536:
             out = (
                 out[:65430]

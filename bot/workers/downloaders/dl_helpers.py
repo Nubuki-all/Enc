@@ -113,7 +113,7 @@ async def get_leech_name(url):
         downloads = await sync_to_async(aria2.add, url, {"dir": f"{os.getcwd()}/temp"})
         c_time = time.time()
         while True:
-            download = await sync_to_async(aria2.get_download,downloads[0].gid)
+            download = await sync_to_async(aria2.get_download, downloads[0].gid)
             download = download.live
             if download.followed_by_ids:
                 gid = download.followed_by_ids[0]
