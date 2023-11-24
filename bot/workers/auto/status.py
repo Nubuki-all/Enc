@@ -90,6 +90,7 @@ async def stateditor(x, channel, id):
 
 async def autostat():
     if forward and forward_id:
+
         class Check:
             def __init__(self):
                 self.batch = {}
@@ -97,9 +98,17 @@ async def autostat():
                 self.file = None
                 self.queue = {}
                 self.state = None
+
         check = Check()
+
         def conditions():
-            return (queue == check.queue and bqueue == check.batch and check.file == encode_info._current and check.state == bool(get_pause_status()))
+            return (
+                queue == check.queue
+                and bqueue == check.batch
+                and check.file == encode_info._current
+                and check.state == bool(get_pause_status())
+            )
+
         def wait():
             if conditions():
                 return True
@@ -108,6 +117,7 @@ async def autostat():
             check.file = encode_info._current
             check.state = bool(get_pause_status())
             return False
+
         while forward_id:
             if not queue:
                 if check.done:
