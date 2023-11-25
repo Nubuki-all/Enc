@@ -26,6 +26,7 @@ async def save2db(db="queue", retries=3):
             await sync_to_async(
                 queuedb.update_one, _filter, {"$set": _update}, upsert=True
             )
+            break
         except ServerSelectionTimeoutError as e:
             retries -= 1
             if not retries:
