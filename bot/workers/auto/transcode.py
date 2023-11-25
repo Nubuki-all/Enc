@@ -378,7 +378,7 @@ async def thing():
 
         text = str()
         mi = await info(dl)
-        await forward_(name, out, up, mi, f)
+        forward_task = asyncio.create_task(forward_(name, out, up, mi, f))
 
         text += f"**Source:** `[{rlsgrp}]`"
         if mi:
@@ -400,6 +400,7 @@ async def thing():
             quote=True,
         )
         await st_msg.copy(chat_id=log_channel) if op else None
+        await forward_task
 
         skip(queue_id)
         mark_file_as_done(einfo.select, queue_id)
