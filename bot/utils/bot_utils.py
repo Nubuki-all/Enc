@@ -243,7 +243,7 @@ def replace_proxy(url):
 
 def gfn(fn):
     "gets module path"
-    return '.'.join([fn.__module__, fn.__qualname__])
+    return ".".join([fn.__module__, fn.__qualname__])
 
 
 def string_escape(s, encoding="utf-8"):

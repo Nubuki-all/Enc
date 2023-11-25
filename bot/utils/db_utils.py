@@ -3,6 +3,7 @@ from pymongo.errors import ServerSelectionTimeoutError
 from bot import asyncio, bot_id
 from bot.config import DATABASE_URL as database
 from bot.startup.before import ffmpegdb, filterdb, pickle, queuedb, userdb
+
 from .bot_utils import BATCH_QUEUE, QUEUE, TEMP_USERS, list_to_str, sync_to_async
 from .local_db_utils import save2db_lcl, save2db_lcl2
 
@@ -22,7 +23,9 @@ async def save2db(db="queue", retries=3):
     _update = {db: data}
     while retries:
         try:
-            await sync_to_async(queuedb.update_one, _filter, {"$set": _update}, upsert=True)
+            await sync_to_async(
+                queuedb.update_one, _filter, {"$set": _update}, upsert=True
+            )
         except ServerSelectionTimeoutError as e:
             retries -= 1
             if not retries:
@@ -42,8 +45,12 @@ async def save2db2(data=False, db=None):
     p_data = pickle.dumps(data)
     _update = {db: p_data}
     if db == "ffmpeg":
-        await sync_to_async(ffmpegdb.update_one, _filter, {"$set": _update}, upsert=True)
+        await sync_to_async(
+            ffmpegdb.update_one, _filter, {"$set": _update}, upsert=True
+        )
         return
     if db in ("autoname", "filter"):
-        await sync_to_async(filterdb.update_one, _filter, {"$set": _update}, upsert=True)
+        await sync_to_async(
+            filterdb.update_one, _filter, {"$set": _update}, upsert=True
+        )
         return
