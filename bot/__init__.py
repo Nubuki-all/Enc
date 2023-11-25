@@ -122,12 +122,19 @@ tgp_client = TelegraphPoster(use_api=True, telegraph_api_url=TELEGRAPH_API)
 
 
 try:
-    tele = TelegramClient("tele", APP_ID, API_HASH, catch_up=True)
+    tele = TelegramClient(
+        "tele",
+        APP_ID,
+        API_HASH,
+        catch_up=True,
+        flood_sleep_threshold=FS_THRESHOLD,
+    )
     pyro = Client(
         "pyro",
         api_id=APP_ID,
         api_hash=API_HASH,
         bot_token=BOT_TOKEN,
+        sleep_threshold=FS_THRESHOLD,
         workers=WORKERS,
     )
 except Exception as e:

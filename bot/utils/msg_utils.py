@@ -1,3 +1,5 @@
+from functools import partial
+
 import pyrogram
 
 from bot import *
@@ -7,7 +9,7 @@ from bot.fun.quips import enquip3
 from bot.fun.quotes import enquotes
 from bot.others.exceptions import ArgumentParserError
 
-from .bot_utils import is_url, var
+from .bot_utils import gfn, is_url, var
 from .log_utils import log, logger
 from .os_utils import s_remove
 
@@ -147,20 +149,50 @@ async def enpause(message):
         except Exception:
             await logger(Exception)
 
+async def avoid_flood(func, *args, **kwargs):
+    try:
+        pfunc = partial(func, *args, **kwargs)
+        return await pfunc()
+    except errors.FloodWaitError as e:
+        log(e=f"Sleeping for {e.seconds}s due to floodwait!"
+        "\n"
+        f"Caused by: {gfn(avoid_flood)}"
+        )
+        await asyncio.sleep(e.seconds)
+        return await avoid_flood(func, *args, **kwargs)
+    except pyro_errors.FloodWait as e:
+        log(e=f"Sleeping for {e.value}s due to floodwait!"
+        "\n"
+        f"Caused by: {gfn(avoid_flood)}"
+        )
+        await asyncio.sleep(e.value)
+        return await avoid_flood(func, *args, **kwargs)
+    except Exception:
+        await logger(Exception)
+
 
 async def edit_message(message, text):
-    """A function to edit message with a loop in the event of FloodWait"""
-
+    """
+   A function to edit message with a loop in the event of a FloodWait
+    """
     try:
         edited = await message.edit(text)
     except pyro_errors.FloodWait as e:
+        log(e=f"Sleeping for {e.value}s due to floodwait!"
+        "\n"
+        f"Caused by: {gfn(edit_message)}"
+        )
         await asyncio.sleep(e.value)
         return await edit_message(message, text)
     except errors.FloodWaitError as e:
+        log(e=f"Sleeping for {e.seconds}s due to floodwait!"
+        "\n"
+        f"Caused by: {gfn(edit_message)}"
+        )
         await asyncio.sleep(e.seconds)
         return await edit_message(message, text)
     except Exception:
-        log(Exception)
+        await logger (Exception)
 
     return edited
 
@@ -196,6 +228,10 @@ async def reply_message(message, text, quote=True):
         try:
             replied = await message.reply(text, quote=quote)
         except pyro_errors.FloodWait as e:
+            log(e=f"Sleeping for {e.value}s due to floodwait!"
+            "\n"
+            f"Caused by: {gfn(reply_message)}"
+            )
             await asyncio.sleep(e.value)
             return await reply_message(message, text, quote)
 
@@ -205,6 +241,10 @@ async def reply_message(message, text, quote=True):
                 await message.reply(text) if quote else await message.respond(text)
             )
         except errors.FloodWaitError as e:
+            log(e=f"Sleeping for {e.seconds}s due to floodwait!"
+            "\n"
+            f"Caused by: {gfn(reply_message)}"
+            )
             await asyncio.sleep(e.seconds)
             return await reply_message(message, text, quote)
 

@@ -241,6 +241,11 @@ def replace_proxy(url):
     return url
 
 
+def gfn(fn):
+    "gets module path"
+    return '.'.join([fn.__module__, fn.__qualname__])
+
+
 def string_escape(s, encoding="utf-8"):
     "unescape escaped characters in string"
     # https://stackoverflow.com/questions/14820429/how-do-i-decodestring-escape-in-python-3
