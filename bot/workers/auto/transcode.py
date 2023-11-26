@@ -294,7 +294,7 @@ async def thing():
             pass
         else:
             einfo.previous = c_n
-            for x in ("!", ":", "-", " "):
+            for x in ("!", ":", ";", "-", " "):
                 c_n = c_n.replace(x, "_")
             await op.reply("#" + c_n) if op else None
             await msg_p.reply("#" + c_n) if log_channel == chat_id else None

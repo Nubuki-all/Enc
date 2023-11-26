@@ -20,7 +20,7 @@ async def batch_status_preview(msg, v, f):
         msg += f"{i}. `{name}`\n"
     if left:
         msg += f"__+{left} more…__\n"
-    if not blist:
+    if not blist and encode_info.current:
         loc = await enquotes()
         msg += f"Nothing Here; While you wait:\n\n{loc}\n"
     return msg
@@ -65,7 +65,7 @@ async def encodestat():
             single = False
         else:
             msg = await queue_status_preview(i, msg, queue)
-        if len(queue) == 1 and single:
+        if len(queue) == 1 and single and encode_info.current:
             loc = await enquotes()
             msg += f"Nothing Here; While you wait:\n\n{loc}"
         elif not single and (r := (len(queue) - 1)):
@@ -129,7 +129,10 @@ async def autostat():
                 if check.done:
                     check.done = False
             if startup_:
-                if not wait():
+                if wait():
+                    await asyncio.sleep(60)
+                    continue
+                else:
                     estat = await encodestat()
             else:
                 estat = f"**{enquip4()} {enmoji()}**"
