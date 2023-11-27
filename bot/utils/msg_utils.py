@@ -150,6 +150,13 @@ async def enpause(message):
             await logger(Exception)
 
 
+async def send_rss(msg):
+    try:
+        await avoid_flood(tele.send_message, RSS_CHAT, msg)
+     except Exception:
+         await logger(Exception)
+
+
 async def avoid_flood(func, *args, **kwargs):
     try:
         pfunc = partial(func, *args, **kwargs)
@@ -170,8 +177,6 @@ async def avoid_flood(func, *args, **kwargs):
         )
         await asyncio.sleep(e.value)
         return await avoid_flood(func, *args, **kwargs)
-    except Exception:
-        await logger(Exception)
 
 
 async def edit_message(message, text):

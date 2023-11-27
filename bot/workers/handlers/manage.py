@@ -1,10 +1,14 @@
 import asyncio
 import itertools
 
-from bot import caption_file, ffmpeg_file, filter_file, parse_file, rename_file, thumb
+from aiohttp import ClientSession
+from feedparser import parse as feedparse
+
+from bot import caption_file, ffmpeg_file, filter_file, parse_file, rename_file, rss_dict_lock, thumb
 from bot.config import FCHANNEL, FFMPEG
 from bot.startup.before import DOCKER_DEPLOYMENT as d_docker
 from bot.startup.before import entime
+from bot.utils.bot_utils import RSS_DICT as rss_dict
 from bot.utils.bot_utils import (
     get_aria2,
     get_bqueue,
@@ -20,6 +24,7 @@ from bot.utils.bot_utils import (
 from bot.utils.db_utils import save2db, save2db2
 from bot.utils.log_utils import logger
 from bot.utils.msg_utils import (
+    avoid_flood,
     bc_msg,
     enquoter,
     get_args,
@@ -680,3 +685,85 @@ async def fc_forward(msg, args, client):
             await try_delete(rep)
     except Exception:
         await logger(Exception)
+
+
+async def rss_list(event, args, client):
+    if not user_is_owner(event.sender_id):
+        return
+    if not rss_dict:
+        return await event.reply("<b> No subscriptions!</b>", parse_mode="html")
+    list_feed = str()
+    pre_event = event
+    async with rss_dict_lock:
+        for i, (title, data) in zip(itertools.count(1), list(rss_dict.items())):
+            list_feed += f"\n\n{i}.<b>Title:</b> <code>{title}</code>\n<b>Feed Url: </b><code>{data['link']}</code>\n"
+            list_feed += f"<b>Command:</b> <code>{data['command']}</code>\n"
+            list_feed += f"<b>Inf:</b> <code>{data['inf']}</code>\n"
+            list_feed += f"<b>Exf:</b> <code>{data['exf']}</code>\n"
+            list_feed += f"<b>Paused:</b> <code>{data['paused']}</code>\n"
+          
+    lmsg = await split_text(list_feed, "\n\n", True)
+    for i, msg in zip(itertools.count(1), lmsg):
+        msg = f"<b>Your subscriptions</b> #{i}" + msg
+        pre_event = await pre_event.reply(msg, parse_mode="html")
+        await asyncio.sleep(1)
+
+
+async def rss_get(event, args, client):
+    """
+    Get the links of titles in rss:
+    Arguments:
+        [Title] - Title used in subscribing rss
+        [Amount] - Amount of links to grab
+    """
+    if not user_is_owner(event.sender_id):
+        return
+    if args.split() < 2:
+        return await event.reply(f"`{rss_get.__doc__}`")
+    args = args.split(maxsplit=1)
+    if not args[1].isdigit():
+        return await event.reply("Second argument must be a digit.")
+
+    title = args[0]
+    count = args[1]
+    data = rss_dict.get(title)
+    if not (data and count > 0):
+        return await event.reply(f"`{rss_get.__doc__}`")
+    try:
+        msg = await event.reply(
+            f"Getting the last <b>{count}</b> item(s) from {title}...",
+            parse_mode="html"
+        )
+        pre_event = msg
+        async with ClientSession(trust_env=True) as session:
+            async with session.get(data["link"]) as res:
+                html = await res.text()
+        rss_d = feedparse(html)
+        item_info = ""
+        for item_num in range(count):
+            try:
+                link = rss_d.entries[item_num]["links"][1]["href"]
+            except IndexError:
+                link = rss_d.entries[item_num]["link"]
+            item_info += f"<b>Name: </b><code>{rss_d.entries[item_num]['title'].replace('>', '').replace('<', '')}</code>\n"
+            item_info += f"<b>Link: </b><code>{link}</code>\n\n"
+        for msg in await split_text(item_info, "\n\n"):
+            pre_event = await avoid_flood(
+                pre_event.reply,
+                msg,
+                parse_mode="html")
+            await asyncio.sleep(2)_
+        await avoid_flood(
+            msg.edit,
+            f"Here are the last <b>{count}</b> item(s) from {title}:",
+            parse_mode="html")
+    except IndexError as e:
+        await avoid_flood(
+            msg.edit,
+            "Parse depth exceeded. Try again with a lower value."
+        )
+    except Exception as e:
+        await logger(Exception)
+        await avoid_flood(event.reply, f"error! - `{str(e)}`")
+    
+    

@@ -32,6 +32,7 @@ class Var_list:
     PREVIEW_BATCH = {}
     BATCH_QUEUE = {}
     E_CANCEL = {}
+    RSS_DICT = {}
     QUEUE = {}
     OK = {}
 
@@ -350,12 +351,12 @@ def get_filename(message):
     return file_name
 
 
-async def split_text(text):
+async def split_text(text, split="\n", pre=False):
     current_list = ""
     list_size = 4000
     message_list = []
-    for string in text.split("\n"):
-        line = string + "\n"
+    for string in text.split(split):
+        line = string + split if not pre else split + string
         if len(current_list) + len(line) <= list_size:
             current_list += line
         else:
