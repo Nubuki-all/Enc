@@ -764,7 +764,7 @@ async def rss_get(event, args, client):
             f"Here are the last <b>{count}</b> item(s) from {title}:",
             parse_mode="html",
         )
-    except IndexError as e:
+    except IndexError:
         await avoid_flood(
             msg.edit, "Parse depth exceeded. Try again with a lower value."
         )
