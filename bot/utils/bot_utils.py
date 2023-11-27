@@ -247,7 +247,7 @@ def gfn(fn):
     return ".".join([fn.__module__, fn.__qualname__])
 
 
-def string_escape(s, encoding="utf-8"):
+def string_escape(s: str, encoding="utf-8"):
     "unescape escaped characters in string"
     # https://stackoverflow.com/questions/14820429/how-do-i-decodestring-escape-in-python-3
     return (
@@ -263,7 +263,7 @@ def string_escape(s, encoding="utf-8"):
     )
 
 
-def list_to_str(lst, sep=" ", start=None, md=True):
+def list_to_str(lst: list, sep=" ", start: int = None, md=True):
     string = str()
     t_start = start if isinstance(start, int) else 1
     for i, count in zip(lst, itertools.count(t_start)):
@@ -276,7 +276,7 @@ def list_to_str(lst, sep=" ", start=None, md=True):
     return string.rstrip(sep)
 
 
-def txt_to_str(txt):
+def txt_to_str(txt: str):
     if Path(txt).is_file():
         with open(txt, "r") as file:
             string = file.read().strip()
@@ -286,7 +286,7 @@ def txt_to_str(txt):
     return string
 
 
-def is_video_file(filename):
+def is_video_file(filename: str):
     video_file_extensions = (
         ".3g2",
         ".3gp",
@@ -321,7 +321,7 @@ def is_video_file(filename):
         return True
 
 
-def get_readable_file_size(size_in_bytes) -> str:
+def get_readable_file_size(size_in_bytes: int) -> str:
     if size_in_bytes is None:
         return "0B"
     index = 0
@@ -351,7 +351,7 @@ def get_filename(message):
     return file_name
 
 
-async def split_text(text, split="\n", pre=False):
+async def split_text(text: str, split="\n", pre=False):
     current_list = ""
     list_size = 4000
     message_list = []
@@ -382,7 +382,7 @@ def code(data, infile=None, outfile=None, user=None, stime=None, index=None):
 # return str(len(OK) - 1)
 
 
-def decode(key, pop=False):
+def decode(key: str | int, pop=False):
     key = int(key) if isinstance(key, str) and key.isdigit() else key
     if pop:
         return OK.pop(key)
@@ -455,7 +455,7 @@ def ts(milliseconds: int) -> str:
     return tmp[:-2]
 
 
-def hbs(size):
+def hbs(size: int):
     if not size:
         return ""
     power = 2**10
@@ -467,7 +467,7 @@ def hbs(size):
     return str(round(size, 2)) + " " + dict_power_n[raised_to_pow] + "B"
 
 
-async def crc32(filename, chunksize=65536):
+async def crc32(filename: str, chunksize=65536):
     """Compute the CRC-32 checksum of the contents of the given filename"""
     with open(filename, "rb") as f:
         checksum = 0
@@ -498,7 +498,9 @@ async def get_codec():
     return __out.strip()
 
 
-async def auto_rename(parsed_name, original_name, refunc, caption=False):
+async def auto_rename(
+    parsed_name: str, original_name: str, refunc: str, caption=False
+) -> str:
     """
     Auto-rename file/caption name, if it matches given string or list of strings seperated by newlines
     """

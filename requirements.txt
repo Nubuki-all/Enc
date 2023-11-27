@@ -1,5 +1,6 @@
 aiohttp
 anitopy
+apscheduler
 aria2p
 country_converter
 emoji-country-flag
@@ -15,4 +16,6 @@ pyrogram==2.0.106
 python-decouple
 qbittorrent-api
 random_word
+tzlocal
+#Depreciating...
 quote

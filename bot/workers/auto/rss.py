@@ -4,15 +4,17 @@ from aiohttp import ClientSession
 from feedparser import parse as feedparse
 
 from bot import rss_dict_lock
-from bot.config import RSS_CHAT
 from bot.utils.bot_utils import RSS_DICT as rss_dict
-from bot.utuls.db_utils import save2db2
-from bot.utils.log_utils import log, logger
+from bot.utils.db_utils import save2db2
+from bot.utils.log_utils import log
 from bot.utils.msg_utils import send_rss
 from bot.utils.rss_utils import scheduler
 
 
 async def rss_monitor():
+    """
+    An asynchronous function to get rss links
+    """
     if not "RSS_CHAT":
         log(e="RSS_CHAT not added! Shutting down rss scheduler...")
         scheduler.shutdown(wait=False)
@@ -75,9 +77,6 @@ async def rss_monitor():
                 else:
                     feed_msg = f"<b>Name: </b><code>{item_title.replace('>', '').replace('<', '')}</code>\n\n"
                     feed_msg += f"<b>Link: </b><code>{url}</code>"
-                feed_msg += (
-                    f"\n<b>Tag: </b><code>{data['tag']}</code> <code>{user}</code>"
-                )
                 await send_rss(feed_msg)
                 feed_count += 1
                 await asyncio.sleep(1)
@@ -93,6 +92,3 @@ async def rss_monitor():
             continue
     if all_paused:
         scheduler.pause()
-
-
-def addJob(delay):

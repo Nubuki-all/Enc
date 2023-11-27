@@ -1,12 +1,14 @@
 from datetime import datetime, timedelta
-from tzlocal import get_localzone
+
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
+from tzlocal import get_localzone
 
 from bot.config import RSS_DELAY as rss_delay
 from bot.workers.auto.rss import rss_monitor
 
-def addjob(delay):
+
+def addjob(delay: int):
     scheduler.add_job(
         rss_monitor,
         trigger=IntervalTrigger(seconds=delay),
@@ -18,7 +20,8 @@ def addjob(delay):
         replace_existing=True,
     )
 
+
 scheduler = AsyncIOScheduler(timezone=str(get_localzone()))
 
-addJob(rss_delay)
+addjob(rss_delay)
 scheduler.start()

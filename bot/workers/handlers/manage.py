@@ -4,8 +4,16 @@ import itertools
 from aiohttp import ClientSession
 from feedparser import parse as feedparse
 
-from bot import caption_file, ffmpeg_file, filter_file, parse_file, rename_file, rss_dict_lock, thumb
-from bot.config import FCHANNEL, FFMPEG
+from bot import (
+    caption_file,
+    ffmpeg_file,
+    filter_file,
+    parse_file,
+    rename_file,
+    rss_dict_lock,
+    thumb,
+)
+from bot.config import FCHANNEL, FFMPEG, RSS_DELAY
 from bot.startup.before import DOCKER_DEPLOYMENT as d_docker
 from bot.startup.before import entime
 from bot.utils.bot_utils import RSS_DICT as rss_dict
@@ -41,6 +49,7 @@ from bot.utils.os_utils import (
     updater,
     x_or_66,
 )
+from bot.utils.rss_utils import addjob, scheduler
 from bot.workers.downloaders.dl_helpers import get_qbclient
 
 
@@ -701,7 +710,7 @@ async def rss_list(event, args, client):
             list_feed += f"<b>Inf:</b> <code>{data['inf']}</code>\n"
             list_feed += f"<b>Exf:</b> <code>{data['exf']}</code>\n"
             list_feed += f"<b>Paused:</b> <code>{data['paused']}</code>\n"
-          
+
     lmsg = await split_text(list_feed, "\n\n", True)
     for i, msg in zip(itertools.count(1), lmsg):
         msg = f"<b>Your subscriptions</b> #{i}" + msg
@@ -732,7 +741,7 @@ async def rss_get(event, args, client):
     try:
         msg = await event.reply(
             f"Getting the last <b>{count}</b> item(s) from {title}...",
-            parse_mode="html"
+            parse_mode="html",
         )
         pre_event = msg
         async with ClientSession(trust_env=True) as session:
@@ -748,22 +757,208 @@ async def rss_get(event, args, client):
             item_info += f"<b>Name: </b><code>{rss_d.entries[item_num]['title'].replace('>', '').replace('<', '')}</code>\n"
             item_info += f"<b>Link: </b><code>{link}</code>\n\n"
         for msg in await split_text(item_info, "\n\n"):
-            pre_event = await avoid_flood(
-                pre_event.reply,
-                msg,
-                parse_mode="html")
-            await asyncio.sleep(2)_
+            pre_event = await avoid_flood(pre_event.reply, item_info, parse_mode="html")
+            await asyncio.sleep(2)
         await avoid_flood(
             msg.edit,
             f"Here are the last <b>{count}</b> item(s) from {title}:",
-            parse_mode="html")
+            parse_mode="html",
+        )
     except IndexError as e:
         await avoid_flood(
-            msg.edit,
-            "Parse depth exceeded. Try again with a lower value."
+            msg.edit, "Parse depth exceeded. Try again with a lower value."
         )
     except Exception as e:
         await logger(Exception)
         await avoid_flood(event.reply, f"error! - `{str(e)}`")
-    
-    
+
+
+async def rss_editor(event, args, client):
+    """
+    Edit subscribed rss feeds!
+    simply pass the rss title with the following arguements:
+        Additional args:
+            -c (/command): command to prefix the rss link
+            -exf (what_to_exclude): keyword of words to fiter out*
+            -inf (what_to_include): keywords to include*
+            -p (no futher args) to pause the rss feed
+            -r (no futher args) to resume the rss feed
+
+        *format = "x or y|z"
+        where:
+            or - means either of both values
+            | - means and
+        Returns:
+            success message on successfully editing the rss configuration
+    """
+    if not user_is_owner(event.sender_id):
+        return
+    arg, args = get_args(
+        "-c",
+        "-exf",
+        "-inf",
+        ["-p", "store_true"],
+        ["-r", "store_true"],
+        to_parse=args,
+        get_unknown=True,
+    )
+    if not args:
+        return await event.reply(f"Please pass the title of the rss item to edit")
+    if not (data := rss_dict.get(args)):
+        return await event.reply(f"Could not find rss with title - {args}.")
+    if not (arg.c or arg.exf or arg.inf or arg.p or arg.r):
+        return await event.reply("Please supply at least one additional arguement.")
+    if arg.c:
+        if not arg.c.startswith("/"):
+            return await event.reply("'-c': arguement must start with '/'")
+        data["command"] = arg.c
+    if arg.exf:
+        exf_lists = []
+        if arg.exf.casefold() not in ("disable", "off"):
+            filters_list = arg.exf.split("|")
+            for x in filters_list:
+                y = x.split(" or ")
+                exf_lists.append(y)
+        data["exf"] = exf_lists
+    if arg.inf:
+        inf_lists = []
+        if arg.inf.casefold() not in ("disable", "off"):
+            filters_list = arg.inf.split("|")
+            for x in filters_list:
+                y = x.split(" or ")
+                inf_lists.append(y)
+        data["inf"] = inf_lists
+    if arg.p:
+        data["paused"] = True
+    elif arg.r:
+        data["paused"] = False
+        if scheduler.state == 2:
+            scheduler.resume()
+        elif not scheduler.running:
+            addjob(RSS_DELAY)
+            scheduler.start()
+    await save2db2(rss_dict, "rss")
+    await event.reply(
+        "Edited rss configurations for rss feed with title - `{args}` successfully!"
+    )
+
+
+async def del_rss(event, args, client):
+    """
+    Removes feed with designated title from list of subscribed feeds
+        Args:
+            TITLE (str): subscribed rss feed title to remove
+
+
+        Returns:
+            Success message on successfull removal
+            Not found message if TITLE passed was not found
+    """
+    if not user_is_owner(event.sender_id):
+        return
+    if not rss_dict.get(args):
+        return await event.reply(f"'{args}' not found in list of subscribed rss feeds!")
+    rss_dict.pop(args)
+    msg = f"Succesfully removed '{args}' from subscribed feeds"
+    await save2db2(rss_dict, "rss")
+    await event.reply(msg)
+    await logger(e=msg)
+
+
+async def rss_sub(event, args, client):
+    """
+    Subscribe rss feeds!
+    simply pass the rss link with the following arguements:
+        Args:
+            -t (TITLE): New Title of the subscribed rss feed [Required]
+            -c (/command): command to prefix the rss link [Required]
+            -exf (what_to_exclude): keyword of words to fiter out*
+            -inf (what_to_include): keywords to include*
+            -p (no futher args) to pause the rss feed
+            -r (no futher args) to resume the rss feed
+
+        *format = "x or y|z"
+        where:
+            or - means either of both values
+            | - means and
+        Returns:
+            success message on successfully editing the rss configuration
+    """
+    if not user_is_owner(event.sender_id):
+        return
+    arg, args = get_args(
+        "-c",
+        "-t" "-exf",
+        "-inf",
+        ["-p", "store_true"],
+        to_parse=args,
+        get_unknown=True,
+    )
+    if not (arg.c and arg.t and args):
+        return await event.reply(f"`{rss_sub.__doc__}`")
+    feed_link = args
+    title = arg.t
+    if rss_dict.get(title):
+        await avoid_flood(
+            event.reply,
+            f"This title {title} has already been subscribed!. Please choose another title!",
+        )
+    inf_lists = []
+    exf_lists = []
+    if arg.inf:
+        filters_list = arg.inf.split("|")
+        for x in filters_list:
+            y = x.split(" or ")
+            inf_lists.append(y)
+    if arg.exf:
+        filters_list = arg.exf.split("|")
+        for x in filters_list:
+            y = x.split(" or ")
+            exf_lists.append(y)
+    try:
+        async with ClientSession(trust_env=True) as session:
+            async with session.get(feed_link) as res:
+                html = await res.text()
+        rss_d = feedparse(html)
+        last_title = rss_d.entries[0]["title"]
+        msg += "<b>Subscribed!</b>"
+        msg += f"\n<b>Title: </b><code>{title}</code>\n<b>Feed Url: </b>{feed_link}"
+        msg += f"\n<b>latest record for </b>{rss_d.feed.title}:"
+        msg += f"\nName: <code>{last_title.replace('>', '').replace('<', '')}</code>"
+        try:
+            last_link = rss_d.entries[0]["links"][1]["href"]
+        except IndexError:
+            last_link = rss_d.entries[0]["link"]
+        msg += f"\nLink: <code>{last_link}</code>"
+        msg += f"\n<b>Command: </b><code>{arg.c}</code>"
+        msg += f"\n<b>Filters:-</b>\ninf: <code>{arg.inf}</code>\nexf: <code>{arg.exf}<code/>"
+        msg += f"\n<b>Paused:-</b><code>{arg.p}</code>"
+        async with rss_dict_lock:
+            rss_dict[title] = {
+                "link": feed_link,
+                "last_feed": last_link,
+                "last_title": last_title,
+                "inf": inf_lists,
+                "exf": exf_lists,
+                "paused": arg.p,
+                "command": arg.c,
+            }
+        await logger(
+            e=f"Rss Feed Added: id: {user_id} - title: {title} - link: {feed_link} - c: {cmd} - inf: {inf} - exf: {exf}"
+        )
+    except (IndexError, AttributeError) as e:
+        emsg = f"The link: {feed_link} doesn't seem to be a RSS feed or it's region-blocked!"
+        await avoid_flood(event.reply, emsg + "\nError: " + str(e))
+    except Exception as e:
+        await logger(Exception)
+        return await avoid_flood(event.reply, str(e))
+    await save2db2(rss_dict, "rss")
+    if msg:
+        await avoid_flood(event.reply, msg)
+    if arg.p:
+        return
+    if scheduler.state == 2:
+        scheduler.resume()
+    elif not scheduler.running:
+        addjob(RSS_DELAY)
+        scheduler.start()

@@ -1,4 +1,6 @@
 .env
+.pytest_cache
+.vscode
 *.jpg
 *.pkl
 *.png

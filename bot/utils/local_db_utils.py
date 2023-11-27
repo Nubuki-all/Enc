@@ -2,7 +2,7 @@ import pickle
 
 from bot import local_qdb, local_qdb2, local_rdb, local_udb
 
-from .bot_utils import BATCH_QUEUE, QUEUE, TEMP_USERS, RSS_DICT, list_to_str
+from .bot_utils import BATCH_QUEUE, QUEUE, RSS_DICT, TEMP_USERS, list_to_str
 from .os_utils import file_exists
 
 
@@ -38,7 +38,7 @@ def save2db_lcl():
 
 
 def save2db_lcl2(db):
-    if db == None:
+    if db is None:
         with open(local_udb, "wb") as file:
             pickle.dump(list_to_str(TEMP_USERS), file)
     elif db == "rss":

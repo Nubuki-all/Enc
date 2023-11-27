@@ -34,7 +34,7 @@ async def save2db(db="queue", retries=3):
             await asyncio.sleep(0.5)
 
 
-async def save2db2(data=False, db=None):
+async def save2db2(data: dict | str = False, db: str = None):
     if not database:
         if data is False or db == "rss":
             await save2db_lcl2(db)
@@ -58,7 +58,5 @@ async def save2db2(data=False, db=None):
         )
         return
     if db == "rss":
-        await sync_to_async(
-            rssdb.update_one, _filter, {"$set": _update}, upsert=True
-        )
+        await sync_to_async(rssdb.update_one, _filter, {"$set": _update}, upsert=True)
         return
