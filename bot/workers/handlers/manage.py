@@ -784,7 +784,7 @@ async def rss_get(event, args, client):
     if not arg.a:
         if len(args.split()) != 2:
             return await event.reply(f"`{rss_get.__doc__}`")
-        argrs, arg.a = args.split()
+        args, arg.a = args.split()
     if not arg.a.isdigit():
         return await event.reply("Second argument must be a digit.")
 
@@ -798,7 +798,7 @@ async def rss_get(event, args, client):
             f"Getting the last <b>{count}</b> item(s) from {title}...",
             parse_mode="html",
         )
-        pre_event = msg
+        pre_event = imsg
         async with ClientSession(trust_env=True) as session:
             async with session.get(data["link"]) as res:
                 html = await res.text()
@@ -812,7 +812,7 @@ async def rss_get(event, args, client):
             item_info += f"<b>Name: </b><code>{rss_d.entries[item_num]['title'].replace('>', '').replace('<', '')}</code>\n"
             item_info += f"<b>Link: </b><code>{link}</code>\n\n"
         for msg in await split_text(item_info, "\n\n"):
-            pre_event = await avoid_flood(pre_event.reply, item_info, parse_mode="html")
+            pre_event = await avoid_flood(pre_event.reply, msg, parse_mode="html")
             await asyncio.sleep(2)
         await avoid_flood(
             imsg.edit,
