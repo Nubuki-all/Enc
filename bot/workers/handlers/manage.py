@@ -781,8 +781,10 @@ async def rss_get(event, args, client):
         to_parse=args,
         get_unknown=True,
     )
-    if not args.a:
-        return await event.reply(f"`{rss_get.__doc__}`")
+    if not arg.a:
+        if len(args.split()) != 2:
+            return await event.reply(f"`{rss_get.__doc__}`")
+        arg.a = args.split()[1]
     if not arg.a.isdigit():
         return await event.reply("Second argument must be a digit.")
 
