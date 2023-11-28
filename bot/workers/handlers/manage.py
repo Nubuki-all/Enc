@@ -13,7 +13,7 @@ from bot import (
     rss_dict_lock,
     thumb,
 )
-from bot.config import FCHANNEL, FFMPEG
+from bot.config import FCHANNEL, FFMPEG, RSS_DELAY
 from bot.startup.before import DOCKER_DEPLOYMENT as d_docker
 from bot.startup.before import entime
 from bot.utils.bot_utils import RSS_DICT as rss_dict

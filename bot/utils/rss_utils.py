@@ -9,9 +9,9 @@ from bot.config import CMD_SUFFIX as suffix
 from bot.config import RSS_CHAT as rss_chat
 from bot.config import RSS_DELAY as rss_delay
 from bot.config import RSS_DIRECT as rss_direct
-from bot.db_utils import save2db2
-from bot.log_utils import log
-from bot.msg_utils import event_handler, send_rss
+from .db_utils import save2db2
+from .log_utils import log
+from .msg_utils import event_handler, send_rss
 from bot.workers.auto.schedule import addjob, scheduler
 from bot.workers.handlers.queue import enleech, enleech2
 
