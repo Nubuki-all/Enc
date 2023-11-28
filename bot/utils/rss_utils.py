@@ -4,14 +4,14 @@ from aiohttp import ClientSession
 from feedparser import parse as feedparse
 
 from bot import pyro, rss_dict_lock
+from bot.bot_utils import RSS_DICT as rss_dict
 from bot.config import CMD_SUFFIX as suffix
 from bot.config import RSS_CHAT as rss_chat
 from bot.config import RSS_DELAY as rss_delay
 from bot.config import RSS_DIRECT as rss_direct
-from bot .bot_utils import RSS_DICT as rss_dict
-from bot .db_utils import save2db2
-from bot .log_utils import log
-from bot .msg_utils import event_handler, send_rss
+from bot.db_utils import save2db2
+from bot.log_utils import log
+from bot.msg_utils import event_handler, send_rss
 from bot.workers.auto.schedule import addjob, scheduler
 from bot.workers.handlers.queue import enleech, enleech2
 
@@ -125,8 +125,10 @@ async def fake_event(event):
         asyncio.create_task(event_handler(event, enleech2, pyro))
     await asyncio.sleep(3)
 
+
 def schedule_rss():
     addjob(rss_delay, rss_monitor)
+
 
 schedule_rss()
 scheduler.start()
