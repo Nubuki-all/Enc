@@ -47,6 +47,7 @@ async def rss_monitor():
             if data["last_feed"] == last_link or data["last_title"] == last_title:
                 continue
             feed_count = 0
+            feed_list = []
             while True:
                 try:
                     item_title = rss_d.entries[feed_count]["title"]
@@ -79,10 +80,12 @@ async def rss_monitor():
                 feed_msg = " ".join(cmd)
                 if not feed_msg.startswith("/"):
                     feed_msg = f"/{feed_msg}"
+                feed_list.append(feed_msg)
+                feed_count += 1
+            for feed_msg in reversed(feed_list):
                 event = await send_rss(feed_msg)
                 if event and rss_direct:
                     await fake_event(event)
-                feed_count += 1
                 await asyncio.sleep(1)
             async with rss_dict_lock:
                 rss_dict[title].update(

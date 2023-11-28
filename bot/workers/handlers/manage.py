@@ -784,7 +784,7 @@ async def rss_get(event, args, client):
     if not arg.a:
         if len(args.split()) != 2:
             return await event.reply(f"`{rss_get.__doc__}`")
-        arg.a = args.split()[1]
+        argrs, arg.a = args.split()
     if not arg.a.isdigit():
         return await event.reply("Second argument must be a digit.")
 
@@ -794,7 +794,7 @@ async def rss_get(event, args, client):
     if not (data and count > 0):
         return await event.reply(f"`{rss_get.__doc__}`")
     try:
-        msg = await event.reply(
+        imsg = await event.reply(
             f"Getting the last <b>{count}</b> item(s) from {title}...",
             parse_mode="html",
         )
@@ -815,13 +815,13 @@ async def rss_get(event, args, client):
             pre_event = await avoid_flood(pre_event.reply, item_info, parse_mode="html")
             await asyncio.sleep(2)
         await avoid_flood(
-            msg.edit,
+            imsg.edit,
             f"Here are the last <b>{count}</b> item(s) from {title}:",
             parse_mode="html",
         )
     except IndexError:
         await avoid_flood(
-            msg.edit, "Parse depth exceeded. Try again with a lower value."
+            imsg.edit, "Parse depth exceeded. Try again with a lower value."
         )
     except Exception as e:
         await logger(Exception)
@@ -895,7 +895,7 @@ async def rss_editor(event, args, client):
             scheduler.start()
     await save2db2(rss_dict, "rss")
     await event.reply(
-        "Edited rss configurations for rss feed with title - `{args}` successfully!"
+        f"Edited rss configurations for rss feed with title - `{args}` successfully!"
     )
 
 
