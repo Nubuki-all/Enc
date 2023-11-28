@@ -12,7 +12,7 @@ from bot.utils.bot_utils import RSS_DICT as rss_dict
 from bot.utils.db_utils import save2db2
 from bot.utils.log_utils import log
 from bot.utils.msg_utils import event_handler, send_rss
-from bot.utils.rss_utils import scheduler
+from bot.utils.rss_utils import addjob, scheduler
 from bot.workers.handlers.queue import enleech, enleech2
 
 
