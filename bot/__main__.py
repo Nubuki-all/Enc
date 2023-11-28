@@ -40,6 +40,7 @@ from .workers.handlers.manage import (
     reffmpeg,
     restart,
     rmfilter,
+    rss_handler,
     save_thumb,
     update2,
     v_auto_rename,
@@ -102,7 +103,7 @@ loop.run_until_complete(get_me())
 LOGS.info(f"@{me.username} is ready!")
 
 
-def command(commands, prefixes=["/"]):
+def command(commands: list, prefixes: list = ["/"]):
     while len(commands) < len(prefixes):
         commands.append(commands[-1])
     pattern = ""
@@ -227,6 +228,11 @@ async def _(e):
 @tele.on(events.NewMessage(pattern=command(["lock", "pause"])))
 async def _(e):
     await event_handler(e, pause)
+
+
+@tele.on(events.NewMessage(pattern=command(["rss"])))
+async def _(e):
+    await event_handler(e, rss_handler, require_args=True)
 
 
 ######## Callbacks #########

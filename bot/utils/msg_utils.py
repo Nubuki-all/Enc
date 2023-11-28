@@ -150,9 +150,9 @@ async def enpause(message):
             await logger(Exception)
 
 
-async def send_rss(msg):
+async def send_rss(msg: str):
     try:
-        await avoid_flood(tele.send_message, RSS_CHAT, msg)
+        return await avoid_flood(tele.send_message, RSS_CHAT, msg)
     except Exception:
         await logger(Exception)
 
@@ -434,14 +434,28 @@ async def enquoter(msg, rply):
 
 
 async def event_handler(
-    event, function, client=None, require_args=False, disable_help=False, split_args=" "
+    event,
+    function,
+    client=None,
+    require_args=False,
+    disable_help=False,
+    split_args=" ",
+    default_args: str = False,
+    use_default_args=False,
 ):
     args = (
         event.text.split(split_args, maxsplit=1)[1].strip()
         if len(event.text.split()) > 1
         else None
     )
-    if (require_args and not args) or (args and args.casefold() in ("--help", "-h")):
+    args = default_args if use_default_args and default_args is not False else args
+    help_tuple = ("--help", "-h")
+    if (
+        (require_args and not args)
+        or (args and args.casefold() in help_tuple)
+        or (require_args and not (default_args or default_args is False))
+        or (default_args in help_tuple)
+    ):
         if disable_help:
             return
         return await reply_message(event, f"`{function.__doc__}`")

@@ -35,6 +35,7 @@ from bot.utils.msg_utils import (
     avoid_flood,
     bc_msg,
     enquoter,
+    event_handler,
     get_args,
     msg_sleep_delete,
     try_delete,
@@ -696,7 +697,54 @@ async def fc_forward(msg, args, client):
         await logger(Exception)
 
 
+async def rss_handler(event, args, client):
+    """
+    Base command for rss:
+        *Arguments:
+            -d (TITLE): To delete already an subscribed feed.
+            -e (TITLE): To edit configurations for already subscribed rss feed.
+            -g (TITLE, AMOUNT): To get previous feeds for given TITLE. (Amount corresponds to AMOUNT)
+            -l (NO REQUIRED ARGS) To list subscribed feeds.
+            -s (TITLE, LINK): To subscribe an rss feed.
+
+        for additional help send the above arguments with -h/--help or without additional params.
+        *listed in the order priority.
+    """
+    if not user_is_owner(event.sender_id):
+        return await try_delete(event)
+    arg, args = get_args(
+        ["-d", "store_true"],
+        ["-e", "store_true"],
+        ["-g", "store_true"],
+        ["-l", "store_true"],
+        ["-s", "store_true"],
+        to_parse=args,
+        get_unknown=True,
+    )
+    if not (arg.d or arg.e or arg.g or arg.l or arg.s):
+        return await avoid_flood(event.reply, f"`{rss_handler.__doc__}`")
+    if arg.d:
+        await event_handler(
+            event, del_rss, client, True, default_args=args, use_default_args=True
+        )
+    elif arg.e:
+        await event_handler(event, rss_editor, client, True, default_args=args)
+    elif arg.g:
+        await event_handler(event, rss_get, client, True, default_args=args)
+    elif arg.l:
+        await event_handler(event, rss_list, client, default_args=args)
+    elif arg.s:
+        await event_handler(event, rss_sub, client, True, default_args=args)
+
+
 async def rss_list(event, args, client):
+    """
+    Get list of subscribed rss feeds
+        Args:
+            None.
+        Returns:
+            List of subscribed rss feeds.
+    """
     if not user_is_owner(event.sender_id):
         return
     if not rss_dict:
@@ -714,7 +762,7 @@ async def rss_list(event, args, client):
     lmsg = await split_text(list_feed, "\n\n", True)
     for i, msg in zip(itertools.count(1), lmsg):
         msg = f"<b>Your subscriptions</b> #{i}" + msg
-        pre_event = await pre_event.reply(msg, parse_mode="html")
+        pre_event = await avoid_flood(pre_event.reply, msg, parse_mode="html")
         await asyncio.sleep(1)
 
 
@@ -723,18 +771,23 @@ async def rss_get(event, args, client):
     Get the links of titles in rss:
     Arguments:
         [Title] - Title used in subscribing rss
-        [Amount] - Amount of links to grab
+        -a [Amount] - Amount of links to grab
     """
     if not user_is_owner(event.sender_id):
         return
-    if args.split() < 2:
+    arg, args = get_args(
+        "-a",
+        "-g",
+        to_parse=args,
+        get_unknown=True,
+    )
+    if not args.a:
         return await event.reply(f"`{rss_get.__doc__}`")
-    args = args.split(maxsplit=1)
-    if not args[1].isdigit():
+    if not arg.a.isdigit():
         return await event.reply("Second argument must be a digit.")
 
-    title = args[0]
-    count = args[1]
+    title = args
+    count = int(arg.a)
     data = rss_dict.get(title)
     if not (data and count > 0):
         return await event.reply(f"`{rss_get.__doc__}`")
@@ -795,6 +848,7 @@ async def rss_editor(event, args, client):
         return
     arg, args = get_args(
         "-c",
+        "-e",
         "-exf",
         "-inf",
         ["-p", "store_true"],
@@ -888,7 +942,9 @@ async def rss_sub(event, args, client):
         return
     arg, args = get_args(
         "-c",
-        "-t" "-exf",
+        "-t",
+        "-s",
+        "-exf",
         "-inf",
         ["-p", "store_true"],
         to_parse=args,
@@ -944,7 +1000,13 @@ async def rss_sub(event, args, client):
                 "command": arg.c,
             }
         await logger(
-            e=f"Rss Feed Added: id: {user_id} - title: {title} - link: {feed_link} - c: {cmd} - inf: {inf} - exf: {exf}"
+            e="Rss Feed Added:"
+            f"\nby:- {event.sender_id}"
+            f"\ntitle:- {title}"
+            f"\nlink:- {feed_link}"
+            f"\ncommand:- {arg.c}"
+            f"\ninclude filter:- {arg.inf}"
+            f"\nexclude filter:- {arg.exf}"
         )
     except (IndexError, AttributeError) as e:
         emsg = f"The link: {feed_link} doesn't seem to be a RSS feed or it's region-blocked!"
@@ -954,7 +1016,7 @@ async def rss_sub(event, args, client):
         return await avoid_flood(event.reply, str(e))
     await save2db2(rss_dict, "rss")
     if msg:
-        await avoid_flood(event.reply, msg)
+        await avoid_flood(event.reply, msg, parse_mode="html")
     if arg.p:
         return
     if scheduler.state == 2:

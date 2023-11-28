@@ -61,6 +61,7 @@ try:
     QBIT_TIMEOUT = config("QBIT_TIMEOUT", default=20, cast=int)
     RSS_CHAT = config("RSS_CHAT", default=-1001339167595, cast=int)
     RSS_DELAY = config("RSS_DELAY", default=60, cast=int)
+    RSS_DIRECT = config("RSS_DIRECT", default=False, cast=bool)
     RELEASER = config("RELEASER", default="A-M|ANi-MiNE")
     TELEGRAPH_API = config("TELEGRAPH_API", default="https://api.telegra.ph")
     TELEGRAPH_AUTHOR = config("TELEGRAPH_AUTHOR", default=None)

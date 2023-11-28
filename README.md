@@ -25,7 +25,7 @@ Optional Variables | Explanation
 `FCHANNEL` `FCHANNEL_STATS` | Input Channel id where **only** the output video will get forwarded. For the 2nd variable input message id of a message in channel to be used as live status for encodes.
 `LOGS_IN_CHANNEL` type=bool | Get error logs in log channel. Turned off by default, set to True to turn on.
 `ALWAYS_DEPLOY_LATEST` type=bool | When starting bot always pull latest code from upstream repo or default repo if none is given 
-`CMD_SUFFIX` type=int | Bot will only listen to commands ending with the given number (only numbers or error)
+`CMD_SUFFIX` | Bot will only listen to commands ending with the given value
 `TELEGRAPH_API` | Api to use instead of api.telegra.ph when posting mediainfo
 `LOCK_ON_STARTUP` | Pause bot on startup untill pause off is used.
 `FS_THRESHOLD` | Threshold for bot to sleep on floodwait in seconds

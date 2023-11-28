@@ -14,7 +14,7 @@ from .bot_utils import (
     sdict,
 )
 from .db_utils import save2db
-from .log_utils import logger
+from .log_utils import log, logger
 from .msg_utils import edit_message
 
 STATUS_START = 0
@@ -130,7 +130,9 @@ async def preview_actions(event):
         await logger(Exception)
 
 
-async def batch_preview(event, torrent, chat_id, e_id, v, f, reuse=False, user=None):
+async def batch_preview(
+    event, torrent, chat_id, e_id, v, f, reuse=False, user=None, select_all=False
+):
     if BATCH_ING:
         await event.reply("`Cannot edit two batches simultaneously.`")
         return
@@ -144,7 +146,8 @@ async def batch_preview(event, torrent, chat_id, e_id, v, f, reuse=False, user=N
         preview_list.extend(torrent.file_list)
         if not reuse:
             for file, no in zip(torrent.file_list, itertools.count()):
-                preview_queue.update({no: None if is_video_file(file) else 3})
+                state = 1 if select_all else None
+                preview_queue.update({no: state if is_video_file(file) else 3})
         else:
             batch_db = get_bqueue().get((chat_id, e_id))
             if not batch_db:
@@ -152,6 +155,9 @@ async def batch_preview(event, torrent, chat_id, e_id, v, f, reuse=False, user=N
             preview_queue.update(batch_db[1])
         await asyncio.sleep(3)
         while True:
+            if select_all:
+                BATCH_ING.clear()
+                break
             if reuse and not get_queue().get((chat_id, e_id)):
                 await edit_message(
                     event2, "`Batch no longer present in queue, exiting…`"

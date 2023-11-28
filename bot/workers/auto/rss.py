@@ -3,12 +3,15 @@ import asyncio
 from aiohttp import ClientSession
 from feedparser import parse as feedparse
 
-from bot import rss_dict_lock
+from bot import pyro, rss_dict_lock
+from bot.config import CMD_SUFFIX as suffix
+from bot.config import RSS_DIRECT as rss_direct
 from bot.utils.bot_utils import RSS_DICT as rss_dict
 from bot.utils.db_utils import save2db2
 from bot.utils.log_utils import log
-from bot.utils.msg_utils import send_rss
+from bot.utils.msg_utils import event_handler, send_rss
 from bot.utils.rss_utils import scheduler
+from bot.workers.handlers.queue import enleech, enleech2
 
 
 async def rss_monitor():
@@ -68,16 +71,14 @@ async def rss_monitor():
                         break
                 if not parse:
                     continue
-                if command := data["command"]:
-                    cmd = command.split(maxsplit=1)
-                    cmd.insert(1, url)
-                    feed_msg = " ".join(cmd)
-                    if not feed_msg.startswith("/"):
-                        feed_msg = f"/{feed_msg}"
-                else:
-                    feed_msg = f"<b>Name: </b><code>{item_title.replace('>', '').replace('<', '')}</code>\n\n"
-                    feed_msg += f"<b>Link: </b><code>{url}</code>"
-                await send_rss(feed_msg)
+                cmd = data["command"].split(maxsplit=1)
+                cmd.insert(1, url)
+                feed_msg = " ".join(cmd)
+                if not feed_msg.startswith("/"):
+                    feed_msg = f"/{feed_msg}"
+                event = await send_rss(feed_msg)
+                if event and rss_direct:
+                    await fake_event(event)
                 feed_count += 1
                 await asyncio.sleep(1)
             async with rss_dict_lock:
@@ -92,3 +93,31 @@ async def rss_monitor():
             continue
     if all_paused:
         scheduler.pause()
+
+
+def check_cmds(command: str, *matches: str):
+    def check_cmd(command: str, match: str):
+        match += suffix
+        c = command.split(match, maxsplit=1)
+        return len(c) == 2 and not c[1]
+
+    for match in matches:
+        if check_cmd(command, match):
+            return True
+    return False
+
+
+async def fake_event(event):
+    """
+    Passes the rss message to the bot as a new event.
+        Args:
+            event (telethon.events): _description_
+    """
+    command = event.text.split(maxsplit=1)[0]
+    if not check_cmds(command, "/l", "/ql", "/qbleech", "/leech"):
+        return
+    if check_cmds(command, "/l", "/leech"):
+        asyncio.create_task(event_handler(event, enleech, pyro))
+    elif check_cmds(command, "/ql", "/qbleech"):
+        asyncio.create_task(event_handler(event, enleech2, pyro))
+    await asyncio.sleep(3)
