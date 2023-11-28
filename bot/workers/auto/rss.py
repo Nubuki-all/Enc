@@ -5,6 +5,8 @@ from feedparser import parse as feedparse
 
 from bot import pyro, rss_dict_lock
 from bot.config import CMD_SUFFIX as suffix
+from bot.config import RSS_CHAT as rss_chat
+from bot.config import RSS_DELAY as rss_delay
 from bot.config import RSS_DIRECT as rss_direct
 from bot.utils.bot_utils import RSS_DICT as rss_dict
 from bot.utils.db_utils import save2db2
@@ -18,7 +20,7 @@ async def rss_monitor():
     """
     An asynchronous function to get rss links
     """
-    if not "RSS_CHAT":
+    if not rss_chat:
         log(e="RSS_CHAT not added! Shutting down rss scheduler...")
         scheduler.shutdown(wait=False)
         return
@@ -121,3 +123,7 @@ async def fake_event(event):
     elif check_cmds(command, "/ql", "/qbleech"):
         asyncio.create_task(event_handler(event, enleech2, pyro))
     await asyncio.sleep(3)
+
+
+addjob(rss_delay, rss_monitor)
+scheduler.start()

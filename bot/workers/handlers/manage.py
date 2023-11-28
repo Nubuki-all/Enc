@@ -51,6 +51,7 @@ from bot.utils.os_utils import (
     x_or_66,
 )
 from bot.utils.rss_utils import addjob, scheduler
+from bot.workers.auto.rss import rss_monitor
 from bot.workers.downloaders.dl_helpers import get_qbclient
 
 
@@ -889,7 +890,7 @@ async def rss_editor(event, args, client):
         if scheduler.state == 2:
             scheduler.resume()
         elif not scheduler.running:
-            addjob(RSS_DELAY)
+            addjob(RSS_DELAY, rss_monitor)
             scheduler.start()
     await save2db2(rss_dict, "rss")
     await event.reply(
@@ -1022,5 +1023,5 @@ async def rss_sub(event, args, client):
     if scheduler.state == 2:
         scheduler.resume()
     elif not scheduler.running:
-        addjob(RSS_DELAY)
+        addjob(RSS_DELAY, rss_monitor)
         scheduler.start()
