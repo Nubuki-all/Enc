@@ -755,11 +755,11 @@ async def rss_list(event, args, client):
         for i, (title, data) in zip(itertools.count(1), list(rss_dict.items())):
             list_feed += f"\n\n{i}.<b>Title:</b> <code>{title}</code>\n<b>Feed Url: </b><code>{data['link']}</code>\n"
             list_feed += f"<b>Command:</b> <code>{data['command']}</code>\n"
-            list_feed += f"<b>Inf:</b> <code>{data['inf']}</code>\n"
-            list_feed += f"<b>Exf:</b> <code>{data['exf']}</code>\n"
-            list_feed += f"<b>Paused:</b> <code>{data['paused']}</code>\n"
+            list_feed += f"<b>Include filter:</b> <code>{data['inf'] or None}</code>\n"
+            list_feed += f"<b>Exclude filter:</b> <code>{data['exf'] or None}</code>\n"
+            list_feed += f"<b>Paused:</b> <code>{data['paused']}</code>"
 
-    lmsg = await split_text(list_feed, "\n\n", True)
+    lmsg = await split_text(list_feed.strip("\n"), "\n\n", True)
     for i, msg in zip(itertools.count(1), lmsg):
         msg = f"<b>Your subscriptions</b> #{i}" + msg
         pre_event = await avoid_flood(pre_event.reply, msg, parse_mode="html")
