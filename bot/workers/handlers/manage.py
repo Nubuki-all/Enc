@@ -778,7 +778,7 @@ async def rss_get(event, args, client):
         return
     arg, args = get_args(
         "-a",
-        "-g",
+        ["-g", "store_true"],
         to_parse=args,
         get_unknown=True,
     )
@@ -849,9 +849,9 @@ async def rss_editor(event, args, client):
         return
     arg, args = get_args(
         "-c",
-        "-e",
         "-exf",
         "-inf",
+        ["-e", "store_true"],
         ["-p", "store_true"],
         ["-r", "store_true"],
         to_parse=args,
@@ -944,10 +944,10 @@ async def rss_sub(event, args, client):
     arg, args = get_args(
         "-c",
         "-t",
-        "-s",
         "-exf",
         "-inf",
         ["-p", "store_true"],
+        ["-s", "store_true"],
         to_parse=args,
         get_unknown=True,
     )
