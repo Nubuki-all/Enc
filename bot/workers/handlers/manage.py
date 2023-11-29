@@ -1,7 +1,6 @@
 import asyncio
 import itertools
 
-from aiohttp import ClientSession
 from feedparser import parse as feedparse
 
 from bot import (
@@ -20,6 +19,7 @@ from bot.utils.bot_utils import RSS_DICT as rss_dict
 from bot.utils.bot_utils import (
     get_aria2,
     get_bqueue,
+    get_html,
     get_pause_status,
     get_queue,
     get_var,
@@ -799,9 +799,7 @@ async def rss_get(event, args, client):
             parse_mode="html",
         )
         pre_event = imsg
-        async with ClientSession(trust_env=True) as session:
-            async with session.get(data["link"]) as res:
-                html = await res.text()
+        html = await get_html(data["link"])
         rss_d = feedparse(html)
         item_info = ""
         for item_num in range(count):
@@ -975,9 +973,7 @@ async def rss_sub(event, args, client):
             y = x.split(" or ")
             exf_lists.append(y)
     try:
-        async with ClientSession(trust_env=True) as session:
-            async with session.get(feed_link) as res:
-                html = await res.text()
+        html = await get_html(feed_link)
         rss_d = feedparse(html)
         last_title = rss_d.entries[0]["title"]
         msg += "<b>Subscribed!</b>"

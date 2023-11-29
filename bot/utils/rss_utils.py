@@ -1,6 +1,5 @@
 import asyncio
 
-from aiohttp import ClientSession
 from feedparser import parse as feedparse
 
 from bot import pyro, rss_dict_lock
@@ -12,6 +11,7 @@ from bot.workers.auto.schedule import addjob, scheduler
 from bot.workers.handlers.queue import enleech, enleech2
 
 from .bot_utils import RSS_DICT as rss_dict
+from .bot_utils import get_html
 from .db_utils import save2db2
 from .log_utils import log
 from .msg_utils import event_handler, send_rss
@@ -33,9 +33,7 @@ async def rss_monitor():
         try:
             if data["paused"]:
                 continue
-            async with ClientSession(trust_env=True) as session:
-                async with session.get(data["link"]) as res:
-                    html = await res.text()
+            html = await get_html(data["link"])
             rss_d = feedparse(html)
             try:
                 last_link = rss_d.entries[0]["links"][1]["href"]
