@@ -100,7 +100,7 @@ if DATABASE_URL:
 
 
 else:
-    queuedb = ffmpegdb = filterdb = userdb = None
+    queuedb = ffmpegdb = filterdb = rssdb =userdb = None
 
     load_local_db()
 
