@@ -5,7 +5,19 @@ from functools import partial
 from pathlib import Path
 from re import match as re_match
 
-from bot import asyncio, caption_file, dt, filter_file, itertools
+import requests
+
+from bot import (
+    asyncio,
+    caption_file,
+    dt,
+    filter_file,
+    itertools,
+    tele,
+    tgp_author,
+    tgp_author_url,
+    tgp_client,
+)
 
 
 class Var_list:
@@ -32,6 +44,7 @@ class Var_list:
     PREVIEW_BATCH = {}
     BATCH_QUEUE = {}
     E_CANCEL = {}
+    RSS_DICT = {}
     QUEUE = {}
     OK = {}
 
@@ -246,7 +259,7 @@ def gfn(fn):
     return ".".join([fn.__module__, fn.__qualname__])
 
 
-def string_escape(s, encoding="utf-8"):
+def string_escape(s: str, encoding="utf-8"):
     "unescape escaped characters in string"
     # https://stackoverflow.com/questions/14820429/how-do-i-decodestring-escape-in-python-3
     return (
@@ -262,7 +275,7 @@ def string_escape(s, encoding="utf-8"):
     )
 
 
-def list_to_str(lst, sep=" ", start=None, md=True):
+def list_to_str(lst: list, sep=" ", start: int = None, md=True):
     string = str()
     t_start = start if isinstance(start, int) else 1
     for i, count in zip(lst, itertools.count(t_start)):
@@ -275,7 +288,7 @@ def list_to_str(lst, sep=" ", start=None, md=True):
     return string.rstrip(sep)
 
 
-def txt_to_str(txt):
+def txt_to_str(txt: str):
     if Path(txt).is_file():
         with open(txt, "r") as file:
             string = file.read().strip()
@@ -285,7 +298,7 @@ def txt_to_str(txt):
     return string
 
 
-def is_video_file(filename):
+def is_video_file(filename: str):
     video_file_extensions = (
         ".3g2",
         ".3gp",
@@ -320,7 +333,7 @@ def is_video_file(filename):
         return True
 
 
-def get_readable_file_size(size_in_bytes) -> str:
+def get_readable_file_size(size_in_bytes: int) -> str:
     if size_in_bytes is None:
         return "0B"
     index = 0
@@ -331,6 +344,32 @@ def get_readable_file_size(size_in_bytes) -> str:
         return f"{round(size_in_bytes, 2)}{SIZE_UNITS[index]}"
     except IndexError:
         return "File too large"
+
+
+async def post_to_tgph(title, out):
+    author = tgp_author or ((await tele.get_me()).first_name)
+    author_url = (
+        f"https://t.me/{((await tele.get_me()).username)}"
+        if not (tgp_author_url and is_url(tgp_author_url))
+        else tgp_author_url
+    )
+
+    retries = 10
+    while retries:
+        try:
+            page = await sync_to_async(
+                tgp_client.post,
+                title=title,
+                author=author,
+                author_url=author_url,
+                text=out,
+            )
+            return page
+        except (requests.exceptions.ConnectionError, ConnectionError) as e:
+            retries -= 1
+            if not retries:
+                raise e
+            await asyncio.sleep(1)
 
 
 def get_filename(message):
@@ -350,12 +389,12 @@ def get_filename(message):
     return file_name
 
 
-async def split_text(text):
+async def split_text(text: str, split="\n", pre=False):
     current_list = ""
     list_size = 4000
     message_list = []
-    for string in text.split("\n"):
-        line = string + "\n"
+    for string in text.split(split):
+        line = string + split if not pre else split + string
         if len(current_list) + len(line) <= list_size:
             current_list += line
         else:
@@ -381,7 +420,7 @@ def code(data, infile=None, outfile=None, user=None, stime=None, index=None):
 # return str(len(OK) - 1)
 
 
-def decode(key, pop=False):
+def decode(key: str | int, pop=False):
     key = int(key) if isinstance(key, str) and key.isdigit() else key
     if pop:
         return OK.pop(key)
@@ -454,7 +493,7 @@ def ts(milliseconds: int) -> str:
     return tmp[:-2]
 
 
-def hbs(size):
+def hbs(size: int):
     if not size:
         return ""
     power = 2**10
@@ -466,7 +505,7 @@ def hbs(size):
     return str(round(size, 2)) + " " + dict_power_n[raised_to_pow] + "B"
 
 
-async def crc32(filename, chunksize=65536):
+async def crc32(filename: str, chunksize=65536):
     """Compute the CRC-32 checksum of the contents of the given filename"""
     with open(filename, "rb") as f:
         checksum = 0
@@ -497,7 +536,9 @@ async def get_codec():
     return __out.strip()
 
 
-async def auto_rename(parsed_name, original_name, refunc, caption=False):
+async def auto_rename(
+    parsed_name: str, original_name: str, refunc: str, caption=False
+) -> str:
     """
     Auto-rename file/caption name, if it matches given string or list of strings seperated by newlines
     """

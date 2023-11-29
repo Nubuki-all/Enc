@@ -2,7 +2,7 @@ from pymongo.errors import ServerSelectionTimeoutError
 
 from bot import asyncio, bot_id
 from bot.config import DATABASE_URL as database
-from bot.startup.before import ffmpegdb, filterdb, pickle, queuedb, userdb
+from bot.startup.before import ffmpegdb, filterdb, pickle, queuedb, rssdb, userdb
 
 from .bot_utils import BATCH_QUEUE, QUEUE, TEMP_USERS, list_to_str, sync_to_async
 from .local_db_utils import save2db_lcl, save2db_lcl2
@@ -34,9 +34,11 @@ async def save2db(db="queue", retries=3):
             await asyncio.sleep(0.5)
 
 
-async def save2db2(data=False, db=None):
+async def save2db2(data: dict | str = False, db: str = None):
     if not database:
-        return save2db_lcl2() if data is False else None
+        if data is False or db == "rss":
+            await save2db_lcl2(db)
+        return
     if data is False:
         tusers = list_to_str(TEMP_USERS)
         data = pickle.dumps(tusers)
@@ -54,4 +56,7 @@ async def save2db2(data=False, db=None):
         await sync_to_async(
             filterdb.update_one, _filter, {"$set": _update}, upsert=True
         )
+        return
+    if db == "rss":
+        await sync_to_async(rssdb.update_one, _filter, {"$set": _update}, upsert=True)
         return

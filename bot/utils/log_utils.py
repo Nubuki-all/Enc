@@ -4,12 +4,12 @@ from bot import LOG_CHANNEL, LOGS, LOGS_IN_CHANNEL, tele
 from bot.fun.emojis import enmoji
 
 
-def log(Exception=None, e=None, critical=False):
+def log(Exception: Exception = None, e: str = None, critical=False):
     trace = e or traceback.format_exc()
     LOGS.info(trace) if not critical else LOGS.critical(trace)
 
 
-async def channel_log(Exception, e):
+async def channel_log(Exception: Exception, e: str):
     if LOG_CHANNEL and LOGS_IN_CHANNEL:
         try:
             error = e or traceback.format_exc()
@@ -23,12 +23,6 @@ async def channel_log(Exception, e):
             LOGS.info(traceback.format_exc())
 
 
-async def logger(Exception=None, e=None, critical=False):
+async def logger(Exception: Exception = None, e: str = None, critical=False):
     log(Exception, e, critical)
     await channel_log(Exception, e)
-
-
-async def getlogs(event, args, client):
-    if str(event.sender_id) not in OWNER and event.sender_id != DEV:
-        return await event.delete()
-    await event.client.send_file(event.chat_id, file=LOG_FILE_NAME, force_document=True)

@@ -12,7 +12,7 @@ from bot import (
     time,
 )
 from bot.fun.emojis import enmoji
-from bot.utils.ani_utils import custcap, dynamicthumb, parse
+from bot.utils.ani_utils import airing_anim, anime_arch, custcap, dynamicthumb, parse
 from bot.utils.bot_utils import (
     code,
     get_f,
@@ -26,6 +26,7 @@ from bot.utils.bot_utils import (
 )
 from bot.utils.log_utils import logger
 from bot.utils.msg_utils import (
+    avoid_flood,
     edit_message,
     get_args,
     get_message_from_link,
@@ -833,3 +834,49 @@ async def en_list(event, args, client):
     except Exception as e:
         await logger(Exception)
         await event.reply("An error occurred:\n" f"- `{str(e)}`")
+
+
+async def en_airing(event, args, client):
+    """
+    Get airing schedule for anime.
+    To use simply pass the anime title as argument
+    """
+    if not user_is_allowed(event.sender_id):
+        return
+    try:
+        img, out = await airing_anim(args)
+        if len(out) > 1024:
+            await avoid_flood(event.reply, out)
+            return
+        await avoid_flood(event.reply, out, file=img)
+    except Exception as e:
+        await logger(Exception)
+        await avoid_flood(event.reply, f"Error - `{e}`")
+    finally:
+        await try_delete(event)
+
+
+async def en_anime(event, args, client):
+    """
+    Fetch anime info from Anilist
+
+    Arguments:
+        anime_title - Title of anime
+                or:
+        anime_id (-m) Add the -m flag if you're searching with a mal_id
+    """
+    if not user_is_allowed(event.sender_id):
+        return
+    try:
+        arg, args = get_args(
+            ["-m", "store_true"],
+            to_parse=args,
+            get_unknown=True,
+        )
+        img, out = await anime_arch(args, arg)
+        await avoid_flood(event.reply, out, file=img)
+    except Exception as e:
+        await logger(Exception)
+        await avoid_flood(event.reply, f"Error - `{e}`")
+    finally:
+        await try_delete(event)

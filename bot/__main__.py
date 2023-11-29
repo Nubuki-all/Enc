@@ -40,6 +40,7 @@ from .workers.handlers.manage import (
     reffmpeg,
     restart,
     rmfilter,
+    rss_handler,
     save_thumb,
     update2,
     v_auto_rename,
@@ -57,6 +58,8 @@ from .workers.handlers.queue import (
     pencode,
 )
 from .workers.handlers.rebut import (
+    en_airing,
+    en_anime,
     en_download,
     en_list,
     en_mux,
@@ -102,7 +105,7 @@ loop.run_until_complete(get_me())
 LOGS.info(f"@{me.username} is ready!")
 
 
-def command(commands, prefixes=["/"]):
+def command(commands: list, prefixes: list = ["/"]):
     while len(commands) < len(prefixes):
         commands.append(commands[-1])
     pattern = ""
@@ -229,6 +232,11 @@ async def _(e):
     await event_handler(e, pause)
 
 
+@tele.on(events.NewMessage(pattern=command(["rss"])))
+async def _(e):
+    await event_handler(e, rss_handler, require_args=True)
+
+
 ######## Callbacks #########
 
 
@@ -341,6 +349,16 @@ async def _(pyro, message):
 @tele.on(events.NewMessage(pattern=command(["bash"])))
 async def _(e):
     await event_handler(e, bash, require_args=True)
+
+
+@tele.on(events.NewMessage(pattern=command(["airing"])))
+async def _(e):
+    await event_handler(e, en_airing, require_args=True)
+
+
+@tele.on(events.NewMessage(pattern=command(["anime"])))
+async def _(e):
+    await event_handler(e, en_anime, require_args=True)
 
 
 @tele.on(events.NewMessage(pattern=command(["name"])))

@@ -87,14 +87,17 @@ if DATABASE_URL:
     queuedb = db["queue"]
     ffmpegdb = db["code"]
     filterdb = db["filter"]
+    rssdb = db["rss"]
     userdb = db["users"]
 
-    load_db(queuedb, "queue", QUEUE, "dict")
     load_db(queuedb, "batches", BATCH_QUEUE, "dict")
+    load_db(queuedb, "queue", QUEUE, "dict")
     load_db(userdb, "t_users", TEMP_USERS, "list")
+    load_db(filterdb, "autoname", rename_file)
     load_db(ffmpegdb, "ffmpeg", ffmpeg_file)
     load_db(filterdb, "filter", filter_file)
-    load_db(filterdb, "autoname", rename_file)
+    load_db(rssdb, "rss", RSS_DICT, "dict")
+
 
 else:
     queuedb = ffmpegdb = filterdb = userdb = None

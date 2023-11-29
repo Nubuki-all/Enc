@@ -223,6 +223,7 @@ async def thing():
                         "-tf",
                         "-v",
                         ["-b", "store_true"],
+                        ["-y", "store_true"],
                     ]
                     einfo.qbit = True
                     if m[1].split()[0].lower() == "select.":

@@ -170,7 +170,7 @@ async def listqueuep(event, args, client):
         return await event.reply(rply)
 
 
-async def enleech(event, args, client):
+async def enleech(event, args: str, client):
     """
     Adds a link or torrent link to encoding queue:
         Requires a reply to link or the link as argument
@@ -349,7 +349,7 @@ async def enleech(event, args, client):
         return await event.reply("An Unknown error Occurred.")
 
 
-async def enleech2(event, args, client):
+async def enleech2(event, args: str, client):
     """
     Adds a torrent link to encoding queue using qbittorrent:
         Requires a reply to link or the link as argument
@@ -358,6 +358,7 @@ async def enleech2(event, args, client):
         (doesn't work if -b is specified)
     Accepts the following flags:
         -b (To force encode batch)
+        -y (in conjunction with -b) add all batch to queue without preview
         -f filter (only use if familiar with filter format)
         -rm what_to_remove (keyword to remove from torrent file_name)
         -s (select a file for encoding __ through indexing)
@@ -395,6 +396,7 @@ async def enleech2(event, args, client):
             "-tf",
             "-v",
             ["-b", "store_true"],
+            ["-y", "store_true"],
             to_parse=args,
             get_unknown=True,
         )
@@ -532,6 +534,7 @@ async def enleech2(event, args, client):
                 cust_v or get_v(),
                 cust_fil or get_f(),
                 user=user_id,
+                select_all=flag.y,
             )
             if not result:
                 return await or_event.delete()

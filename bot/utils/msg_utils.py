@@ -17,12 +17,12 @@ attrs = dir(var)
 globals().update({n: getattr(var, n) for n in attrs if not n.startswith("_")})
 
 
-def user_is_allowed(user):
+def user_is_allowed(user: str | int):
     user = str(user)
     return user in OWNER or user in TEMP_USERS
 
 
-def user_is_owner(user):
+def user_is_owner(user: str | int):
     user = str(user)
     return user in OWNER
 
@@ -39,18 +39,18 @@ def pm_is_allowed(in_group=False, in_pm=False):
         return TEMP_ONLY_IN_GROUP
 
 
-def temp_is_allowed(user):
+def temp_is_allowed(user: str | int):
     user = str(user)
     return user in TEMP_USERS
 
 
-def turn(turn_id=None):
+def turn(turn_id: str = None):
     if turn_id:
         return turn_id in R_QUEUE
     return R_QUEUE
 
 
-async def wait_for_turn(turn_id, msg):
+async def wait_for_turn(turn_id: str, msg):
     while R_QUEUE:
         await asyncio.sleep(5)
         if R_QUEUE[0] == turn_id:
@@ -80,7 +80,7 @@ async def try_delete(msg):
         await logger(Exception)
 
 
-async def get_cached(dl, sender, user, e, op):
+async def get_cached(dl: str, sender, user: int, e, op):
     try:
         dl_check = Path(dl)
         dl_check2 = Path(dl + ".temp")
@@ -122,7 +122,7 @@ async def get_cached(dl, sender, user, e, op):
         return False
 
 
-def valid_range(args):
+def valid_range(args: str):
     if isinstance(args, str):
         return (
             len(args.split("-")) == 2
@@ -150,6 +150,13 @@ async def enpause(message):
             await logger(Exception)
 
 
+async def send_rss(msg: str):
+    try:
+        return await avoid_flood(tele.send_message, RSS_CHAT, msg)
+    except Exception:
+        await logger(Exception)
+
+
 async def avoid_flood(func, *args, **kwargs):
     try:
         pfunc = partial(func, *args, **kwargs)
@@ -170,11 +177,9 @@ async def avoid_flood(func, *args, **kwargs):
         )
         await asyncio.sleep(e.value)
         return await avoid_flood(func, *args, **kwargs)
-    except Exception:
-        await logger(Exception)
 
 
-async def edit_message(message, text):
+async def edit_message(message, text: str):
     """
     A function to edit message with a loop in the event of a FloodWait
     """
@@ -211,7 +216,7 @@ def line_split(line):
     return [t.strip("\"'") for t in re.findall(r'[^\s"]+|"[^"]*"', line)]
 
 
-def get_args(*args, to_parse, get_unknown=False):
+def get_args(*args, to_parse: str, get_unknown=False):
     parser = ThrowingArgumentParser(
         description="parse command flags", exit_on_error=False, add_help=False
     )
@@ -429,14 +434,28 @@ async def enquoter(msg, rply):
 
 
 async def event_handler(
-    event, function, client=None, require_args=False, disable_help=False, split_args=" "
+    event,
+    function,
+    client=None,
+    require_args=False,
+    disable_help=False,
+    split_args=" ",
+    default_args: str = False,
+    use_default_args=False,
 ):
     args = (
         event.text.split(split_args, maxsplit=1)[1].strip()
         if len(event.text.split()) > 1
         else None
     )
-    if (require_args and not args) or (args and args.casefold() in ("--help", "-h")):
+    args = default_args if use_default_args and default_args is not False else args
+    help_tuple = ("--help", "-h")
+    if (
+        (require_args and not args)
+        or (args and args.casefold() in help_tuple)
+        or (require_args and not (default_args or default_args is False))
+        or (default_args in help_tuple)
+    ):
         if disable_help:
             return
         return await reply_message(event, f"`{function.__doc__}`")
