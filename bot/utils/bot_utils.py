@@ -350,7 +350,7 @@ def get_readable_file_size(size_in_bytes: int) -> str:
 async def get_html(link):
     async with ClientSession(trust_env=True) as session:
         async with session.get(replace_proxy(link)) as res:
-            return html = await res.text()
+            return await res.text()
 
 
 async def post_to_tgph(title, out):
