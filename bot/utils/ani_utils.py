@@ -1002,7 +1002,7 @@ async def airing_anim(query):
     status = data.get("status")
     episodes = data.get("episodes")
     country = data.get("countryOfOrigin")
-    c_flag = cflag.flag(country)
+    c_flag = flag.flag(country)
     source = data.get("source")
     coverImg = data.get("coverImage")["extraLarge"]
     genres = data.get("genres")
