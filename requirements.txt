@@ -4,7 +4,9 @@ apscheduler
 aria2p
 country_converter
 emoji-country-flag
+feedparser
 html_telegraph_poster
+humanize
 telethon
 tgcrypto
 psutil

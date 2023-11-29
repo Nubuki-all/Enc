@@ -14,13 +14,10 @@ from bot import (
     ffmpeg_file,
     signal,
     tele,
-    tgp_author,
-    tgp_author_url,
-    tgp_client,
     version_file,
 )
 
-from .bot_utils import is_url, sync_to_async
+from .bot_utils import is_url, post_to_tgph, sync_to_async
 from .log_utils import log, logger
 
 
@@ -44,42 +41,15 @@ async def is_running(proc):
 
 async def info(file):
     try:
-        author = tgp_author or ((await tele.get_me()).first_name)
-        author_url = (
-            f"https://t.me/{((await tele.get_me()).username)}"
-            if not (tgp_author_url and is_url(tgp_author_url))
-            else tgp_author_url
-        )
-
-        # process = subprocess.Popen(
-        # ["mediainfo", file, "--Output=HTML"],
-        # stdout=subprocess.PIPE,
-        # stderr=subprocess.STDOUT,
-        # )
         out = await sync_to_async(
             pymediainfo.MediaInfo.parse, file, output="HTML", full=False
         )
         if len(out) > 65536:
             out = (
                 out[:65430]
-                + "<strong>...<strong><br><br><strong>(TRUNCATED DUE TO CONTENT EXCEEDING MAX LENGTH)<strong>"
+                + "<strong>...<strong><br><br><strong>(TRUNCATED DUE TO CONTENT EXCEEDING MAX LENGTH)<strong>"p
             )
-        retries = 10
-        while retries:
-            try:
-                page = await sync_to_async(
-                    tgp_client.post,
-                    title="Mediainfo",
-                    author=author,
-                    author_url=author_url,
-                    text=out,
-                )
-                break
-            except (requests.exceptions.ConnectionError, ConnectionError) as e:
-                retries -= 1
-                if not retries:
-                    raise e
-                await asyncio.sleep(1)
+        page = await post_to_tgph: ("MediaInfo", out)
         return page["url"]
     except Exception:
         await logger(Exception)

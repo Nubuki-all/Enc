@@ -1,11 +1,12 @@
 import os
+import requests
 import zlib
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from pathlib import Path
 from re import match as re_match
 
-from bot import asyncio, caption_file, dt, filter_file, itertools
+from bot import asyncio, caption_file, dt, filter_file, itertools, tele,tgp_author, tgp_author_url, tgp_client
 
 
 class Var_list:
@@ -332,6 +333,32 @@ def get_readable_file_size(size_in_bytes: int) -> str:
         return f"{round(size_in_bytes, 2)}{SIZE_UNITS[index]}"
     except IndexError:
         return "File too large"
+
+
+async def post_to_tgph(title, out):
+    author = tgp_author or ((await tele.get_me()).first_name)
+    author_url = (
+        f"https://t.me/{((await tele.get_me()).username)}"
+        if not (tgp_author_url and is_url(tgp_author_url))
+        else tgp_author_url
+    )
+
+    retries = 10
+    while retries:
+        try:
+            page = await sync_to_async(
+                tgp_client.post,
+                title=title,
+                author=author,
+                author_url=author_url,
+                text=out,
+            )
+            return page
+        except (requests.exceptions.ConnectionError, ConnectionError) as e:
+            retries -= 1
+            if not retries:
+                raise e
+            await asyncio.sleep(1)
 
 
 def get_filename(message):
