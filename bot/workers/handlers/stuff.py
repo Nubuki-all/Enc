@@ -304,9 +304,12 @@ filter{s} - filter & stuff
 vfilter{s} - view filter
 groupenc{s} - allow encoding in group toggle
 delfilter{s} - delete filter
+airing{s} - get anime airing info
+anime{s} - get anime info
 name{s} - quick filter with anime_title
 vname{s} - get list of name filter
 delname{s} - delete name filter
+rss{s} - edit, delete & subscribe rss feeds
 status{s} - 🆕 get bot's status
 showthumb{s} - 🖼️ show current thumbnail
 parse{s} - toggle parsing with captions or anilist
