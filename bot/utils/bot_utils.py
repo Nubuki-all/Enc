@@ -248,9 +248,12 @@ def replace_proxy(url):
         if not (rep_proxy and len(rep_proxy.split()) > 1):
             return url
         d_search, proxy = rep_proxy.split()
-        if d_search not in url:
+        if not url.startswith(d_search):
             continue
-        url = url.replace(d_search, proxy)
+        if proxy.endswith("="):
+            url = f'{proxy}"{url}"'
+        else:
+            url = url.replace(d_search, proxy)
         break
     return url
 
