@@ -955,7 +955,7 @@ async def rss_sub(event, args, client):
     feed_link = args
     title = arg.t
     if rss_dict.get(title):
-        await avoid_flood(
+        return await avoid_flood(
             event.reply,
             f"This title {title} has already been subscribed!. Please choose another title!",
         )
