@@ -47,9 +47,9 @@ async def info(file):
         if len(out) > 65536:
             out = (
                 out[:65430]
-                + "<strong>...<strong><br><br><strong>(TRUNCATED DUE TO CONTENT EXCEEDING MAX LENGTH)<strong>"p
+                + "<strong>...<strong><br><br><strong>(TRUNCATED DUE TO CONTENT EXCEEDING MAX LENGTH)<strong>"
             )
-        page = await post_to_tgph: ("MediaInfo", out)
+        page = await post_to_tgph("MediaInfo", out)
         return page["url"]
     except Exception:
         await logger(Exception)

@@ -896,7 +896,7 @@ async def anime_arch(query, arg):
     vars_ = {"search": query, "asHtml": True, "type": "ANIME"}
     if query.isdigit():
         if arg.m:
-            vars_ = {'idMal': int(query), 'asHtml': True, type': "ANIME"}
+            vars_ = {'idMal': int(query), 'asHtml': True, 'type': "ANIME"}
         else:
             vars_ = {"id": int(query), "asHtml": True, "type": "ANIME"}
     
