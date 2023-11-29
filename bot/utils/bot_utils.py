@@ -251,7 +251,7 @@ def replace_proxy(url):
         if not url.startswith(d_search):
             continue
         if proxy.endswith("="):
-            url = f'{proxy}"{url}"'
+            url = f"{proxy}{url}"
         else:
             url = url.replace(d_search, proxy)
         break
