@@ -59,7 +59,7 @@ try:
     PAUSE_ON_DL_INFO = config("PODI", default=True, cast=bool)
     QBIT_PORT = config("QBIT_PORT", default=8090, cast=int)
     QBIT_TIMEOUT = config("QBIT_TIMEOUT", default=20, cast=int)
-    RSS_CHAT = config("RSS_CHAT", default=-1001764444204, cast=int)
+    RSS_CHAT = config("RSS_CHAT", default=0, cast=int)
     RSS_DELAY = config("RSS_DELAY", default=60, cast=int)
     RSS_DIRECT = config("RSS_DIRECT", default=True, cast=bool)
     RELEASER = config("RELEASER", default="A-M|ANi-MiNE")
