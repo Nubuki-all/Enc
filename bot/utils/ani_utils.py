@@ -1,5 +1,5 @@
-import asyncio 
 import string
+from datetime import datetime
 
 import aiohttp
 import anitopy
@@ -7,8 +7,6 @@ import country_converter as coco
 import flag
 import humanize
 import pycountry
-
-from datetime import datetime
 
 from bot import (
     C_LINK,
@@ -20,7 +18,6 @@ from bot import (
     parse_file,
     release_name,
     release_name_b,
-    tgp_client,
 )
 
 from .bot_utils import (
@@ -142,9 +139,7 @@ query ($id: Int, $mediaId: Int, $notYetAired: Boolean) {
 async def get_ani_info(title=None, query=anime_query, var=None):
     variables = var or {"search": title, "type": "ANIME"}
     async with aiohttp.ClientSession() as requests:
-        result = await requests.post(
-            url, json={"query": query, "variables": variables}
-        )
+        result = await requests.post(url, json={"query": query, "variables": variables})
         if var:
             return await result.json()
         info = (await result.json())["data"].get("Media")
@@ -896,10 +891,10 @@ async def anime_arch(query, arg):
     vars_ = {"search": query, "asHtml": True, "type": "ANIME"}
     if query.isdigit():
         if arg.m:
-            vars_ = {'idMal': int(query), 'asHtml': True, 'type': "ANIME"}
+            vars_ = {"idMal": int(query), "asHtml": True, "type": "ANIME"}
         else:
             vars_ = {"id": int(query), "asHtml": True, "type": "ANIME"}
-    
+
     result = await get_ani_info(query=anime_query, var=vars_)
     error = result.get("errors")
     if error:
@@ -986,48 +981,40 @@ async def anime_arch(query, arg):
 
 
 async def airing_anim(query):
-    """ Get Airing Detail of Anime """
-    vars_ = {
-        'search': query,
-        'asHtml': True,
-        'type': "ANIME"
-    }
+    """Get Airing Detail of Anime"""
+    vars_ = {"search": query, "asHtml": True, "type": "ANIME"}
     if query.isdigit():
-        vars_ = {
-            'id': int(query),
-            'asHtml': True,
-            'type': "ANIME"
-        }
+        vars_ = {"id": int(query), "asHtml": True, "type": "ANIME"}
     result = await get_ani_info(query=anime_query, var=vars_)
-    error = result.get('errors')
+    error = result.get("errors")
     if error:
         alog(e=f"**ANILIST RETURNED FOLLOWING ERROR:**\n\n`{error}`")
         error_sts = error[0].get("message")
-            raise Exception(f"[{error_sts}]")
+        raise Exception(f"[{error_sts}]")
 
-    data = result['data']['Media']
+    data = result["data"]["Media"]
 
     # Airing Details
-    mid = data.get('id')
-    romaji = data['title']['romaji']
-    english = data['title']['english']
-    native = data['title']['native']
-    status = data.get('status')
-    episodes = data.get('episodes')
-    country = data.get('countryOfOrigin')
+    mid = data.get("id")
+    romaji = data["title"]["romaji"]
+    english = data["title"]["english"]
+    native = data["title"]["native"]
+    status = data.get("status")
+    episodes = data.get("episodes")
+    country = data.get("countryOfOrigin")
     c_flag = cflag.flag(country)
-    source = data.get('source')
-    coverImg = data.get('coverImage')['extraLarge']
-    genres = data.get('genres')
+    source = data.get("source")
+    coverImg = data.get("coverImage")["extraLarge"]
+    genres = data.get("genres")
     genres = data.get("genres")
     genre = genres[0] if genres else genres
     if genre and len(genres) > 1:
         genre = ", ".join(genres)
-    score = data.get('averageScore')
+    score = data.get("averageScore")
     air_on = None
-    if data['nextAiringEpisode']:
-        nextAir = data['nextAiringEpisode']['airingAt']
-        episode = data['nextAiringEpisode']['episode']
+    if data["nextAiringEpisode"]:
+        nextAir = data["nextAiringEpisode"]["airingAt"]
+        episode = data["nextAiringEpisode"]["episode"]
         air_on = make_it_rw(nextAir, True)
 
     title_ = english or romaji

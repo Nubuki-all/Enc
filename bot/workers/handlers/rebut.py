@@ -875,12 +875,8 @@ async def en_anime(event, args, client):
         )
         img, out = await anime_arch(args, arg)
         await avoid_flood(event.reply, out, file=img)
-    except Exception as e :
+    except Exception as e:
         await logger(Exception)
         await avoid_flood(event.reply, f"Error - `{e}`")
     finally:
         await try_delete(event)
-
-        
-    
-    

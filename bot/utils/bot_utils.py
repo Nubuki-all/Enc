@@ -1,12 +1,23 @@
 import os
-import requests
 import zlib
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from pathlib import Path
 from re import match as re_match
 
-from bot import asyncio, caption_file, dt, filter_file, itertools, tele,tgp_author, tgp_author_url, tgp_client
+import requests
+
+from bot import (
+    asyncio,
+    caption_file,
+    dt,
+    filter_file,
+    itertools,
+    tele,
+    tgp_author,
+    tgp_author_url,
+    tgp_client,
+)
 
 
 class Var_list:

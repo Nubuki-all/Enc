@@ -8,16 +8,10 @@ from subprocess import run as bashrun
 import anitopy
 import psutil
 import pymediainfo
-import requests
 
-from bot import (
-    ffmpeg_file,
-    signal,
-    tele,
-    version_file,
-)
+from bot import ffmpeg_file, signal, version_file
 
-from .bot_utils import is_url, post_to_tgph, sync_to_async
+from .bot_utils import post_to_tgph, sync_to_async
 from .log_utils import log, logger
 
 
