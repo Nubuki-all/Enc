@@ -866,7 +866,9 @@ async def rss_editor(event, args, client):
         return await event.reply(f"Could not find rss with title - {args}.")
     if not (arg.c or arg.exf or arg.inf or arg.p or arg.r or arg.chat):
         return await event.reply("Please supply at least one additional arguement.")
-    if arg.chat and not (arg.chat.lstrip("-").isdigit() or arg.chat.casefold() == "default"):
+    if arg.chat and not (
+        arg.chat.lstrip("-").isdigit() or arg.chat.casefold() == "default"
+    ):
         return await avoid_flood(
             event.reply,
             f"Chat must be a Telegram chat id (with -100 if a group or channel)\nNot '{arg.chat}'",
