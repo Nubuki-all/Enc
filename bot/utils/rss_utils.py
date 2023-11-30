@@ -81,9 +81,9 @@ async def rss_monitor():
                 feed_list.append(feed_msg)
                 feed_count += 1
             for feed_msg in reversed(feed_list):
-                event = await send_rss(feed_msg)
+                event = await send_rss(feed_msg, data["chat"])
                 if event and rss_direct:
-                    await fake_event(event, data["chat"])
+                    await fake_event(event)
                 await asyncio.sleep(1)
             async with rss_dict_lock:
                 rss_dict[title].update(

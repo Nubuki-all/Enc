@@ -1009,7 +1009,7 @@ async def rss_sub(event, args, client):
         msg += f"\n<b>Chat:- </b><code>{arg.chat}</code>"
         msg += f"\n<b>Command:- </b><code>{arg.c}</code>"
         msg += f"\n<b>Filters:-</b>\ninf: <code>{arg.inf}</code>\nexf: <code>{arg.exf}<code/>"
-        msg += f"\n<b>Paused:-</b><code>{arg.p}</code>"
+        msg += f"\n<b>Paused:- </b><code>{arg.p}</code>"
         async with rss_dict_lock:
             rss_dict[title] = {
                 "link": feed_link,
