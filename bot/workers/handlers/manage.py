@@ -975,6 +975,8 @@ async def rss_sub(event, args, client):
             event.reply,
             f"Chat must be a Telegram chat id (with -100 if a group or channel)\nNot '{arg.chat}'",
         )
+    if arg.chat:
+        arg.chat = int(arg.chat)
     if rss_dict.get(title):
         return await avoid_flood(
             event.reply,
@@ -1019,7 +1021,7 @@ async def rss_sub(event, args, client):
                 "exf": exf_lists,
                 "paused": arg.p,
                 "command": arg.c,
-                "chat": int(arg.chat),
+                "chat": arg.chat,
             }
         await logger(
             e="Rss Feed Added:"
