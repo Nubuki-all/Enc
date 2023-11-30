@@ -754,6 +754,7 @@ async def rss_list(event, args, client):
     async with rss_dict_lock:
         for i, (title, data) in zip(itertools.count(1), list(rss_dict.items())):
             list_feed += f"\n\n{i}.<b>Title:</b> <code>{title}</code>\n<b>Feed Url: </b><code>{data['link']}</code>\n"
+            list_feed += f"<b>Chat:</b> <code>{data['chat'] or "Default"}</code>\n"
             list_feed += f"<b>Command:</b> <code>{data['command']}</code>\n"
             list_feed += f"<b>Include filter:</b> <code>{data['inf'] or None}</code>\n"
             list_feed += f"<b>Exclude filter:</b> <code>{data['exf'] or None}</code>\n"
@@ -834,10 +835,12 @@ async def rss_editor(event, args, client):
             -c (/command): command to prefix the rss link
             -exf (what_to_exclude): keyword of words to fiter out*
             -inf (what_to_include): keywords to include*
+            --chat (chat_id) chat to send rss overides RSS_CHAT pass 'default' to reset.
             -p (no futher args) to pause the rss feed
             -r (no futher args) to resume the rss feed
 
         *format = "x or y|z"
+        *to unset pass 'disable' or 'off'
         where:
             or - means either of both values
             | - means and
@@ -850,6 +853,7 @@ async def rss_editor(event, args, client):
         "-c",
         "-exf",
         "-inf",
+        "--chat",
         ["-e", "store_true"],
         ["-p", "store_true"],
         ["-r", "store_true"],
@@ -860,12 +864,19 @@ async def rss_editor(event, args, client):
         return await event.reply(f"Please pass the title of the rss item to edit")
     if not (data := rss_dict.get(args)):
         return await event.reply(f"Could not find rss with title - {args}.")
-    if not (arg.c or arg.exf or arg.inf or arg.p or arg.r):
+    if not (arg.c or arg.exf or arg.inf or arg.p or arg.r or arg.chat):
         return await event.reply("Please supply at least one additional arguement.")
+    if arg.chat and not (arg.chat.lstrip("-").isdigit() or arg.chat.casefold() == "default"):
+        return await avoid_flood(
+            event.reply,
+            f"Chat must be a Telegram chat id (with -100 if a group or channel)\nNot '{arg.chat}'",
+        )
     if arg.c:
         if not arg.c.startswith("/"):
             return await event.reply("'-c': arguement must start with '/'")
         data["command"] = arg.c
+    if arg.chat:
+        data["chat"] = int(arg.chat) if arg.chat.casefold() != "default" else None
     if arg.exf:
         exf_lists = []
         if arg.exf.casefold() not in ("disable", "off"):
@@ -945,6 +956,7 @@ async def rss_sub(event, args, client):
         "-t",
         "-exf",
         "-inf",
+        "--chat",
         ["-p", "store_true"],
         ["-s", "store_true"],
         to_parse=args,
@@ -954,10 +966,17 @@ async def rss_sub(event, args, client):
         return await event.reply(f"`{rss_sub.__doc__}`")
     feed_link = args
     title = arg.t
+    if not arg.c.startswith("/"):
+        return await event.reply("'-c': arguement must start with '/'")
+    if arg.chat and not arg.chat.lstrip("-").isdigit():
+        return await avoid_flood(
+            event.reply,
+            f"Chat must be a Telegram chat id (with -100 if a group or channel)\nNot '{arg.chat}'",
+        )
     if rss_dict.get(title):
         return await avoid_flood(
             event.reply,
-            f"This title {title} has already been subscribed!. Please choose another title!",
+            f"This title **{title}** has already been subscribed!. **Please choose another title!**",
         )
     inf_lists = []
     exf_lists = []
@@ -984,8 +1003,9 @@ async def rss_sub(event, args, client):
             last_link = rss_d.entries[0]["links"][1]["href"]
         except IndexError:
             last_link = rss_d.entries[0]["link"]
-        msg += f"\nLink: <code>{last_link}</code>"
-        msg += f"\n<b>Command: </b><code>{arg.c}</code>"
+        msg += f"\nLink:- <code>{last_link}</code>"
+        msg += f"\n<b>Chat:- </b><code>{arg.chat}</code>"
+        msg += f"\n<b>Command:- </b><code>{arg.c}</code>"
         msg += f"\n<b>Filters:-</b>\ninf: <code>{arg.inf}</code>\nexf: <code>{arg.exf}<code/>"
         msg += f"\n<b>Paused:-</b><code>{arg.p}</code>"
         async with rss_dict_lock:
@@ -997,12 +1017,14 @@ async def rss_sub(event, args, client):
                 "exf": exf_lists,
                 "paused": arg.p,
                 "command": arg.c,
+                "chat": int(arg.chat),
             }
         await logger(
             e="Rss Feed Added:"
             f"\nby:- {event.sender_id}"
             f"\ntitle:- {title}"
             f"\nlink:- {feed_link}"
+            f"\nchat:- {arg.chat}"
             f"\ncommand:- {arg.c}"
             f"\ninclude filter:- {arg.inf}"
             f"\nexclude filter:- {arg.exf}"
