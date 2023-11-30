@@ -83,7 +83,7 @@ async def rss_monitor():
             for feed_msg in reversed(feed_list):
                 event = await send_rss(feed_msg, data["chat"])
                 if event and rss_direct:
-                    await fake_event(event)
+                    await fake_event_handler(event)
                 await asyncio.sleep(1)
             async with rss_dict_lock:
                 rss_dict[title].update(
@@ -112,7 +112,7 @@ def check_cmds(command: str, *matches: str):
     return False
 
 
-async def fake_event(event):
+async def fake_event_handler(event):
     """
     Passes the rss message to the bot as a new event.
         Args:
