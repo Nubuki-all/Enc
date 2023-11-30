@@ -14,7 +14,7 @@ from .bot_utils import RSS_DICT as rss_dict
 from .bot_utils import get_html
 from .db_utils import save2db2
 from .log_utils import log
-from .msg_utils import event_handler, send_rss
+from .msg_utils import send_rss
 
 
 async def rss_monitor():
