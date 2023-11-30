@@ -118,13 +118,13 @@ async def fake_event(event):
         Args:
             event (telethon.events): _description_
     """
-    command = event.text.split(maxsplit=1)[0]
+    command, args = event.text.split(maxsplit=1)
     if not check_cmds(command, "/l", "/ql", "/qbleech", "/leech"):
         return
     if check_cmds(command, "/l", "/leech"):
-        asyncio.create_task(event_handler(event, enleech, pyro))
+        asyncio.create_task(enleech(event, args, pyro, True))
     elif check_cmds(command, "/ql", "/qbleech"):
-        asyncio.create_task(event_handler(event, enleech2, pyro))
+        asyncio.create_task(enleech2(event, args, pyro, True))
     await asyncio.sleep(3)
 
 
