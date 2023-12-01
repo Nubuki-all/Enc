@@ -188,7 +188,7 @@ async def thing():
         # USER_MAN.clear()
         # USER_MAN.append(user)
         _id = f"{msg_t.chat_id}:{msg_t.id}"
-        if str(sender_id).startswith("-100"):
+        if not sender_id or str(sender_id).startswith("-100"):
             sender_id = 777000
         sender = await pyro.get_users(sender_id)
         if chat_id == log_channel:
