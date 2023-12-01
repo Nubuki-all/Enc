@@ -1050,7 +1050,7 @@ async def rss_sub(event, args, client):
         except IndexError:
             last_link = rss_d.entries[0]["link"]
         msg += f"\nLink:- <code>{last_link}</code>"
-        msg += f"\n<b>Chat:- </b><code>{arg.chat}</code>"
+        msg += f"\n<b>Chat:- </b><code>{arg.chat or 'Default'}</code>"
         msg += f"\n<b>Command:- </b><code>{arg.c}</code>"
         msg += f"\n<b>Direct:- </b><code>{arg.direct}</code>"
         msg += f"\n<b>Filters:-</b>\ninf: <code>{arg.inf}</code>\nexf: <code>{arg.exf}<code/>"
