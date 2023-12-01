@@ -104,7 +104,9 @@ logging.basicConfig(
         logging.StreamHandler(),
     ],
 )
+logging.getLogger("apscheduler.executors.default").setLevel(logging.WARNING)
 logging.getLogger("FastTelethon").setLevel(logging.INFO)
+# logging.getLogger("telethon.messagebox").setLevel(logging.NOTSET + 1)
 logging.getLogger("urllib3").setLevel(logging.INFO)
 LOGS = logging.getLogger(__name__)
 

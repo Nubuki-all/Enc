@@ -1,20 +1,19 @@
 import asyncio
 
-from aiohttp import ClientSession
 from feedparser import parse as feedparse
 
 from bot import pyro, rss_dict_lock
 from bot.config import CMD_SUFFIX as suffix
 from bot.config import RSS_CHAT as rss_chat
 from bot.config import RSS_DELAY as rss_delay
-from bot.config import RSS_DIRECT as rss_direct
 from bot.workers.auto.schedule import addjob, scheduler
 from bot.workers.handlers.queue import enleech, enleech2
 
 from .bot_utils import RSS_DICT as rss_dict
+from .bot_utils import get_html
 from .db_utils import save2db2
 from .log_utils import log
-from .msg_utils import event_handler, send_rss
+from .msg_utils import send_rss
 
 
 async def rss_monitor():
@@ -33,9 +32,7 @@ async def rss_monitor():
         try:
             if data["paused"]:
                 continue
-            async with ClientSession(trust_env=True) as session:
-                async with session.get(data["link"]) as res:
-                    html = await res.text()
+            html = await get_html(data["link"])
             rss_d = feedparse(html)
             try:
                 last_link = rss_d.entries[0]["links"][1]["href"]
@@ -83,9 +80,9 @@ async def rss_monitor():
                 feed_list.append(feed_msg)
                 feed_count += 1
             for feed_msg in reversed(feed_list):
-                event = await send_rss(feed_msg)
-                if event and rss_direct:
-                    await fake_event(event)
+                event = await send_rss(feed_msg, data["chat"])
+                if event and data.get("direct", True):
+                    await fake_event_handler(event)
                 await asyncio.sleep(1)
             async with rss_dict_lock:
                 rss_dict[title].update(
@@ -114,19 +111,19 @@ def check_cmds(command: str, *matches: str):
     return False
 
 
-async def fake_event(event):
+async def fake_event_handler(event):
     """
     Passes the rss message to the bot as a new event.
         Args:
             event (telethon.events): _description_
     """
-    command = event.text.split(maxsplit=1)[0]
+    command, args = event.text.split(maxsplit=1)
     if not check_cmds(command, "/l", "/ql", "/qbleech", "/leech"):
         return
     if check_cmds(command, "/l", "/leech"):
-        asyncio.create_task(event_handler(event, enleech, pyro))
+        asyncio.create_task(enleech(event, args, pyro, True))
     elif check_cmds(command, "/ql", "/qbleech"):
-        asyncio.create_task(event_handler(event, enleech2, pyro))
+        asyncio.create_task(enleech2(event, args, pyro, True))
     await asyncio.sleep(3)
 
 

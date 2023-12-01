@@ -170,7 +170,7 @@ async def listqueuep(event, args, client):
         return await event.reply(rply)
 
 
-async def enleech(event, args: str, client):
+async def enleech(event, args: str, client, direct=False):
     """
     Adds a link or torrent link to encoding queue:
         Requires a reply to link or the link as argument
@@ -190,7 +190,7 @@ async def enleech(event, args: str, client):
     """
     chat_id = event.chat_id
     user_id = event.sender_id
-    if not user_is_allowed(user_id):
+    if not (user_is_allowed(user_id) or direct):
         return
     cust_fil = cust_v = str()
     mode = "None"
@@ -349,7 +349,7 @@ async def enleech(event, args: str, client):
         return await event.reply("An Unknown error Occurred.")
 
 
-async def enleech2(event, args: str, client):
+async def enleech2(event, args: str, client, direct=False):
     """
     Adds a torrent link to encoding queue using qbittorrent:
         Requires a reply to link or the link as argument
@@ -373,7 +373,7 @@ async def enleech2(event, args: str, client):
     """
     chat_id = event.chat_id
     user_id = event.sender_id
-    if not user_is_allowed(user_id):
+    if not (user_is_allowed(user_id) or direct):
         return
     cust_fil = cust_v = flag = str()
     queue = get_queue()

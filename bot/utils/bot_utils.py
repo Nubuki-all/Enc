@@ -6,6 +6,7 @@ from pathlib import Path
 from re import match as re_match
 
 import requests
+from aiohttp import ClientSession
 
 from bot import (
     asyncio,
@@ -247,9 +248,12 @@ def replace_proxy(url):
         if not (rep_proxy and len(rep_proxy.split()) > 1):
             return url
         d_search, proxy = rep_proxy.split()
-        if d_search not in url:
+        if not url.startswith(d_search):
             continue
-        url = url.replace(d_search, proxy)
+        if proxy.endswith("="):
+            url = f"{proxy}{url}"
+        else:
+            url = url.replace(d_search, proxy)
         break
     return url
 
@@ -344,6 +348,12 @@ def get_readable_file_size(size_in_bytes: int) -> str:
         return f"{round(size_in_bytes, 2)}{SIZE_UNITS[index]}"
     except IndexError:
         return "File too large"
+
+
+async def get_html(link):
+    async with ClientSession(trust_env=True) as session:
+        async with session.get(replace_proxy(link)) as res:
+            return await res.text()
 
 
 async def post_to_tgph(title, out):
