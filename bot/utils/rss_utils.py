@@ -6,7 +6,6 @@ from bot import pyro, rss_dict_lock
 from bot.config import CMD_SUFFIX as suffix
 from bot.config import RSS_CHAT as rss_chat
 from bot.config import RSS_DELAY as rss_delay
-from bot.config import RSS_DIRECT as rss_direct
 from bot.workers.auto.schedule import addjob, scheduler
 from bot.workers.handlers.queue import enleech, enleech2
 
@@ -82,7 +81,7 @@ async def rss_monitor():
                 feed_count += 1
             for feed_msg in reversed(feed_list):
                 event = await send_rss(feed_msg, data["chat"])
-                if event and rss_direct:
+                if event and data.get("direct", True):
                     await fake_event_handler(event)
                 await asyncio.sleep(1)
             async with rss_dict_lock:

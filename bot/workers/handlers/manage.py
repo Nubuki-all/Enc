@@ -13,6 +13,7 @@ from bot import (
     thumb,
 )
 from bot.config import FCHANNEL, FFMPEG
+from bot.config import RSS_DIRECT as rss_direct
 from bot.startup.before import DOCKER_DEPLOYMENT as d_docker
 from bot.startup.before import entime
 from bot.utils.bot_utils import RSS_DICT as rss_dict
@@ -756,6 +757,7 @@ async def rss_list(event, args, client):
             list_feed += f"\n\n{i}.<b>Title:</b> <code>{title}</code>\n<b>Feed Url: </b><code>{data['link']}</code>\n"
             list_feed += f"<b>Chat:</b> <code>{data['chat'] or 'Default'}</code>\n"
             list_feed += f"<b>Command:</b> <code>{data['command']}</code>\n"
+            list_feed += f"<b>Direct== :</b> <code>{data.get('direct', True)}</code>\n"
             list_feed += f"<b>Include filter:</b> <code>{data['inf'] or None}</code>\n"
             list_feed += f"<b>Exclude filter:</b> <code>{data['exf'] or None}</code>\n"
             list_feed += f"<b>Paused:</b> <code>{data['paused']}</code>"
@@ -836,8 +838,10 @@ async def rss_editor(event, args, client):
             -exf (what_to_exclude): keyword of words to fiter out*
             -inf (what_to_include): keywords to include*
             --chat (chat_id) chat to send rss overides RSS_CHAT pass 'default' to reset.
-            -p (no futher args) to pause the rss feed
-            -r (no futher args) to resume the rss feed
+            -p () to pause the rss feed
+            -r () to resume the rss feed
+            --nodirect () disables rss direct
+            --direct () enables rss direct
 
         *format = "x or y|z"
         *to unset pass 'disable' or 'off'
@@ -857,6 +861,8 @@ async def rss_editor(event, args, client):
         ["-e", "store_true"],
         ["-p", "store_true"],
         ["-r", "store_true"],
+        ["--direct", "store_true"],
+        ["--nodirect", "store_true"],
         to_parse=args,
         get_unknown=True,
     )
@@ -879,6 +885,10 @@ async def rss_editor(event, args, client):
         data["command"] = arg.c
     if arg.chat:
         data["chat"] = int(arg.chat) if arg.chat.casefold() != "default" else None
+    if arg.direct and arg.nodirect:
+        await avoid_flood(event.reply, "**Warning:** Ignoring '--direct'")
+    if arg.direct or arg.nodirect:
+        data["direct"] = False if arg.nodirect else arg.direct
     if arg.exf:
         exf_lists = []
         if arg.exf.casefold() not in ("disable", "off"):
@@ -941,13 +951,18 @@ async def rss_sub(event, args, client):
             -c (/command): command to prefix the rss link [Required]
             -exf (what_to_exclude): keyword of words to fiter out*
             -inf (what_to_include): keywords to include*
-            -p (no futher args) to pause the rss feed
-            -r (no futher args) to resume the rss feed
+            -p () to pause the rss feed
+            -r () to resume the rss feed
+            --chat (chat_id) chat to send feeds
+            --nodirect () to disable rss message getting passed directly* to bot
+            --direct () to enable the above
+                if not specified, defaults to RSS_DIRECT env.
 
         *format = "x or y|z"
         where:
             or - means either of both values
             | - means and
+        *only leech and qbleech commands are passed
         Returns:
             success message on successfully editing the rss configuration
     """
@@ -959,6 +974,8 @@ async def rss_sub(event, args, client):
         "-exf",
         "-inf",
         "--chat",
+        ["--direct", "store_true"],
+        ["--nodirect", "store_true"],
         ["-p", "store_true"],
         ["-s", "store_true"],
         to_parse=args,
@@ -975,8 +992,8 @@ async def rss_sub(event, args, client):
             event.reply,
             f"Chat must be a Telegram chat id (with -100 if a group or channel)\nNot '{arg.chat}'",
         )
-    if arg.chat:
-        arg.chat = int(arg.chat)
+    if arg.direct and arg.nodirect:
+        await avoid_flood(event.reply, "**Warning:** Ignoring '--direct'")
     if rss_dict.get(title):
         return await avoid_flood(
             event.reply,
@@ -985,6 +1002,8 @@ async def rss_sub(event, args, client):
     inf_lists = []
     exf_lists = []
     msg = str()
+    if arg.chat:
+        arg.chat = int(arg.chat)
     if arg.inf:
         filters_list = arg.inf.split("|")
         for x in filters_list:
@@ -995,6 +1014,10 @@ async def rss_sub(event, args, client):
         for x in filters_list:
             y = x.split(" or ")
             exf_lists.append(y)
+    if arg.nodirect:
+        arg.direct = False
+    elif not arg.direct:
+        arg.direct = rss_direct
     try:
         html = await get_html(feed_link)
         rss_d = feedparse(html)
@@ -1017,11 +1040,12 @@ async def rss_sub(event, args, client):
                 "link": feed_link,
                 "last_feed": last_link,
                 "last_title": last_title,
+                "chat": arg.chat,
+                "command": arg.c,
+                "direct": arg.direct,
                 "inf": inf_lists,
                 "exf": exf_lists,
                 "paused": arg.p,
-                "command": arg.c,
-                "chat": arg.chat,
             }
         await logger(
             e="Rss Feed Added:"
@@ -1030,8 +1054,10 @@ async def rss_sub(event, args, client):
             f"\nlink:- {feed_link}"
             f"\nchat:- {arg.chat}"
             f"\ncommand:- {arg.c}"
+            f"\ndirect:- {arg.direct}"
             f"\ninclude filter:- {arg.inf}"
             f"\nexclude filter:- {arg.exf}"
+            f"\npaused:- {arg.p}"
         )
     except (IndexError, AttributeError) as e:
         emsg = f"The link: {feed_link} doesn't seem to be a RSS feed or it's region-blocked!"
