@@ -752,18 +752,24 @@ async def rss_list(event, args, client):
         return await event.reply("<b> No subscriptions!</b>", parse_mode="html")
     list_feed = str()
     pre_event = event
+
     def parse_filter(ftr: str):
         if not ftr:
             return None
-        return (', '.join(['(' + ', '.join(map(str, sublist)) + ')' for sublist in ftr]))
+        return ", ".join(["(" + ", ".join(map(str, sublist)) + ")" for sublist in ftr])
+
     async with rss_dict_lock:
         for i, (title, data) in zip(itertools.count(1), list(rss_dict.items())):
             list_feed += f"\n\n{i}.<b>Title:</b> <code>{title}</code>\n<b>Feed Url: </b><code>{data['link']}</code>\n"
             list_feed += f"<b>Chat:</b> <code>{data['chat'] or 'Default'}</code>\n"
             list_feed += f"<b>Command:</b> <code>{data['command']}</code>\n"
             list_feed += f"<b>Direct:</b> <code>{data.get('direct', True)}</code>\n"
-            list_feed += f"<b>Include filter:</b> <code>{parse_filter(data['inf'])}</code>\n"
-            list_feed += f"<b>Exclude filter:</b> <code>{parse_filter(data['exf'])}</code>\n"
+            list_feed += (
+                f"<b>Include filter:</b> <code>{parse_filter(data['inf'])}</code>\n"
+            )
+            list_feed += (
+                f"<b>Exclude filter:</b> <code>{parse_filter(data['exf'])}</code>\n"
+            )
             list_feed += f"<b>Paused:</b> <code>{data['paused']}</code>"
 
     lmsg = await split_text(list_feed.strip("\n"), "\n\n", True)
@@ -874,7 +880,16 @@ async def rss_editor(event, args, client):
         return await event.reply(f"Please pass the title of the rss item to edit")
     if not (data := rss_dict.get(args)):
         return await event.reply(f"Could not find rss with title - {args}.")
-    if not (arg.c or arg.exf or arg.inf or arg.p or arg.r or arg.chat or arg.direct or arg.nodirect):
+    if not (
+        arg.c
+        or arg.exf
+        or arg.inf
+        or arg.p
+        or arg.r
+        or arg.chat
+        or arg.direct
+        or arg.nodirect
+    ):
         return await event.reply("Please supply at least one additional arguement.")
     if arg.chat and not (
         arg.chat.lstrip("-").isdigit() or arg.chat.casefold() == "default"
