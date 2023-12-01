@@ -757,7 +757,7 @@ async def rss_list(event, args, client):
             list_feed += f"\n\n{i}.<b>Title:</b> <code>{title}</code>\n<b>Feed Url: </b><code>{data['link']}</code>\n"
             list_feed += f"<b>Chat:</b> <code>{data['chat'] or 'Default'}</code>\n"
             list_feed += f"<b>Command:</b> <code>{data['command']}</code>\n"
-            list_feed += f"<b>Direct== :</b> <code>{data.get('direct', True)}</code>\n"
+            list_feed += f"<b>Direct:</b> <code>{data.get('direct', True)}</code>\n"
             list_feed += f"<b>Include filter:</b> <code>{data['inf'] or None}</code>\n"
             list_feed += f"<b>Exclude filter:</b> <code>{data['exf'] or None}</code>\n"
             list_feed += f"<b>Paused:</b> <code>{data['paused']}</code>"
