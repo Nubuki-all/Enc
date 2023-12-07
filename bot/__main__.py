@@ -35,6 +35,7 @@ from .workers.handlers.manage import (
 )
 from .workers.handlers.manage import filter as filter_
 from .workers.handlers.manage import (
+    get_mux_args,
     nuke,
     pause,
     reffmpeg,
@@ -42,6 +43,7 @@ from .workers.handlers.manage import (
     rmfilter,
     rss_handler,
     save_thumb,
+    set_mux_args,
     update2,
     v_auto_rename,
     version2,
@@ -212,6 +214,16 @@ async def _(e):
     await event_handler(e, rmfilter)
 
 
+@tele.on(events.NewMessage(pattern=command(["mset"])))
+async def _(e):
+    await event_handler(e, set_mux_args, require_args=True)
+
+
+@tele.on(events.NewMessage(pattern=command(["mget"])))
+async def _(e):
+    await event_handler(e, get_mux_args)
+
+
 @tele.on(events.NewMessage(pattern=command(["get"])))
 async def _(e):
     await event_handler(e, check)
@@ -219,7 +231,7 @@ async def _(e):
 
 @tele.on(events.NewMessage(pattern=command(["set"])))
 async def _(e):
-    await event_handler(e, change)
+    await event_handler(e, change, require_args=True)
 
 
 @tele.on(events.NewMessage(pattern=command(["reset"])))

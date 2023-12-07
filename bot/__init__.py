@@ -56,6 +56,7 @@ bot_id = BOT_TOKEN.split(":", 1)[0]
 botStartTime = time.time()
 caption_file = "NO_CAPTION"
 ffmpeg_file = "ffmpeg.txt"
+mux_file = "mux.txt"
 filter_file = "filter.txt"
 home_dir = os.getcwd()
 local_qdb = ".local_queue.pkl"

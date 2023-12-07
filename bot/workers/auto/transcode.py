@@ -2,7 +2,7 @@ from os.path import split as path_split
 from os.path import splitext as split_ext
 from shutil import copy2 as copy_file
 
-from bot import Path, asyncio, pyro, tele, time
+from bot import Path, asyncio, ffmpeg_file, mux_file, pyro, tele, time
 from bot.config import CACHE_DL as cache
 from bot.config import DUMP_LEECH as dump
 from bot.config import ENCODER
@@ -11,7 +11,6 @@ from bot.config import FCHANNEL as fc
 from bot.config import FCODEC
 from bot.config import FSTICKER as fs
 from bot.config import LOG_CHANNEL as log_channel
-from bot.config import MUX_ARGS as mux_args
 from bot.others.exceptions import AlreadyDl
 from bot.startup.before import entime
 from bot.utils.ani_utils import custcap, dynamicthumb, f_post, parse, qparse_t
@@ -36,7 +35,7 @@ from bot.utils.msg_utils import (
     report_encode_status,
     report_failed_download,
 )
-from bot.utils.os_utils import info, pos_in_stm, s_remove
+from bot.utils.os_utils import file_exists, info, pos_in_stm, s_remove, size_of
 from bot.workers.downloaders.dl_helpers import cache_dl
 from bot.workers.downloaders.download import Downloader as downloader
 from bot.workers.encoders.encode import Encoder as encoder
@@ -305,7 +304,7 @@ async def thing():
             asyncio.create_task(dumpdl(dl, name, thumb2, msg_t.chat_id, message))
         if len(queue) > 1 and cache:
             await cache_dl()
-        with open("ffmpeg.txt", "r") as file:
+        with open(ffmpeg_file, "r") as file:
             nani = file.read().rstrip()
         ffmpeg = await another(nani, title, epi, sn, metadata_name, dl)
 
@@ -344,7 +343,9 @@ async def thing():
         await asyncio.sleep(3)
         await enpause(msg_p)
 
-        if mux_args:
+        if file_exists(mux_file):
+            with open(mux_file, "r") as file:
+                mux_args = file.read().rstrip("\n").rstrip()
             smt = time.time()
             mux_args = await another(mux_args, title, epi, sn, metadata_name, dl)
             ffmpeg = 'ffmpeg -i """{}""" ' f"{mux_args} -codec copy" ' """{}""" -y'
@@ -410,8 +411,8 @@ async def thing():
         await op.delete() if op else None
         await up.copy(chat_id=log_channel) if op else None
 
-        org_s = int(Path(dl).stat().st_size)
-        out_s = int(Path(out).stat().st_size)
+        org_s = size_of(dl)
+        out_s = size_of(out)
         pe = 100 - ((out_s / org_s) * 100)
         per = str(f"{pe:.2f}") + "%"
         mux_msg = f"Muxed in `{mtime}`" if mux_args else str()

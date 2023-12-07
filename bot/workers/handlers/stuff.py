@@ -300,6 +300,8 @@ mux{s} - remux a file
 get{s} - get current ffmpeg code
 set{s} - set custom ffmpeg code
 reset{s} - reset default ffmpeg code
+mset{s} - set, reset, disable mux_args
+mget{s} - view current mux_args
 filter{s} - filter & stuff
 vfilter{s} - view filter
 groupenc{s} - allow encoding in group toggle

@@ -31,6 +31,10 @@ if not file_exists(ffmpeg_file):
     with open(ffmpeg_file, "w") as file:
         file.write(str(FFMPEG) + "\n")
 
+if not file_exists(mux_file):
+    with open(mux_file, "w") as file:
+        file.write(str(MUX_ARGS) + "\n")
+
 if not os.path.isdir("downloads/"):
     os.mkdir("downloads/")
 if not os.path.isdir("encode/"):
@@ -96,6 +100,7 @@ if DATABASE_URL:
     load_db(filterdb, "autoname", rename_file)
     load_db(ffmpegdb, "ffmpeg", ffmpeg_file)
     load_db(filterdb, "filter", filter_file)
+    load_db(ffmpegdb, "mux_args", mux_file)
     load_db(rssdb, "rss", RSS_DICT, "dict")
 
 
