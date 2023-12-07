@@ -1,5 +1,6 @@
 from os.path import split as path_split
 from os.path import splitext as split_ext
+from shutil import copy2 as copy_file
 
 from bot import Path, asyncio, pyro, tele, time
 from bot.config import CACHE_DL as cache
@@ -10,6 +11,7 @@ from bot.config import FCHANNEL as fc
 from bot.config import FCODEC
 from bot.config import FSTICKER as fs
 from bot.config import LOG_CHANNEL as log_channel
+from bot.config import MUX_ARGS as mux_args
 from bot.others.exceptions import AlreadyDl
 from bot.startup.before import entime
 from bot.utils.ani_utils import custcap, dynamicthumb, f_post, parse, qparse_t
@@ -342,6 +344,34 @@ async def thing():
         await asyncio.sleep(3)
         await enpause(msg_p)
 
+        if mux_args:
+            smt = time.time()
+            mux_args = await another(mux_args, title, epi, sn, metadata_name, dl)
+            ffmpeg = 'ffmpeg -i """{}""" ' f"-map 0:v -map 0:a? -map 0:s? -map 0:t? {mux_args} -codec copy" ' """{}""" -y'
+            _out = "muxing: " + out
+            cmd = ffmpeg.format(out, _out)
+            encode = encoder(_id, event=msg_t)
+            await encode.start(cmd)
+            stderr = (await encode.await_completion())[1]
+            await report_encode_status(
+                encode.process, _id, stderr, msg_t, sender_id, out, _is="Muxing", log_msg=op,
+            )
+            if encode.process.returncode != 0:
+                if download:
+                    await download.clean_download()
+                s_remove(out, _out)
+                skip(queue_id)
+                mark_file_as_done(einfo.select, queue_id)
+                E_CANCEL.pop(_id) if E_CANCEL.get(_id) else None
+                await save2db()
+                await save2db("batches")
+                return
+            s_remove(out)
+            copy_file(_out, out)
+            s_remove(_out)
+            emt = time.time()
+            mtime = tf(emt - smt)
+            
         sut = time.time()
         fname = path_split(out)[1]
         pcap = await custcap(name, fname, ver=v, encoder=ENCODER, _filter=f)
@@ -377,6 +407,7 @@ async def thing():
         out_s = int(Path(out).stat().st_size)
         pe = 100 - ((out_s / org_s) * 100)
         per = str(f"{pe:.2f}") + "%"
+        mux_msg = f"Muxed in `{mtime}`" if mux_args else str()
 
         text = str()
         mi = await info(dl)
@@ -397,7 +428,7 @@ async def thing():
             f"`{hbs(org_s)}`\nEncoded Size: `{hbs(out_s)}`\n"
             f"Encoded Percentage: `{per}`\n\n"
             f"{'Cached' if einfo.cached_dl else 'Downloaded'} in `{dtime}`\n"
-            f"Encoded in `{etime}`\nUploaded in `{utime}`",
+            f"Encoded in `{etime}`\nUploaded in `{utime}`\n{mux_msg}",
             disable_web_page_preview=True,
             quote=True,
         )
