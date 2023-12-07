@@ -223,6 +223,7 @@ async def allowgroupenc(event, args, client):
             "**Group Encoding Turned on Successfully**\n__Persists till bot restarts!__"
         )
 
+
 async def set_mux_args(event, args, client):
     """
     Set, reset or disable muxing after transcoding.
@@ -230,8 +231,8 @@ async def set_mux_args(event, args, client):
         ffmpeg params without the (-i input & output)
             Do not pass encoding params, only map, metadata, dispositions are allowed.
         or:
-        
-        reset 
+
+        reset
             to reset the mux_args to same parameter in env.
             - if env is not set it is disabled.
     """
@@ -244,8 +245,9 @@ async def set_mux_args(event, args, client):
                     s_remove(mux_file)
                     return await event.reply("**Successfully unset mux_args**")
                 else:
-                    return await event.reply(f"**Muxing argument was not set; Therefore cannot {args}!**")
-            MUX_ARGS = args
+                    return await event.reply(
+                        f"**Muxing argument was not set; Therefore cannot {args}!**"
+                    )
         with open(mux_file, "w") as file:
             file.write(str(args) + "\n")
         await save2db2(args, "mux_args")

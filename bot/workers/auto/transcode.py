@@ -2,7 +2,7 @@ from os.path import split as path_split
 from os.path import splitext as split_ext
 from shutil import copy2 as copy_file
 
-from bot import Path, asyncio, ffmpeg_file, mux_file, pyro, tele, time
+from bot import asyncio, ffmpeg_file, mux_file, pyro, tele, time
 from bot.config import CACHE_DL as cache
 from bot.config import DUMP_LEECH as dump
 from bot.config import ENCODER
