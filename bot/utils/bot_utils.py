@@ -537,7 +537,7 @@ async def get_codec():
             "720": "720p",
             "1080": "1080p",
             "x264": "AVC",
-            "x265": "HEVC","
+            "x265": "HEVC",
             "libsvtav1": "AV1",
             "svt_av1": "AV1",
         }
