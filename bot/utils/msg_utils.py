@@ -9,7 +9,7 @@ from bot.fun.quips import enquip3
 from bot.fun.quotes import enquotes
 from bot.others.exceptions import ArgumentParserError
 
-from .bot_utils import gfn, is_url, var
+from .bot_utils import gfn, is_url, sync_to_async, var
 from .log_utils import log, logger
 from .os_utils import s_remove
 
@@ -427,9 +427,9 @@ async def get_message_from_link(link, pyrogram=True):
 
 async def enquoter(msg, rply):
     try:
-        quotes = await enquotes()
+        quotes = await sync_to_async(enquotes)
         await rply.edit(f"**{msg}**\n\n~while you wait~\n\n{quotes}")
-        await asyncio.sleep(5)
+        await asyncio.sleep(1.5)
     except Exception:
         await logger(Exception)
 

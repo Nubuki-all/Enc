@@ -536,8 +536,10 @@ async def get_codec():
             "480": "480p",
             "720": "720p",
             "1080": "1080p",
-            "libx265": "HEVC",
+            "x264": "AVC",
+            "x265": "HEVC","
             "libsvtav1": "AV1",
+            "svt_av1": "AV1",
         }
     )
     for key, value in s_check.items():

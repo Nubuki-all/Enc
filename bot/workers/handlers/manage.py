@@ -86,7 +86,10 @@ async def restart(event, args, client):
         rst = await rst.edit(f"`{rst_msg}`")
         message = str(rst.chat_id) + ":" + str(rst.id)
         await enquoter(rst_msg, rst)
-        await clean_all_qb()
+        try:
+            await clean_all_qb()
+        except Exception:
+            pass
         await re_x("restart", message)
     except Exception:
         await event.reply("Error Occurred")

@@ -1,4 +1,3 @@
-import asyncio
 import time
 
 from quote import quote
@@ -7,7 +6,7 @@ from random_word import RandomWords
 from .emojis import enmoji
 
 
-async def enquotes():
+def enquotes():
     em = enmoji()
     res = str()
     start = time.time()
@@ -24,5 +23,5 @@ async def enquotes():
                 output = (result[:2045] + "…") if len(result) > 2046 else result
                 output = f"{em} **{result2}:** `{output}`"
         except Exception:
-            await asyncio.sleep(0.5)
+            time.sleep(0.5)
     return output

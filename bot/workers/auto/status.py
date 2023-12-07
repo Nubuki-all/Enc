@@ -9,7 +9,7 @@ from bot.utils.ani_utils import qparse
 from bot.utils.batch_utils import get_batch_list
 from bot.utils.bot_utils import BATCH_QUEUE as bqueue
 from bot.utils.bot_utils import QUEUE as queue
-from bot.utils.bot_utils import encode_info, get_codec, get_pause_status
+from bot.utils.bot_utils import encode_info, get_codec, get_pause_status. sync_to_async
 from bot.utils.log_utils import logger
 
 
@@ -21,7 +21,7 @@ async def batch_status_preview(msg, v, f):
     if left:
         msg += f"__+{left} more…__\n"
     if not blist and encode_info.current:
-        loc = await enquotes()
+        loc = await sync_to_async(enquotes)
         msg += f"Nothing Here; While you wait:\n\n{loc}\n"
     return msg
 
@@ -66,7 +66,7 @@ async def encodestat():
         else:
             msg = await queue_status_preview(i, msg, queue)
         if len(queue) == 1 and single and encode_info.current:
-            loc = await enquotes()
+            loc = await sync_to_async(enquotes)
             msg += f"Nothing Here; While you wait:\n\n{loc}"
         elif not single and (r := (len(queue) - 1)):
             msg += f"\n__(+{r} more item(s) on queue.)__ \n"
