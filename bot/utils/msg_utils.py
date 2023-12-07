@@ -307,6 +307,7 @@ async def report_encode_status(
     msg_2_delete=None,
     log_msg=None,
     pyro_msg=False,
+    exe_prefix="ffmpeg",
 ):
     _dir, file = os.path.split(file)
     if msg_2_delete:
@@ -350,7 +351,7 @@ async def report_encode_status(
         error = None
         msg_2_delete = msg_2_delete or msg
         if len(er) > 4095 and not cancelled:
-            out_file = "ffmpeg_error.txt"
+            out_file = f"{exe_prefix}_error.txt"
             with open(out_file, "w") as file:
                 file.write(er)
             error = await msg_2_delete.reply(
@@ -365,8 +366,6 @@ async def report_encode_status(
             log(er)
         if error and log_msg:
             await log_msg.reply(error)
-        # if uri:
-        # rm_leech_file(download.uri_gid)
     else:
         reply = f"**{_is}** "
         if file:

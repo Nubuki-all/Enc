@@ -324,6 +324,7 @@ async def thing():
             sender_id,
             out,
             log_msg=op,
+            exe_prefix=ffmpeg.split(maxsplit=1)[0]
         )
         if encode.process.returncode != 0:
             if download:
