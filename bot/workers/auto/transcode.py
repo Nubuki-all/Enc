@@ -347,14 +347,25 @@ async def thing():
         if mux_args:
             smt = time.time()
             mux_args = await another(mux_args, title, epi, sn, metadata_name, dl)
-            ffmpeg = 'ffmpeg -i """{}""" ' f"-map 0:v -map 0:a? -map 0:s? -map 0:t? {mux_args} -codec copy" ' """{}""" -y'
+            ffmpeg = (
+                'ffmpeg -i """{}""" '
+                f"-map 0:v -map 0:a? -map 0:s? -map 0:t? {mux_args} -codec copy"
+                ' """{}""" -y'
+            )
             _out = "muxing: " + out
             cmd = ffmpeg.format(out, _out)
             encode = encoder(_id, event=msg_t)
             await encode.start(cmd)
             stderr = (await encode.await_completion())[1]
             await report_encode_status(
-                encode.process, _id, stderr, msg_t, sender_id, out, _is="Muxing", log_msg=op,
+                encode.process,
+                _id,
+                stderr,
+                msg_t,
+                sender_id,
+                out,
+                _is="Muxing",
+                log_msg=op,
             )
             if encode.process.returncode != 0:
                 if download:
@@ -371,7 +382,7 @@ async def thing():
             s_remove(_out)
             emt = time.time()
             mtime = tf(emt - smt)
-            
+
         sut = time.time()
         fname = path_split(out)[1]
         pcap = await custcap(name, fname, ver=v, encoder=ENCODER, _filter=f)
