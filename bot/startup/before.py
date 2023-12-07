@@ -31,7 +31,7 @@ if not file_exists(ffmpeg_file):
     with open(ffmpeg_file, "w") as file:
         file.write(str(FFMPEG) + "\n")
 
-if not file_exists(mux_file):
+if not file_exists(mux_file) and MUX_ARGS:
     with open(mux_file, "w") as file:
         file.write(str(MUX_ARGS) + "\n")
 
