@@ -248,6 +248,7 @@ async def set_mux_args(event, args, client):
                     return await event.reply(
                         f"**Muxing argument was not set; Therefore cannot {args}!**"
                     )
+            args = MUX_ARGS
         with open(mux_file, "w") as file:
             file.write(str(args) + "\n")
         await save2db2(args, "mux_args")
