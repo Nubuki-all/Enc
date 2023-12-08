@@ -243,6 +243,7 @@ async def set_mux_args(event, args, client):
             if not MUX_ARGS:
                 if file_exists(mux_file):
                     s_remove(mux_file)
+                    await save2db2(None, "mux_args")
                     return await event.reply("**Successfully unset mux_args**")
                 else:
                     return await event.reply(
