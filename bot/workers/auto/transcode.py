@@ -343,6 +343,7 @@ async def thing():
         await asyncio.sleep(3)
         await enpause(msg_p)
 
+        mux_args = None
         if file_exists(mux_file):
             with open(mux_file, "r") as file:
                 mux_args = file.read().rstrip("\n").rstrip()
