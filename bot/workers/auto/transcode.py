@@ -436,8 +436,8 @@ async def thing():
             f"**Encode Stats:**\n\nOriginal Size: "
             f"`{hbs(org_s)}`\nEncoded Size: `{hbs(out_s)}`\n"
             f"Encoded Percentage: `{per}`\n\n"
-            f"{'Cached' if einfo.cached_dl else 'Downloaded'} in `{dtime}`\n{mux_msg}"
-            f"Encoded in `{etime}`\nUploaded in `{utime}`",
+            f"{'Cached' if einfo.cached_dl else 'Downloaded'} in `{dtime}`\n"
+            f"Encoded in `{etime}`\n{mux_msg}Uploaded in `{utime}`",
             disable_web_page_preview=True,
             quote=True,
         )
