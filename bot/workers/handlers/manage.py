@@ -268,7 +268,7 @@ async def get_mux_args(event, args, client):
     if not user_is_owner(event.sender_id):
         return await try_delete(event)
     if not file_exists(mux_file):
-        return await avoid_flood(event.reply, "__mux_args not set.")
+        return await avoid_flood(event.reply, "__mux_args not set.__")
     with open(mux_file, "r") as file:
         m = file.read().rstrip("\n").rstrip()
 
