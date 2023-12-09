@@ -5,7 +5,6 @@ from functools import partial
 from pathlib import Path
 from re import match as re_match
 
-
 import requests
 from aiohttp import ClientSession
 
@@ -18,10 +17,10 @@ from bot import (
     itertools,
     tele,
     telegraph_errors,
-    time,
     tgp_author,
     tgp_author_url,
     tgp_client,
+    time,
 )
 
 
@@ -361,9 +360,7 @@ async def get_html(link):
 
 
 def create_api_token(retries=10):
-    telgrph_tkn_err_msg = (
-        "Couldn't not successfully create telegraph api token!."
-    )
+    telgrph_tkn_err_msg = "Couldn't not successfully create telegraph api token!."
     while retries:
         try:
             tgp_client.create_api_token("Mediainfo")

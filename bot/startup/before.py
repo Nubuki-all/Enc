@@ -15,7 +15,7 @@ uptime = dt.now()
 global aria2
 aria2 = None
 
-LOGS.info("="*30)
+LOGS.info("=" * 30)
 LOGS.info(f"Python version: {sys.version.split()[0]}")
 
 vmsg = f"Warning: {version_file} is missing!"
@@ -25,8 +25,8 @@ if file_exists(version_file):
     vmsg = f"Bot version: {ver}"
 
 LOGS.info(vmsg)
-LOGS.info("="*30)
-            
+LOGS.info("=" * 30)
+
 if THUMB:
     os.system(f"wget {THUMB} -O thumb.jpg")
 
@@ -122,6 +122,7 @@ else:
 No_Flood = {}
 
 create_api_token()
+
 
 class EnTimer:
     def __init__(self):
