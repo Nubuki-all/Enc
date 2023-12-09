@@ -1,11 +1,10 @@
 import pickle
 
-import requests
 from pymongo import MongoClient
 
 from bot import *
 from bot.config import *
-from bot.utils.bot_utils import var
+from bot.utils.bot_utils import create_api_token, var
 from bot.utils.local_db_utils import load_local_db
 from bot.utils.os_utils import file_exists
 
@@ -16,7 +15,18 @@ uptime = dt.now()
 global aria2
 aria2 = None
 
+LOGS.info("="*30)
+LOGS.info(f"Python version: {sys.version.split()[0]}")
 
+vmsg = f"Warning: {version_file} is missing!"
+if file_exists(version_file):
+    with open(version_file, "r") as file:
+        ver = file.read().strip()
+    vmsg = f"Bot version: {ver}"
+
+LOGS.info(vmsg)
+LOGS.info("="*30)
+            
 if THUMB:
     os.system(f"wget {THUMB} -O thumb.jpg")
 
@@ -111,22 +121,7 @@ else:
 
 No_Flood = {}
 
-retries = 10
-telgrph_tkn_err_msg = (
-    "Couldn't not successfully create api token required by telegraph to work"
-    "\nAs such telegraph is therefore disabled!"
-)
-while retries:
-    try:
-        tgp_client.create_api_token("Mediainfo")
-        break
-    except (requests.exceptions.ConnectionError, ConnectionError) as e:
-        retries -= 1
-        if not retries:
-            LOGS.info(telgrph_tkn_err_msg)
-            break
-        time.sleep(1)
-
+create_api_token()
 
 class EnTimer:
     def __init__(self):

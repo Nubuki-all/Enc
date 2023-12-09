@@ -5,16 +5,20 @@ from functools import partial
 from pathlib import Path
 from re import match as re_match
 
+
 import requests
 from aiohttp import ClientSession
 
 from bot import (
+    LOGS,
     asyncio,
     caption_file,
     dt,
     filter_file,
     itertools,
     tele,
+    telegraph_errors,
+    time,
     tgp_author,
     tgp_author_url,
     tgp_client,
@@ -356,6 +360,23 @@ async def get_html(link):
             return await res.text()
 
 
+def create_api_token(retries=10):
+    telgrph_tkn_err_msg = (
+        "Couldn't not successfully create telegraph api token!."
+    )
+    while retries:
+        try:
+            tgp_client.create_api_token("Mediainfo")
+            break
+        except (requests.exceptions.ConnectionError, ConnectionError) as e:
+            retries -= 1
+            if not retries:
+                LOGS.info(telgrph_tkn_err_msg)
+                break
+            time.sleep(1)
+    return retries
+
+
 async def post_to_tgph(title, out):
     author = tgp_author or ((await tele.get_me()).first_name)
     author_url = (
@@ -375,6 +396,10 @@ async def post_to_tgph(title, out):
                 text=out,
             )
             return page
+        except telegraph_errors.APITokenRequiredError as e:
+            result = await sync_to_async(create_api_token)
+            if not result:
+                raise e
         except (requests.exceptions.ConnectionError, ConnectionError) as e:
             retries -= 1
             if not retries:

@@ -40,7 +40,7 @@ from pathlib import Path
 
 import aiohttp
 import aria2p
-from html_telegraph_poster import TelegraphPoster
+from html_telegraph_poster import TelegraphPoster, errors as telegraph_errors 
 from pyrogram import Client
 from pyrogram import errors as pyro_errors
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
