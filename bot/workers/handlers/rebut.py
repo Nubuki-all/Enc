@@ -615,7 +615,7 @@ async def en_upload(event, args, client):
     try:
         download = None
         ext = None
-        folder = "downloads2/"
+        folder = "downloads2/" f"{event.chat_id}:{event.id}/"
         qb = select = None
         uri = None
         topic_id = None
