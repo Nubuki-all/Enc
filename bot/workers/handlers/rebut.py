@@ -805,6 +805,7 @@ async def en_upload(event, args, client):
     finally:
         if download:
             await download.clean_download()
+            s_remove(folder, folders=True)
 
 
 async def en_list(event, args, client):

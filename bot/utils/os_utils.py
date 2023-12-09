@@ -65,8 +65,15 @@ def check_ext(path, ext=".mkv", get_split=False, overide=False):
     return path
 
 
-def s_remove(*filenames):
+def s_remove(*filenames, folders=False):
     """Deletes a single or tuple of files silently and return no errors if not found"""
+    if folders:
+        for _dir in filenames:
+            try:
+                Path(_dir).rmdir()
+            except Exception:
+                pass
+        return
     for filename in filenames:
         try:
             os.remove(filename)
