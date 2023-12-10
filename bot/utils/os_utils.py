@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import shutil
 import sys
 from pathlib import Path
 from subprocess import run as bashrun
@@ -70,7 +71,7 @@ def s_remove(*filenames, folders=False):
     if folders:
         for _dir in filenames:
             try:
-                Path(_dir).rmdir()
+                shutil.rmtree(_dir)
             except Exception:
                 pass
         return
