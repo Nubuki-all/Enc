@@ -243,21 +243,14 @@ async def enleech(event, args: str, client, direct=False):
                         if not (is_url(uri) or is_magnet(uri)):
                             await event2.reply(invalid_msg)
                             return await rm_pause(dl_pause, 5)
-                        file_name = await get_leech_name(uri)
-                        if file_name is None or file_name.startswith("aria2_error"):
-                            error = (
-                                file_name.split("aria2_error")[1].strip()
-                                if file_name
-                                else file_name
-                            )
+                        file = await get_leech_name(uri)
+                        if file.error:
                             await event2.reply(
-                                ukn_err_msg, quote=True
-                            ) if not error else await event2.reply(
-                                f"`{error}`", quote=True
+                                f"`{file.error}`", quote=True
                             )
                             await asyncio.sleep(10)
                             continue
-                        if not file_name:
+                        if not is_video_file(file.name):
                             await event2.reply(no_dl_spt_msg, quote=True)
                             await asyncio.sleep(5)
                             continue
@@ -279,7 +272,7 @@ async def enleech(event, args: str, client, direct=False):
                         queue.update(
                             {
                                 (chat_id, event2.id): [
-                                    file_name,
+                                    file.name,
                                     (user_id, event2),
                                     (
                                         cust_v or get_v(),
@@ -309,17 +302,12 @@ async def enleech(event, args: str, client, direct=False):
             return await event.reply(no_uri_msg)
         if not (is_url(uri) or is_magnet(uri)):
             return await event.reply(invalid_msg)
-        file_name = await get_leech_name(uri)
-        if file_name is None or (file_name and file_name.startswith("aria2_error")):
-            error = (
-                file_name.split("aria2_error")[1].strip() if file_name else file_name
-            )
+        file = await get_leech_name(uri)
+        if file.error:
             return (
-                await event.reply(ukn_err_msg)
-                if not error
-                else await event.reply(f"`{error}`")
+                await event.reply(f"`{file.error}`")
             )
-        if not file_name:
+        if not is_video_file(file.name):
             return await event.reply(no_dl_spt_msg)
         for item in queue.values():
             if file_name in item:
@@ -330,7 +318,7 @@ async def enleech(event, args: str, client, direct=False):
             queue.update(
                 {
                     (chat_id, event.id): [
-                        file_name,
+                        file.name,
                         (user_id, None),
                         (cust_v or get_v(), cust_fil or get_f(), ("aria2", mode)),
                     ]
@@ -343,10 +331,10 @@ async def enleech(event, args: str, client, direct=False):
             )
             if len(queue) > 1:
                 return asyncio.create_task(listqueue(msg, None, event.client, False))
-    except Exception:
+    except Exception as e:
         await logger(Exception)
         await rm_pause(dl_pause)
-        return await event.reply("An Unknown error Occurred.")
+        return await event.reply(f"An error Occurred:\n - {e}")
 
 
 async def enleech2(event, args: str, client, direct=False):
@@ -385,7 +373,6 @@ async def enleech2(event, args: str, client, direct=False):
     no_bt_spt_msg = "`Torrent is a batch torrent.\nTo add to queue use -b`"
     no_fl_spt_msg = "`File is not a video.`"
     or_event = event
-    ukn_err_msg = "`An unknown error occurred, might an internal issue with aria2.\nCheck logs for more info`"
     if args:
         flag, args = get_args(
             "-f",
@@ -420,7 +407,9 @@ async def enleech2(event, args: str, client, direct=False):
                     return await event.reply(
                         f"**Yeah No.**\n`Error: expected a number but received '{args}'.`"
                     )
-                if flag.b:
+                if flag.b and not flag.y:
+                    await event.reply("Warning: '-b' flag ignored!")
+                if flag.s and not flag.y:
                     await event.reply("Warning: '-b' flag ignored!")
                 args = int(args)
                 async with queue_lock:
@@ -444,6 +433,23 @@ async def enleech2(event, args: str, client, direct=False):
                             await event2.reply(file.error, quote=True)
                             await asyncio.sleep(10)
                             continue
+                        if (flag.b and flag.y) and file.count > 1:
+                            file.name = flag.n or file.name
+                            mode = "Batch."
+                        elif (flag.s and flag.y) and file.count > 1:
+                            if (ind := int(flag.s)) > (file.count - 1):
+                                await event2.reply(
+                                    f"'-s': `{flag.s} is more than last file_id :- {file.count - 1}\n"
+                                    f"Total files in folder :- {file.count}`"
+                                )
+                                await asyncio.sleep(5)
+                                continue
+                            if not is_video_file(file.file_list[ind]):
+                                await event2.reply("'-s': " + no_fl_spt_msg)
+                                await asyncio.sleep(5)
+                                continue
+                            mode = f"Select. {flag.s}"
+                            file.name = flag.n or (file.file_list[ind].split("/"))[-1]
                         if file.count > 1:
                             await event2.reply(no_bt_spt_msg, quote=True)
                             await asyncio.sleep(3)
@@ -464,6 +470,21 @@ async def enleech2(event, args: str, client, direct=False):
                                 break
                         if already_in_queue:
                             continue
+                        if file.count > 1 and (flag.b and flag.y):
+                            result = await batch_preview(
+                                event2,
+                                file,
+                                chat_id,
+                                event2.id,
+                                cust_v or get_v(),
+                                cust_fil or get_f(),
+                                user=user_id,
+                                select_all=flag.y,
+                            )
+                            if not result:
+                                await event2.reply("'-b': `Not added to queue due to unknown error!`")
+                                await asyncio.sleep(5)
+                                continue
                         if not bot_is_paused():
                             pause(status=dl_pause)
 
@@ -555,10 +576,10 @@ async def enleech2(event, args: str, client, direct=False):
             )
             if len(queue) > 1:
                 return asyncio.create_task(listqueue(msg, None, event.client, False))
-    except Exception:
+    except Exception as e:
         await logger(Exception)
         await rm_pause(dl_pause)
-        return await event.reply("An Unknown error Occurred.")
+        return await event.reply(f"An error Occurred.\n - {e}")
 
 
 async def enselect(event, args, client):

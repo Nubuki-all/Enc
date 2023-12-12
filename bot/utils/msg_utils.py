@@ -51,11 +51,14 @@ def turn(turn_id: str = None):
 
 
 async def wait_for_turn(turn_id: str, msg):
-    while R_QUEUE:
+    cancel_button = InlineKeyboardButton(text=f"Cancel", callback_data=f"cancel_turn {turn_id}")
+    reply_markup = InlineKeyboardMarkup([[cancel_button]])
+    await msg.edit_reply_markup(reply_markup=reply_markup)
+    while turn(turn_id):
         await asyncio.sleep(5)
         if R_QUEUE[0] == turn_id:
             await msg.delete()
-            break
+            return 1
 
 
 def waiting_for_turn():

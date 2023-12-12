@@ -165,7 +165,7 @@ def rm_temp_user(id):
     TEMP_USERS.remove(id)
 
 
-class C_qbit:
+class Qbit_c:
     def __init__(self, count=None, flist=None, error=None):
         self.count = count
         self.file_list = flist
@@ -305,6 +305,30 @@ def txt_to_str(txt: str):
     return string
 
 
+def is_audio_file(filename: str):
+    audio_file_extensions = (
+        ".aac",
+        ".mp3",
+        ".m4a",
+        ".flac",
+        ".opus",
+        ".wav",
+    )
+    if filename.endswith((audio_file_extensions)):
+        return True
+
+
+def is_subtitle_file(filename: str):
+    sub_file_extensions = (
+        ".ass",
+        ".srt",
+        ".txt",
+        ".pgs",
+    )
+    if filename.endswith((sub_file_extensions)):
+        return True
+
+
 def is_video_file(filename: str):
     video_file_extensions = (
         ".3g2",
@@ -338,6 +362,12 @@ def is_video_file(filename: str):
     )
     if filename.endswith((video_file_extensions)):
         return True
+
+
+is_supported_file(filename: str):
+    for support in (is_audio_file, is_subtitle_file, is_video_file):
+        if support(filename):
+            return True
 
 
 def get_readable_file_size(size_in_bytes: int) -> str:

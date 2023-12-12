@@ -13,7 +13,7 @@ async def start_aria2p():
             aria2p.Client(host="http://localhost", port=ARIA2_PORT, secret="")
         )
         aria2.add(
-            "https://nyaa.si/download/1690208.torrent",
+            "https://nyaa.si/download/1752639.torrent",
             {"dir": f"{os.getcwd()}/temp"},
         )
         await asyncio.sleep(2)

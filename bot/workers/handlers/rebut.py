@@ -18,6 +18,7 @@ from bot.utils.bot_utils import (
     get_f,
     get_filename,
     is_magnet,
+    is_supported_file,
     is_url,
     is_video_file,
     split_text,
@@ -238,14 +239,13 @@ async def en_rename(event, args, client):
             __loc = loc
             __out, __none = await parse(loc, anilist=_parse, folder=work_folder)
         else:
-            __out = await get_leech_name(link)
-            if not __out:
-                error = aria2_err_msg if __out is None else not_vid_msg
-                return await rep_event.reply(error)
-            if __out.startswith("aria2_error"):
-                error = __out.split("aria2_error")[1].strip()
+            file = await get_leech_name(link)
+            if file.error:
                 return await rep_event.reply(f"`{error}`")
-            __loc = __out
+            if not is_video_file(file.name):
+                error = not_vid_msg
+                return await rep_event.reply(error)
+            __loc = __out = file.name
         _f = get_f()
         turn().append(turn_id)
         if waiting_for_turn():
@@ -409,13 +409,13 @@ async def en_mux(event, args, client):
             qb = True
             select = ind
         else:
-            name = await get_leech_name(link)
-        if not name:
-            error = aria2_err_msg if name is None else not_vid_msg
-            return await rep_event.reply(error)
-        if name.startswith("aria2_error"):
-            error = input_2.split("aria2_error")[1].strip()
-            return await rep_event.reply(f"{error}")
+            file = await get_leech_name(link)
+            if file.error:
+                return await rep_event.reply(f"{file.error}")
+            if not is_video_file(file.name):
+                error = not_vid_msg
+                return await rep_event.reply(error)
+            name = file.name
         if flags:
             if flag.np:
                 ani_parse = False
@@ -435,13 +435,13 @@ async def en_mux(event, args, client):
                 else:
                     link2 = flag.i
                     message_2 = None
-                    name_2 = await get_leech_name(link2)
-                    if not name_2:
-                        error = aria2_err_msg if __out is None else not_vid_msg
+                    file2 = await get_leech_name(link2)
+                    if file2.error:
+                        return await event.reply(f"{file.error}")
+                    if not is_supported_file(file2.name):
+                        error = "`Input 2 is either a folder or not in the list of supported files.`"
                         return await event.reply(error)
-                    if name_2.startswith("aria2_error"):
-                        error = name_2.split("aria2_error")[1].strip()
-                        return await event.reply(f"{error}")
+                    name_2 = file2.name
                 input_2 = work_folder + name_2
             cap_tag = flag.tag_c
             codec = flag.q
@@ -460,7 +460,9 @@ async def en_mux(event, args, client):
             w_msg = await message.reply(
                 "`Waiting for previous process to complete.`", quote=True
             )
-            await wait_for_turn(turn_id, w_msg)
+            go_ahead = await wait_for_turn(turn_id, w_msg)
+            if not go_ahead:
+                return
         e = await message.reply(f"{enmoji()} **Downloading:-** `{name}`…", quote=True)
         await asyncio.sleep(5)
         d_id = f"{e.chat.id}:{e.id}"

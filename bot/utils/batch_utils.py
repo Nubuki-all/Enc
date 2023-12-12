@@ -133,11 +133,11 @@ async def preview_actions(event):
 async def batch_preview(
     event, torrent, chat_id, e_id, v, f, reuse=False, user=None, select_all=False
 ):
-    if BATCH_ING:
+    if BATCH_ING and not select_all:
         await event.reply("`Cannot edit two batches simultaneously.`")
         return
     user = user or event.sender_id
-    BATCH_ING.append(user)
+    BATCH_ING.append(user) if not select_all else None
     event2 = await event.reply("…")
     preview_queue = get_preview()
     preview_list = get_preview(list=True)
@@ -156,7 +156,6 @@ async def batch_preview(
         await asyncio.sleep(3)
         while True:
             if select_all:
-                BATCH_ING.clear()
                 break
             if reuse and not get_queue().get((chat_id, e_id)):
                 await edit_message(

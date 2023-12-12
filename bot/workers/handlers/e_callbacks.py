@@ -18,7 +18,7 @@ from bot.utils.bot_utils import (
     u_cancelled,
 )
 from bot.utils.log_utils import logger
-from bot.utils.msg_utils import clean_old_message, user_is_owner
+from bot.utils.msg_utils import clean_old_message, turn, user_is_owner
 from bot.utils.os_utils import file_exists, s_remove
 
 #######! ENCODE CALLBACK HANDLERS !#######
@@ -305,6 +305,25 @@ async def upload_button_callback(client, callback_query):
         await logger(Exception)
 
 
+#######! TURN CALLBACK HANDLERS !#######
+
+
+async def cancel_turn_callback(client, query):
+    try:
+        turn_id = query.data.split()[1]
+        if not turn(turn_id):
+            return await clean_old_message(query, True)
+        if not user_is_owner(query.from_user.id):
+            return await query.answer("You're not allowed to do this!")
+        await query.answer("Cancelling…")
+        turn().remove(turn_id)
+        await query.message.delete()
+    except Exception as e:
+        await logger(Exception)
+        await query.answer(f"Error: {e}", show_alert=True)
+
+
+
 pyro.add_handler(
     CallbackQueryHandler(download_button_callback, filters=regex("^cancel_download"))
 )
@@ -315,4 +334,9 @@ pyro.add_handler(CallbackQueryHandler(dl_stat, filters=regex("^more")))
 
 pyro.add_handler(
     CallbackQueryHandler(upload_button_callback, filters=regex("^cancel_upload"))
+)
+
+
+pyro.add_handler(
+    CallbackQueryHandler(cancel_turn_callback, filters=regex("^cancel_turn"))
 )

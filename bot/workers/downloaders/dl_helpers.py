@@ -5,7 +5,7 @@ from bot import QBIT_TIMEOUT as q_timeout
 from bot import asyncio, math, os, pyro, qbClient, time
 from bot.utils.bot_utils import (
     CACHE_QUEUE,
-    C_qbit,
+    Qbit_c,
     get_aria2,
     get_queue,
     is_video_file,
@@ -108,6 +108,7 @@ async def download2(dl, file, message=None, e=None):
 
 async def get_leech_name(url):
     aria2 = get_aria2()
+    dinfo = Qbit_c()
     try:
         url = replace_proxy(url)
         downloads = await sync_to_async(aria2.add, url, {"dir": f"{os.getcwd()}/temp"})
@@ -119,32 +120,31 @@ async def get_leech_name(url):
                 gid = download.followed_by_ids[0]
                 download = await sync_to_async(aria2.get_download, gid)
             if time.time() - c_time > 300:
-                filename = "aria2_error E408: Getting filename timed out."
+                dinfo.error = "E408: Getting filename timed out."
                 break
             if download.status == "error":
-                download_error = (
+                dinfo.error = (
                     "E" + download.error_code + ": " + download.error_message
                 )
-                filename = "aria2_error " + download_error
                 break
             if download.name.startswith("[METADATA]") or download.name.endswith(
                 ".torrent"
             ):
                 await asyncio.sleep(2)
                 continue
-            else:
-                filename = (
-                    download.name if is_video_file(download.name) is True else str()
-                )
-                break
+
+            dinfo.name = download.name
+            break
         await sync_to_async(clean_aria_dl, download)
-        return filename
-    except Exception:
+    except Exception as e:
+        dinfo.error = e
         await logger(Exception)
+    finally:
+        return dinfo
 
 
 async def get_torrent(url):
-    qinfo = C_qbit()
+    qinfo = Qbit_c()
     tag = "qb_dl" + str(uuid.uuid4())
     url = replace_proxy(url)
     try:
