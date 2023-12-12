@@ -51,9 +51,7 @@ def turn(turn_id: str = None):
 
 
 async def wait_for_turn(turn_id: str, msg):
-    cancel_button = InlineKeyboardButton(
-        text=f"Cancel", callback_data=f"cancel_turn {turn_id}"
-    )
+    cancel_button = InlineKeyboardButton(text=f"Cancel", callback_data=f"cancel_turn {turn_id}")
     reply_markup = InlineKeyboardMarkup([[cancel_button]])
     await msg.edit_reply_markup(reply_markup=reply_markup)
     while turn(turn_id):

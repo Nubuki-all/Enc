@@ -254,7 +254,7 @@ async def enleech(event, args: str, client, direct=False):
                             continue
                         already_in_queue = False
                         for item in queue.values():
-                            if file_name in item:
+                            if file.name in item:
                                 await event2.reply(
                                     "**THIS LINK HAS ALREADY BEEN ADDED TO QUEUE**",
                                     quote=True,
@@ -306,7 +306,7 @@ async def enleech(event, args: str, client, direct=False):
         if not is_video_file(file.name):
             return await event.reply(no_dl_spt_msg)
         for item in queue.values():
-            if file_name in item:
+            if file.name in item:
                 return await event.reply(
                     "**THIS TORRENT HAS ALREADY BEEN ADDED TO QUEUE**"
                 )
