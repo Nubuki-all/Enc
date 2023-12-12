@@ -364,10 +364,11 @@ def is_video_file(filename: str):
         return True
 
 
-is_supported_file(filename: str):
+def is_supported_file(filename: str):
     for support in (is_audio_file, is_subtitle_file, is_video_file):
         if support(filename):
             return True
+    return False
 
 
 def get_readable_file_size(size_in_bytes: int) -> str:
