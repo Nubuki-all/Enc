@@ -245,9 +245,7 @@ async def enleech(event, args: str, client, direct=False):
                             return await rm_pause(dl_pause, 5)
                         file = await get_leech_name(uri)
                         if file.error:
-                            await event2.reply(
-                                f"`{file.error}`", quote=True
-                            )
+                            await event2.reply(f"`{file.error}`", quote=True)
                             await asyncio.sleep(10)
                             continue
                         if not is_video_file(file.name):
@@ -304,9 +302,7 @@ async def enleech(event, args: str, client, direct=False):
             return await event.reply(invalid_msg)
         file = await get_leech_name(uri)
         if file.error:
-            return (
-                await event.reply(f"`{file.error}`")
-            )
+            return await event.reply(f"`{file.error}`")
         if not is_video_file(file.name):
             return await event.reply(no_dl_spt_msg)
         for item in queue.values():
@@ -482,7 +478,9 @@ async def enleech2(event, args: str, client, direct=False):
                                 select_all=flag.y,
                             )
                             if not result:
-                                await event2.reply("'-b': `Not added to queue due to unknown error!`")
+                                await event2.reply(
+                                    "'-b': `Not added to queue due to unknown error!`"
+                                )
                                 await asyncio.sleep(5)
                                 continue
                         if not bot_is_paused():

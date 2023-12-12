@@ -8,7 +8,6 @@ from bot.utils.bot_utils import (
     Qbit_c,
     get_aria2,
     get_queue,
-    is_video_file,
     replace_proxy,
     sync_to_async,
 )
@@ -123,9 +122,7 @@ async def get_leech_name(url):
                 dinfo.error = "E408: Getting filename timed out."
                 break
             if download.status == "error":
-                dinfo.error = (
-                    "E" + download.error_code + ": " + download.error_message
-                )
+                dinfo.error = "E" + download.error_code + ": " + download.error_message
                 break
             if download.name.startswith("[METADATA]") or download.name.endswith(
                 ".torrent"
