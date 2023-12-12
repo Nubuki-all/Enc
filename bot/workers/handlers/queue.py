@@ -6,6 +6,7 @@ from bot.utils.ani_utils import qparse
 from bot.utils.batch_utils import batch_preview, clean_batch
 from bot.utils.bot_utils import (
     bot_is_paused,
+    check_cmds,
     get_bqueue,
     get_f,
     get_filename,
@@ -759,7 +760,8 @@ async def addqueue(event, args, client):
     """
     Add replied video to queue with args
     Accepts the same argument as /l
-    can also be used to reuse a leech command
+    can also be used to reuse a leech command 
+        if user is OWNER
     """
     user_id = event.sender_id
     if not user_is_allowed(user_id):
@@ -774,15 +776,15 @@ async def addqueue(event, args, client):
                 return await event.reply("Try again!")
             await pencode(media, args, user_id)
             return
-        if event_2.text.startswith("/l"):
-            args = (
-                event_2.text.split(maxsplit=1)[1].strip()
-                if len(event_2.text.split()) > 1
-                else None
-            )
-            await enleech(event_2, args, client)
+        if not user_is_owner(user_id):
             return
-        await event.reply(addqueue.__doc__)
+        command, args = event_2.text.split(maxsplit=1) if (event_2.text and len(event_2.text.split()) > 1) else (event_2.text, None)
+        if not (command and check_cmds(command, "/l", "/ql", "/qbleech", "/leech")):
+            return await event.reply(addqueue.__doc__)
+        if check_cmds(command, "/l", "/leech"):
+            asyncio.create_task(enleech(event_2, args, client, True))
+        elif check_cmds(command, "/ql", "/qbleech"):
+            asyncio.create_task(enleech2(event_2, args, client, True))
     except Exception:
         await logger(Exception)
     finally:

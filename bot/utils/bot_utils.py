@@ -22,6 +22,7 @@ from bot import (
     tgp_client,
     time,
 )
+from bot.config import CMD_SUFFIX as suffix
 
 
 class Var_list:
@@ -259,6 +260,18 @@ def replace_proxy(url):
             url = url.replace(d_search, proxy)
         break
     return url
+
+
+def check_cmds(command: str, *matches: str):
+    def check_cmd(command: str, match: str):
+        match += suffix
+        c = command.split(match, maxsplit=1)
+        return len(c) == 2 and not c[1]
+
+    for match in matches:
+        if check_cmd(command, match):
+            return True
+    return False
 
 
 def gfn(fn):
