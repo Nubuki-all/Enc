@@ -760,7 +760,7 @@ async def addqueue(event, args, client):
     """
     Add replied video to queue with args
     Accepts the same argument as /l
-    can also be used to reuse a leech command 
+    can also be used to reuse a leech command
         if user is OWNER
     """
     user_id = event.sender_id
@@ -778,7 +778,11 @@ async def addqueue(event, args, client):
             return
         if not user_is_owner(user_id):
             return
-        command, args = event_2.text.split(maxsplit=1) if (event_2.text and len(event_2.text.split()) > 1) else (event_2.text, None)
+        command, args = (
+            event_2.text.split(maxsplit=1)
+            if (event_2.text and len(event_2.text.split()) > 1)
+            else (event_2.text, None)
+        )
         if not (command and check_cmds(command, "/l", "/ql", "/qbleech", "/leech")):
             return await event.reply(addqueue.__doc__)
         if check_cmds(command, "/l", "/leech"):
