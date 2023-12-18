@@ -1,5 +1,5 @@
-from bot.config import conf
 from bot import asyncio, itertools, pyro, startup_, tele
+from bot.config import conf
 from bot.fun.emojis import enmoji
 from bot.fun.quips import enquip4
 from bot.fun.quotes import enquotes

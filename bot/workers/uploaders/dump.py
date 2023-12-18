@@ -8,7 +8,6 @@ from bot.utils.log_utils import logger
 from bot.utils.os_utils import parse_dl, s_remove
 from bot.workers.uploaders.upload import Uploader as uploader
 
-
 h_sticker = "CAACAgEAAxkBAAI0aWKx36P2GY9Fq6xvN0SBU1V2xZYIAAKXAgACJ_hhR9HcWzoditT7HgQ"
 
 

@@ -24,9 +24,8 @@ from bot import (
 )
 from bot.config import conf
 
-
-
 suffix = conf.CMD_SUFFIX
+
 
 class Var_list:
     TEMP_ONLY_IN_GROUP = []

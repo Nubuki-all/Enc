@@ -8,12 +8,7 @@ import flag
 import humanize
 import pycountry
 
-from bot import (
-    conf,
-    parse_file,
-    release_name,
-    release_name_b,
-)
+from bot import conf, parse_file, release_name, release_name_b
 
 from .bot_utils import (
     auto_rename,

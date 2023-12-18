@@ -1,6 +1,6 @@
 from telethon import events
 
-from bot import conf, Button, itertools, pyro, queue_lock, re, tele
+from bot import Button, conf, itertools, pyro, queue_lock, re, tele
 
 from .bot_utils import QUEUE, QUEUE_STATUS
 from .log_utils import logger

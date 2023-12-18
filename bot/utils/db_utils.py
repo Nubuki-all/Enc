@@ -16,6 +16,7 @@ _filter = {"_id": bot_id}
 
 database = conf.DATABASE_URL
 
+
 async def save2db(db="queue", retries=3):
     if not database:
         return save2db_lcl()

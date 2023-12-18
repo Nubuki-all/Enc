@@ -2,7 +2,7 @@ import copy
 
 from telethon import events
 
-from bot import conf, Button, asyncio, batch_lock, errors, itertools, os, re, tele
+from bot import Button, asyncio, batch_lock, conf, errors, itertools, os, re, tele
 
 from .ani_utils import qparse
 from .bot_utils import (

@@ -30,7 +30,9 @@ async def start_aria2p():
 
 
 async def start_qbit():
-    os.system(f"qbittorrent-nox -d --webui-port={conf.QBIT_PORT} --profile={os.getcwd()}")
+    os.system(
+        f"qbittorrent-nox -d --webui-port={conf.QBIT_PORT} --profile={os.getcwd()}"
+    )
 
 
 async def start_rpc():

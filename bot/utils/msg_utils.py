@@ -17,8 +17,6 @@ attrs = dir(var)
 globals().update({n: getattr(var, n) for n in attrs if not n.startswith("_")})
 
 
-
-
 def user_is_allowed(user: str | int):
     user = str(user)
     return user in conf.OWNER or user in TEMP_USERS

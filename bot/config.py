@@ -20,10 +20,14 @@ from decouple import config
 class Config:
     def __init__(self):
         try:
-            self.ALWAYS_DEPLOY_LATEST = config("ALWAYS_DEPLOY_LATEST", default=False, cast=bool)
+            self.ALWAYS_DEPLOY_LATEST = config(
+                "ALWAYS_DEPLOY_LATEST", default=False, cast=bool
+            )
             self.ALLOW_ACTION = config("ALLOW_ACTION", default=True, cast=bool)
             self.APP_ID = config("APP_ID", default=6, cast=int)
-            self.API_HASH = config("API_HASH", default="eb06d4abfb49dc3eeb1aeb98ae0f581e")
+            self.API_HASH = config(
+                "API_HASH", default="eb06d4abfb49dc3eeb1aeb98ae0f581e"
+            )
             self.ARIA2_PORT = config("ARIA2_PORT", default=6800, cast=int)
             self.BOT_TOKEN = config("BOT_TOKEN")
             self.CACHE_DL = config("CACHE_DL", default=False, cast=bool)
@@ -66,7 +70,9 @@ class Config:
             self.RSS_DELAY = config("RSS_DELAY", default=60, cast=int)
             self.RSS_DIRECT = config("RSS_DIRECT", default=True, cast=bool)
             self.RELEASER = config("RELEASER", default="A-M|ANi-MiNE")
-            self.TELEGRAPH_API = config("TELEGRAPH_API", default="https://api.telegra.ph")
+            self.TELEGRAPH_API = config(
+                "TELEGRAPH_API", default="https://api.telegra.ph"
+            )
             self.TELEGRAPH_AUTHOR = config("TELEGRAPH_AUTHOR", default=None)
             self.TEMP_USER = config("TEMP_USERS", default=str())
             self.TG_DL_CLIENT = config("TG_DL_CLIENT", default="pyrogram")
@@ -78,5 +84,6 @@ class Config:
             print("something went wrong")
             print(traceback.format_exc())
             exit()
+
 
 conf = Config()
