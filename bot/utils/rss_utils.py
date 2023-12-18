@@ -3,8 +3,7 @@ import asyncio
 from feedparser import parse as feedparse
 
 from bot import pyro, rss_dict_lock
-from bot.config import RSS_CHAT as rss_chat
-from bot.config import RSS_DELAY as rss_delay
+from bot.config import conf
 from bot.workers.auto.schedule import addjob, scheduler
 from bot.workers.handlers.queue import enleech, enleech2
 
@@ -19,7 +18,7 @@ async def rss_monitor():
     """
     An asynchronous function to get rss links
     """
-    if not rss_chat:
+    if not conf.RSS_CHAT:
         log(e="RSS_CHAT not added! Shutting down rss scheduler...")
         scheduler.shutdown(wait=False)
         return
@@ -115,7 +114,7 @@ async def fake_event_handler(event):
 
 
 def schedule_rss():
-    addjob(rss_delay, rss_monitor)
+    addjob(conf.RSS_DELAY, rss_monitor)
 
 
 schedule_rss()

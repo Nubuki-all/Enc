@@ -1,7 +1,7 @@
 from pymongo.errors import ServerSelectionTimeoutError
 
 from bot import asyncio, bot_id
-from bot.config import DATABASE_URL as database
+from bot.config import conf
 from bot.startup.before import ffmpegdb, filterdb, pickle, queuedb, rssdb, userdb
 
 from .bot_utils import BATCH_QUEUE, QUEUE, TEMP_USERS, list_to_str, sync_to_async
@@ -14,6 +14,7 @@ from .local_db_utils import save2db_lcl, save2db_lcl2
 
 _filter = {"_id": bot_id}
 
+database = conf.DATABASE_URL
 
 async def save2db(db="queue", retries=3):
     if not database:

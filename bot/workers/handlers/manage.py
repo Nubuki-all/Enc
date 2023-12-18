@@ -13,8 +13,7 @@ from bot import (
     rss_dict_lock,
     thumb,
 )
-from bot.config import FCHANNEL, FFMPEG, MUX_ARGS
-from bot.config import RSS_DIRECT as rss_direct
+from bot.config import conf
 from bot.startup.before import DOCKER_DEPLOYMENT as d_docker
 from bot.startup.before import entime
 from bot.utils.bot_utils import RSS_DICT as rss_dict
@@ -240,7 +239,7 @@ async def set_mux_args(event, args, client):
         return await try_delete(event)
     try:
         if args.casefold() == "reset":
-            if not MUX_ARGS:
+            if not conf.MUX_ARGS:
                 if file_exists(mux_file):
                     s_remove(mux_file)
                     await save2db2(None, "mux_args")
@@ -249,7 +248,7 @@ async def set_mux_args(event, args, client):
                     return await event.reply(
                         f"**Muxing argument was not set; Therefore cannot {args}!**"
                     )
-            args = MUX_ARGS
+            args = conf.MUX_ARGS
         with open(mux_file, "w") as file:
             file.write(str(args) + "\n")
         await save2db2(args, "mux_args")
@@ -333,11 +332,11 @@ async def reffmpeg(event, args, client):
         return await try_delete(event)
     try:
         with open(ffmpeg_file, "w") as file:
-            file.write(str(FFMPEG) + "\n")
+            file.write(str(conf.FFMPEG) + "\n")
 
-        await save2db2(FFMPEG, "ffmpeg")
+        await save2db2(conf.FFMPEG, "ffmpeg")
         await event.reply(
-            f"<pre>\n<code class='Reseted ffmpeg CLI parameters to:'>{FFMPEG}</code>\n</pre>",
+            f"<pre>\n<code class='Reseted ffmpeg CLI parameters to:'>{conf.FFMPEG}</code>\n</pre>",
             parse_mode="html",
         )
     except Exception:
@@ -735,20 +734,20 @@ async def pause(event, args, client):
 
 
 async def fc_forward(msg, args, client):
-    """Forwards replied message to FCHANNEL"""
+    """Forwards replied message to conf.FCHANNEL"""
     if msg.from_user:
         if not user_is_owner(msg.from_user.id):
             return
     else:
-        if msg.chat.id != FCHANNEL:
+        if msg.chat.id != conf.FCHANNEL:
             return
     try:
-        if not FCHANNEL:
-            return await msg.reply("`FCHANNEL var not set.`")
+        if not conf.FCHANNEL:
+            return await msg.reply("`conf.FCHANNEL var not set.`")
         if not msg.reply_to_message:
-            return await msg.reply("`Reply with a message to forward to FCHANNEL`")
+            return await msg.reply("`Reply with a message to forward to conf.FCHANNEL`")
         f_msg = msg.reply_to_message
-        await f_msg.copy(chat_id=FCHANNEL)
+        await f_msg.copy(chat_id=conf.FCHANNEL)
         rep = await msg.reply("`Forwarded succesfully.`")
         if args:
             await try_delete(msg)
@@ -1095,7 +1094,7 @@ async def rss_sub(event, args, client):
     if arg.nodirect:
         arg.direct = False
     elif not arg.direct:
-        arg.direct = rss_direct
+        arg.direct = conf.RSS_DIRECT
     try:
         html = await get_html(feed_link)
         rss_d = feedparse(html)

@@ -3,14 +3,7 @@ from os.path import splitext as split_ext
 from shutil import copy2 as copy_file
 
 from bot import asyncio, ffmpeg_file, mux_file, pyro, tele, time
-from bot.config import CACHE_DL as cache
-from bot.config import DUMP_LEECH as dump
-from bot.config import ENCODER
-from bot.config import FBANNER as fb
-from bot.config import FCHANNEL as fc
-from bot.config import FCODEC
-from bot.config import FSTICKER as fs
-from bot.config import LOG_CHANNEL as log_channel
+from bot.config import conf
 from bot.others.exceptions import AlreadyDl
 from bot.startup.before import entime
 from bot.utils.ani_utils import custcap, dynamicthumb, f_post, parse, qparse_t
@@ -81,10 +74,13 @@ async def another(text, title, epi, sea, metadata, dl):
 
 
 async def forward_(name, out, ds, mi, f):
+    fb = conf.FBANNER
+    fc = conf.FCHANNEL
+    fs = conf.FSTICKER
     if not fc:
         return
     try:
-        pic_id, f_msg = await f_post(name, out, FCODEC, mi, _filter=f, evt=fb)
+        pic_id, f_msg = await f_post(name, out, conf.FCODEC, mi, _filter=f, evt=fb)
         if pic_id:
             await pyro.send_photo(photo=pic_id, caption=f_msg, chat_id=fc)
     except Exception:
@@ -160,6 +156,7 @@ async def thing():
         queue_id = list(queue.keys())[0]
         chat_id, msg_id = queue_id
         download = None
+        log_channel = conf.LOG_CHANNEL
         name, u_msg, v_f = list(queue.values())[0]
         v, f, m = v_f
         sender_id, message = u_msg
@@ -300,9 +297,9 @@ async def thing():
                 c_n = c_n.replace(x, "_")
             await op.reply("#" + c_n) if op else None
             await msg_p.reply("#" + c_n) if log_channel == chat_id else None
-        if einfo.uri and dump is True:
+        if einfo.uri and conf.DUMP_LEECH is True:
             asyncio.create_task(dumpdl(dl, name, thumb2, msg_t.chat_id, message))
-        if len(queue) > 1 and cache:
+        if len(queue) > 1 and conf.CACHE_DL:
             await cache_dl()
         with open(ffmpeg_file, "r") as file:
             nani = file.read().rstrip()
@@ -383,7 +380,7 @@ async def thing():
 
         sut = time.time()
         fname = path_split(out)[1]
-        pcap = await custcap(name, fname, ver=v, encoder=ENCODER, _filter=f)
+        pcap = await custcap(name, fname, ver=v, encoder=conf.ENCODER, _filter=f)
         await op.edit(f"`Uploading…` `{out}`") if op else None
         upload = uploader(sender_id, _id)
         up = await upload.start(msg_t.chat_id, out, msg_p, thumb2, pcap, message)

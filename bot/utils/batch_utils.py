@@ -2,7 +2,7 @@ import copy
 
 from telethon import events
 
-from bot import CMD_SUFFIX, Button, asyncio, batch_lock, errors, itertools, os, re, tele
+from bot import conf, Button, asyncio, batch_lock, errors, itertools, os, re, tele
 
 from .ani_utils import qparse
 from .bot_utils import (
@@ -47,7 +47,7 @@ async def clean_batch(args=None, key=None):
 async def get_preview_msg(file_list, batch_queue, ver=None, fil=None):
     msg = str()
     button = []
-    cmd_s = CMD_SUFFIX.strip()
+    cmd_s = conf.CMD_SUFFIX.strip()
     qn = sum(1 for st in batch_queue.values() if st == 1)
     try:
         i = len(batch_queue)

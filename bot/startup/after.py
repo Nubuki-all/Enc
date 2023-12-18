@@ -10,7 +10,7 @@ from .before import *
 async def start_aria2p():
     try:
         globals()["aria2"] = aria2p.API(
-            aria2p.Client(host="http://localhost", port=ARIA2_PORT, secret="")
+            aria2p.Client(host="http://localhost", port=conf.ARIA2_PORT, secret="")
         )
         aria2.add(
             "https://nyaa.si/download/1752639.torrent",
@@ -30,17 +30,18 @@ async def start_aria2p():
 
 
 async def start_qbit():
-    os.system(f"qbittorrent-nox -d --webui-port={QBIT_PORT} --profile={os.getcwd()}")
+    os.system(f"qbittorrent-nox -d --webui-port={conf.QBIT_PORT} --profile={os.getcwd()}")
 
 
 async def start_rpc():
     os.system(
-        f"aria2c --enable-rpc=true --rpc-max-request-size=1024M --rpc-listen-port={ARIA2_PORT} "
+        f"aria2c --enable-rpc=true --rpc-max-request-size=1024M --rpc-listen-port={conf.ARIA2_PORT} "
         "--seed-time=0 --follow-torrent=mem --summary-interval=0 --daemon=true --allow-overwrite=true "
         "--user-agent=Wget/1.12"
     )
-    await asyncio.sleep(3)
-    await start_aria2p()
+    if not startup_:
+        await asyncio.sleep(3)
+        await start_aria2p()
 
 
 async def onrestart():
@@ -65,15 +66,15 @@ async def onrestart():
 
 async def onstart():
     try:
-        for i in OWNER.split():
+        for i in conf.OWNER.split():
             try:
                 await tele.send_message(int(i), f"**I'm {enquip()} {enmoji()}**")
             except Exception:
                 pass
-        if LOG_CHANNEL:
+        if conf.LOG_CHANNEL:
             me = await pyro.get_users("me")
             await tele.send_message(
-                LOG_CHANNEL, f"**{me.first_name} is {enquip()} {enmoji()}**"
+                conf.LOG_CHANNEL, f"**{me.first_name} is {enquip()} {enmoji()}**"
             )
     except BaseException:
         pass
@@ -82,10 +83,10 @@ async def onstart():
 async def on_termination():
     try:
         dead_msg = f"**I'm {enquip2()} {enmoji2()}**"
-        if LOG_CHANNEL:
-            await tele.send_message((LOG_CHANNEL), dead_msg)
+        if conf.LOG_CHANNEL:
+            await tele.send_message((conf.LOG_CHANNEL), dead_msg)
         else:
-            for i in OWNER.split():
+            for i in conf.OWNER.split():
                 try:
                     await tele.send_message(int(i), dead_msg)
                 except Exception:

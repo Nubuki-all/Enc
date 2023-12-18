@@ -3,13 +3,13 @@ import shutil
 from os.path import split as path_split
 
 from bot import Path, pyro, pyro_errors
-from bot.config import DUMP_CHANNEL, LOG_CHANNEL
+from bot.config import conf
 from bot.utils.log_utils import logger
 from bot.utils.os_utils import parse_dl, s_remove
 from bot.workers.uploaders.upload import Uploader as uploader
 
-dump_ = int(DUMP_CHANNEL) if DUMP_CHANNEL else None
-sticker = "CAACAgEAAxkBAAI0aWKx36P2GY9Fq6xvN0SBU1V2xZYIAAKXAgACJ_hhR9HcWzoditT7HgQ"
+
+h_sticker = "CAACAgEAAxkBAAI0aWKx36P2GY9Fq6xvN0SBU1V2xZYIAAKXAgACJ_hhR9HcWzoditT7HgQ"
 
 
 async def dumpdl(dl, name, thum, user, message):
@@ -17,7 +17,9 @@ async def dumpdl(dl, name, thum, user, message):
     try:
         shutil.copy2(dl, dmp)
         _dmp = Path(dmp)
+        dump_ = conf.DUMP_CHANNEL or None
         fname = f"`{name}`"
+        sticker = conf.FSTICKER or h_sticker
         if dump_:
             message = await pyro.send_message(
                 dump_, "`🚨 Incoming! 🚨`\n\n" + await parse_dl(name)
@@ -40,8 +42,8 @@ async def dumpdl(dl, name, thum, user, message):
                 f_reply = await reply.edit(f"{fname} __dumped successfully.__")
             else:
                 f_reply = await reply.edit(f"`Dumping of {fname} was cancelled.`")
-        if LOG_CHANNEL:
-            chat = int(LOG_CHANNEL)
+        if conf.LOG_CHANNEL:
+            chat = int(conf.LOG_CHANNEL)
             await f_reply.copy(chat_id=chat)
             if dp is not None:
                 await dp.copy(chat_id=chat)

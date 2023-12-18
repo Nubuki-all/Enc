@@ -1,5 +1,4 @@
-from bot import FCHANNEL as forward
-from bot import FCHANNEL_STAT as forward_id
+from bot.config import conf
 from bot import asyncio, itertools, pyro, startup_, tele
 from bot.fun.emojis import enmoji
 from bot.fun.quips import enquip4
@@ -89,7 +88,7 @@ async def stateditor(x, channel, id):
 
 
 async def autostat():
-    if forward and forward_id:
+    if conf.FCHANNEL and conf.FCHANNEL_STAT:
 
         class Check:
             def __init__(self):
@@ -118,7 +117,7 @@ async def autostat():
             check.state = get_pause_status() == 0
             return False
 
-        while forward_id:
+        while conf.FCHANNEL_STAT:
             if not queue:
                 if check.done:
                     await asyncio.sleep(60)
@@ -136,5 +135,5 @@ async def autostat():
                     estat = await encodestat()
             else:
                 estat = f"**{enquip4()} {enmoji()}**"
-            await stateditor(estat, forward, forward_id)
+            await stateditor(estat, conf.FCHANNEL, conf.FCHANNEL_STAT)
             await asyncio.sleep(60)

@@ -1,8 +1,7 @@
 import uuid
 
-from bot import QBIT_PORT as qbit_port
-from bot import QBIT_TIMEOUT as q_timeout
 from bot import asyncio, math, os, pyro, qbClient, time
+from bot.config import conf
 from bot.utils.bot_utils import (
     CACHE_QUEUE,
     Qbit_c,
@@ -40,7 +39,7 @@ def rm_leech_file(*gids):
 def get_qbclient():
     return qbClient(
         host="localhost",
-        port=qbit_port,
+        port=conf.QBIT_PORT,
         VERIFY_WEBUI_CERTIFICATE=False,
         REQUESTS_ARGS={"timeout": (30, 60)},
     )
@@ -162,7 +161,7 @@ async def get_torrent(url):
                     tor_info = await sync_to_async(qb.torrents_info, tag=tag)
                     if len(tor_info) > 0:
                         break
-                    elif time.time() - st >= q_timeout:
+                    elif time.time() - st >= conf.QBIT_TIMEOUT:
                         qinfo.error = "Failed to add torrent…"
                         return
         else:

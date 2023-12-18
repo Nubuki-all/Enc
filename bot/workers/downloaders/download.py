@@ -60,7 +60,7 @@ class Downloader:
             self.display_dl_info = True
         else:
             self.display_dl_info = False
-        if PAUSE_ON_DL_INFO:
+        if conf.PAUSE_ON_DL_INFO:
             self.pause_on_dl_info = True
         else:
             self.pause_on_dl_info = False

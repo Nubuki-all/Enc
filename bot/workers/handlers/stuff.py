@@ -4,9 +4,7 @@ import time
 
 import psutil
 
-from bot import CMD_SUFFIX
-from bot import OWNER as owner
-from bot import Button, botStartTime, dt, subprocess, version_file
+from bot import Button, conf, botStartTime, dt, subprocess, version_file
 from bot.fun.emojis import enmoji
 from bot.utils.bot_utils import add_temp_user, get_readable_file_size, rm_temp_user
 from bot.utils.bot_utils import time_formatter as tf
@@ -106,9 +104,9 @@ async def start(event, args, client):
     if temp_is_allowed(user):
         msg = msg3
     elif not user_is_allowed(user):
-        priv = await event.client.get_entity(int(owner.split()[0]))
+        priv = await event.client.get_entity(int(conf.OWNER.split()[0]))
         msg = f"{msg1}You're not allowed access to this bot"
-        msg += f"\nAsk [{priv.first_name}](tg://user?id={owner.split()[0]}) "
+        msg += f"\nAsk [{priv.first_name}](tg://user?id={conf.OWNER.split()[0]}) "
         msg += "(nicely) to grant you access."
 
     if not msg:
@@ -158,9 +156,9 @@ async def beck(event):
     if temp_is_allowed(sender):
         msg = msg3
     elif not user_is_allowed(sender):
-        priv = await event.client.get_entity(int(owner.split()[0]))
+        priv = await event.client.get_entity(int(conf.OWNER.split()[0]))
         msg = f"{msg1}You're not allowed access to this bot"
-        msg += f"\nAsk [{priv.first_name}](tg://user?id={owner.split()[0]}) "
+        msg += f"\nAsk [{priv.first_name}](tg://user?id={conf.OWNER.split()[0]}) "
         msg += "(nicely) to grant you access."
     if not msg:
         msg = msg2
@@ -270,7 +268,7 @@ async def temp_auth(event, args, client):
 
 
 async def icommands(event):
-    s = CMD_SUFFIX or str()
+    s = conf.CMD_SUFFIX or str()
     await event.edit(
         f"""`
 start{s} - check if bot is awake and get usage.

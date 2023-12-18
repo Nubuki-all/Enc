@@ -27,23 +27,23 @@ if file_exists(version_file):
 LOGS.info(vmsg)
 LOGS.info("=" * 30)
 
-if THUMB:
-    os.system(f"wget {THUMB} -O thumb.jpg")
+if conf.THUMB:
+    os.system(f"wget {conf.THUMB} -O thumb.jpg")
 
-if DL_STUFF:
-    for link in DL_STUFF.split(","):
+if conf.DL_STUFF:
+    for link in conf.DL_STUFF.split(","):
         os.system(f"wget {link.strip()}")
 
-if NO_TEMP_PM:
+if conf.DL_STUFF:
     TEMP_ONLY_IN_GROUP.append(1)
 
 if not file_exists(ffmpeg_file):
     with open(ffmpeg_file, "w") as file:
-        file.write(str(FFMPEG) + "\n")
+        file.write(str(conf.FFMPEG) + "\n")
 
 if not file_exists(mux_file) and MUX_ARGS:
     with open(mux_file, "w") as file:
-        file.write(str(MUX_ARGS) + "\n")
+        file.write(str(conf.MUX_ARGS) + "\n")
 
 if not os.path.isdir("downloads/"):
     os.mkdir("downloads/")
@@ -62,9 +62,9 @@ if not os.path.isdir("thumb/"):
 if os.path.isdir("/tgenc"):
     DOCKER_DEPLOYMENT.append(1)
 
-if TEMP_USER:
-    for t in TEMP_USER.split():
-        if t in OWNER.split():
+if conf.TEMP_USER:
+    for t in conf.TEMP_USER.split():
+        if t in conf.OWNER.split():
             continue
         if t not in TEMP_USERS:
             TEMP_USERS.append(t)
@@ -84,7 +84,7 @@ def load_db(_db, _key, var, var_type=None):
 
     if var_type == "list":
         for item in out.split():
-            if item in OWNER.split():
+            if item in conf.OWNER.split():
                 continue
             if item not in var:
                 var.append(item)
@@ -95,9 +95,9 @@ def load_db(_db, _key, var, var_type=None):
             file.write(out + "\n")
 
 
-if DATABASE_URL:
-    cluster = MongoClient(DATABASE_URL)
-    db = cluster[DBNAME]
+if conf.DATABASE_URL:
+    cluster = MongoClient(conf.DATABASE_URL)
+    db = cluster[conf.DBNAME]
     queuedb = db["queue"]
     ffmpegdb = db["code"]
     filterdb = db["filter"]
@@ -126,7 +126,7 @@ create_api_token()
 
 class EnTimer:
     def __init__(self):
-        self.ind_pause = LOCK_ON_STARTUP
+        self.ind_pause = conf.LOCK_ON_STARTUP
         self.time = 0
         self.msg = None
 

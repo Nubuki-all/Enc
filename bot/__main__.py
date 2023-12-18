@@ -13,10 +13,12 @@
 # License can be found in
 # <https://github.com/Nubuki-all/Enc/blob/main/License> .
 
+import asyncio
+import itertools
 
 from pyrogram import filters
 
-from . import *
+from . import LOGS, conf, pyro, tele
 from .startup.after import on_startup
 from .utils.msg_utils import event_handler
 from .workers.handlers.dev import bash
@@ -82,7 +84,7 @@ from .workers.handlers.stuff import (
     up,
 )
 
-cmd_suffix = CMD_SUFFIX.strip()
+cmd_suffix = conf.CMD_SUFFIX.strip()
 LOGS.info("Starting...")
 
 
@@ -90,7 +92,7 @@ LOGS.info("Starting...")
 
 
 try:
-    tele.start(bot_token=BOT_TOKEN)
+    tele.start(bot_token=conf.BOT_TOKEN)
     pyro.start()
 except Exception as er:
     LOGS.info(er)

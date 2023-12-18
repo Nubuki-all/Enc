@@ -1,6 +1,6 @@
 from telethon import events
 
-from bot import CMD_SUFFIX, Button, itertools, pyro, queue_lock, re, tele
+from bot import conf, Button, itertools, pyro, queue_lock, re, tele
 
 from .bot_utils import QUEUE, QUEUE_STATUS
 from .log_utils import logger
@@ -49,7 +49,7 @@ async def queue_status(event):
 async def get_queue_msg():
     msg = str()
     button = None
-    cmd_s = CMD_SUFFIX.strip()
+    cmd_s = conf.CMD_SUFFIX.strip()
     try:
         i = len(QUEUE)
         globals()["PAGES"] = (i + STATUS_LIMIT - 2) // STATUS_LIMIT

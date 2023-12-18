@@ -125,7 +125,7 @@ async def en_download(event, args, client):
       --cap (To use download with caption instead of filename.)
       if no other arg is given after dir, bot automatically downloads to given dir with default filename instead.
 
-      *path specified directly will be downloaded to download folder
+      *path specified directly will be downloaded as a subdir to download folder
     """
     if not user_is_owner(event.sender_id):
         return await event.delete()
@@ -331,8 +331,8 @@ async def en_mux(event, args, client):
         -default_s {lang_iso3} same as above but for subtitles.
             the probability of this working rests on the source file having a language metadata.
         -ext {ext} force change extension (requires the preceding dot ".")
-        -tag_c {string} force tag caption
-        -tag_f {string} force tag file
+        -tc {string} force tag caption
+        -tf {string} force tag file
     """
 
     turn_id = f"{event.chat_id}:{event.id}"
@@ -383,8 +383,8 @@ async def en_mux(event, args, client):
                 ["-np", "store_true"],
                 "-q",
                 "-qs",
-                "-tag_c",
-                "-tag_f",
+                "-tc",
+                "-tf",
                 "-v",
                 to_parse=flags,
             )

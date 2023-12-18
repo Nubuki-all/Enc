@@ -22,8 +22,11 @@ from bot import (
     tgp_client,
     time,
 )
-from bot.config import CMD_SUFFIX as suffix
+from bot.config import conf
 
+
+
+suffix = conf.CMD_SUFFIX
 
 class Var_list:
     TEMP_ONLY_IN_GROUP = []
