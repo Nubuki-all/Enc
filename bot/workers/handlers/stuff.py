@@ -4,7 +4,8 @@ import time
 
 import psutil
 
-from bot import Button, botStartTime, conf, dt, subprocess, version_file
+from bot import Button, botStartTime, dt, subprocess, version_file
+from bot.config import conf
 from bot.fun.emojis import enmoji
 from bot.utils.bot_utils import add_temp_user, get_readable_file_size, rm_temp_user
 from bot.utils.bot_utils import time_formatter as tf
@@ -24,12 +25,14 @@ async def up(event, args, client):
     """ping bot!"""
     if not user_is_allowed(event.sender_id):
         return await event.delete()
+    ist = dt.now()
     msg = await reply_message(event, "…")
     st = dt.now()
     await edit_message(msg, "`Ping…`")
     ed = dt.now()
+    ims = (st - ist).microseconds / 1000
     ms = (ed - st).microseconds / 1000
-    await edit_message(msg, "**Pong!**\n`{}` __ms__".format(ms))
+    await edit_message(msg, "**Pong!**\n`{}` __ms__, `{}` __ms__".format(ims, ms))
 
 
 async def status(event, args, client):
