@@ -289,10 +289,10 @@ async def bc_msg(text, except_user=None, mlist=[]):
         except Exception:
             pass
             # log(Exception)
-    if LOG_CHANNEL:
+    if conf.LOG_CHANNEL:
         try:
             e = await pyro.send_message(
-                LOG_CHANNEL,
+                conf.LOG_CHANNEL,
                 text,
             )
             mlist.append(e)
