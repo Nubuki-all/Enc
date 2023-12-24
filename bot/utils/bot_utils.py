@@ -9,16 +9,22 @@ import requests
 from aiohttp import ClientSession
 
 from bot import (
+    LOGS,
     asyncio,
     caption_file,
     dt,
     filter_file,
     itertools,
     tele,
+    telegraph_errors,
     tgp_author,
     tgp_author_url,
     tgp_client,
+    time,
 )
+from bot.config import conf
+
+suffix = conf.CMD_SUFFIX
 
 
 class Var_list:
@@ -162,7 +168,7 @@ def rm_temp_user(id):
     TEMP_USERS.remove(id)
 
 
-class C_qbit:
+class Qbit_c:
     def __init__(self, count=None, flist=None, error=None):
         self.count = count
         self.file_list = flist
@@ -258,6 +264,18 @@ def replace_proxy(url):
     return url
 
 
+def check_cmds(command: str, *matches: str):
+    def check_cmd(command: str, match: str):
+        match += suffix
+        c = command.split(match, maxsplit=1)
+        return len(c) == 2 and not c[1]
+
+    for match in matches:
+        if check_cmd(command, match):
+            return True
+    return False
+
+
 def gfn(fn):
     "gets module path"
     return ".".join([fn.__module__, fn.__qualname__])
@@ -302,6 +320,30 @@ def txt_to_str(txt: str):
     return string
 
 
+def is_audio_file(filename: str):
+    audio_file_extensions = (
+        ".aac",
+        ".mp3",
+        ".m4a",
+        ".flac",
+        ".opus",
+        ".wav",
+    )
+    if filename.endswith((audio_file_extensions)):
+        return True
+
+
+def is_subtitle_file(filename: str):
+    sub_file_extensions = (
+        ".ass",
+        ".srt",
+        ".txt",
+        ".pgs",
+    )
+    if filename.endswith((sub_file_extensions)):
+        return True
+
+
 def is_video_file(filename: str):
     video_file_extensions = (
         ".3g2",
@@ -337,6 +379,13 @@ def is_video_file(filename: str):
         return True
 
 
+def is_supported_file(filename: str):
+    for support in (is_audio_file, is_subtitle_file, is_video_file):
+        if support(filename):
+            return True
+    return False
+
+
 def get_readable_file_size(size_in_bytes: int) -> str:
     if size_in_bytes is None:
         return "0B"
@@ -354,6 +403,21 @@ async def get_html(link):
     async with ClientSession(trust_env=True) as session:
         async with session.get(replace_proxy(link)) as res:
             return await res.text()
+
+
+def create_api_token(retries=10):
+    telgrph_tkn_err_msg = "Couldn't not successfully create telegraph api token!."
+    while retries:
+        try:
+            tgp_client.create_api_token("Mediainfo")
+            break
+        except (requests.exceptions.ConnectionError, ConnectionError) as e:
+            retries -= 1
+            if not retries:
+                LOGS.info(telgrph_tkn_err_msg)
+                break
+            time.sleep(1)
+    return retries
 
 
 async def post_to_tgph(title, out):
@@ -375,6 +439,10 @@ async def post_to_tgph(title, out):
                 text=out,
             )
             return page
+        except telegraph_errors.APITokenRequiredError as e:
+            result = await sync_to_async(create_api_token)
+            if not result:
+                raise e
         except (requests.exceptions.ConnectionError, ConnectionError) as e:
             retries -= 1
             if not retries:
@@ -536,8 +604,10 @@ async def get_codec():
             "480": "480p",
             "720": "720p",
             "1080": "1080p",
-            "libx265": "HEVC",
+            "x264": "AVC",
+            "x265": "HEVC",
             "libsvtav1": "AV1",
+            "svt_av1": "AV1",
         }
     )
     for key, value in s_check.items():

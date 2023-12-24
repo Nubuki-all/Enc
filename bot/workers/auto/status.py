@@ -1,6 +1,5 @@
-from bot import FCHANNEL as forward
-from bot import FCHANNEL_STAT as forward_id
 from bot import asyncio, itertools, pyro, startup_, tele
+from bot.config import conf
 from bot.fun.emojis import enmoji
 from bot.fun.quips import enquip4
 from bot.fun.quotes import enquotes
@@ -9,7 +8,7 @@ from bot.utils.ani_utils import qparse
 from bot.utils.batch_utils import get_batch_list
 from bot.utils.bot_utils import BATCH_QUEUE as bqueue
 from bot.utils.bot_utils import QUEUE as queue
-from bot.utils.bot_utils import encode_info, get_codec, get_pause_status
+from bot.utils.bot_utils import encode_info, get_codec, get_pause_status, sync_to_async
 from bot.utils.log_utils import logger
 
 
@@ -21,7 +20,7 @@ async def batch_status_preview(msg, v, f):
     if left:
         msg += f"__+{left} more…__\n"
     if not blist and encode_info.current:
-        loc = await enquotes()
+        loc = await sync_to_async(enquotes)
         msg += f"Nothing Here; While you wait:\n\n{loc}\n"
     return msg
 
@@ -66,7 +65,7 @@ async def encodestat():
         else:
             msg = await queue_status_preview(i, msg, queue)
         if len(queue) == 1 and single and encode_info.current:
-            loc = await enquotes()
+            loc = await sync_to_async(enquotes)
             msg += f"Nothing Here; While you wait:\n\n{loc}"
         elif not single and (r := (len(queue) - 1)):
             msg += f"\n__(+{r} more item(s) on queue.)__ \n"
@@ -89,7 +88,7 @@ async def stateditor(x, channel, id):
 
 
 async def autostat():
-    if forward and forward_id:
+    if conf.FCHANNEL and conf.FCHANNEL_STAT:
 
         class Check:
             def __init__(self):
@@ -118,7 +117,7 @@ async def autostat():
             check.state = get_pause_status() == 0
             return False
 
-        while forward_id:
+        while conf.FCHANNEL_STAT:
             if not queue:
                 if check.done:
                     await asyncio.sleep(60)
@@ -136,5 +135,5 @@ async def autostat():
                     estat = await encodestat()
             else:
                 estat = f"**{enquip4()} {enmoji()}**"
-            await stateditor(estat, forward, forward_id)
+            await stateditor(estat, conf.FCHANNEL, conf.FCHANNEL_STAT)
             await asyncio.sleep(60)

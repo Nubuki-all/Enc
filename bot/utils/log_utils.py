@@ -1,6 +1,6 @@
 import traceback
 
-from bot import LOG_CHANNEL, LOGS, LOGS_IN_CHANNEL, tele
+from bot import LOGS, conf, tele
 from bot.fun.emojis import enmoji
 
 
@@ -10,12 +10,12 @@ def log(Exception: Exception = None, e: str = None, critical=False):
 
 
 async def channel_log(Exception: Exception, e: str):
-    if LOG_CHANNEL and LOGS_IN_CHANNEL:
+    if conf.LOG_CHANNEL and conf.LOGS_IN_CHANNEL:
         try:
             error = e or traceback.format_exc()
             msg = await tele.send_message(
-                LOG_CHANNEL,
-                f"**#ERROR\n\n⛱️ Summary of what happened:**\n`{error}`\n\n**To restict error messages to logs set the** `LOGS_IN_CHANNEL` **env var to** `False`. {enmoji()}",
+                conf.LOG_CHANNEL,
+                f"**#ERROR\n\n⛱️ Summary of what happened:**\n`{error}`\n\n**To restict error messages to logs set the** `conf.LOGS_IN_CHANNEL` **env var to** `False`. {enmoji()}",
             )
             return msg
         except Exception:

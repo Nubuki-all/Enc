@@ -8,17 +8,7 @@ import flag
 import humanize
 import pycountry
 
-from bot import (
-    C_LINK,
-    CAP_DECO,
-    EXT_CAP,
-    FL_CAP,
-    MI_CAP,
-    NO_BANNER,
-    parse_file,
-    release_name,
-    release_name_b,
-)
+from bot import conf, parse_file, release_name, release_name_b
 
 from .bot_utils import (
     auto_rename,
@@ -443,7 +433,7 @@ async def parse(
         file_name += ".mkv"
     except Exception:
         await logger(Exception)
-        file_name = _file.replace(f".{_ext}", f" {C_LINK}.{_ext}")
+        file_name = _file.replace(f".{_ext}", f" {conf.C_LINK}.{_ext}")
         file_name2 = file_name
     if "/" in file_name:
         file_name = file_name.replace("/", " ")
@@ -509,9 +499,9 @@ async def custcap(
     _filter=None,
     ccodec=None,
 ):
-    if FL_CAP:
+    if conf.FL_CAP:
         return f"`{fname}`"
-    if not EXT_CAP:
+    if not conf.EXT_CAP:
         return await simplecap(
             name, fname, anilist, cust_type, folder, ver, encoder, _filter, ccodec
         )
@@ -548,7 +538,7 @@ async def custcap(
         if title is None:
             raise Exception("Parsing Failed")
         out = folder + fname
-        ccd = CAP_DECO if not ccd else ccd
+        ccd = conf.CAP_DECO if not ccd else ccd
         or_title = title
         r_is_end = True if ri == "[END]" else False
         codec = await get_codec()
@@ -617,12 +607,12 @@ async def custcap(
             encr = encoder.replace("@", "", 1)
             caption += f"**{ccd} Encoder:** `{encr}`\n"
         caption += f"**{ccd} CRC32:** `[{crc32s}]`\n"
-        caption += f"**🔗 {C_LINK}**"
+        caption += f"**🔗 {conf.C_LINK}**"
     except Exception:
         await logger(Exception)
         om = fname.split(".")[0]
         ot = om.split("@")[0]
-        caption = f"**{ot}**\n**🔗 {C_LINK}**"
+        caption = f"**{ot}**\n**🔗 {conf.C_LINK}**"
     return caption
 
 
@@ -734,7 +724,7 @@ async def simplecap(
             caption += f"-{encr}"
         caption += f" [{crc32s}]"
         caption += check_ext(fname, get_split=True)[2]
-        if mi and MI_CAP:
+        if mi and conf.MI_CAP:
             caption = f"**[{caption}]({mi})**"
         else:
             caption = f"`{caption}`"
@@ -756,7 +746,7 @@ async def qparse_t(name, ver=None, fil=None):
 
 
 async def f_post(name, out, fcodec=None, mi=None, _filter=None, evt=True):
-    if NO_BANNER:
+    if conf.NO_BANNER:
         return None, None
     try:
         name = (await filter_name(name, _filter))[0]

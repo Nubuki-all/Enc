@@ -7,13 +7,13 @@ from bot import (
     caption_file,
     ffmpeg_file,
     filter_file,
+    mux_file,
     parse_file,
     rename_file,
     rss_dict_lock,
     thumb,
 )
-from bot.config import FCHANNEL, FFMPEG
-from bot.config import RSS_DIRECT as rss_direct
+from bot.config import conf
 from bot.startup.before import DOCKER_DEPLOYMENT as d_docker
 from bot.startup.before import entime
 from bot.utils.bot_utils import RSS_DICT as rss_dict
@@ -58,7 +58,7 @@ from bot.workers.downloaders.dl_helpers import get_qbclient
 async def nuke(event, args, client):
     """Stop/Nuke bot."""
     if not user_is_owner(event.sender_id):
-        return await event.delete()
+        return await msg_sleep_delete(event, "😂", time=5, del_rep=True)
     try:
         if not d_docker:
             await event.reply("`Exited.`")
@@ -78,7 +78,7 @@ async def nuke(event, args, client):
 async def restart(event, args, client):
     """Restarts bot. (To avoid issues use /update instead.)"""
     if not user_is_owner(event.sender_id):
-        return await event.delete()
+        return await try_delete(event)
     try:
         rst = await event.reply("`Trying To Restart`")
         await asyncio.sleep(1)
@@ -86,7 +86,10 @@ async def restart(event, args, client):
         rst = await rst.edit(f"`{rst_msg}`")
         message = str(rst.chat_id) + ":" + str(rst.id)
         await enquoter(rst_msg, rst)
-        await clean_all_qb()
+        try:
+            await clean_all_qb()
+        except Exception:
+            pass
         await re_x("restart", message)
     except Exception:
         await event.reply("Error Occurred")
@@ -97,7 +100,7 @@ async def update2(client, message):
     """Fetches latest update for bot"""
     try:
         if not user_is_owner(message.from_user.id):
-            return message.delete()
+            return try_delete(message)
         upt_mess = "Updating…"
         reply = await message.reply(f"`{upt_mess}`", quote=True)
         await enquoter(upt_mess, reply)
@@ -147,7 +150,7 @@ async def clean(event, args, client):
             Not advised if encoding as already started, use /clear all instead
     """
     if not user_is_owner(event.sender_id):
-        return await event.delete()
+        return await try_delete(event)
     try:
         if args and args.casefold() == "ffmpeg":
             kill_process("ffmpeg")
@@ -220,6 +223,61 @@ async def allowgroupenc(event, args, client):
         )
 
 
+async def set_mux_args(event, args, client):
+    """
+    Set, reset or disable muxing after transcoding.
+    Arguments:
+        ffmpeg params without the (-i input & output)
+            Do not pass encoding params, only map, metadata, dispositions are allowed.
+        or:
+
+        reset
+            to reset the mux_args to same parameter in env.
+            - if env is not set it is disabled.
+    """
+    if not user_is_owner(event.sender_id):
+        return await try_delete(event)
+    try:
+        if args.casefold() == "reset":
+            if not conf.MUX_ARGS:
+                if file_exists(mux_file):
+                    s_remove(mux_file)
+                    await save2db2(None, "mux_args")
+                    return await event.reply("**Successfully unset mux_args**")
+                else:
+                    return await event.reply(
+                        f"**Muxing argument was not set; Therefore cannot {args}!**"
+                    )
+            args = conf.MUX_ARGS
+        with open(mux_file, "w") as file:
+            file.write(str(args) + "\n")
+        await save2db2(args, "mux_args")
+        await event.reply(
+            f"<pre>\n<code class='language-Changed mux_args to:'>{args}</code>\n</pre>",
+            parse_mode="html",
+        )
+    except Exception:
+        await logger(Exception)
+
+
+async def get_mux_args(event, args, client):
+    """
+    Get currently set mux_args
+    Requires no arguments and any given will be ignored.
+    """
+    if not user_is_owner(event.sender_id):
+        return await try_delete(event)
+    if not file_exists(mux_file):
+        return await avoid_flood(event.reply, "__mux_args not set.__")
+    with open(mux_file, "r") as file:
+        m = file.read().rstrip("\n").rstrip()
+
+    await event.reply(
+        f"<pre>\n<code class='language-Current mux_args:'>{m}</code>\n</pre>",
+        parse_mode="html",
+    )
+
+
 async def change(event, args, client):
     """
     Changes bot encoding params;
@@ -234,7 +292,7 @@ async def change(event, args, client):
     Or… path/to/bash_script as arguments.
     """
     if not user_is_owner(event.sender_id):
-        return await event.delete()
+        return await try_delete(event)
     try:
         with open(ffmpeg_file, "w") as file:
             file.write(str(args) + "\n")
@@ -254,7 +312,7 @@ async def check(event, args, client):
     Requires no arguments and any given will be ignored.
     """
     if not user_is_owner(event.sender_id):
-        return await event.delete()
+        return await try_delete(event)
     with open(ffmpeg_file, "r") as file:
         ffmpeg = file.read().rstrip()
 
@@ -271,14 +329,14 @@ async def reffmpeg(event, args, client):
     Requires no argument.
     """
     if not user_is_owner(event.sender_id):
-        return await event.delete()
+        return await try_delete(event)
     try:
         with open(ffmpeg_file, "w") as file:
-            file.write(str(FFMPEG) + "\n")
+            file.write(str(conf.FFMPEG) + "\n")
 
-        await save2db2(FFMPEG, "ffmpeg")
+        await save2db2(conf.FFMPEG, "ffmpeg")
         await event.reply(
-            f"<pre>\n<code class='Reseted ffmpeg CLI parameters to:'>{FFMPEG}</code>\n</pre>",
+            f"<pre>\n<code class='Reseted ffmpeg CLI parameters to:'>{conf.FFMPEG}</code>\n</pre>",
             parse_mode="html",
         )
     except Exception:
@@ -294,7 +352,7 @@ async def version2(event, args, client):
     """
 
     if not user_is_owner(event.sender_id):
-        return await event.delete()
+        return await try_delete(event)
     version2 = get_var("version2")
     if not args:
         if version2:
@@ -334,7 +392,7 @@ async def discap(event, args, client):
             • ___ (to check state.)
     """
     if not user_is_owner(event.sender_id):
-        return await event.delete()
+        return await try_delete(event)
 
     no = len(args.split(maxsplit=1))
     if no == 1:
@@ -423,7 +481,7 @@ async def auto_rename(event, args, client):
         "failed…\n**Try:**\n/name " "`(Add_name_to_check_for|Add_name_to_replace_with)`"
     )
     if not user_is_owner(event.sender_id):
-        return await event.delete()
+        return await try_delete(event)
     try:
         if "|" not in args:
             return await event.reply(fail_msg)
@@ -454,7 +512,7 @@ async def auto_rename(event, args, client):
 async def v_auto_rename(event, args, client):
     """View all name filters."""
     if not user_is_owner(event.sender_id):
-        return await event.delete()
+        return await try_delete(event)
     if not file_exists(rename_file):
         return event.reply("`Nothing but a void.`")
     with open(rename_file, "r") as file:
@@ -489,7 +547,7 @@ async def del_auto_rename(event, args, client):
         f"`(Add_name_to_check_for|Add_name_to_replace_with)`"
     )
     if not user_is_owner(event.sender_id):
-        return await event.delete()
+        return await try_delete(event)
     try:
         if "|" not in args:
             if not args.isdigit():
@@ -555,7 +613,7 @@ async def filter(event, args, client):
         - /vfilter, /delfilter
     """
     if not user_is_owner(event.sender_id):
-        return await event.delete()
+        return await try_delete(event)
     try:
         arg = get_args("-f", "-rm", "-tc", "-tf", to_parse=args)
         if not arg.f and not arg.rm and not arg.tc and not arg.tf:
@@ -579,7 +637,7 @@ async def filter(event, args, client):
 async def vfilter(event, args, client):
     """View currently added filter."""
     if not user_is_owner(event.sender_id):
-        return await event.delete()
+        return await try_delete(event)
     try:
         if not file_exists(filter_file):
             return await event.reply("`❌ No Filters Found!`")
@@ -600,7 +658,7 @@ async def vfilter(event, args, client):
 async def rmfilter(event, args, client):
     """Delete previously added filter"""
     if not user_is_owner(event.sender_id):
-        return await event.delete()
+        return await try_delete(event)
     try:
         if not file_exists(filter_file):
             await event.reply("❌ No Filters Found To Delete")
@@ -643,7 +701,7 @@ async def pause(event, args, client):
         - no argument; (To check state)
     """
     if not user_is_owner(event.sender_id):
-        return await event.delete()
+        return await try_delete(event)
     try:
         if not args:
             if get_pause_status() == 0:
@@ -676,20 +734,20 @@ async def pause(event, args, client):
 
 
 async def fc_forward(msg, args, client):
-    """Forwards replied message to FCHANNEL"""
+    """Forwards replied message to conf.FCHANNEL"""
     if msg.from_user:
         if not user_is_owner(msg.from_user.id):
             return
     else:
-        if msg.chat.id != FCHANNEL:
+        if msg.chat.id != conf.FCHANNEL:
             return
     try:
-        if not FCHANNEL:
-            return await msg.reply("`FCHANNEL var not set.`")
+        if not conf.FCHANNEL:
+            return await msg.reply("`conf.FCHANNEL var not set.`")
         if not msg.reply_to_message:
-            return await msg.reply("`Reply with a message to forward to FCHANNEL`")
+            return await msg.reply("`Reply with a message to forward to conf.FCHANNEL`")
         f_msg = msg.reply_to_message
-        await f_msg.copy(chat_id=FCHANNEL)
+        await f_msg.copy(chat_id=conf.FCHANNEL)
         rep = await msg.reply("`Forwarded succesfully.`")
         if args:
             await try_delete(msg)
@@ -1036,7 +1094,7 @@ async def rss_sub(event, args, client):
     if arg.nodirect:
         arg.direct = False
     elif not arg.direct:
-        arg.direct = rss_direct
+        arg.direct = conf.RSS_DIRECT
     try:
         html = await get_html(feed_link)
         rss_d = feedparse(html)

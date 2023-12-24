@@ -4,9 +4,8 @@ import time
 
 import psutil
 
-from bot import CMD_SUFFIX
-from bot import OWNER as owner
 from bot import Button, botStartTime, dt, subprocess, version_file
+from bot.config import conf
 from bot.fun.emojis import enmoji
 from bot.utils.bot_utils import add_temp_user, get_readable_file_size, rm_temp_user
 from bot.utils.bot_utils import time_formatter as tf
@@ -26,12 +25,14 @@ async def up(event, args, client):
     """ping bot!"""
     if not user_is_allowed(event.sender_id):
         return await event.delete()
+    ist = dt.now()
     msg = await reply_message(event, "…")
     st = dt.now()
     await edit_message(msg, "`Ping…`")
     ed = dt.now()
+    ims = (st - ist).microseconds / 1000
     ms = (ed - st).microseconds / 1000
-    await edit_message(msg, "**Pong!**\n`{}` __ms__".format(ms))
+    await edit_message(msg, "**Pong!**\n`{}` __ms__, `{}` __ms__".format(ims, ms))
 
 
 async def status(event, args, client):
@@ -106,9 +107,9 @@ async def start(event, args, client):
     if temp_is_allowed(user):
         msg = msg3
     elif not user_is_allowed(user):
-        priv = await event.client.get_entity(int(owner.split()[0]))
+        priv = await event.client.get_entity(int(conf.OWNER.split()[0]))
         msg = f"{msg1}You're not allowed access to this bot"
-        msg += f"\nAsk [{priv.first_name}](tg://user?id={owner.split()[0]}) "
+        msg += f"\nAsk [{priv.first_name}](tg://user?id={conf.OWNER.split()[0]}) "
         msg += "(nicely) to grant you access."
 
     if not msg:
@@ -158,9 +159,9 @@ async def beck(event):
     if temp_is_allowed(sender):
         msg = msg3
     elif not user_is_allowed(sender):
-        priv = await event.client.get_entity(int(owner.split()[0]))
+        priv = await event.client.get_entity(int(conf.OWNER.split()[0]))
         msg = f"{msg1}You're not allowed access to this bot"
-        msg += f"\nAsk [{priv.first_name}](tg://user?id={owner.split()[0]}) "
+        msg += f"\nAsk [{priv.first_name}](tg://user?id={conf.OWNER.split()[0]}) "
         msg += "(nicely) to grant you access."
     if not msg:
         msg = msg2
@@ -270,7 +271,7 @@ async def temp_auth(event, args, client):
 
 
 async def icommands(event):
-    s = CMD_SUFFIX or str()
+    s = conf.CMD_SUFFIX or str()
     await event.edit(
         f"""`
 start{s} - check if bot is awake and get usage.
@@ -300,6 +301,8 @@ mux{s} - remux a file
 get{s} - get current ffmpeg code
 set{s} - set custom ffmpeg code
 reset{s} - reset default ffmpeg code
+mset{s} - set, reset, disable mux_args
+mget{s} - view current mux_args
 filter{s} - filter & stuff
 vfilter{s} - view filter
 groupenc{s} - allow encoding in group toggle

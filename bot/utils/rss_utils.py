@@ -3,14 +3,12 @@ import asyncio
 from feedparser import parse as feedparse
 
 from bot import pyro, rss_dict_lock
-from bot.config import CMD_SUFFIX as suffix
-from bot.config import RSS_CHAT as rss_chat
-from bot.config import RSS_DELAY as rss_delay
+from bot.config import conf
 from bot.workers.auto.schedule import addjob, scheduler
 from bot.workers.handlers.queue import enleech, enleech2
 
 from .bot_utils import RSS_DICT as rss_dict
-from .bot_utils import get_html
+from .bot_utils import check_cmds, get_html
 from .db_utils import save2db2
 from .log_utils import log
 from .msg_utils import send_rss
@@ -20,7 +18,7 @@ async def rss_monitor():
     """
     An asynchronous function to get rss links
     """
-    if not rss_chat:
+    if not conf.RSS_CHAT:
         log(e="RSS_CHAT not added! Shutting down rss scheduler...")
         scheduler.shutdown(wait=False)
         return
@@ -99,18 +97,6 @@ async def rss_monitor():
         log(e="No active rss feed\nRss Monitor has been paused!")
 
 
-def check_cmds(command: str, *matches: str):
-    def check_cmd(command: str, match: str):
-        match += suffix
-        c = command.split(match, maxsplit=1)
-        return len(c) == 2 and not c[1]
-
-    for match in matches:
-        if check_cmd(command, match):
-            return True
-    return False
-
-
 async def fake_event_handler(event):
     """
     Passes the rss message to the bot as a new event.
@@ -128,7 +114,7 @@ async def fake_event_handler(event):
 
 
 def schedule_rss():
-    addjob(rss_delay, rss_monitor)
+    addjob(conf.RSS_DELAY, rss_monitor)
 
 
 schedule_rss()

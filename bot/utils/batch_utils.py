@@ -2,7 +2,7 @@ import copy
 
 from telethon import events
 
-from bot import CMD_SUFFIX, Button, asyncio, batch_lock, errors, itertools, os, re, tele
+from bot import Button, asyncio, batch_lock, conf, errors, itertools, os, re, tele
 
 from .ani_utils import qparse
 from .bot_utils import (
@@ -47,7 +47,7 @@ async def clean_batch(args=None, key=None):
 async def get_preview_msg(file_list, batch_queue, ver=None, fil=None):
     msg = str()
     button = []
-    cmd_s = CMD_SUFFIX.strip()
+    cmd_s = conf.CMD_SUFFIX.strip()
     qn = sum(1 for st in batch_queue.values() if st == 1)
     try:
         i = len(batch_queue)
@@ -133,11 +133,11 @@ async def preview_actions(event):
 async def batch_preview(
     event, torrent, chat_id, e_id, v, f, reuse=False, user=None, select_all=False
 ):
-    if BATCH_ING:
+    if BATCH_ING and not select_all:
         await event.reply("`Cannot edit two batches simultaneously.`")
         return
     user = user or event.sender_id
-    BATCH_ING.append(user)
+    BATCH_ING.append(user) if not select_all else None
     event2 = await event.reply("…")
     preview_queue = get_preview()
     preview_list = get_preview(list=True)
@@ -156,7 +156,6 @@ async def batch_preview(
         await asyncio.sleep(3)
         while True:
             if select_all:
-                BATCH_ING.clear()
                 break
             if reuse and not get_queue().get((chat_id, e_id)):
                 await edit_message(

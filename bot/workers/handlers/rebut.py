@@ -18,6 +18,7 @@ from bot.utils.bot_utils import (
     get_f,
     get_filename,
     is_magnet,
+    is_supported_file,
     is_url,
     is_video_file,
     split_text,
@@ -124,7 +125,7 @@ async def en_download(event, args, client):
       --cap (To use download with caption instead of filename.)
       if no other arg is given after dir, bot automatically downloads to given dir with default filename instead.
 
-      *path specified directly will be downloaded to download folder
+      *path specified directly will be downloaded as a subdir to download folder
     """
     if not user_is_owner(event.sender_id):
         return await event.delete()
@@ -238,14 +239,13 @@ async def en_rename(event, args, client):
             __loc = loc
             __out, __none = await parse(loc, anilist=_parse, folder=work_folder)
         else:
-            __out = await get_leech_name(link)
-            if not __out:
-                error = aria2_err_msg if __out is None else not_vid_msg
-                return await rep_event.reply(error)
-            if __out.startswith("aria2_error"):
-                error = __out.split("aria2_error")[1].strip()
+            file = await get_leech_name(link)
+            if file.error:
                 return await rep_event.reply(f"`{error}`")
-            __loc = __out
+            if not is_video_file(file.name):
+                error = not_vid_msg
+                return await rep_event.reply(error)
+            __loc = __out = file.name
         _f = get_f()
         turn().append(turn_id)
         if waiting_for_turn():
@@ -322,6 +322,7 @@ async def en_mux(event, args, client):
         -i {link of file to download, tg link also supported(must be a supergroup link to file)}
         -np to turn off anilist
         -d {file_name} to change download name
+        -du {chat_id} id of chat to dumb resulting file.
         -c to delete command after muxing - needs no argument.
         -v tag files with versions.
         -q custom caption codec
@@ -331,8 +332,8 @@ async def en_mux(event, args, client):
         -default_s {lang_iso3} same as above but for subtitles.
             the probability of this working rests on the source file having a language metadata.
         -ext {ext} force change extension (requires the preceding dot ".")
-        -tag_c {string} force tag caption
-        -tag_f {string} force tag file
+        -tc {string} force tag caption
+        -tf {string} force tag file
     """
 
     turn_id = f"{event.chat_id}:{event.id}"
@@ -376,6 +377,7 @@ async def en_mux(event, args, client):
             flag = get_args(
                 ["-c", "store_true"],
                 "-d",
+                "du",
                 "-default_a",
                 "-default_s",
                 "-ext",
@@ -383,8 +385,8 @@ async def en_mux(event, args, client):
                 ["-np", "store_true"],
                 "-q",
                 "-qs",
-                "-tag_c",
-                "-tag_f",
+                "-tc",
+                "-tf",
                 "-v",
                 to_parse=flags,
             )
@@ -409,14 +411,18 @@ async def en_mux(event, args, client):
             qb = True
             select = ind
         else:
-            name = await get_leech_name(link)
-        if not name:
-            error = aria2_err_msg if name is None else not_vid_msg
-            return await rep_event.reply(error)
-        if name.startswith("aria2_error"):
-            error = input_2.split("aria2_error")[1].strip()
-            return await rep_event.reply(f"{error}")
+            file = await get_leech_name(link)
+            if file.error:
+                return await rep_event.reply(f"{file.error}")
+            if not is_video_file(file.name):
+                error = not_vid_msg
+                return await rep_event.reply(error)
+            name = file.name
         if flags:
+            if flag.du:
+                if not flag.du.lstrip("-").isdigit():
+                    return await event.reply("'-du': chat_id is not a valid number.")
+                flag.du = int(flag.du)
             if flag.np:
                 ani_parse = False
             if flag.i and (is_url(flag.i) or is_magnet(flag.i)):
@@ -435,13 +441,13 @@ async def en_mux(event, args, client):
                 else:
                     link2 = flag.i
                     message_2 = None
-                    name_2 = await get_leech_name(link2)
-                    if not name_2:
-                        error = aria2_err_msg if __out is None else not_vid_msg
+                    file2 = await get_leech_name(link2)
+                    if file2.error:
+                        return await event.reply(f"{file.error}")
+                    if not is_supported_file(file2.name):
+                        error = "`Input 2 is either a folder or not in the list of supported files.`"
                         return await event.reply(error)
-                    if name_2.startswith("aria2_error"):
-                        error = name_2.split("aria2_error")[1].strip()
-                        return await event.reply(f"{error}")
+                    name_2 = file2.name
                 input_2 = work_folder + name_2
             cap_tag = flag.tag_c
             codec = flag.q
@@ -460,7 +466,9 @@ async def en_mux(event, args, client):
             w_msg = await message.reply(
                 "`Waiting for previous process to complete.`", quote=True
             )
-            await wait_for_turn(turn_id, w_msg)
+            go_ahead = await wait_for_turn(turn_id, w_msg)
+            if not go_ahead:
+                return
         e = await message.reply(f"{enmoji()} **Downloading:-** `{name}`…", quote=True)
         await asyncio.sleep(5)
         d_id = f"{e.chat.id}:{e.id}"
@@ -567,13 +575,20 @@ async def en_mux(event, args, client):
         e = await message.reply("…")
         u_id = f"{e.chat.id}:{e.id}"
         upload = uploader(user, u_id)
-        await upload.start(event.chat_id, loc, e, thumb3, cap, message)
+        up = await upload.start(event.chat_id, loc, e, thumb3, cap, message)
         if not upload.is_cancelled:
             await e.edit(f"`{__out}` __uploaded successfully.__")
         else:
             await e.edit(f"__Upload of__ `{__out}` __was cancelled.__")
-        if flags and flag.c:
-            await try_delete(event)
+        if flags:
+            if flag.c:
+                await try_delete(event)
+            if flag.du:
+                try:
+                    await up.copy(chat_id=flag.du)
+                except Exception as e:
+                    await event.reply(f"'du': `{str(e)}`")
+                    await logger(Exception)
         s_remove(t_file, loc)
     except Exception:
         await logger(Exception)
@@ -615,7 +630,7 @@ async def en_upload(event, args, client):
     try:
         download = None
         ext = None
-        folder = "downloads2/"
+        folder = "downloads2/" f"{event.chat_id}:{event.id}/"
         qb = select = None
         uri = None
         topic_id = None
@@ -805,6 +820,7 @@ async def en_upload(event, args, client):
     finally:
         if download:
             await download.clean_download()
+            s_remove(folder, folders=True)
 
 
 async def en_list(event, args, client):

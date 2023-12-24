@@ -1,15 +1,9 @@
 from os.path import split as path_split
 from os.path import splitext as split_ext
+from shutil import copy2 as copy_file
 
-from bot import Path, asyncio, pyro, tele, time
-from bot.config import CACHE_DL as cache
-from bot.config import DUMP_LEECH as dump
-from bot.config import ENCODER
-from bot.config import FBANNER as fb
-from bot.config import FCHANNEL as fc
-from bot.config import FCODEC
-from bot.config import FSTICKER as fs
-from bot.config import LOG_CHANNEL as log_channel
+from bot import asyncio, ffmpeg_file, mux_file, pyro, tele, time
+from bot.config import conf
 from bot.others.exceptions import AlreadyDl
 from bot.startup.before import entime
 from bot.utils.ani_utils import custcap, dynamicthumb, f_post, parse, qparse_t
@@ -34,7 +28,7 @@ from bot.utils.msg_utils import (
     report_encode_status,
     report_failed_download,
 )
-from bot.utils.os_utils import info, pos_in_stm, s_remove
+from bot.utils.os_utils import file_exists, info, pos_in_stm, s_remove, size_of
 from bot.workers.downloaders.dl_helpers import cache_dl
 from bot.workers.downloaders.download import Downloader as downloader
 from bot.workers.encoders.encode import Encoder as encoder
@@ -80,10 +74,13 @@ async def another(text, title, epi, sea, metadata, dl):
 
 
 async def forward_(name, out, ds, mi, f):
+    fb = conf.FBANNER
+    fc = conf.FCHANNEL
+    fs = conf.FSTICKER
     if not fc:
         return
     try:
-        pic_id, f_msg = await f_post(name, out, FCODEC, mi, _filter=f, evt=fb)
+        pic_id, f_msg = await f_post(name, out, conf.FCODEC, mi, _filter=f, evt=fb)
         if pic_id:
             await pyro.send_photo(photo=pic_id, caption=f_msg, chat_id=fc)
     except Exception:
@@ -159,6 +156,7 @@ async def thing():
         queue_id = list(queue.keys())[0]
         chat_id, msg_id = queue_id
         download = None
+        log_channel = conf.LOG_CHANNEL
         name, u_msg, v_f = list(queue.values())[0]
         v, f, m = v_f
         sender_id, message = u_msg
@@ -188,7 +186,7 @@ async def thing():
         # USER_MAN.clear()
         # USER_MAN.append(user)
         _id = f"{msg_t.chat_id}:{msg_t.id}"
-        if str(sender_id).startswith("-100"):
+        if not sender_id or str(sender_id).startswith("-100"):
             sender_id = 777000
         sender = await pyro.get_users(sender_id)
         if chat_id == log_channel:
@@ -299,11 +297,11 @@ async def thing():
                 c_n = c_n.replace(x, "_")
             await op.reply("#" + c_n) if op else None
             await msg_p.reply("#" + c_n) if log_channel == chat_id else None
-        if einfo.uri and dump is True:
+        if einfo.uri and conf.DUMP_LEECH is True:
             asyncio.create_task(dumpdl(dl, name, thumb2, msg_t.chat_id, message))
-        if len(queue) > 1 and cache:
+        if len(queue) > 1 and conf.CACHE_DL:
             await cache_dl()
-        with open("ffmpeg.txt", "r") as file:
+        with open(ffmpeg_file, "r") as file:
             nani = file.read().rstrip()
         ffmpeg = await another(nani, title, epi, sn, metadata_name, dl)
 
@@ -324,6 +322,7 @@ async def thing():
             sender_id,
             out,
             log_msg=op,
+            exe_prefix=ffmpeg.split(maxsplit=1)[0],
         )
         if encode.process.returncode != 0:
             if download:
@@ -341,9 +340,47 @@ async def thing():
         await asyncio.sleep(3)
         await enpause(msg_p)
 
+        mux_args = None
+        if file_exists(mux_file):
+            with open(mux_file, "r") as file:
+                mux_args = file.read().rstrip("\n").rstrip()
+            smt = time.time()
+            mux_args = await another(mux_args, title, epi, sn, metadata_name, dl)
+            ffmpeg = 'ffmpeg -i """{}""" ' f"{mux_args} -codec copy" ' """{}""" -y'
+            _out = split_ext(out)[0] + " [Muxing]" + split_ext(out)[1]
+            cmd = ffmpeg.format(out, _out)
+            encode = encoder(_id, event=msg_t)
+            await encode.start(cmd)
+            stderr = (await encode.await_completion())[1]
+            await report_encode_status(
+                encode.process,
+                _id,
+                stderr,
+                msg_t,
+                sender_id,
+                out,
+                _is="Muxing",
+                log_msg=op,
+            )
+            if encode.process.returncode != 0:
+                if download:
+                    await download.clean_download()
+                s_remove(out, _out)
+                skip(queue_id)
+                mark_file_as_done(einfo.select, queue_id)
+                E_CANCEL.pop(_id) if E_CANCEL.get(_id) else None
+                await save2db()
+                await save2db("batches")
+                return
+            s_remove(out)
+            copy_file(_out, out)
+            s_remove(_out)
+            emt = time.time()
+            mtime = tf(emt - smt)
+
         sut = time.time()
         fname = path_split(out)[1]
-        pcap = await custcap(name, fname, ver=v, encoder=ENCODER, _filter=f)
+        pcap = await custcap(name, fname, ver=v, encoder=conf.ENCODER, _filter=f)
         await op.edit(f"`Uploading…` `{out}`") if op else None
         upload = uploader(sender_id, _id)
         up = await upload.start(msg_t.chat_id, out, msg_p, thumb2, pcap, message)
@@ -372,10 +409,11 @@ async def thing():
         await op.delete() if op else None
         await up.copy(chat_id=log_channel) if op else None
 
-        org_s = int(Path(dl).stat().st_size)
-        out_s = int(Path(out).stat().st_size)
+        org_s = size_of(dl)
+        out_s = size_of(out)
         pe = 100 - ((out_s / org_s) * 100)
         per = str(f"{pe:.2f}") + "%"
+        mux_msg = f"Muxed in `{mtime}`\n" if mux_args else str()
 
         text = str()
         mi = await info(dl)
@@ -396,7 +434,7 @@ async def thing():
             f"`{hbs(org_s)}`\nEncoded Size: `{hbs(out_s)}`\n"
             f"Encoded Percentage: `{per}`\n\n"
             f"{'Cached' if einfo.cached_dl else 'Downloaded'} in `{dtime}`\n"
-            f"Encoded in `{etime}`\nUploaded in `{utime}`",
+            f"Encoded in `{etime}`\n{mux_msg}Uploaded in `{utime}`",
             disable_web_page_preview=True,
             quote=True,
         )

@@ -1,4 +1,5 @@
 from bot import *
+from bot.config import conf
 from bot.fun.emojis import enhearts, enmoji, enmoji2
 from bot.utils.bot_utils import UN_FINISHED_PROGRESS_STR as unfin_str
 from bot.utils.bot_utils import code, decode, hbs, time_formatter
@@ -39,7 +40,7 @@ class Uploader:
                     progress=self.progress_for_pyrogram,
                     progress_args=(
                         pyro,
-                        f"**{CAP_DECO} Uploading…**",
+                        f"**{conf.CAP_DECO} Uploading…**",
                         reply,
                         u_start,
                         fm,

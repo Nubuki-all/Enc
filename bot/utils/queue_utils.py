@@ -1,6 +1,6 @@
 from telethon import events
 
-from bot import CMD_SUFFIX, Button, itertools, pyro, queue_lock, re, tele
+from bot import Button, conf, itertools, pyro, queue_lock, re, tele
 
 from .bot_utils import QUEUE, QUEUE_STATUS
 from .log_utils import logger
@@ -49,7 +49,7 @@ async def queue_status(event):
 async def get_queue_msg():
     msg = str()
     button = None
-    cmd_s = CMD_SUFFIX.strip()
+    cmd_s = conf.CMD_SUFFIX.strip()
     try:
         i = len(QUEUE)
         globals()["PAGES"] = (i + STATUS_LIMIT - 2) // STATUS_LIMIT
@@ -64,7 +64,9 @@ async def get_queue_msg():
             file_name, u_msg, ver_fil = file
             chat_id, msg_id = list(QUEUE.keys())[list(QUEUE.values()).index(file)]
             user_id, message = u_msg
-            user_id = 777000 if str(user_id).startswith("-100") else user_id
+            user_id = (
+                777000 if not user_id or str(user_id).startswith("-100") else user_id
+            )
             user = await pyro.get_users(user_id)
             ver, fil, mode = ver_fil
 

@@ -41,6 +41,7 @@ from pathlib import Path
 import aiohttp
 import aria2p
 from html_telegraph_poster import TelegraphPoster
+from html_telegraph_poster import errors as telegraph_errors
 from pyrogram import Client
 from pyrogram import errors as pyro_errors
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -49,13 +50,14 @@ from telethon import Button, TelegramClient, errors, events, functions, types
 from telethon.sessions import StringSession
 from telethon.utils import pack_bot_file_id
 
-from .config import *
+from .config import conf
 
 batch_lock = asyncio.Lock()
-bot_id = BOT_TOKEN.split(":", 1)[0]
+bot_id = conf.BOT_TOKEN.split(":", 1)[0]
 botStartTime = time.time()
 caption_file = "NO_CAPTION"
 ffmpeg_file = "ffmpeg.txt"
+mux_file = "mux.txt"
 filter_file = "filter.txt"
 home_dir = os.getcwd()
 local_qdb = ".local_queue.pkl"
@@ -72,20 +74,20 @@ thumb = "thumb.jpg"
 version_file = "version.txt"
 
 tgp_author = tgp_author_url = None
-if TELEGRAPH_AUTHOR and TELEGRAPH_AUTHOR.split("|")[0].casefold() != "auto":
-    tgp_author = TELEGRAPH_AUTHOR.split("|")[0]
+if conf.TELEGRAPH_AUTHOR and conf.TELEGRAPH_AUTHOR.split("|")[0].casefold() != "auto":
+    tgp_author = conf.TELEGRAPH_AUTHOR.split("|")[0]
 
-if TELEGRAPH_AUTHOR and len(TELEGRAPH_AUTHOR.split("|")) > 1:
-    if (tgp_author_url := TELEGRAPH_AUTHOR.split("|")[1]).casefold() == "auto":
+if conf.TELEGRAPH_AUTHOR and len(conf.TELEGRAPH_AUTHOR.split("|")) > 1:
+    if (tgp_author_url := conf.TELEGRAPH_AUTHOR.split("|")[1]).casefold() == "auto":
         tgp_author_url = None
 
 
-if "|" in RELEASER:
-    release_name = RELEASER.split("|")[0]
-    release_name_b = RELEASER.split("|")[1]
+if "|" in conf.RELEASER:
+    release_name = conf.RELEASER.split("|")[0]
+    release_name_b = conf.RELEASER.split("|")[1]
 else:
-    release_name = RELEASER
-    release_name_b = RELEASER
+    release_name = conf.RELEASER
+    release_name_b = conf.RELEASER
 
 release_name = f"[{release_name.strip()}]"
 release_name_b = f"[{release_name_b.strip()}]"
@@ -122,24 +124,24 @@ if sys.version_info < (3, 8):
     exit(1)
 
 
-tgp_client = TelegraphPoster(use_api=True, telegraph_api_url=TELEGRAPH_API)
+tgp_client = TelegraphPoster(use_api=True, telegraph_api_url=conf.TELEGRAPH_API)
 
 
 try:
     tele = TelegramClient(
         "tele",
-        APP_ID,
-        API_HASH,
+        conf.APP_ID,
+        conf.API_HASH,
         catch_up=True,
-        flood_sleep_threshold=FS_THRESHOLD,
+        flood_sleep_threshold=conf.FS_THRESHOLD,
     )
     pyro = Client(
         "pyro",
-        api_id=APP_ID,
-        api_hash=API_HASH,
-        bot_token=BOT_TOKEN,
-        sleep_threshold=FS_THRESHOLD,
-        workers=WORKERS,
+        api_id=conf.APP_ID,
+        api_hash=conf.API_HASH,
+        bot_token=conf.BOT_TOKEN,
+        sleep_threshold=conf.FS_THRESHOLD,
+        workers=conf.WORKERS,
     )
 except Exception as e:
     LOGS.info("Environment vars are missing! Kindly recheck.")

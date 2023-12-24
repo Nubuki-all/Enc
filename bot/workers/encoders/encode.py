@@ -1,7 +1,8 @@
 import asyncio
 import os
 
-from bot import ALLOW_ACTION, Button
+from bot import Button
+from bot.config import conf
 from bot.fun.emojis import enmoji
 from bot.utils.bot_utils import code, decode
 from bot.utils.log_utils import logger
@@ -65,7 +66,7 @@ class Encoder:
             await logger(Exception)
 
     async def await_completion(self):
-        action = "game" if ALLOW_ACTION is True else "cancel"
+        action = "game" if conf.ALLOW_ACTION is True else "cancel"
         async with self.client.action(self.event.chat_id, action):
             com = await self.process.communicate()
             # while True:
