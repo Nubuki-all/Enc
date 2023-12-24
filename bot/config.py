@@ -78,6 +78,8 @@ class Config:
             self.TG_DL_CLIENT = config("TG_DL_CLIENT", default="pyrogram")
             self.TG_UL_CLIENT = config("TG_UL_CLIENT", default="pyrogram")
             self.THUMB = config("THUMBNAIL", default=None)
+            self.USE_ANILIST = config("USE_ANILIST", default=True, cast=bool)
+            self.USE_CAPTION = config("USE_CAPTION", default=True, cast=bool)
             self.WORKERS = config("WORKERS", default=2, cast=int)
         except Exception:
             print("Environment vars Missing; or")

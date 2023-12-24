@@ -41,9 +41,15 @@ if not file_exists(ffmpeg_file):
     with open(ffmpeg_file, "w") as file:
         file.write(str(conf.FFMPEG) + "\n")
 
-if not file_exists(mux_file) and MUX_ARGS:
+if not file_exists(mux_file) and conf.MUX_ARGS:
     with open(mux_file, "w") as file:
         file.write(str(conf.MUX_ARGS) + "\n")
+
+if not conf.USE_ANILIST:
+    Path("NO_PARSE").touch()
+
+if not conf.USE_CAPTION:
+    Path("NO_CAPTION").touch()
 
 if not os.path.isdir("downloads/"):
     os.mkdir("downloads/")
