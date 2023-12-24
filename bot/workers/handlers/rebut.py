@@ -322,6 +322,7 @@ async def en_mux(event, args, client):
         -i {link of file to download, tg link also supported(must be a supergroup link to file)}
         -np to turn off anilist
         -d {file_name} to change download name
+        -du {chat_id} id of chat to dumb resulting file.
         -c to delete command after muxing - needs no argument.
         -v tag files with versions.
         -q custom caption codec
@@ -376,6 +377,7 @@ async def en_mux(event, args, client):
             flag = get_args(
                 ["-c", "store_true"],
                 "-d",
+                "du",
                 "-default_a",
                 "-default_s",
                 "-ext",
@@ -417,6 +419,10 @@ async def en_mux(event, args, client):
                 return await rep_event.reply(error)
             name = file.name
         if flags:
+            if flag.du:
+                if not flag.du.lstrip("-").isdigit():
+                    return await event.reply("'-du': chat_id is not a valid number.")
+                flag.du = int(flag.du)
             if flag.np:
                 ani_parse = False
             if flag.i and (is_url(flag.i) or is_magnet(flag.i)):
@@ -569,13 +575,20 @@ async def en_mux(event, args, client):
         e = await message.reply("…")
         u_id = f"{e.chat.id}:{e.id}"
         upload = uploader(user, u_id)
-        await upload.start(event.chat_id, loc, e, thumb3, cap, message)
+        up = await upload.start(event.chat_id, loc, e, thumb3, cap, message)
         if not upload.is_cancelled:
             await e.edit(f"`{__out}` __uploaded successfully.__")
         else:
             await e.edit(f"__Upload of__ `{__out}` __was cancelled.__")
-        if flags and flag.c:
-            await try_delete(event)
+        if flags:
+            if flag.c:
+                await try_delete(event)
+            if flag.du:
+                try:
+                    await up.copy(chat_id=flag.du)
+                except Exception as e:
+                    await event.reply(f"'du': `{str(e)}`")
+                    await logger(Exception)
         s_remove(t_file, loc)
     except Exception:
         await logger(Exception)
