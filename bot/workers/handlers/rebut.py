@@ -449,11 +449,11 @@ async def en_mux(event, args, client):
                         return await event.reply(error)
                     name_2 = file2.name
                 input_2 = work_folder + name_2
-            cap_tag = flag.tag_c
+            cap_tag = flag.tc
             codec = flag.q
             default_audio = flag.default_a
             default_sub = flag.default_s
-            file_tag = flag.tag_f
+            file_tag = flag.tf
             force_ext = flag.ext
             ver = flag.v
 
