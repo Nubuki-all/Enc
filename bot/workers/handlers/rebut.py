@@ -322,7 +322,7 @@ async def en_mux(event, args, client):
         -i {link of file to download, tg link also supported(must be a supergroup link to file)}
         -np to turn off anilist
         -d {file_name} to change download name
-        -du {chat_id} id of chat to dumb resulting file.
+        -du {chat_id} id of chat to dump resulting file.
         -c to delete command after muxing - needs no argument.
         -v tag files with versions.
         -q custom caption codec
@@ -377,7 +377,7 @@ async def en_mux(event, args, client):
             flag = get_args(
                 ["-c", "store_true"],
                 "-d",
-                "du",
+                "-du",
                 "-default_a",
                 "-default_s",
                 "-ext",
