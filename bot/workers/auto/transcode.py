@@ -299,7 +299,7 @@ async def thing():
             await msg_p.reply("#" + c_n) if log_channel == chat_id else None
         if einfo.uri and conf.DUMP_LEECH is True:
             asyncio.create_task(dumpdl(dl, name, thumb2, msg_t.chat_id, message))
-        if len(queue) > 1 and conf.CACHE_DL:
+        if len(queue) > 1 and conf.CACHE_DL and not einfo.batch:
             await cache_dl()
         with open(ffmpeg_file, "r") as file:
             nani = file.read().rstrip()
