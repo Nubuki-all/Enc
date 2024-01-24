@@ -1,3 +1,4 @@
+from bot.config import _bot, conf
 from bot.fun.emojis import enmoji, enmoji2
 from bot.fun.quips import enquip, enquip2
 from bot.utils.log_utils import logger
