@@ -87,13 +87,14 @@ class Config:
             print(traceback.format_exc())
             exit()
 
+
 class Runtime_Config:
-  # will slowly replace the Var_list class in utils.bot_utils
+    # will slowly replace the Var_list class in utils.bot_utils
     def __init__(self):
-      self.aria2 = None
-      self.sas = False
-      self.sqs = False
-      self.started = False
+        self.aria2 = None
+        self.sas = False
+        self.sqs = False
+        self.started = False
 
 
 conf = Config()

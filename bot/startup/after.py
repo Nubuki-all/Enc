@@ -82,9 +82,9 @@ async def onstart():
         dev = conf.DEV or conf.LOG_CHANNEL or int(conf.OWNER.split()[0])
         try:
             await tele.send_message(
-              dev,
-              f"**Aria2:** `{'Online' if _bot.sas else 'Offline/Not_ready'}`"
-              f"\n**Qbit:** `{'Online' if _bot.sqs else 'Offline/Not_ready'}`"
+                dev,
+                f"**Aria2:** `{'Online' if _bot.sas else 'Offline/Not_ready'}`"
+                f"\n**Qbit:** `{'Online' if _bot.sqs else 'Offline/Not_ready'}`",
             )
         except Exception:
             await logger(Exception)

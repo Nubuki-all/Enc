@@ -22,7 +22,9 @@ async def rss_monitor():
         await asyncio.sleep(10)
         if _bot.sas and _bot.sqs:
             return
-        log(e='RSS scheduler has been paused since a download service is not responding…')
+        log(
+            e="RSS scheduler has been paused since a download service is not responding…"
+        )
         if _bot.started:
             scheduler.pause()
         return
