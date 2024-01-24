@@ -3,7 +3,7 @@ import pickle
 from pymongo import MongoClient
 
 from bot import *
-from bot.config import conf
+from bot.config import _bot, conf
 from bot.utils.bot_utils import create_api_token, var
 from bot.utils.local_db_utils import load_local_db
 from bot.utils.os_utils import file_exists

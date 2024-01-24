@@ -1,5 +1,5 @@
-from bot import asyncio, itertools, pyro, startup_, tele
-from bot.config import conf
+from bot import asyncio, itertools, pyro, tele
+from bot.config import _bot, conf
 from bot.fun.emojis import enmoji
 from bot.fun.quips import enquip4
 from bot.fun.quotes import enquotes
@@ -127,7 +127,7 @@ async def autostat():
             else:
                 if check.done:
                     check.done = False
-            if startup_:
+            if _bot.started:
                 if wait():
                     await asyncio.sleep(60)
                     continue

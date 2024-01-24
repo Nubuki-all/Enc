@@ -22,7 +22,7 @@ from bot import (
     tgp_client,
     time,
 )
-from bot.config import conf
+from bot.config import _bot, conf
 
 suffix = conf.CMD_SUFFIX
 
@@ -46,7 +46,6 @@ class Var_list:
     STARTUP = []
     WORKING = []
     EVENT2 = []
-    ARIA2 = []
 
     PREVIEW_BATCH = {}
     BATCH_QUEUE = {}
@@ -125,7 +124,7 @@ def get_pause_status():
 
 
 def get_aria2():
-    return ARIA2[0] if ARIA2 else None
+    return _bot.aria2
 
 
 def get_var(var):

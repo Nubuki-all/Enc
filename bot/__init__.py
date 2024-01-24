@@ -69,7 +69,6 @@ parse_file = "NO_PARSE"
 queue_lock = asyncio.Lock()
 rename_file = "Auto-rename.txt"
 rss_dict_lock = asyncio.Lock()
-startup_ = []
 thumb = "thumb.jpg"
 version_file = "version.txt"
 

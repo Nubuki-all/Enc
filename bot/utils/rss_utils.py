@@ -3,7 +3,7 @@ import asyncio
 from feedparser import parse as feedparse
 
 from bot import pyro, rss_dict_lock
-from bot.config import conf
+from bot.config import _bot, conf
 from bot.workers.auto.schedule import addjob, scheduler
 from bot.workers.handlers.queue import enleech, enleech2
 
@@ -18,6 +18,14 @@ async def rss_monitor():
     """
     An asynchronous function to get rss links
     """
+    if not (_bot.sas and _bot.sqs):
+        await asyncio.sleep(10)
+        if _bot.sas and _bot.sqs:
+            return
+        log(e='RSS scheduler has been paused since a download service is not responding…')
+        if _bot.started:
+            scheduler.pause()
+        return
     if not conf.RSS_CHAT:
         log(e="RSS_CHAT not added! Shutting down rss scheduler...")
         scheduler.shutdown(wait=False)
