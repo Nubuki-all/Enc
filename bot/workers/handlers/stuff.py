@@ -98,7 +98,9 @@ async def start(event, args, client):
     currentTime = tf(time.time() - botStartTime)
     msg = ""
     msg1 = f"Hi `{event.sender.first_name}`\n"
-    msg2 = f"{msg1}I've been alive for `{currentTime}` and i'm ready to encode videos 😗"
+    msg2 = (
+        f"{msg1}I've been alive for `{currentTime}` and i'm ready to encode videos 😗"
+    )
     msg3 = f"{msg2}\nand by the way you're a temporary user"
     user = event.sender_id
     if not user_is_owner(user) and event.is_private:
@@ -154,7 +156,9 @@ async def beck(event):
     currentTime = tf(time.time() - botStartTime)
     msg = ""
     msg1 = f"Hi `{event.sender.first_name}`\n"
-    msg2 = f"{msg1}I've been alive for `{currentTime}` and i'm ready to encode videos 😗"
+    msg2 = (
+        f"{msg1}I've been alive for `{currentTime}` and i'm ready to encode videos 😗"
+    )
     msg3 = f"{msg2}\nand by the way you're a temporary user"
     if temp_is_allowed(sender):
         msg = msg3
