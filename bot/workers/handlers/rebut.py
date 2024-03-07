@@ -802,9 +802,11 @@ async def en_upload(event, args, client):
             await upload.start(event.chat_id, file, r, "thumb.jpg", f"`{cap}`", message)
             s_remove(file) if ext else None
             if not upload.is_cancelled:
-                await edit_message(
-                    r, f"`{cap} uploaded successfully.`"
-                ) if not arg.s else await r.delete()
+                (
+                    await edit_message(r, f"`{cap} uploaded successfully.`")
+                    if not arg.s
+                    else await r.delete()
+                )
             else:
                 _no = 0
                 await edit_message(r, f"`Uploading of {cap} has been cancelled.`")

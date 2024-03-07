@@ -99,7 +99,11 @@ async def rss_monitor():
                 await asyncio.sleep(1)
             async with rss_dict_lock:
                 rss_dict[title].update(
-                    {"allow_rss_spam": False, "last_feed": last_link, "last_title": last_title}
+                    {
+                        "allow_rss_spam": False,
+                        "last_feed": last_link,
+                        "last_title": last_title,
+                    }
                 )
             await save2db2(rss_dict, "rss")
             log(e=f"Feed Name: {title}")

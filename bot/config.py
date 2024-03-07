@@ -104,7 +104,6 @@ class Runtime_Config:
         self.sqs = False
         self.started = False
         self.temp_users = []
-        
 
 
 conf = Config()
