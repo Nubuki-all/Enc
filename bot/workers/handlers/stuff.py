@@ -28,11 +28,12 @@ async def up(event, args, client):
     ist = dt.now()
     msg = await reply_message(event, "…")
     st = dt.now()
-    await edit_message(msg, "`Ping…`")
-    ed = dt.now()
     ims = (st - ist).microseconds / 1000
+    msg1 = f"**Pong! ----** `{}`__ms__"
+    await edit_message(msg, msg1.format(ims))
+    ed = dt.now()
     ms = (ed - st).microseconds / 1000
-    await edit_message(msg, "**Pong!**\n`{}` __ms__, `{}` __ms__".format(ims, ms))
+    await edit_message(msg, f"{msg1.formart(ims)}\n{msg1.formart(ms)}"
 
 
 async def status(event, args, client):
