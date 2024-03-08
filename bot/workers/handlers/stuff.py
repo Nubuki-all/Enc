@@ -34,7 +34,7 @@ async def up(event, args, client):
     await edit_message(msg, msg1.format(ims))
     ed = dt.now()
     ms = (ed - st).microseconds / 1000
-    await edit_message(msg, f"1. {msg1.formart(ims)}\n2. {msg1.formart(ms)}")
+    await edit_message(msg, f"1. {msg1.format(ims)}\n2. {msg1.format(ms)}")
 
 
 async def status(event, args, client):
