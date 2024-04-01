@@ -7,6 +7,7 @@ emoji-country-flag
 feedparser
 html_telegraph_poster
 humanize
+lxml[html_clean]
 telethon
 tgcrypto
 psutil
