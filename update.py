@@ -42,11 +42,10 @@ r_filep = Path("Auto-rename.txt")
 rvars = varsgetter(r_filep)
 update_check = Path("update")
 cmd = (
-    "git reset --hard @{u} \
-    && git clean -df -q \
-    && git fetch --all "
-    f"&& git switch {UPSTREAM_BRANCH} \
-    && git pull"
+    f"git switch {UPSTREAM_BRANCH} -q \
+    && git pull -q "
+    "&& git reset --hard @{u} -q \
+    && git clean -df -q"
 )
 cmd2 = f"git init -q \
        && git config --global user.email 117080364+Niffy-the-conqueror@users.noreply.github.com \
@@ -55,7 +54,8 @@ cmd2 = f"git init -q \
        && git commit -sm update -q \
        && git remote add origin {UPSTREAM_REPO} \
        && git fetch origin -q \
-       && git reset --hard origin/{UPSTREAM_BRANCH} -q"
+       && git reset --hard origin/{UPSTREAM_BRANCH} -q \
+       && git switch {UPSTREAM_BRANCH} -q"
 
 try:
     if ALWAYS_DEPLOY_LATEST is True or update_check.is_file():
