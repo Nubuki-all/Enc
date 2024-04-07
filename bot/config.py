@@ -100,6 +100,7 @@ class Runtime_Config:
         self.only_owner_pm = False
         self.pause_status = 0
         self.paused = False
+        self.repo_branch = None
         self.sas = False
         self.sqs = False
         self.started = False

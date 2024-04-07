@@ -5,7 +5,7 @@ import time
 import psutil
 
 from bot import Button, botStartTime, dt, subprocess, version_file
-from bot.config import conf
+from bot.config import _bot, conf
 from bot.fun.emojis import enmoji
 from bot.utils.bot_utils import add_temp_user, get_readable_file_size, rm_temp_user
 from bot.utils.bot_utils import time_formatter as tf
@@ -42,6 +42,7 @@ async def status(event, args, client):
     Requires no arguments."""
     if not user_is_allowed(event.sender_id):
         return await event.delete()
+    branch = _bot.repo_branch or "❓"
     last_commit = "UNAVAILABLE!"
     if os.path.exists(".git"):
         try:
@@ -73,6 +74,7 @@ async def status(event, args, client):
     disk = psutil.disk_usage("/").percent
     await event.reply(
         f"**Version:** `{vercheck}`\n"
+        f"**Branch:** `{branch}`\n"
         f"**Commit Date:** `{last_commit}`\n\n"
         f"**Bot Uptime:** `{currentTime}`\n"
         f"**System Uptime:** `{ostime}`\n\n"
