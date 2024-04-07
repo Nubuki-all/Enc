@@ -47,7 +47,7 @@ cmd = (
     && git fetch --all "
     f"&& git switch {UPSTREAM_BRANCH} \
     && git pull"
-    )
+)
 cmd2 = f"git init -q \
        && git config --global user.email 117080364+Niffy-the-conqueror@users.noreply.github.com \
        && git config --global user.name Niffy-the-conqueror \
