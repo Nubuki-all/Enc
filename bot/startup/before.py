@@ -11,13 +11,6 @@ from bot.utils.os_utils import file_exists
 attrs = dir(var)
 globals().update({n: getattr(var, n) for n in attrs if not n.startswith("_")})
 
-_bot.repo_branch = (
-    subprocess.check_output(["git rev-parse --abbrev-ref HEAD"], shell=True)
-    .decode()
-    .strip()
-    if os.path.exists(".git")
-    else None
-)
 uptime = dt.now()
 
 LOGS.info("=" * 30)

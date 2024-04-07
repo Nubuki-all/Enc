@@ -72,6 +72,14 @@ rss_dict_lock = asyncio.Lock()
 thumb = "thumb.jpg"
 version_file = "version.txt"
 
+_bot.repo_branch = (
+    subprocess.check_output(["git rev-parse --abbrev-ref HEAD"], shell=True)
+    .decode()
+    .strip()
+    if os.path.exists(".git")
+    else None
+)
+
 tgp_author = tgp_author_url = None
 if conf.TELEGRAPH_AUTHOR and conf.TELEGRAPH_AUTHOR.split("|")[0].casefold() != "auto":
     tgp_author = conf.TELEGRAPH_AUTHOR.split("|")[0]
