@@ -985,6 +985,7 @@ async def rss_editor(event, args, client):
     if arg.p:
         data["paused"] = True
     elif arg.r:
+        data["allow_rss_spam"] = True
         data["paused"] = False
         if scheduler.state == 2:
             scheduler.resume()

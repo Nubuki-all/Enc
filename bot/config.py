@@ -92,9 +92,18 @@ class Runtime_Config:
     # will slowly replace the Var_list class in utils.bot_utils
     def __init__(self):
         self.aria2 = None
+        self.cached_dl = False
+        self.display_additional_dl_info = True
+        self.docker_deployed = False
+        self.rss_ran_once = False
+        self.group_enc = False
+        self.only_owner_pm = False
+        self.pause_status = 0
+        self.paused = False
         self.sas = False
         self.sqs = False
         self.started = False
+        self.temp_users = []
 
 
 conf = Config()
