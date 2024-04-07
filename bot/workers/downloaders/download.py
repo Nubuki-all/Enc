@@ -271,12 +271,16 @@ class Downloader:
                     if i != s:
                         x += str(i) + "|"
                 x = x.strip("|")
-            await sync_to_async(
-                self.qb.torrents_file_priority,
-                torrent_hash=self.uri_gid,
-                file_ids=x,
-                priority=0,
-            ) if x else None
+            (
+                await sync_to_async(
+                    self.qb.torrents_file_priority,
+                    torrent_hash=self.uri_gid,
+                    file_ids=x,
+                    priority=0,
+                )
+                if x
+                else None
+            )
             await sync_to_async(self.qb.torrents_resume, torrent_hashes=self.uri_gid)
             while True:
                 download = await self.progress_for_qbit()

@@ -7,6 +7,7 @@ emoji-country-flag
 feedparser
 html_telegraph_poster
 humanize
+lxml[html_clean]
 telethon
 tgcrypto
 psutil
@@ -17,10 +18,11 @@ pyrogram==2.0.106
 #pyrogram==2.0.73
 python-decouple
 qbittorrent-api
+quote
 random_word
 tzlocal
-#Depreciating...
-quote
+#Snyk pins 
 certifi>=2023.7.22 # not directly required, pinned by Snyk to avoid a vulnerability
+dnspython>=2.6.0rc1 # not directly required, pinned by Snyk to avoid a vulnerability
 requests>=2.31.0 # not directly required, pinned by Snyk to avoid a vulnerability
-#setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability

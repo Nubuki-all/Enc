@@ -1,3 +1,4 @@
+from bot.config import _bot, conf
 from bot.fun.emojis import enmoji, enmoji2
 from bot.fun.quips import enquip, enquip2
 from bot.utils.log_utils import logger
@@ -9,7 +10,7 @@ from .before import *
 
 async def start_aria2p():
     try:
-        globals()["aria2"] = aria2p.API(
+        aria2 = aria2p.API(
             aria2p.Client(host="http://localhost", port=conf.ARIA2_PORT, secret="")
         )
         aria2.add(
@@ -20,9 +21,8 @@ async def start_aria2p():
         downloads = aria2.get_downloads()
         await asyncio.sleep(3)
         aria2.remove(downloads, force=True, files=True, clean=True)
-        ARIA2.append(aria2)
-
-        # return aria2
+        _bot.aria2 = aria2
+        _bot.sas = True
 
     except Exception:
         await logger(Exception, critical=True)
@@ -33,6 +33,8 @@ async def start_qbit():
     os.system(
         f"qbittorrent-nox -d --webui-port={conf.QBIT_PORT} --profile={os.getcwd()}"
     )
+    # TO_DO: Properly check if qbit is fully operational.
+    _bot.sqs = True
 
 
 async def start_rpc():
@@ -41,8 +43,8 @@ async def start_rpc():
         "--seed-time=0 --follow-torrent=mem --summary-interval=0 --daemon=true --allow-overwrite=true "
         "--user-agent=Wget/1.12"
     )
-    if not startup_:
-        await asyncio.sleep(3)
+    if not _bot.started:
+        await asyncio.sleep(1)
         await start_aria2p()
 
 
@@ -78,6 +80,15 @@ async def onstart():
             await tele.send_message(
                 conf.LOG_CHANNEL, f"**{me.first_name} is {enquip()} {enmoji()}**"
             )
+        dev = conf.DEV or conf.LOG_CHANNEL or int(conf.OWNER.split()[0])
+        try:
+            await tele.send_message(
+                dev,
+                f"**Aria2:** `{'Online' if _bot.sas else 'Offline/Not_ready'}`"
+                f"\n**Qbit:** `{'Online' if _bot.sqs else 'Offline/Not_ready'}`",
+            )
+        except Exception:
+            await logger(Exception)
     except BaseException:
         pass
 
@@ -114,11 +125,12 @@ async def on_startup():
         if len(sys.argv) == 3:
             await onrestart()
         else:
+            await asyncio.sleep(1)
             await onstart()
         await entime.start()
         await asyncio.sleep(30)
         asyncio.create_task(something())
     except Exception:
         logger(Exception)
-    startup_.append(1)
+    _bot.started = True
     # STARTUP.append(1)

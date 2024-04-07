@@ -41,19 +41,28 @@ def varssaver(evars, files):
 r_filep = Path("Auto-rename.txt")
 rvars = varsgetter(r_filep)
 update_check = Path("update")
+cmd = (
+    f"git switch {UPSTREAM_BRANCH} -q \
+    && git pull -q "
+    "&& git reset --hard @{u} -q \
+    && git clean -df -q"
+)
+cmd2 = f"git init -q \
+       && git config --global user.email 117080364+Niffy-the-conqueror@users.noreply.github.com \
+       && git config --global user.name Niffy-the-conqueror \
+       && git add . \
+       && git commit -sm update -q \
+       && git remote add origin {UPSTREAM_REPO} \
+       && git fetch origin -q \
+       && git reset --hard origin/{UPSTREAM_BRANCH} -q \
+       && git switch {UPSTREAM_BRANCH} -q"
 
 try:
     if ALWAYS_DEPLOY_LATEST is True or update_check.is_file():
         if os.path.exists('.git'):
-            bashrun(["rm", "-rf", ".git"])
-        update = bashrun([f"git init -q \
-                       && git config --global user.email 117080364+Niffy-the-conqueror@users.noreply.github.com \
-                       && git config --global user.name Niffy-the-conqueror \
-                       && git add . \
-                       && git commit -sm update -q \
-                       && git remote add origin {UPSTREAM_REPO} \
-                       && git fetch origin -q \
-                       && git reset --hard origin/{UPSTREAM_BRANCH} -q"], shell=True)
+            update = bashrun([cmd], shell=True)
+        else:
+            update = bashrun([cmd2], shell=True)
         if AUPR:
             bashrun(["pip3", "install", "-r", "requirements.txt"])
         if update.returncode == 0:

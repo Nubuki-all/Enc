@@ -5,7 +5,7 @@ import time
 import psutil
 
 from bot import Button, botStartTime, dt, subprocess, version_file
-from bot.config import conf
+from bot.config import _bot, conf
 from bot.fun.emojis import enmoji
 from bot.utils.bot_utils import add_temp_user, get_readable_file_size, rm_temp_user
 from bot.utils.bot_utils import time_formatter as tf
@@ -28,11 +28,13 @@ async def up(event, args, client):
     ist = dt.now()
     msg = await reply_message(event, "…")
     st = dt.now()
-    await edit_message(msg, "`Ping…`")
-    ed = dt.now()
     ims = (st - ist).microseconds / 1000
+    msg1 = "**Pong! ——** `{}`__ms__"
+    st = dt.now()
+    await edit_message(msg, msg1.format(ims))
+    ed = dt.now()
     ms = (ed - st).microseconds / 1000
-    await edit_message(msg, "**Pong!**\n`{}` __ms__, `{}` __ms__".format(ims, ms))
+    await edit_message(msg, f"1. {msg1.format(ims)}\n2. {msg1.format(ms)}")
 
 
 async def status(event, args, client):
@@ -40,6 +42,7 @@ async def status(event, args, client):
     Requires no arguments."""
     if not user_is_allowed(event.sender_id):
         return await event.delete()
+    branch = _bot.repo_branch or "❓"
     last_commit = "UNAVAILABLE!"
     if os.path.exists(".git"):
         try:
@@ -71,6 +74,7 @@ async def status(event, args, client):
     disk = psutil.disk_usage("/").percent
     await event.reply(
         f"**Version:** `{vercheck}`\n"
+        f"**Branch:** `{branch}`\n"
         f"**Commit Date:** `{last_commit}`\n\n"
         f"**Bot Uptime:** `{currentTime}`\n"
         f"**System Uptime:** `{ostime}`\n\n"
@@ -98,7 +102,9 @@ async def start(event, args, client):
     currentTime = tf(time.time() - botStartTime)
     msg = ""
     msg1 = f"Hi `{event.sender.first_name}`\n"
-    msg2 = f"{msg1}I've been alive for `{currentTime}` and i'm ready to encode videos 😗"
+    msg2 = (
+        f"{msg1}I've been alive for `{currentTime}` and i'm ready to encode videos 😗"
+    )
     msg3 = f"{msg2}\nand by the way you're a temporary user"
     user = event.sender_id
     if not user_is_owner(user) and event.is_private:
@@ -154,7 +160,9 @@ async def beck(event):
     currentTime = tf(time.time() - botStartTime)
     msg = ""
     msg1 = f"Hi `{event.sender.first_name}`\n"
-    msg2 = f"{msg1}I've been alive for `{currentTime}` and i'm ready to encode videos 😗"
+    msg2 = (
+        f"{msg1}I've been alive for `{currentTime}` and i'm ready to encode videos 😗"
+    )
     msg3 = f"{msg2}\nand by the way you're a temporary user"
     if temp_is_allowed(sender):
         msg = msg3

@@ -50,7 +50,15 @@ from telethon import Button, TelegramClient, errors, events, functions, types
 from telethon.sessions import StringSession
 from telethon.utils import pack_bot_file_id
 
-from .config import conf
+from .config import _bot, conf
+
+_bot.repo_branch = (
+    subprocess.check_output(["git rev-parse --abbrev-ref HEAD"], shell=True)
+    .decode()
+    .strip()
+    if os.path.exists(".git")
+    else None
+)
 
 batch_lock = asyncio.Lock()
 bot_id = conf.BOT_TOKEN.split(":", 1)[0]
@@ -69,7 +77,6 @@ parse_file = "NO_PARSE"
 queue_lock = asyncio.Lock()
 rename_file = "Auto-rename.txt"
 rss_dict_lock = asyncio.Lock()
-startup_ = []
 thumb = "thumb.jpg"
 version_file = "version.txt"
 
@@ -109,6 +116,15 @@ logging.basicConfig(
 logging.getLogger("apscheduler.executors.default").setLevel(logging.WARNING)
 logging.getLogger("FastTelethon").setLevel(logging.INFO)
 # logging.getLogger("telethon.messagebox").setLevel(logging.NOTSET + 1)
+no_verbose = [
+    "telethon.client.updates",
+    "telethon.client.users",
+    "pyrogram.session.session",
+    "pyrogram.connection.connection",
+]
+if _bot.repo_branch == "stable":
+    for item in no_verbose:
+        logging.getLogger(item).setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.INFO)
 LOGS = logging.getLogger(__name__)
 
