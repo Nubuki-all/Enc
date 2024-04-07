@@ -312,6 +312,7 @@ async def report_encode_status(
     msg_2_delete=None,
     log_msg=None,
     pyro_msg=False,
+    stdout=None,
     exe_prefix="ffmpeg",
 ):
     _dir, file = os.path.split(file)
@@ -351,8 +352,8 @@ async def report_encode_status(
         if log_msg:
             await log_msg.edit(reply, buttons=None)
         er = stderr.decode()
-        # if stdout and (out := stdout):
-        # er + "\n" + out
+        if stdout and (out := stdout.decode()):
+            er += "\n" + out
         error = None
         msg_2_delete = msg_2_delete or msg
         if len(er) > 4095 and not cancelled:
