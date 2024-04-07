@@ -52,14 +52,6 @@ from telethon.utils import pack_bot_file_id
 
 from .config import _bot, conf
 
-_bot.repo_branch = (
-    subprocess.check_output(["git rev-parse --abbrev-ref HEAD"], shell=True)
-    .decode()
-    .strip()
-    if os.path.exists(".git")
-    else None
-)
-
 batch_lock = asyncio.Lock()
 bot_id = conf.BOT_TOKEN.split(":", 1)[0]
 botStartTime = time.time()

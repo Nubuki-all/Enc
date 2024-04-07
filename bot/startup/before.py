@@ -3,7 +3,7 @@ import pickle
 from pymongo import MongoClient
 
 from bot import *
-from bot.config import conf
+from bot.config import _bot, conf
 from bot.utils.bot_utils import create_api_token, var
 from bot.utils.local_db_utils import load_local_db
 from bot.utils.os_utils import file_exists
@@ -11,9 +11,14 @@ from bot.utils.os_utils import file_exists
 attrs = dir(var)
 globals().update({n: getattr(var, n) for n in attrs if not n.startswith("_")})
 
+_bot.repo_branch = (
+    subprocess.check_output(["git rev-parse --abbrev-ref HEAD"], shell=True)
+    .decode()
+    .strip()
+    if os.path.exists(".git")
+    else None
+)
 uptime = dt.now()
-global aria2
-aria2 = None
 
 LOGS.info("=" * 30)
 LOGS.info(f"Python version: {sys.version.split()[0]}")
@@ -24,6 +29,7 @@ if file_exists(version_file):
         ver = file.read().strip()
     vmsg = f"Bot version: {ver}"
 
+LOGS.info(f"Branch: {_bot.repo_branch or 'Unknown!'}")
 LOGS.info(vmsg)
 LOGS.info("=" * 30)
 
