@@ -1014,7 +1014,7 @@ async def del_rss(event, args, client):
     if not rss_dict.get(args):
         return await event.reply(f"'{args}' not found in list of subscribed rss feeds!")
     rss_dict.pop(args)
-    msg = f"Succesfully removed '{args}' from subscribed feeds"
+    msg = f"Succesfully removed '{args}' from subscribed feeds!"
     await save2db2(rss_dict, "rss")
     await event.reply(msg)
     await logger(e=msg)

@@ -176,7 +176,7 @@ class Qbit_c:
         self.name = None
 
     def __str__(self):
-        return self.error
+        return self.error or self.name
 
 
 class Encode_info:
