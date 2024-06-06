@@ -128,14 +128,9 @@ async def get_leech_name(url):
             ):
                 await asyncio.sleep(2)
                 continue
-            if download.is_waiting:
+            if not (os.path.splitext(download.name))[1] and not download.total_length:
                 await asyncio.sleep(2)
                 continue
-            # __fn, ext = os.path.splitext(download.name)
-            # if not ext:
-            # if time.time() - c_time > 60:
-            # await asyncio.sleep(2)
-            # continue
 
             dinfo.name = download.name
             break
