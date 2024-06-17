@@ -62,7 +62,9 @@ async def get_queue_msg():
             itertools.count(STATUS_START),
         ):
             file_name, u_msg, ver_fil = file
-            chat_id, msg_id = list(_bot.queue.keys())[list(_bot.queue.values()).index(file)]
+            chat_id, msg_id = list(_bot.queue.keys())[
+                list(_bot.queue.values()).index(file)
+            ]
             user_id, message = u_msg
             user_id = (
                 777000 if not user_id or str(user_id).startswith("-100") else user_id

@@ -14,9 +14,6 @@ from .log_utils import log, logger
 from .os_utils import s_remove
 
 
-
-
-
 def user_is_allowed(user: str | int):
     user = str(user)
     return user in conf.OWNER or user in _bot.temp_users

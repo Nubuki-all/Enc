@@ -314,7 +314,9 @@ class Downloader:
 
             progress = "```\n{0}{1}```\n<b>Progress:</b> `{2}%`\n".format(
                 "".join([fin_str for i in range(math.floor(percentage / 10))]),
-                "".join([self.unfin_str for i in range(10 - math.floor(percentage / 10))]),
+                "".join(
+                    [self.unfin_str for i in range(10 - math.floor(percentage / 10))]
+                ),
                 round(percentage, 2),
             )
 
@@ -418,7 +420,10 @@ class Downloader:
             progress = "```\n{0}{1}```\n<b>Progress:</b> `{2}%`\n".format(
                 "".join([fin_str for i in range(math.floor(download.progress / 10))]),
                 "".join(
-                    [self.unfin_str for i in range(10 - math.floor(download.progress / 10))]
+                    [
+                        self.unfin_str
+                        for i in range(10 - math.floor(download.progress / 10))
+                    ]
                 ),
                 round(download.progress, 2),
             )
@@ -521,7 +526,9 @@ class Downloader:
 
             progress = "```\n{0}{1}```\n<b>Progress:</b> `{2}%`\n".format(
                 "".join([fin_str for i in range(math.floor(d_progress / 10))]),
-                "".join([self.unfin_str for i in range(10 - math.floor(d_progress / 10))]),
+                "".join(
+                    [self.unfin_str for i in range(10 - math.floor(d_progress / 10))]
+                ),
                 round(d_progress, 2),
             )
             tmp = (

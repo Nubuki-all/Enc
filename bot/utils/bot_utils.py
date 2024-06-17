@@ -28,11 +28,6 @@ OK = {}
 suffix = conf.CMD_SUFFIX
 
 
-
-
-
-
-
 def add_temp_user(id):
     _bot.temp_users.append(id)
 

@@ -6,13 +6,7 @@ from bot import Button, asyncio, batch_lock, conf, errors, itertools, os, re, te
 from bot.config import _bot
 
 from .ani_utils import qparse
-from .bot_utils import (
-    get_bqueue,
-    get_preview,
-    get_queue,
-    is_video_file,
-    sdict,
-)
+from .bot_utils import get_bqueue, get_preview, get_queue, is_video_file, sdict
 from .db_utils import save2db
 from .log_utils import log, logger
 from .msg_utils import edit_message

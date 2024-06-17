@@ -8,9 +8,6 @@ from bot.utils.bot_utils import create_api_token
 from bot.utils.local_db_utils import load_local_db
 from bot.utils.os_utils import file_exists
 
-
-
-
 uptime = dt.now()
 
 LOGS.info("=" * 30)

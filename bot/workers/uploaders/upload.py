@@ -89,7 +89,9 @@ class Uploader:
 
             progress = "```\n{0}{1}```\n{2}\n<b>Progress:</b> `{3}%`\n".format(
                 "".join([fin_str for i in range(math.floor(percentage / 10))]),
-                "".join([self.unfin_str for i in range(10 - math.floor(percentage / 10))]),
+                "".join(
+                    [self.unfin_str for i in range(10 - math.floor(percentage / 10))]
+                ),
                 file_info,
                 round(percentage, 2),
             )
