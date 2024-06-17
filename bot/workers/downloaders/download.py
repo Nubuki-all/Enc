@@ -1,7 +1,6 @@
 from bot import *
+from bot.config import _bot, conf
 from bot.fun.emojis import enhearts, enmoji, enmoji2
-from bot.utils.bot_utils import DISPLAY_DOWNLOAD
-from bot.utils.bot_utils import UN_FINISHED_PROGRESS_STR as unfin_str
 from bot.utils.bot_utils import (
     code,
     decode,
@@ -56,8 +55,8 @@ class Downloader:
         self.path = None
         self.qb = None
         self.qbit = qbit
-        if DISPLAY_DOWNLOAD:
-            self.display_dl_info = True
+        self.unfin_str = conf.UN_FINISHED_PROGRESS_STR
+        self.display_dl_info = _bot.display_additional_dl_info
         else:
             self.display_dl_info = False
         if conf.PAUSE_ON_DL_INFO:
@@ -317,7 +316,7 @@ class Downloader:
 
             progress = "```\n{0}{1}```\n<b>Progress:</b> `{2}%`\n".format(
                 "".join([fin_str for i in range(math.floor(percentage / 10))]),
-                "".join([unfin_str for i in range(10 - math.floor(percentage / 10))]),
+                "".join([self.unfin_str for i in range(10 - math.floor(percentage / 10))]),
                 round(percentage, 2),
             )
 
@@ -421,7 +420,7 @@ class Downloader:
             progress = "```\n{0}{1}```\n<b>Progress:</b> `{2}%`\n".format(
                 "".join([fin_str for i in range(math.floor(download.progress / 10))]),
                 "".join(
-                    [unfin_str for i in range(10 - math.floor(download.progress / 10))]
+                    [self.unfin_str for i in range(10 - math.floor(download.progress / 10))]
                 ),
                 round(download.progress, 2),
             )
@@ -524,7 +523,7 @@ class Downloader:
 
             progress = "```\n{0}{1}```\n<b>Progress:</b> `{2}%`\n".format(
                 "".join([fin_str for i in range(math.floor(d_progress / 10))]),
-                "".join([unfin_str for i in range(10 - math.floor(d_progress / 10))]),
+                "".join([self.unfin_str for i in range(10 - math.floor(d_progress / 10))]),
                 round(d_progress, 2),
             )
             tmp = (

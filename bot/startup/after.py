@@ -111,7 +111,6 @@ async def on_termination():
 
 
 async def on_startup():
-    # if not STARTUP:
     try:
         asyncio.create_task(autostat())
         asyncio.create_task(start_rpc())
@@ -133,4 +132,3 @@ async def on_startup():
     except Exception:
         logger(Exception)
     _bot.started = True
-    # STARTUP.append(1)

@@ -13,10 +13,8 @@ from bot import (
     rss_dict_lock,
     thumb,
 )
-from bot.config import conf
-from bot.startup.before import DOCKER_DEPLOYMENT as d_docker
+from bot.config import _bot, conf
 from bot.startup.before import entime
-from bot.utils.bot_utils import RSS_DICT as rss_dict
 from bot.utils.bot_utils import (
     get_aria2,
     get_bqueue,
@@ -60,7 +58,7 @@ async def nuke(event, args, client):
     if not user_is_owner(event.sender_id):
         return await msg_sleep_delete(event, "😂", time=5, del_rep=True)
     try:
-        if not d_docker:
+        if not _bot.docker_deployed:
             await event.reply("`Exited.`")
             await clean_all_qb()
             await qclean()
@@ -806,7 +804,7 @@ async def rss_list(event, args, client):
     """
     if not user_is_owner(event.sender_id):
         return
-    if not rss_dict:
+    if not _bot.rss_dict:
         return await event.reply("<b> No subscriptions!</b>", parse_mode="html")
     list_feed = str()
     pre_event = event
@@ -817,7 +815,7 @@ async def rss_list(event, args, client):
         return ", ".join(["(" + ", ".join(map(str, sublist)) + ")" for sublist in ftr])
 
     async with rss_dict_lock:
-        for i, (title, data) in zip(itertools.count(1), list(rss_dict.items())):
+        for i, (title, data) in zip(itertools.count(1), list(_bot.rss_dict.items())):
             list_feed += f"\n\n{i}.<b>Title:</b> <code>{title}</code>\n<b>Feed Url: </b><code>{data['link']}</code>\n"
             list_feed += f"<b>Chat:</b> <code>{data['chat'] or 'Default'}</code>\n"
             list_feed += f"<b>Command:</b> <code>{data['command']}</code>\n"
@@ -861,7 +859,7 @@ async def rss_get(event, args, client):
 
     title = args
     count = int(arg.a)
-    data = rss_dict.get(title)
+    data = _bot.rss_dict.get(title)
     if not (data and count > 0):
         return await event.reply(f"`{rss_get.__doc__}`")
     try:
@@ -936,7 +934,7 @@ async def rss_editor(event, args, client):
     )
     if not args:
         return await event.reply(f"Please pass the title of the rss item to edit")
-    if not (data := rss_dict.get(args)):
+    if not (data := _bot.rss_dict.get(args)):
         return await event.reply(f"Could not find rss with title - {args}.")
     if not (
         arg.c
@@ -992,7 +990,7 @@ async def rss_editor(event, args, client):
         elif not scheduler.running:
             schedule_rss()
             scheduler.start()
-    await save2db2(rss_dict, "rss")
+    await save2db2(_bot.rss_dict, "rss")
     await event.reply(
         f"Edited rss configurations for rss feed with title - `{args}` successfully!"
     )
@@ -1011,11 +1009,11 @@ async def del_rss(event, args, client):
     """
     if not user_is_owner(event.sender_id):
         return
-    if not rss_dict.get(args):
+    if not _bot.rss_dict.get(args):
         return await event.reply(f"'{args}' not found in list of subscribed rss feeds!")
-    rss_dict.pop(args)
+    _bot.rss_dict.pop(args)
     msg = f"Succesfully removed '{args}' from subscribed feeds!"
-    await save2db2(rss_dict, "rss")
+    await save2db2(_bot.rss_dict, "rss")
     await event.reply(msg)
     await logger(e=msg)
 
@@ -1072,7 +1070,7 @@ async def rss_sub(event, args, client):
         )
     if arg.direct and arg.nodirect:
         await avoid_flood(event.reply, "**Warning:** Ignoring '--direct'")
-    if rss_dict.get(title):
+    if _bot.rss_dict.get(title):
         return await avoid_flood(
             event.reply,
             f"This title **{title}** has already been subscribed!. **Please choose another title!**",
@@ -1115,7 +1113,7 @@ async def rss_sub(event, args, client):
         msg += f"\n<b>Filters:-</b>\ninf: <code>{arg.inf}</code>\nexf: <code>{arg.exf}<code/>"
         msg += f"\n<b>Paused:- </b><code>{arg.p}</code>"
         async with rss_dict_lock:
-            rss_dict[title] = {
+            _bot.rss_dict[title] = {
                 "link": feed_link,
                 "last_feed": last_link,
                 "last_title": last_title,
@@ -1144,7 +1142,7 @@ async def rss_sub(event, args, client):
     except Exception as e:
         await logger(Exception)
         return await avoid_flood(event.reply, str(e))
-    await save2db2(rss_dict, "rss")
+    await save2db2(_bot.rss_dict, "rss")
     if msg:
         await avoid_flood(event.reply, msg, parse_mode="html")
     if arg.p:

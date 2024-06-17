@@ -6,8 +6,6 @@ from bot.fun.quotes import enquotes
 from bot.fun.stuff import lvbar
 from bot.utils.ani_utils import qparse
 from bot.utils.batch_utils import get_batch_list
-from bot.utils.bot_utils import BATCH_QUEUE as bqueue
-from bot.utils.bot_utils import QUEUE as queue
 from bot.utils.bot_utils import encode_info, get_codec, get_pause_status, sync_to_async
 from bot.utils.log_utils import logger
 
@@ -44,7 +42,7 @@ async def queue_status_preview(start, msg, queue):
 
 
 async def encodestat():
-    if not queue:
+    if not _bot.queue:
         msg = "**Currently Resting…😑**"
         return msg
     single = True
@@ -56,18 +54,18 @@ async def encodestat():
         if file_name := encode_info.current:
             i = 1
             msg += f"```{s}\n{file_name}```\n\n"
-        key = list(queue.keys())[0]
-        out = queue.get(key)
+        key = list(_bot.queue.keys())[0]
+        out = _bot.queue.get(key)
         v, f, m = out[2]
         if m[1].lower() == "batch.":
             msg = await batch_status_preview(msg, v, f)
             single = False
         else:
-            msg = await queue_status_preview(i, msg, queue)
-        if len(queue) == 1 and single and encode_info.current:
+            msg = await queue_status_preview(i, msg, _bot.queue)
+        if len(_bot.queue) == 1 and single and encode_info.current:
             loc = await sync_to_async(enquotes)
             msg += f"Nothing Here; While you wait:\n\n{loc}"
-        elif not single and (r := (len(queue) - 1)):
+        elif not single and (r := (len(_bot.queue) - 1)):
             msg += f"\n__(+{r} more item(s) on queue.)__ \n"
     except Exception:
         # pass
@@ -102,8 +100,8 @@ async def autostat():
 
         def conditions():
             return (
-                queue == check.queue
-                and bqueue == check.batch
+                _bot.queue == check.queue
+                and _bot.batch_queue == check.batch
                 and check.file == encode_info._current
                 and check.state == (get_pause_status() == 0)
             )
@@ -111,14 +109,14 @@ async def autostat():
         def wait():
             if conditions():
                 return True
-            check.batch.clear(), check.batch.update(bqueue)
-            check.queue.clear(), check.queue.update(queue)
+            check.batch.clear(), check.batch.update(_bot.batch_queue)
+            check.queue.clear(), check.queue.update(_bot.queue)
             check.file = encode_info._current
             check.state = get_pause_status() == 0
             return False
 
         while conf.FCHANNEL_STAT:
-            if not queue:
+            if not _bot.queue:
                 if check.done:
                     await asyncio.sleep(60)
                     continue

@@ -4,7 +4,7 @@ import io
 import sys
 import traceback
 
-from bot.utils.bot_utils import MAX_MESSAGE_LENGTH
+from bot.config import _bot
 from bot.utils.msg_utils import user_is_dev, user_is_owner
 from bot.utils.os_utils import s_remove
 
@@ -165,7 +165,7 @@ async def eval_message_p(message, cmd, client):
         cmd, evaluation.strip()
     )
 
-    if len(final_output) > MAX_MESSAGE_LENGTH:
+    if len(final_output) > _bot.max_message_length:
         final_output = "Evaluated:\n{}\n\nOutput:\n{}".format(cmd, evaluation.strip())
         with open("eval.text", "w+", encoding="utf8") as out_file:
             out_file.write(str(final_output))

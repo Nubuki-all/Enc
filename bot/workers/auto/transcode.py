@@ -12,8 +12,7 @@ from bot.utils.batch_utils import (
     get_downloadable_batch,
     mark_file_as_done,
 )
-from bot.utils.bot_utils import CACHE_QUEUE as cached
-from bot.utils.bot_utils import E_CANCEL
+from bot.utils.bot_utils import enc_canceller as e_cancel
 from bot.utils.bot_utils import encode_info as einfo
 from bot.utils.bot_utils import get_bqueue, get_queue, get_var, hbs
 from bot.utils.bot_utils import time_formatter as tf
@@ -140,7 +139,7 @@ async def something():
 
 async def thing():
     try:
-        while get_var("pausefile"):
+        while get_var("paused"):
             await asyncio.sleep(10)
         queue = get_queue()
         if not queue:
@@ -183,8 +182,7 @@ async def thing():
         msg_t = await tele.edit_message(
             chat_id, msg_p.id, "`Waiting for download handler…`"
         )
-        # USER_MAN.clear()
-        # USER_MAN.append(user)
+
         _id = f"{msg_t.chat_id}:{msg_t.id}"
         if not sender_id or str(sender_id).startswith("-100"):
             sender_id = 777000
@@ -230,7 +228,7 @@ async def thing():
                     get_args(*args_list, to_parse=einfo.uri, get_unknown=True)
                 )[1]
 
-            if cached:
+            if cache_dl(check=True):
                 raise (AlreadyDl)
 
             sdt = time.time()
@@ -331,7 +329,7 @@ async def thing():
             s_remove(out)
             skip(queue_id)
             mark_file_as_done(einfo.select, queue_id)
-            E_CANCEL.pop(_id) if E_CANCEL.get(_id) else None
+            e_cancel().pop(_id) if e_cancel().get(_id) else None
             await save2db()
             await save2db("batches")
             return
@@ -369,7 +367,7 @@ async def thing():
                 s_remove(out, _out)
                 skip(queue_id)
                 mark_file_as_done(einfo.select, queue_id)
-                E_CANCEL.pop(_id) if E_CANCEL.get(_id) else None
+                e_cancel().pop(_id) if e_cancel().get(_id) else None
                 await save2db()
                 await save2db("batches")
                 return

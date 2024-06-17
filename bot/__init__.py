@@ -135,8 +135,8 @@ dl_pause = "dl_pause"
 id_pause = "id_pause"
 
 
-if sys.version_info < (3, 8):
-    LOGS.critical("Please use Python 3.8+")
+if sys.version_info < (3, 10):
+    LOGS.critical("Please use Python 3.10+")
     exit(1)
 
 
