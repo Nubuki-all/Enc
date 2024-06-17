@@ -57,8 +57,6 @@ class Downloader:
         self.qbit = qbit
         self.unfin_str = conf.UN_FINISHED_PROGRESS_STR
         self.display_dl_info = _bot.display_additional_dl_info
-        else:
-            self.display_dl_info = False
         if conf.PAUSE_ON_DL_INFO:
             self.pause_on_dl_info = True
         else:
