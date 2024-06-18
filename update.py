@@ -60,7 +60,9 @@ cmd2 = f"git init -q \
 
 try:
     if ALWAYS_DEPLOY_LATEST is True or update_check.is_file():
-        if os.path.exists('.git') and check_output(["git config --get remote.origin.url"], shell=True).decode().strip() == {UPSTREAM_REPO}:
+        if os.path.exists('.git') and check_output(
+            ["git config --get remote.origin.url"],
+                shell=True).decode().strip() == {UPSTREAM_REPO}:
             update = bashrun([cmd], shell=True)
         else:
             update = bashrun([cmd2], shell=True)
