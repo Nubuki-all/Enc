@@ -228,7 +228,8 @@ async def thing():
                     get_args(*args_list, to_parse=einfo.uri, get_unknown=True)
                 )[1]
 
-            if await cache_dl(check=True):
+            cached = await cache_dl(check=True)
+            if cached:
                 raise (AlreadyDl)
 
             sdt = time.time()
