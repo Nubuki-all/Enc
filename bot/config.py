@@ -102,7 +102,7 @@ class Runtime_Config:
         self.batch_queue = {}
         self.cached = False
         self.cached_dl = False
-        self.display_additional_dl_info = True
+        self.display_additional_dl_info = False
         self.docker_deployed = False
         self.e_cancel = {}
         self.group_enc = False

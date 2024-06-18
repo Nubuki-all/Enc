@@ -140,7 +140,7 @@ async def enpause(message):
     pause_msg = (
         " `Bot has been paused to continue, unpause bot using the /pause command`"
     )
-    while _bot.pauselist:
+    while _bot.paused:
         try:
             await message.edit(enmoji() + pause_msg)
             await asyncio.sleep(10)
