@@ -3,6 +3,7 @@ import traceback
 
 from decouple import config
 from pathlib import Path
+from subprocess import check_output
 from subprocess import run as bashrun
 
 try:
@@ -14,7 +15,7 @@ try:
     AUPR = config("ALWAYS_UPDATE_PY_REQ", default=False, cast=bool)
     UPSTREAM_REPO = config(
         "UPSTREAM_REPO",
-        default="https://github.com/Nubuki-all/Tg-encoder")
+        default="https://github.com/Nubuki-all/Enc")
     UPSTREAM_BRANCH = config("UPSTREAM_BRANCH", default="main")
 
 except Exception:
@@ -59,7 +60,7 @@ cmd2 = f"git init -q \
 
 try:
     if ALWAYS_DEPLOY_LATEST is True or update_check.is_file():
-        if os.path.exists('.git'):
+        if os.path.exists('.git') and check_output(["git config --get remote.origin.url"], shell=True).decode().strip() == {UPSTREAM_REPO}:
             update = bashrun([cmd], shell=True)
         else:
             update = bashrun([cmd2], shell=True)
