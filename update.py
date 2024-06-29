@@ -59,9 +59,9 @@ cmd2 = f"git init -q \
        && git switch {UPSTREAM_BRANCH} -q"
 
 try:
-    if UPSTREAM_BRANCH == "main":
-        bashrun(["rm -rf .git"], shell=True)
     if ALWAYS_DEPLOY_LATEST is True or update_check.is_file():
+        if UPSTREAM_BRANCH == "main":
+            bashrun(["rm -rf .git"], shell=True)
         if os.path.exists('.git') and check_output(
             ["git config --get remote.origin.url"],
                 shell=True).decode().strip() == UPSTREAM_REPO:
