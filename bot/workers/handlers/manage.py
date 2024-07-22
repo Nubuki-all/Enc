@@ -921,8 +921,8 @@ async def rss_editor(event, args, client):
         return
     arg, args = get_args(
         "-c",
-        "-exf",
-        "-inf",
+        "--exf",
+        "--inf",
         "--chat",
         ["-e", "store_true"],
         ["-p", "store_true"],
@@ -1047,8 +1047,8 @@ async def rss_sub(event, args, client):
     arg, args = get_args(
         "-c",
         "-t",
-        "-exf",
-        "-inf",
+        "--exf",
+        "--inf",
         "--chat",
         ["--direct", "store_true"],
         ["--nodirect", "store_true"],
