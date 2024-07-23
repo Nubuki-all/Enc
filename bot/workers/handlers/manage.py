@@ -901,8 +901,8 @@ async def rss_editor(event, args, client):
     simply pass the rss title with the following arguements:
         Additional args:
             -c (/command): command to prefix the rss link
-            -exf (what_to_exclude): keyword of words to fiter out*
-            -inf (what_to_include): keywords to include*
+            --exf (what_to_exclude): keyword of words to fiter out*
+            --inf (what_to_include): keywords to include*
             --chat (chat_id) chat to send rss overides RSS_CHAT pass 'default' to reset.
             -p () to pause the rss feed
             -r () to resume the rss feed
@@ -1025,8 +1025,8 @@ async def rss_sub(event, args, client):
         Args:
             -t (TITLE): New Title of the subscribed rss feed [Required]
             -c (/command): command to prefix the rss link [Required]
-            -exf (what_to_exclude): keyword of words to fiter out*
-            -inf (what_to_include): keywords to include*
+            --exf (what_to_exclude): keyword of words to fiter out*
+            --inf (what_to_include): keywords to include*
             -p () to pause the rss feed
             -r () to resume the rss feed
             --chat (chat_id) chat to send feeds
