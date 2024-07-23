@@ -83,6 +83,7 @@ def enquip4():
         "HOORAAAY",
         "Don’t give up! Try a little harder! You can do it!!!",
         "English or Spa- Just kidding! I swear! So put the knife down!, Please?!",
+        "Crowdstrike? what's that?",
     )
     y = random.choice(quip)
     return y
