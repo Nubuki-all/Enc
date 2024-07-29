@@ -159,7 +159,7 @@ async def thing():
         name, u_msg, v_f = list(queue.values())[0]
         v, f, m, n, au = v_f
         ani = au[0]
-        link = au[1]
+        einfo.uri = au[1]
         sender_id, message = u_msg
         if not message:
             message = await pyro.get_messages(chat_id, msg_id)
@@ -184,7 +184,7 @@ async def thing():
             msg_p = await message.reply("`Download Pending…`", quote=True)
         except Exception:
             msg_p = await pyro.send_message(chat_id, "`Download Pending…`")
-            message = msg_p if link else message
+            message = msg_p if einfo.uri else message
         await asyncio.sleep(2)
         msg_t = await tele.edit_message(
             chat_id, msg_p.id, "`Waiting for download handler…`"
@@ -209,7 +209,7 @@ async def thing():
             op = None
         try:
             dl = "downloads/" + name
-            if einfo.uri := link:
+            if einfo.uri:
                 if m[0] == "qbit":
                     einfo.qbit = True
                     if m[1].split()[0].lower() == "select.":
