@@ -21,7 +21,6 @@ from bot.utils.log_utils import logger
 from bot.utils.msg_utils import (
     bc_msg,
     enpause,
-    get_args,
     get_cached,
     reply_message,
     report_encode_status,
