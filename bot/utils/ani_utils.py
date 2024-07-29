@@ -741,7 +741,7 @@ async def simplecap(
 
 
 async def qparse(name, ver=None, fil=None, rdir=None, ani=True):
-    return (await parse(name, v=ver, _filter=fil, direct=rdir, anilist=ani))[0]
+    return (await parse(name, anilist=ani, v=ver, _filter=fil, direct=rdir))[0]
 
 
 async def qparse_t(name, ver=None, fil=None):
