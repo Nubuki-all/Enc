@@ -79,7 +79,9 @@ async def forward_(name, out, ds, mi, f, ani):
     if not fc:
         return
     try:
-        pic_id, f_msg = await f_post(name, out, ani, conf.FCODEC, mi, _filter=f, evt=fb)
+        pic_id, f_msg = await f_post(
+            name, out, ani, conf.FCODEC, mi, _filter=f, evt=fb
+        )
         if pic_id:
             await pyro.send_photo(photo=pic_id, caption=f_msg, chat_id=fc)
     except Exception:
@@ -158,6 +160,8 @@ async def thing():
         log_channel = conf.LOG_CHANNEL
         name, u_msg, v_f = list(queue.values())[0]
         v, f, m, n, au = v_f
+        ani = au[0]
+        link = au[1]
         sender_id, message = u_msg
         if not message:
             message = await pyro.get_messages(chat_id, msg_id)
@@ -182,7 +186,7 @@ async def thing():
             msg_p = await message.reply("`Download Pending…`", quote=True)
         except Exception:
             msg_p = await pyro.send_message(chat_id, "`Download Pending…`")
-            message = msg_p if au[1] else message
+            message = msg_p if else message
         await asyncio.sleep(2)
         msg_t = await tele.edit_message(
             chat_id, msg_p.id, "`Waiting for download handler…`"
@@ -207,7 +211,7 @@ async def thing():
             op = None
         try:
             dl = "downloads/" + name
-            if einfo.uri := au[1]:
+            if einfo.uri := link:
                 if m[0] == "qbit":
                     einfo.qbit = True
                     if m[1].split()[0].lower() == "select.":
@@ -269,7 +273,7 @@ async def thing():
             name,
             d_fname,
             d_ext,
-            anilist=au[0],
+            anilist=ani,
             v=v,
             folder=d_folder,
             _filter=f,
@@ -277,7 +281,7 @@ async def thing():
         )
         out = f"{_dir}/{file_name}"
         title, epi, sn, rlsgrp = await dynamicthumb(
-            name, anilist=(not n or au[0]), _filter=f
+            name, anilist=(not n or ani), _filter=f
         )
 
         c_n = f"{title} {sn or str()}".strip()
@@ -374,7 +378,7 @@ async def thing():
         sut = time.time()
         fname = path_split(out)[1]
         pcap = await custcap(
-            name, fname, anilist=au[0], ver=v, encoder=conf.ENCODER, _filter=f, direct=n
+            name, fname, anilist=ani, ver=v, encoder=conf.ENCODER, _filter=f, direct=n
         )
         await op.edit(f"`Uploading…` `{out}`") if op else None
         upload = uploader(sender_id, _id)
@@ -412,7 +416,7 @@ async def thing():
 
         text = str()
         mi = await info(dl)
-        forward_task = asyncio.create_task(forward_(name, out, up, mi, f, au[0]))
+        forward_task = asyncio.create_task(forward_(name, out, up, mi, f, ani))
 
         text += f"**Source:** `[{rlsgrp}]`"
         if mi:
