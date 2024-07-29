@@ -80,7 +80,7 @@ async def forward_(name, out, ds, mi, f, ani):
         return
     try:
         pic_id, f_msg = await f_post(
-            name, out, anilist=ani, conf.FCODEC, mi, _filter=f, evt=fb
+            name, out, ani, conf.FCODEC, mi, _filter=f, evt=fb
         )
         if pic_id:
             await pyro.send_photo(photo=pic_id, caption=f_msg, chat_id=fc)
