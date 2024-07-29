@@ -31,9 +31,9 @@ async def queue_status_preview(start, msg, queue):
             msg += f"__+{r} more…__\n"
             break
         out = queue.get(key)
-        v, f, m = out[2]
+        v, f, m, n, au = out[2]
         name = (
-            await qparse(out[0], v, f)
+            await qparse(out[0], v, f, n, au[0])
             if m[1].lower() != "batch."
             else f"[Batch]:- {out[0]}"
         )
@@ -56,7 +56,7 @@ async def encodestat():
             msg += f"```{s}\n{file_name}```\n\n"
         key = list(_bot.queue.keys())[0]
         out = _bot.queue.get(key)
-        v, f, m = out[2]
+        v, f, m, n, au = out[2]
         if m[1].lower() == "batch.":
             msg = await batch_status_preview(msg, v, f)
             single = False

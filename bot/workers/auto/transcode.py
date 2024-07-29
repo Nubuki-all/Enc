@@ -72,14 +72,14 @@ async def another(text, title, epi, sea, metadata, dl):
     return text
 
 
-async def forward_(name, out, ds, mi, f):
+async def forward_(name, out, ds, mi, f, ani):
     fb = conf.FBANNER
     fc = conf.FCHANNEL
     fs = conf.FSTICKER
     if not fc:
         return
     try:
-        pic_id, f_msg = await f_post(name, out, conf.FCODEC, mi, _filter=f, evt=fb)
+        pic_id, f_msg = await f_post(name, out, anilist=ani, conf.FCODEC, mi, _filter=f, evt=fb)
         if pic_id:
             await pyro.send_photo(photo=pic_id, caption=f_msg, chat_id=fc)
     except Exception:
@@ -157,7 +157,7 @@ async def thing():
         download = None
         log_channel = conf.LOG_CHANNEL
         name, u_msg, v_f = list(queue.values())[0]
-        v, f, m = v_f
+        v, f, m, n, au = v_f
         sender_id, message = u_msg
         if not message:
             message = await pyro.get_messages(chat_id, msg_id)
@@ -169,6 +169,7 @@ async def thing():
             einfo.batch = einfo.qbit = True
             file_name, index, name = get_downloadable_batch(queue_id)
             einfo.select = index
+            n = None # To prevent hell from breaking loose
             if name is None:
                 einfo.batch = None
                 skip(queue_id)
@@ -177,7 +178,11 @@ async def thing():
                 await asyncio.sleep(2)
                 return
 
-        msg_p = await message.reply("`Download Pending…`", quote=True)
+        try:
+            msg_p = await message.reply("`Download Pending…`", quote=True)
+        except Exception:
+            msg_p = await pyro.send_message(chat_id, "`Download Pending…`")
+            message = msg_p if au[1] else message
         await asyncio.sleep(2)
         msg_t = await tele.edit_message(
             chat_id, msg_p.id, "`Waiting for download handler…`"
@@ -202,31 +207,11 @@ async def thing():
             op = None
         try:
             dl = "downloads/" + name
-            if message.text:
-                if message.text.startswith("/"):
-                    einfo.uri = message.text.split(" ", maxsplit=1)[1].strip()
-                else:
-                    einfo.uri = message.text
-                if m[0] == "aria2":
-                    args_list = ["-f", "-rm", "-tc", "-tf", "-v"]
-                else:
-                    args_list = [
-                        "-f",
-                        "-n",
-                        "-rm",
-                        "-s",
-                        "-tc",
-                        "-tf",
-                        "-v",
-                        ["-b", "store_true"],
-                        ["-y", "store_true"],
-                    ]
+            if (einfo.uri := au[1]):
+                if m[0] == "qbit":
                     einfo.qbit = True
                     if m[1].split()[0].lower() == "select.":
                         einfo.select = int(m[1].split()[1])
-                einfo.uri = (
-                    get_args(*args_list, to_parse=einfo.uri, get_unknown=True)
-                )[1]
 
             if await cache_dl(check=True):
                 raise (AlreadyDl)
@@ -281,10 +266,10 @@ async def thing():
         d_ext = split_ext(d_fname)[-1]
         _dir = "encode"
         file_name, metadata_name = await parse(
-            name, d_fname, d_ext, v=v, folder=d_folder, _filter=f
+            name, d_fname, d_ext, anilist=au[0], v=v, folder=d_folder, _filter=f, direct=n
         )
         out = f"{_dir}/{file_name}"
-        title, epi, sn, rlsgrp = await dynamicthumb(name, _filter=f)
+        title, epi, sn, rlsgrp = await dynamicthumb(name, anilist=(not n or au[0]), _filter=f)
 
         c_n = f"{title} {sn or str()}".strip()
         if einfo.previous and einfo.previous == c_n:
@@ -379,7 +364,7 @@ async def thing():
 
         sut = time.time()
         fname = path_split(out)[1]
-        pcap = await custcap(name, fname, ver=v, encoder=conf.ENCODER, _filter=f)
+        pcap = await custcap(name, fname, anilist=au[0], ver=v, encoder=conf.ENCODER, _filter=f, direct=n)
         await op.edit(f"`Uploading…` `{out}`") if op else None
         upload = uploader(sender_id, _id)
         up = await upload.start(msg_t.chat_id, out, msg_p, thumb2, pcap, message)
@@ -416,7 +401,7 @@ async def thing():
 
         text = str()
         mi = await info(dl)
-        forward_task = asyncio.create_task(forward_(name, out, up, mi, f))
+        forward_task = asyncio.create_task(forward_(name, out, up, mi, f, au[0]))
 
         text += f"**Source:** `[{rlsgrp}]`"
         if mi:

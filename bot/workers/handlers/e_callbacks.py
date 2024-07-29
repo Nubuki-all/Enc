@@ -28,18 +28,18 @@ async def get_next(length, queue):
     try:
         if length > 1:
             file_name, _id, v_f = list(queue.values())[1]
-            v, f, m = v_f
+            v, f, m, n, au = v_f
             next_ = (
-                await qparse(file_name, v, f)
+                await qparse(file_name, v, f, n, au[0])
                 if m[1].lower() != "batch."
                 else "[Batch]: " + file_name
             )
             next_ = (next_[:45] + "…") if len(next_) > 45 else next_
             if length > 2:
                 file_name, _id, v_f = list(queue.values())[2]
-                v, f, m = v_f
+                v, f, m, n, au = v_f
                 next2_ = "\n" + (
-                    await qparse(file_name, v, f)
+                    await qparse(file_name, v, f, n, au[0])
                     if m[1].lower() != "batch."
                     else "[Batch]: " + file_name
                 )
@@ -71,7 +71,7 @@ async def pres(e):
         if file_exists("thumb2.jpg"):
             ansa += "\n\nAnilist thumbnail:\nYes"
         file_name, _id, v_f = list(queue.values())[0]
-        v, f, m = v_f
+        v, f, m, n, au = v_f
         if m[1].lower() == "batch.":
             _dir, name_ = os.path.split(dl)
             nxt_, left = await get_batch_list(
@@ -190,8 +190,8 @@ async def dl_stat(client, query):
         file_name = (os.path.split(d.file_name))[1]
         ov = hbs(int(Path(dls).stat().st_size))
         queue = get_queue()
-        ver, fil, mode = (list(queue.values())[0])[2]
-        q = await qparse(file_name, ver, fil)
+        ver, fil, mode, n, au = (list(queue.values())[0])[2]
+        q = await qparse(file_name, ver, fil, n, au[0])
         ans = f"➡️:\n{q}"
         ans += "\n\n"
         ans += f'{"Current " if not d.uri else str()}Size:\n{ov}'

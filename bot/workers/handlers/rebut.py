@@ -188,6 +188,7 @@ async def en_rename(event, args, client):
     -tc {caption type} specify type in caption
     -tf {file tag} specify file language tag.
     -v {int} specify a number for versionimg
+    --force force rename a file to a specified filename and file type.
 
     To define file name send any of the below as arguments:
     "file_name" > str - custom name to rename to (if parsing is enabled this is parsed too)
@@ -204,7 +205,7 @@ async def en_rename(event, args, client):
         link = None
         _parse = True
         work_folder = "temp/"
-        _em = _q = _tc = _tf = _v = None
+        _em = _forced = _q = _tc = _tf = _v = None
         rep_event = await event.get_reply_message()
         message = await client.get_messages(event.chat_id, int(rep_event.id))
         if message.text and not (is_url(message.text) or is_magnet(message.text)):
@@ -214,6 +215,7 @@ async def en_rename(event, args, client):
         link = message.text if message.text else None
         if args:
             arg, args = get_args(
+                ["--force", "store_true"],
                 ["-np", "store_false"],
                 "-e",
                 "-q",
@@ -223,21 +225,25 @@ async def en_rename(event, args, client):
                 to_parse=args,
                 get_unknown=True,
             )
-            _parse = arg.np
+            _parse = arg.np if not arg.force else False
             _em = arg.e
+            _forced = args if arg.force else None
             _q = arg.q
             _tc = arg.tc
             _tf = arg.tf
             _v = arg.v
         if not args and not link:
             loc = rep_event.file.name
+            if not arg.force:
+                return await event.reply("**Force rename to what exactly?**")
         elif args == "0" and not link:
             loc = message.caption
+            _forced = loc if _forced else None
         elif not link:
             loc = check_ext(args)
         if not link:
             __loc = loc
-            __out, __none = await parse(loc, anilist=_parse, folder=work_folder)
+            __out, __none = await parse(loc, anilist=_parse, folder=work_folder, direct=_forced)
         else:
             file = await get_leech_name(link)
             if file.error:
@@ -272,6 +278,7 @@ async def en_rename(event, args, client):
             v=_v,
             _filter=_f,
             ccodec=_q,
+            direct=_forced,
         )
         if not __pout == __out:
             await asyncio.sleep(3)
@@ -294,6 +301,7 @@ async def en_rename(event, args, client):
             ver=_v,
             _filter=_f,
             ccodec=_q,
+            direct=_forced,
         )
         upload = uploader(event.sender_id, d_id)
         await upload.start(event.chat_id, loc, e, thumb3, cap, message)

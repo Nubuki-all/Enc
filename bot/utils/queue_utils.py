@@ -70,18 +70,20 @@ async def get_queue_msg():
                 777000 if not user_id or str(user_id).startswith("-100") else user_id
             )
             user = await pyro.get_users(user_id)
-            ver, fil, mode = ver_fil
+            ver, fil, mode, rname, ani_uri = ver_fil
 
             if fil and len(fil.split("\n")) > 2:
                 rm, ftag, ctag = fil.split("\n", maxsplit=2)
                 fil = f"[-rm: `{rm}`, -tf: `{ftag}`, -tc: `{ctag}`]"
 
-            batch = "  ├**Batch:** Yes\n  " if mode[1].lower() == "batch." else "  "
+            batch = "  ├**Batch:** Yes\n" if mode[1].lower() == "batch." else ""
+            force_rnm = f"  ├**Force rename to:** `{rname}`\n" if rname else ""
+            anilist = "  ├**Anilist:** Off\n" if not ani_uri[0] else ""
 
             msg += (
                 f"{_no}. `{file_name}`\n  ├**Filter:** {fil}\n  ├**Release version:** {ver}\n"
-                f"{batch}"
-                f"└**Added by:** [{user.first_name}](tg://user?id={user_id})\n\n"
+                f"{batch}{force_rnm}{anilist}"
+                f"  └**Added by:** [{user.first_name}](tg://user?id={user_id})\n\n"
             )
 
         if not msg:
