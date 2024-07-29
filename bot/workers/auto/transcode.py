@@ -186,7 +186,7 @@ async def thing():
             msg_p = await message.reply("`Download Pending…`", quote=True)
         except Exception:
             msg_p = await pyro.send_message(chat_id, "`Download Pending…`")
-            message = msg_p if else message
+            message = msg_p if link else message
         await asyncio.sleep(2)
         msg_t = await tele.edit_message(
             chat_id, msg_p.id, "`Waiting for download handler…`"
