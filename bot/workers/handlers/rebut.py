@@ -243,7 +243,9 @@ async def en_rename(event, args, client):
             loc = check_ext(args)
         if not link:
             __loc = loc
-            __out, __none = await parse(loc, anilist=_parse, folder=work_folder, direct=_forced)
+            __out, __none = await parse(
+                loc, anilist=_parse, folder=work_folder, direct=_forced
+            )
         else:
             file = await get_leech_name(link)
             if file.error:

@@ -210,7 +210,15 @@ async def enleech(event, args: str, client, direct=False):
     if args:
         o_args = args
         flag, args = get_args(
-            "-f", "-rm", "-n", "-tc", "-tf", "-v", ["-da", "store_false"], to_parse=args, get_unknown=True
+            "-f",
+            "-rm",
+            "-n",
+            "-tc",
+            "-tf",
+            "-v",
+            ["-da", "store_false"],
+            to_parse=args,
+            get_unknown=True,
         )
         if flag.rm or flag.tc or flag.tf:
             cust_fil = flag.rm or "disabled__"
@@ -284,7 +292,7 @@ async def enleech(event, args: str, client, direct=False):
                                         cust_fil or get_f(),
                                         ("aria2", mode),
                                         force_name,
-                                        (anilist, uri)
+                                        (anilist, uri),
                                     ),
                                 ]
                             }
@@ -325,7 +333,13 @@ async def enleech(event, args: str, client, direct=False):
                     (chat_id, event.id): [
                         file.name,
                         (user_id, None),
-                        (cust_v or get_v(), cust_fil or get_f(), ("aria2", mode), force_name, (anilist, uri)),
+                        (
+                            cust_v or get_v(),
+                            cust_fil or get_f(),
+                            ("aria2", mode),
+                            force_name,
+                            (anilist, uri),
+                        ),
                     ]
                 }
             )
@@ -370,7 +384,7 @@ async def enleech2(event, args: str, client, direct=False):
     user_id = event.sender_id
     if not (user_is_allowed(user_id) or direct):
         return
-    anilist=True
+    anilist = True
     cust_fil = cust_v = flag = str()
     force_name = None
     queue = get_queue()
@@ -406,7 +420,7 @@ async def enleech2(event, args: str, client, direct=False):
             )
         else:
             cust_fil = str_esc(flag.f)
-        anilist=flag.da
+        anilist = flag.da
         cust_v = flag.v
         force_name = flag.n
         if flag.s and not flag.s.isdigit():
@@ -422,9 +436,13 @@ async def enleech2(event, args: str, client, direct=False):
                         f"**Yeah No.**\n`Error: expected a number but received '{args}'.`"
                     )
                 if flag.b and not flag.y:
-                    await event.reply("Warning: '-b' flag ignored!\nAdd -y to bypass this warning.")
+                    await event.reply(
+                        "Warning: '-b' flag ignored!\nAdd -y to bypass this warning."
+                    )
                 if flag.s and not flag.y:
-                    await event.reply("Warning: '-s' flag ignored!\nAdd -y to bypass this warning.")
+                    await event.reply(
+                        "Warning: '-s' flag ignored!\nAdd -y to bypass this warning."
+                    )
                 args = int(args)
                 async with queue_lock:
                     for _none, _id in zip(
@@ -585,7 +603,13 @@ async def enleech2(event, args: str, client, direct=False):
                     (chat_id, event.id): [
                         file.name,
                         (user_id, None),
-                        (cust_v or get_v(), cust_fil or get_f(), ("qbit", mode), force_name, (anilist, uri)),
+                        (
+                            cust_v or get_v(),
+                            cust_fil or get_f(),
+                            ("qbit", mode),
+                            force_name,
+                            (anilist, uri),
+                        ),
                     ]
                 }
             )
@@ -728,14 +752,22 @@ async def pencode(message, args=None, sender_id=None, flag=None):
         for item in queue.values():
             if name in item:
                 return await xxx.edit("**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**")
-        anilist=True
+        anilist = True
         cust_fil = cust_v = str()
         force_name = None
         uri = None
         if args:
             if not flag:
                 flag, args = get_args(
-                    ["-da", "store_false"], "-f", "-rm", "-n", "-tc", "-tf", "-v", to_parse=args, get_unknown=True
+                    ["-da", "store_false"],
+                    "-f",
+                    "-rm",
+                    "-n",
+                    "-tc",
+                    "-tf",
+                    "-v",
+                    to_parse=args,
+                    get_unknown=True,
                 )
             if flag.rm or flag.tc or flag.tf:
                 cust_fil = flag.rm or "disabled__"
@@ -752,7 +784,13 @@ async def pencode(message, args=None, sender_id=None, flag=None):
                 (chat_id, message.id): [
                     name,
                     (sender_id, message),
-                    (cust_v or get_v(), cust_fil or get_f(), ("tg", "None"), force_name, (anilist, uri)),
+                    (
+                        cust_v or get_v(),
+                        cust_fil or get_f(),
+                        ("tg", "None"),
+                        force_name,
+                        (anilist, uri),
+                    ),
                 ]
             }
         )
@@ -1020,7 +1058,13 @@ async def edit_queue(event, args, client):
             cust_v = v = None
         uri = flag.u or uri
         queue.update(
-            {key: [flag.d or file_name, s_msg, (cust_v or v, cust_fil or f, m, flag.n or n, (anilist, uri))]}
+            {
+                key: [
+                    flag.d or file_name,
+                    s_msg,
+                    (cust_v or v, cust_fil or f, m, flag.n or n, (anilist, uri)),
+                ]
+            }
         )
         await save2db()
         await save2db("batches")

@@ -79,7 +79,9 @@ async def forward_(name, out, ds, mi, f, ani):
     if not fc:
         return
     try:
-        pic_id, f_msg = await f_post(name, out, anilist=ani, conf.FCODEC, mi, _filter=f, evt=fb)
+        pic_id, f_msg = await f_post(
+            name, out, anilist=ani, conf.FCODEC, mi, _filter=f, evt=fb
+        )
         if pic_id:
             await pyro.send_photo(photo=pic_id, caption=f_msg, chat_id=fc)
     except Exception:
@@ -169,7 +171,7 @@ async def thing():
             einfo.batch = einfo.qbit = True
             file_name, index, name = get_downloadable_batch(queue_id)
             einfo.select = index
-            n = None # To prevent hell from breaking loose
+            n = None  # To prevent hell from breaking loose
             if name is None:
                 einfo.batch = None
                 skip(queue_id)
@@ -207,7 +209,7 @@ async def thing():
             op = None
         try:
             dl = "downloads/" + name
-            if (einfo.uri := au[1]):
+            if einfo.uri := au[1]:
                 if m[0] == "qbit":
                     einfo.qbit = True
                     if m[1].split()[0].lower() == "select.":
@@ -266,10 +268,19 @@ async def thing():
         d_ext = split_ext(d_fname)[-1]
         _dir = "encode"
         file_name, metadata_name = await parse(
-            name, d_fname, d_ext, anilist=au[0], v=v, folder=d_folder, _filter=f, direct=n
+            name,
+            d_fname,
+            d_ext,
+            anilist=au[0],
+            v=v,
+            folder=d_folder,
+            _filter=f,
+            direct=n,
         )
         out = f"{_dir}/{file_name}"
-        title, epi, sn, rlsgrp = await dynamicthumb(name, anilist=(not n or au[0]), _filter=f)
+        title, epi, sn, rlsgrp = await dynamicthumb(
+            name, anilist=(not n or au[0]), _filter=f
+        )
 
         c_n = f"{title} {sn or str()}".strip()
         if einfo.previous and einfo.previous == c_n:
@@ -364,7 +375,9 @@ async def thing():
 
         sut = time.time()
         fname = path_split(out)[1]
-        pcap = await custcap(name, fname, anilist=au[0], ver=v, encoder=conf.ENCODER, _filter=f, direct=n)
+        pcap = await custcap(
+            name, fname, anilist=au[0], ver=v, encoder=conf.ENCODER, _filter=f, direct=n
+        )
         await op.edit(f"`Uploading…` `{out}`") if op else None
         upload = uploader(sender_id, _id)
         up = await upload.start(msg_t.chat_id, out, msg_p, thumb2, pcap, message)
