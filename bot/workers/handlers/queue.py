@@ -675,7 +675,7 @@ async def enselect(event, args, client):
                 _start, _end = map(int, flag.e.split("-"))
                 enable_list = [str(x) for x in range(_start, (_end + 1))]
             else:
-                enable_list = flag.e.split() if not "," in flag.e else flag.e.split(",")
+                enable_list = flag.e.split() if "," not in flag.e else flag.e.split(",")
             msg += "**Will Encode:**\n"
             for i in enable_list:
                 i = int(i) if i.isdigit() else i
@@ -697,7 +697,9 @@ async def enselect(event, args, client):
                 _start, _end = map(int, flag.d.split("-"))
                 disable_list = [str(x) for x in range(_start, (_end + 1))]
             else:
-                disable_list = flag.d.split() if not "," in flag.d else flag.d.split(",")
+                disable_list = (
+                    flag.d.split() if "," not in flag.d else flag.d.split(",")
+                )
             msg += "**Will Skip:-**\n"
             for i in disable_list:
                 i = int(i) if i.isdigit() else i
