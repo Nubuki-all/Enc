@@ -751,7 +751,9 @@ async def qparse_t(name, ver=None, fil=None):
     )
 
 
-async def f_post(name, out, anilist=True, fcodec=None, mi=None, _filter=None, evt=True, direct=None):
+async def f_post(
+    name, out, anilist=True, fcodec=None, mi=None, _filter=None, evt=True, direct=None
+):
     if conf.NO_BANNER:
         return None, None
     try:

@@ -78,7 +78,9 @@ async def forward_(name, out, ds, mi, f, ani, n):
     if not fc:
         return
     try:
-        pic_id, f_msg = await f_post(name, out, ani, conf.FCODEC, mi, _filter=f, evt=fb, direct=n)
+        pic_id, f_msg = await f_post(
+            name, out, ani, conf.FCODEC, mi, _filter=f, evt=fb, direct=n
+        )
         if pic_id:
             await pyro.send_photo(photo=pic_id, caption=f_msg, chat_id=fc)
     except Exception:
