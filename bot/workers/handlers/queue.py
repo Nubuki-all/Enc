@@ -365,6 +365,7 @@ async def enleech2(event, args: str, client, direct=False):
         (doesn't work if -b is specified)
     Accepts the following flags:
         -b (To force encode batch)
+        -d set name for batch or selected file in batch (useful to avoid duplication)
         -da Disables anilist for the item
         -y (in conjunction with -b) add all batch to queue without preview
         -f filter (only use if familiar with filter format)
@@ -400,7 +401,6 @@ async def enleech2(event, args: str, client, direct=False):
         flag, args = get_args(
             "-d",
             "-f",
-            "-n",
             "-rm",
             "-n",
             "-s",
