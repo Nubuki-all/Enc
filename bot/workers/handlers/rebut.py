@@ -342,6 +342,7 @@ async def en_mux(event, args, client):
         -default_s {lang_iso3} same as above but for subtitles.
             the probability of this working rests on the source file having a language metadata.
         -ext {ext} force change extension (requires the preceding dot ".")
+        -f set output file name.
         -tc {string} force tag caption
         -tf {string} force tag file
     """
@@ -361,6 +362,7 @@ async def en_mux(event, args, client):
         default_sub = None
         download = download2 = None
         flags = None
+        forced_file = None
         input_2 = None
         link = qb = select = None
         ver = None
@@ -391,6 +393,7 @@ async def en_mux(event, args, client):
                 "-default_a",
                 "-default_s",
                 "-ext",
+                "-f",
                 "-i",
                 ["-np", "store_true"],
                 "-q",
@@ -433,7 +436,7 @@ async def en_mux(event, args, client):
                 if not flag.du.lstrip("-").isdigit():
                     return await event.reply("'-du': chat_id is not a valid number.")
                 flag.du = int(flag.du)
-            if flag.np:
+            if flag.np or flag.f:
                 ani_parse = False
             if flag.i and (is_url(flag.i) or is_magnet(flag.i)):
                 link2 = None
@@ -463,6 +466,7 @@ async def en_mux(event, args, client):
             codec = flag.q
             default_audio = flag.default_a
             default_sub = flag.default_s
+            forced_file = flag.f
             file_tag = flag.tf
             force_ext = flag.ext
             ver = flag.v
@@ -530,6 +534,7 @@ async def en_mux(event, args, client):
             folder=work_folder,
             _filter=_f,
             ccodec=codec,
+            direct=forced_file,
         )
         loc = work_folder + __out
         b, d, c, rlsgrp = await dynamicthumb(
@@ -579,6 +584,7 @@ async def en_mux(event, args, client):
             ver=ver,
             _filter=_f,
             ccodec=codec,
+            direct=forced_file,
         )
         await e.delete()
         await asyncio.sleep(5)

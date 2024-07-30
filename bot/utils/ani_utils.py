@@ -751,12 +751,13 @@ async def qparse_t(name, ver=None, fil=None):
     )
 
 
-async def f_post(name, out, anilist=True, fcodec=None, mi=None, _filter=None, evt=True):
+async def f_post(name, out, anilist=True, fcodec=None, mi=None, _filter=None, evt=True, direct=None):
     if conf.NO_BANNER:
         return None, None
     try:
         name = (await filter_name(name, _filter))[0]
         ## Get info ##
+        name = direct or name
         parsed = anitopy.parse(name)
         # title
         title = parsed.get("anime_title")
@@ -781,7 +782,7 @@ async def f_post(name, out, anilist=True, fcodec=None, mi=None, _filter=None, ev
         codec = fcodec if fcodec else await get_codec()
 
         try:
-            if file_exists(parse_file) or not anilist:
+            if file_exists(parse_file) or not anilist or direct:
                 raise Exception("Parsing turned off")
             json = await get_ani_info(title)
             if sn:
