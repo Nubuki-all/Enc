@@ -51,6 +51,7 @@ class Config:
                 "FFMPEG",
                 default='ffmpeg -i "{}" -preset ultrafast -c:v libx265 -crf 27 -map 0:v -c:a aac -map 0:a -c:s copy -map 0:s? "{}"',
             )
+            self.FINISHED_PROGRESS_STR = config("FINISHED_PROGRESS_STR", default="🧡")
             self.FL_CAP = config("FILENAME_AS_CAPTION", default=False, cast=bool)
             self.FS_THRESHOLD = config("FLOOD_SLEEP_THRESHOLD", default=600, cast=int)
             self.FSTICKER = config("FSTICKER", default=None)
@@ -78,33 +79,53 @@ class Config:
             self.TG_DL_CLIENT = config("TG_DL_CLIENT", default="pyrogram")
             self.TG_UL_CLIENT = config("TG_UL_CLIENT", default="pyrogram")
             self.THUMB = config("THUMBNAIL", default=None)
+            self.UN_FINISHED_PROGRESS_STR = config(
+                "UN_FINISHED_PROGRESS_STR", default="🤍"
+            )
             self.USE_ANILIST = config("USE_ANILIST", default=True, cast=bool)
             self.USE_CAPTION = config("USE_CAPTION", default=True, cast=bool)
             self.WORKERS = config("WORKERS", default=2, cast=int)
         except Exception:
             print("Environment vars Missing; or")
-            print("something went wrong")
+            print("Something went wrong:")
             print(traceback.format_exc())
             exit()
 
 
 class Runtime_Config:
     # will slowly replace the Var_list class in utils.bot_utils
+    # Progress 1 / 2
+    # checking for missed variables
     def __init__(self):
         self.aria2 = None
+        self.batch_ing = []
+        self.batch_queue = {}
+        self.cached = False
         self.cached_dl = False
-        self.display_additional_dl_info = True
+        self.display_additional_dl_info = False
         self.docker_deployed = False
-        self.rss_ran_once = False
+        self.e_cancel = {}
         self.group_enc = False
+        self.groupenc = []
+        self.max_message_length = 4096
         self.only_owner_pm = False
         self.pause_status = 0
-        self.paused = False
+        self.paused = []
+        self.preview_batch = {}
+        self.preview_list = []
+        self.queue = {}
+        self.queue_status = []
+        self.r_queue = []
         self.repo_branch = None
+        self.rss_dict = {}
+        self.rss_ran_once = False
         self.sas = False
         self.sqs = False
         self.started = False
+        self.temp_only_in_group = False
         self.temp_users = []
+        self.u_cancel = []
+        self.version2 = []
 
 
 conf = Config()

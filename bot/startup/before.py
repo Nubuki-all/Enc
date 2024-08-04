@@ -4,12 +4,9 @@ from pymongo import MongoClient
 
 from bot import *
 from bot.config import _bot, conf
-from bot.utils.bot_utils import create_api_token, var
+from bot.utils.bot_utils import create_api_token
 from bot.utils.local_db_utils import load_local_db
 from bot.utils.os_utils import file_exists
-
-attrs = dir(var)
-globals().update({n: getattr(var, n) for n in attrs if not n.startswith("_")})
 
 uptime = dt.now()
 
@@ -33,8 +30,8 @@ if conf.DL_STUFF:
     for link in conf.DL_STUFF.split(","):
         os.system(f"wget {link.strip()}")
 
-if conf.DL_STUFF:
-    TEMP_ONLY_IN_GROUP.append(1)
+if conf.NO_TEMP_PM:
+    _bot.temp_only_in_group = True
 
 if not file_exists(ffmpeg_file):
     with open(ffmpeg_file, "w") as file:
@@ -65,14 +62,14 @@ if not os.path.isdir("thumb/"):
 
 
 if os.path.isdir("/tgenc"):
-    DOCKER_DEPLOYMENT.append(1)
+    _bot.docker_deployed = True
 
 if conf.TEMP_USER:
     for t in conf.TEMP_USER.split():
         if t in conf.OWNER.split():
             continue
-        if t not in TEMP_USERS:
-            TEMP_USERS.append(t)
+        if t not in _bot.temp_users:
+            _bot.temp_users.append(t)
 
 
 def load_db(_db, _key, var, var_type=None):
@@ -109,14 +106,14 @@ if conf.DATABASE_URL:
     rssdb = db["rss"]
     userdb = db["users"]
 
-    load_db(queuedb, "batches", BATCH_QUEUE, "dict")
-    load_db(queuedb, "queue", QUEUE, "dict")
-    load_db(userdb, "t_users", TEMP_USERS, "list")
+    load_db(queuedb, "batches", _bot.batch_queue, "dict")
+    load_db(queuedb, "queue", _bot.queue, "dict")
+    load_db(userdb, "t_users", _bot.temp_users, "list")
     load_db(filterdb, "autoname", rename_file)
     load_db(ffmpegdb, "ffmpeg", ffmpeg_file)
     load_db(filterdb, "filter", filter_file)
     load_db(ffmpegdb, "mux_args", mux_file)
-    load_db(rssdb, "rss", RSS_DICT, "dict")
+    load_db(rssdb, "rss", _bot.rss_dict, "dict")
 
 
 else:
@@ -141,15 +138,15 @@ class EnTimer:
     async def timer(self):
         while True:
             while self.ind_pause or self.time > 0:
-                PAUSEFILE.append(0) if not PAUSEFILE else None
+                _bot.paused.append(0) if not _bot.paused else None
                 await asyncio.sleep(1)
                 print(f"paused for {self.time}")
                 if self.time:
                     self.ind_pause = False
                     self.time = self.time - 1
             await asyncio.sleep(1)
-            if PAUSEFILE and PAUSEFILE[0] == 0:
-                PAUSEFILE.clear()
+            if _bot.paused and _bot.paused[0] == 0:
+                _bot.paused.clear()
             if self.msg and not (self.time or self.ind_pause):
                 try:
                     for msg in self.msg:

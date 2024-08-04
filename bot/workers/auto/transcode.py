@@ -12,8 +12,7 @@ from bot.utils.batch_utils import (
     get_downloadable_batch,
     mark_file_as_done,
 )
-from bot.utils.bot_utils import CACHE_QUEUE as cached
-from bot.utils.bot_utils import E_CANCEL
+from bot.utils.bot_utils import enc_canceller as e_cancel
 from bot.utils.bot_utils import encode_info as einfo
 from bot.utils.bot_utils import get_bqueue, get_queue, get_var, hbs
 from bot.utils.bot_utils import time_formatter as tf
@@ -22,7 +21,6 @@ from bot.utils.log_utils import logger
 from bot.utils.msg_utils import (
     bc_msg,
     enpause,
-    get_args,
     get_cached,
     reply_message,
     report_encode_status,
@@ -73,14 +71,16 @@ async def another(text, title, epi, sea, metadata, dl):
     return text
 
 
-async def forward_(name, out, ds, mi, f):
+async def forward_(name, out, ds, mi, f, ani, n):
     fb = conf.FBANNER
     fc = conf.FCHANNEL
     fs = conf.FSTICKER
     if not fc:
         return
     try:
-        pic_id, f_msg = await f_post(name, out, conf.FCODEC, mi, _filter=f, evt=fb)
+        pic_id, f_msg = await f_post(
+            name, out, ani, conf.FCODEC, mi, _filter=f, evt=fb, direct=n
+        )
         if pic_id:
             await pyro.send_photo(photo=pic_id, caption=f_msg, chat_id=fc)
     except Exception:
@@ -140,7 +140,7 @@ async def something():
 
 async def thing():
     try:
-        while get_var("pausefile"):
+        while get_var("paused"):
             await asyncio.sleep(10)
         queue = get_queue()
         if not queue:
@@ -158,7 +158,9 @@ async def thing():
         download = None
         log_channel = conf.LOG_CHANNEL
         name, u_msg, v_f = list(queue.values())[0]
-        v, f, m = v_f
+        v, f, m, n, au = v_f
+        ani = au[0]
+        einfo.uri = au[1]
         sender_id, message = u_msg
         if not message:
             message = await pyro.get_messages(chat_id, msg_id)
@@ -170,6 +172,7 @@ async def thing():
             einfo.batch = einfo.qbit = True
             file_name, index, name = get_downloadable_batch(queue_id)
             einfo.select = index
+            n = None  # To prevent hell from breaking loose
             if name is None:
                 einfo.batch = None
                 skip(queue_id)
@@ -178,13 +181,16 @@ async def thing():
                 await asyncio.sleep(2)
                 return
 
-        msg_p = await message.reply("`Download Pending…`", quote=True)
+        try:
+            msg_p = await message.reply("`Download Pending…`", quote=True)
+        except Exception:
+            msg_p = await pyro.send_message(chat_id, "`Download Pending…`")
+            message = msg_p if einfo.uri else message
         await asyncio.sleep(2)
         msg_t = await tele.edit_message(
             chat_id, msg_p.id, "`Waiting for download handler…`"
         )
-        # USER_MAN.clear()
-        # USER_MAN.append(user)
+
         _id = f"{msg_t.chat_id}:{msg_t.id}"
         if not sender_id or str(sender_id).startswith("-100"):
             sender_id = 777000
@@ -204,33 +210,13 @@ async def thing():
             op = None
         try:
             dl = "downloads/" + name
-            if message.text:
-                if message.text.startswith("/"):
-                    einfo.uri = message.text.split(" ", maxsplit=1)[1].strip()
-                else:
-                    einfo.uri = message.text
-                if m[0] == "aria2":
-                    args_list = ["-f", "-rm", "-tc", "-tf", "-v"]
-                else:
-                    args_list = [
-                        "-f",
-                        "-n",
-                        "-rm",
-                        "-s",
-                        "-tc",
-                        "-tf",
-                        "-v",
-                        ["-b", "store_true"],
-                        ["-y", "store_true"],
-                    ]
+            if einfo.uri:
+                if m[0] == "qbit":
                     einfo.qbit = True
                     if m[1].split()[0].lower() == "select.":
                         einfo.select = int(m[1].split()[1])
-                einfo.uri = (
-                    get_args(*args_list, to_parse=einfo.uri, get_unknown=True)
-                )[1]
 
-            if cached:
+            if await cache_dl(check=True):
                 raise (AlreadyDl)
 
             sdt = time.time()
@@ -283,10 +269,19 @@ async def thing():
         d_ext = split_ext(d_fname)[-1]
         _dir = "encode"
         file_name, metadata_name = await parse(
-            name, d_fname, d_ext, v=v, folder=d_folder, _filter=f
+            name,
+            d_fname,
+            d_ext,
+            anilist=ani,
+            v=v,
+            folder=d_folder,
+            _filter=f,
+            direct=n,
         )
         out = f"{_dir}/{file_name}"
-        title, epi, sn, rlsgrp = await dynamicthumb(name, _filter=f)
+        title, epi, sn, rlsgrp = await dynamicthumb(
+            name, anilist=(not n or ani), _filter=f
+        )
 
         c_n = f"{title} {sn or str()}".strip()
         if einfo.previous and einfo.previous == c_n:
@@ -331,7 +326,7 @@ async def thing():
             s_remove(out)
             skip(queue_id)
             mark_file_as_done(einfo.select, queue_id)
-            E_CANCEL.pop(_id) if E_CANCEL.get(_id) else None
+            e_cancel().pop(_id) if e_cancel().get(_id) else None
             await save2db()
             await save2db("batches")
             return
@@ -369,7 +364,7 @@ async def thing():
                 s_remove(out, _out)
                 skip(queue_id)
                 mark_file_as_done(einfo.select, queue_id)
-                E_CANCEL.pop(_id) if E_CANCEL.get(_id) else None
+                e_cancel().pop(_id) if e_cancel().get(_id) else None
                 await save2db()
                 await save2db("batches")
                 return
@@ -381,7 +376,9 @@ async def thing():
 
         sut = time.time()
         fname = path_split(out)[1]
-        pcap = await custcap(name, fname, ver=v, encoder=conf.ENCODER, _filter=f)
+        pcap = await custcap(
+            name, fname, anilist=ani, ver=v, encoder=conf.ENCODER, _filter=f, direct=n
+        )
         await op.edit(f"`Uploading…` `{out}`") if op else None
         upload = uploader(sender_id, _id)
         up = await upload.start(msg_t.chat_id, out, msg_p, thumb2, pcap, message)
@@ -418,7 +415,7 @@ async def thing():
 
         text = str()
         mi = await info(dl)
-        forward_task = asyncio.create_task(forward_(name, out, up, mi, f))
+        forward_task = asyncio.create_task(forward_(name, out, up, mi, f, ani, n))
 
         text += f"**Source:** `[{rlsgrp}]`"
         if mi:

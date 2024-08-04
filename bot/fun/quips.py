@@ -73,6 +73,17 @@ def enquip4():
         "It is what it is.",
         "Oh hell naw!",
         "What's Poppin?",
+        "This is Kangaroo Court",
+        "Behold, The Warrior of servers",
+        "H-Haters Gonna H-Hate",
+        "Well? We're Waiting!",
+        "If Google Can Get Away With It, Why Can't I?",
+        "Oooo, Ghoooosts",
+        "Aha ha... S-Suspicious person, I am not...",
+        "HOORAAAY",
+        "Don’t give up! Try a little harder! You can do it!!!",
+        "English or Spa- Just kidding! I swear! So put the knife down!, Please?!",
+        "Crowdstrike? what's that?",
     )
     y = random.choice(quip)
     return y

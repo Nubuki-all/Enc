@@ -135,9 +135,9 @@ async def listqueuep(event, args, client):
         try:
             if args.isdigit() and ((args := int(args)) <= (len(queue) - 1)):
                 file = list(queue.values())[args]
-                v, f, m = file[2]
+                v, f, m, n, au = file[2]
                 p_file_name = (
-                    await qparse(file[0], v, f)
+                    await qparse(file[0], v, f, n, au[0])
                     if not m[1].lower() == "batch."
                     else "[Batch]: " + file[0]
                 )
@@ -155,9 +155,9 @@ async def listqueuep(event, args, client):
             rply = str()
             y = y + 1
             for file, i in zip(list(queue.values())[x:y], itertools.count(start=1)):
-                v, f, m = file[2]
+                v, f, m, n, au = file[2]
                 file_name = (
-                    await qparse(file[0], v, f)
+                    await qparse(file[0], v, f, n, au[0])
                     if not m[1].lower() == "batch."
                     else "[Batch]: " + file[0]
                 )
@@ -178,8 +178,10 @@ async def enleech(event, args: str, client, direct=False):
         can also add consecutive items to queue by replying
         to the first link and a number of how many links to add to queue
     Accepts the following flags:
+        -da Disables anilist for the item
         -f filter (only use if familiar with filter format)
         -rm what_to_remove (keyword to remove from torrent file_name)
+        -n new_filename.mp4 (rename the processed file.)
         -tc caption_tag (tag caption type as…)
         -tf file_tag (tag file_as)
         -v number (tag according to version number)
@@ -193,7 +195,9 @@ async def enleech(event, args: str, client, direct=False):
     user_id = event.sender_id
     if not (user_is_allowed(user_id) or direct):
         return
+    anilist = True
     cust_fil = cust_v = str()
+    force_name = None
     mode = "None"
     o_args = None
     queue = get_queue()
@@ -206,7 +210,15 @@ async def enleech(event, args: str, client, direct=False):
     if args:
         o_args = args
         flag, args = get_args(
-            "-f", "-rm", "-tc", "-tf", "-v", to_parse=args, get_unknown=True
+            "-f",
+            "-rm",
+            "-n",
+            "-tc",
+            "-tf",
+            "-v",
+            ["-da", "store_false"],
+            to_parse=args,
+            get_unknown=True,
         )
         if flag.rm or flag.tc or flag.tf:
             cust_fil = flag.rm or "disabled__"
@@ -215,7 +227,9 @@ async def enleech(event, args: str, client, direct=False):
             )
         else:
             cust_fil = str_esc(flag.f)
+        anilist = flag.da
         cust_v = flag.v
+        force_name = flag.n
     try:
         if event.is_reply:
             rep_event = await event.get_reply_message()
@@ -277,6 +291,8 @@ async def enleech(event, args: str, client, direct=False):
                                         cust_v or get_v(),
                                         cust_fil or get_f(),
                                         ("aria2", mode),
+                                        force_name,
+                                        (anilist, uri),
                                     ),
                                 ]
                             }
@@ -317,7 +333,13 @@ async def enleech(event, args: str, client, direct=False):
                     (chat_id, event.id): [
                         file.name,
                         (user_id, None),
-                        (cust_v or get_v(), cust_fil or get_f(), ("aria2", mode)),
+                        (
+                            cust_v or get_v(),
+                            cust_fil or get_f(),
+                            ("aria2", mode),
+                            force_name,
+                            (anilist, uri),
+                        ),
                     ]
                 }
             )
@@ -343,9 +365,12 @@ async def enleech2(event, args: str, client, direct=False):
         (doesn't work if -b is specified)
     Accepts the following flags:
         -b (To force encode batch)
+        -d set name for batch or selected file in batch (useful to avoid duplication)
+        -da Disables anilist for the item
         -y (in conjunction with -b) add all batch to queue without preview
         -f filter (only use if familiar with filter format)
         -rm what_to_remove (keyword to remove from torrent file_name)
+        -n new_filename.mp4 (rename the processed file.)
         -s (select a file for encoding __ through indexing)
         -tc caption_tag (tag caption type as…)
         -tf file_tag (tag file_as)
@@ -360,7 +385,9 @@ async def enleech2(event, args: str, client, direct=False):
     user_id = event.sender_id
     if not (user_is_allowed(user_id) or direct):
         return
+    anilist = True
     cust_fil = cust_v = flag = str()
+    force_name = None
     queue = get_queue()
     invalid_msg = "`Invalid torrent/direct link`"
     mode = "None"
@@ -372,14 +399,16 @@ async def enleech2(event, args: str, client, direct=False):
     or_event = event
     if args:
         flag, args = get_args(
+            "-d",
             "-f",
-            "-n",
             "-rm",
+            "-n",
             "-s",
             "-tc",
             "-tf",
             "-v",
             ["-b", "store_true"],
+            ["-da", "store_false"],
             ["-y", "store_true"],
             to_parse=args,
             get_unknown=True,
@@ -391,7 +420,9 @@ async def enleech2(event, args: str, client, direct=False):
             )
         else:
             cust_fil = str_esc(flag.f)
+        anilist = flag.da
         cust_v = flag.v
+        force_name = flag.n
         if flag.s and not flag.s.isdigit():
             return await event.reply("`Value for '-s' arg has to be digit.`")
     try:
@@ -405,9 +436,13 @@ async def enleech2(event, args: str, client, direct=False):
                         f"**Yeah No.**\n`Error: expected a number but received '{args}'.`"
                     )
                 if flag.b and not flag.y:
-                    await event.reply("Warning: '-b' flag ignored!")
+                    await event.reply(
+                        "Warning: '-b' flag ignored!\nAdd -y to bypass this warning."
+                    )
                 if flag.s and not flag.y:
-                    await event.reply("Warning: '-b' flag ignored!")
+                    await event.reply(
+                        "Warning: '-s' flag ignored!\nAdd -y to bypass this warning."
+                    )
                 args = int(args)
                 async with queue_lock:
                     for _none, _id in zip(
@@ -431,8 +466,9 @@ async def enleech2(event, args: str, client, direct=False):
                             await asyncio.sleep(10)
                             continue
                         if (flag.b and flag.y) and file.count > 1:
-                            file.name = flag.n or file.name
+                            file.name = flag.d or file.name
                             mode = "Batch."
+                            force_name = None
                         elif (flag.s and flag.y) and file.count > 1:
                             if (ind := int(flag.s)) > (file.count - 1):
                                 await event2.reply(
@@ -446,7 +482,7 @@ async def enleech2(event, args: str, client, direct=False):
                                 await asyncio.sleep(5)
                                 continue
                             mode = f"Select. {flag.s}"
-                            file.name = flag.n or (file.file_list[ind].split("/"))[-1]
+                            file.name = flag.d or (file.file_list[ind].split("/"))[-1]
                         if file.count > 1:
                             await event2.reply(no_bt_spt_msg, quote=True)
                             await asyncio.sleep(3)
@@ -496,6 +532,8 @@ async def enleech2(event, args: str, client, direct=False):
                                         cust_v or get_v(),
                                         cust_fil or get_f(),
                                         ("qbit", mode),
+                                        force_name,
+                                        (anilist, uri),
                                     ),
                                 ]
                             }
@@ -524,8 +562,9 @@ async def enleech2(event, args: str, client, direct=False):
         if file.error:
             return await event.reply(f"`{file.error}`")
         if flag and flag.b and file.count > 1:
-            file.name = flag.n or file.name
+            file.name = flag.d or file.name
             mode = "Batch."
+            force_name = None
         elif flag and flag.s and file.count > 1:
             if (ind := int(flag.s)) > (file.count - 1):
                 return await event.reply(
@@ -535,7 +574,7 @@ async def enleech2(event, args: str, client, direct=False):
             if not is_video_file(file.file_list[ind]):
                 return await event.reply("'-s': " + no_fl_spt_msg)
             mode = f"Select. {flag.s}"
-            file.name = flag.n or (file.file_list[ind].split("/"))[-1]
+            file.name = flag.d or (file.file_list[ind].split("/"))[-1]
         elif file.count > 1:
             return await event.reply(no_bt_spt_msg)
         elif not is_video_file(file.name):
@@ -564,7 +603,13 @@ async def enleech2(event, args: str, client, direct=False):
                     (chat_id, event.id): [
                         file.name,
                         (user_id, None),
-                        (cust_v or get_v(), cust_fil or get_f(), ("qbit", mode)),
+                        (
+                            cust_v or get_v(),
+                            cust_fil or get_f(),
+                            ("qbit", mode),
+                            force_name,
+                            (anilist, uri),
+                        ),
                     ]
                 }
             )
@@ -630,7 +675,7 @@ async def enselect(event, args, client):
                 _start, _end = map(int, flag.e.split("-"))
                 enable_list = [str(x) for x in range(_start, (_end + 1))]
             else:
-                enable_list = flag.e.split()
+                enable_list = flag.e.split() if "," not in flag.e else flag.e.split(",")
             msg += "**Will Encode:**\n"
             for i in enable_list:
                 i = int(i) if i.isdigit() else i
@@ -652,7 +697,9 @@ async def enselect(event, args, client):
                 _start, _end = map(int, flag.d.split("-"))
                 disable_list = [str(x) for x in range(_start, (_end + 1))]
             else:
-                disable_list = flag.d.split()
+                disable_list = (
+                    flag.d.split() if "," not in flag.d else flag.d.split(",")
+                )
             msg += "**Will Skip:-**\n"
             for i in disable_list:
                 i = int(i) if i.isdigit() else i
@@ -707,11 +754,22 @@ async def pencode(message, args=None, sender_id=None, flag=None):
         for item in queue.values():
             if name in item:
                 return await xxx.edit("**THIS FILE HAS ALREADY BEEN ADDED TO QUEUE**")
+        anilist = True
         cust_fil = cust_v = str()
+        force_name = None
+        uri = None
         if args:
             if not flag:
                 flag, args = get_args(
-                    "-f", "-rm", "-tc", "-tf", "-v", to_parse=args, get_unknown=True
+                    ["-da", "store_false"],
+                    "-f",
+                    "-rm",
+                    "-n",
+                    "-tc",
+                    "-tf",
+                    "-v",
+                    to_parse=args,
+                    get_unknown=True,
                 )
             if flag.rm or flag.tc or flag.tf:
                 cust_fil = flag.rm or "disabled__"
@@ -720,13 +778,21 @@ async def pencode(message, args=None, sender_id=None, flag=None):
                 )
             else:
                 cust_fil = str_esc(flag.f)
+            anilist = flag.da
             cust_v = flag.v
+            force_name = flag.n
         queue.update(
             {
                 (chat_id, message.id): [
                     name,
                     (sender_id, message),
-                    (cust_v or get_v(), cust_fil or get_f(), ("tg", "None")),
+                    (
+                        cust_v or get_v(),
+                        cust_fil or get_f(),
+                        ("tg", "None"),
+                        force_name,
+                        (anilist, uri),
+                    ),
                 ]
             }
         )
@@ -903,7 +969,7 @@ async def edit_batch(event, args, client):
         name, s_msg, vfm = queue.get(key)
         if not (user_is_owner(user) or user == s_msg[0]):
             return await event.reply("`This batch wasn't added to queue by you.`")
-        v, f, m = vfm
+        v, f, m, n, au = vfm
         if not (value := batch_queue.get(key)):
             return await event.reply(f"'{args}' - not a batch queue item")
         result = await batch_preview(event, value[0], key[0], key[1], v, f, reuse=True)
@@ -921,13 +987,17 @@ async def edit_queue(event, args, client):
     arguments:
         -f <filter> (*raw filter) [low priority]
             to disable filter pass *'None'
-        -n "new file name for item in queue"
+        -a enable anilist (Higher priority)
+        -d "new file name for item in queue"
+        -da disable anilist (Lower priority)
+        -n outputfile.mkv to force an output filename
         -q <int> (id of queue item to edit)
             can be checked with /queue command
             can also be passed without flags
         -rm <filter> (what_to_remove)
         -tc <filter> (tag_caption_as)
         -tf <filter> (tag_file_as)
+        -u (for debugging) change uri
         -v <version> (tag file with version)
             to disable versioning pass 'None'
 
@@ -945,6 +1015,9 @@ async def edit_queue(event, args, client):
     try:
         cust_fil = cust_v = str()
         flag, args = get_args(
+            ["-a", "store_true"],
+            "-d",
+            ["-da", "store_true"],
             ["-e", "store_true"],
             "-f",
             "-n",
@@ -952,6 +1025,7 @@ async def edit_queue(event, args, client):
             "-rm",
             "-tc",
             "-tf",
+            "-u",
             "-v",
             to_parse=args,
             get_unknown=True,
@@ -977,13 +1051,22 @@ async def edit_queue(event, args, client):
         if not (user_is_owner(user) or user == s_msg[0]):
             return await event.reply("`This item wasn't added to queue by you.`")
         key = list(queue.keys())[args]
-        v, f, m = v_f_m
+        v, f, m, n, au = v_f_m
+        anilist, uri = au
+        anilist = (flag.a or flag.da) or anilist
         if flag.f and flag.f.casefold() in ("none", "disable", "off"):
             cust_fil = f = None
         if flag.v and flag.v.casefold() in ("none", "disable", "off"):
             cust_v = v = None
+        uri = flag.u or uri
         queue.update(
-            {key: [flag.n or file_name, s_msg, (cust_v or v, cust_fil or f, m)]}
+            {
+                key: [
+                    flag.d or file_name,
+                    s_msg,
+                    (cust_v or v, cust_fil or f, m, flag.n or n, (anilist, uri)),
+                ]
+            }
         )
         await save2db()
         await save2db("batches")

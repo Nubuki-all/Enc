@@ -3,16 +3,10 @@ import copy
 from telethon import events
 
 from bot import Button, asyncio, batch_lock, conf, errors, itertools, os, re, tele
+from bot.config import _bot
 
 from .ani_utils import qparse
-from .bot_utils import (
-    BATCH_ING,
-    get_bqueue,
-    get_preview,
-    get_queue,
-    is_video_file,
-    sdict,
-)
+from .bot_utils import get_bqueue, get_preview, get_queue, is_video_file, sdict
 from .db_utils import save2db
 from .log_utils import log, logger
 from .msg_utils import edit_message
@@ -118,9 +112,9 @@ async def preview_actions(event):
             elif data == "cancel":
                 get_preview().clear()
                 get_preview(list=True).clear()
-                BATCH_ING.clear()
+                _bot.batch_ing.clear()
             elif data == "done":
-                BATCH_ING.clear()
+                _bot.batch_ing.clear()
             elif data == "parse":
                 PARSE_STATUS = not PARSE_STATUS
 
@@ -133,11 +127,11 @@ async def preview_actions(event):
 async def batch_preview(
     event, torrent, chat_id, e_id, v, f, reuse=False, user=None, select_all=False
 ):
-    if BATCH_ING and not select_all:
+    if _bot.batch_ing and not select_all:
         await event.reply("`Cannot edit two batches simultaneously.`")
         return
     user = user or event.sender_id
-    BATCH_ING.append(user) if not select_all else None
+    _bot.batch_ing.append(user) if not select_all else None
     event2 = await event.reply("…")
     preview_queue = get_preview()
     preview_list = get_preview(list=True)
@@ -163,9 +157,9 @@ async def batch_preview(
                 )
                 get_preview().clear()
                 get_preview(list=True).clear()
-                BATCH_ING.clear()
+                _bot.batch_ing.clear()
                 return
-            if not BATCH_ING:
+            if not _bot.batch_ing:
                 if not preview_queue:
                     return
                 break

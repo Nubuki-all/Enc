@@ -1,7 +1,6 @@
 from bot import *
 from bot.config import conf
 from bot.fun.emojis import enhearts, enmoji, enmoji2
-from bot.utils.bot_utils import UN_FINISHED_PROGRESS_STR as unfin_str
 from bot.utils.bot_utils import code, decode, hbs, time_formatter
 from bot.utils.log_utils import logger
 from bot.utils.os_utils import file_exists
@@ -15,6 +14,7 @@ class Uploader:
         self.id = _id
         self.canceller = None
         self.time = None
+        self.unfin_str = conf.UN_FINISHED_PROGRESS_STR
 
     def __str__(self):
         return "#wip"
@@ -89,7 +89,9 @@ class Uploader:
 
             progress = "```\n{0}{1}```\n{2}\n<b>Progress:</b> `{3}%`\n".format(
                 "".join([fin_str for i in range(math.floor(percentage / 10))]),
-                "".join([unfin_str for i in range(10 - math.floor(percentage / 10))]),
+                "".join(
+                    [self.unfin_str for i in range(10 - math.floor(percentage / 10))]
+                ),
                 file_info,
                 round(percentage, 2),
             )

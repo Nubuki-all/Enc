@@ -24,75 +24,25 @@ from bot import (
 )
 from bot.config import _bot, conf
 
+OK = {}
 suffix = conf.CMD_SUFFIX
 
 
-class Var_list:
-    TEMP_ONLY_IN_GROUP = []
-    DOCKER_DEPLOYMENT = []
-    DISPLAY_DOWNLOAD = []
-    PREVIEW_LIST = []
-    QUEUE_STATUS = []
-    CACHE_QUEUE = []
-    TEMP_USERS = []
-    BATCH_ING = []
-    LAST_ENCD = []
-    PAUSEFILE = []
-    USER_MAN = []
-    GROUPENC = []
-    VERSION2 = []
-    U_CANCEL = []
-    R_QUEUE = []
-    STARTUP = []
-    WORKING = []
-    EVENT2 = []
-
-    PREVIEW_BATCH = {}
-    BATCH_QUEUE = {}
-    E_CANCEL = {}
-    RSS_DICT = {}
-    QUEUE = {}
-    OK = {}
-
-    FINISHED_PROGRESS_STR = "🧡"
-    UN_FINISHED_PROGRESS_STR = "🤍"
-    MAX_MESSAGE_LENGTH = 4096
-
-
-var = Var_list()
-
-
-######## VAR EDITOR #########
-
-
-def edit_var(var, value, replace=False, remove=False):
-    if remove:
-        var.remove(value)
-        return
-    if replace:
-        var.clear()
-    var.append(value)
-
-
-attrs = dir(var)
-globals().update({n: getattr(var, n) for n in attrs if not n.startswith("_")})
-
-
 def add_temp_user(id):
-    TEMP_USERS.append(id)
+    _bot.temp_users.append(id)
 
 
 def bot_is_paused():
-    if PAUSEFILE:
+    if _bot.paused:
         return True
 
 
 def u_cancelled():
-    return U_CANCEL
+    return _bot.u_cancel
 
 
 def enc_canceller():
-    return E_CANCEL
+    return _bot.e_cancel
 
 
 def get_f():
@@ -104,23 +54,23 @@ def get_f():
 
 
 def get_bqueue():
-    return BATCH_QUEUE
+    return _bot.batch_queue
 
 
 def get_preview(list=False):
-    return PREVIEW_BATCH if not list else PREVIEW_LIST
+    return _bot.preview_batch if not list else _bot.preview_list
 
 
 def get_previewer():
-    return BATCH_ING[0] if BATCH_ING else None
+    return _bot.batch_ing[0] if _bot.batch_ing else None
 
 
 def get_queue():
-    return QUEUE
+    return _bot.queue
 
 
 def get_pause_status():
-    return PAUSEFILE[0] if PAUSEFILE else None
+    return _bot.paused[0] if _bot.paused else None
 
 
 def get_aria2():
@@ -131,26 +81,25 @@ def get_var(var):
     var_dict = dict()
     var_dict.update(
         {
-            "groupenc": GROUPENC,
-            "startup": STARTUP,
-            "version2": VERSION2,
-            "pausefile": PAUSEFILE,
+            "groupenc": _bot.groupenc,
+            "version2": _bot.version2,
+            "paused": _bot.paused,
         }
     )
     return var_dict.get(var.casefold())
 
 
 def get_v():
-    return VERSION2[0] if VERSION2 else None
+    return _bot.version2[0] if _bot.version2 else None
 
 
 def if_queued():
-    if QUEUE:
+    if _bot.queue:
         return True
 
 
 def pause(unpause=False, status=1):
-    return PAUSEFILE.clear() if unpause else PAUSEFILE.append(status)
+    return _bot.paused.clear() if unpause else _bot.paused.append(status)
 
 
 async def rm_pause(match=None, time=0):
@@ -164,7 +113,7 @@ async def rm_pause(match=None, time=0):
 
 
 def rm_temp_user(id):
-    TEMP_USERS.remove(id)
+    _bot.temp_users.remove(id)
 
 
 class Qbit_c:
@@ -176,7 +125,7 @@ class Qbit_c:
         self.name = None
 
     def __str__(self):
-        return self.error
+        return self.error or self.name
 
 
 class Encode_info:

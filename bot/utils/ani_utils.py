@@ -323,8 +323,11 @@ async def parse(
     folder="downloads/",
     _filter=None,
     ccodec=None,
+    direct=None,
 ):
     try:
+        if direct:
+            return direct, direct
         _parsed = anitopy.parse(name)
         name, fil2, fil3 = await filter_name(name, _filter)
 
@@ -498,7 +501,10 @@ async def custcap(
     encoder=None,
     _filter=None,
     ccodec=None,
+    direct=None,
 ):
+    if direct:
+        return f"`{direct}`"
     if conf.FL_CAP:
         return f"`{fname}`"
     if not conf.EXT_CAP:
@@ -734,8 +740,8 @@ async def simplecap(
     return caption
 
 
-async def qparse(name, ver=None, fil=None):
-    return (await parse(name, v=ver, _filter=fil))[0]
+async def qparse(name, ver=None, fil=None, rdir=None, ani=True):
+    return (await parse(name, anilist=ani, v=ver, _filter=fil, direct=rdir))[0]
 
 
 async def qparse_t(name, ver=None, fil=None):
@@ -745,12 +751,15 @@ async def qparse_t(name, ver=None, fil=None):
     )
 
 
-async def f_post(name, out, fcodec=None, mi=None, _filter=None, evt=True):
+async def f_post(
+    name, out, anilist=True, fcodec=None, mi=None, _filter=None, evt=True, direct=None
+):
     if conf.NO_BANNER:
         return None, None
     try:
         name = (await filter_name(name, _filter))[0]
         ## Get info ##
+        name = direct or name
         parsed = anitopy.parse(name)
         # title
         title = parsed.get("anime_title")
@@ -775,7 +784,7 @@ async def f_post(name, out, fcodec=None, mi=None, _filter=None, evt=True):
         codec = fcodec if fcodec else await get_codec()
 
         try:
-            if file_exists(parse_file):
+            if file_exists(parse_file) or not anilist or direct:
                 raise Exception("Parsing turned off")
             json = await get_ani_info(title)
             if sn:

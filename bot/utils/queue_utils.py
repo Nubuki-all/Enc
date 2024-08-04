@@ -1,8 +1,8 @@
 from telethon import events
 
 from bot import Button, conf, itertools, pyro, queue_lock, re, tele
+from bot.config import _bot
 
-from .bot_utils import QUEUE, QUEUE_STATUS
 from .log_utils import logger
 
 STATUS_START = 1
@@ -13,9 +13,9 @@ STATUS_LIMIT = 10
 
 async def q_dup_check(event):
     try:
-        if QUEUE_STATUS:
+        if _bot.queue_status:
             check = True
-            for q_id in QUEUE_STATUS:
+            for q_id in _bot.queue_status:
                 _q_id = str(event.chat_id) + " " + str(event.id)
                 if q_id == _q_id:
                     check = False
@@ -29,8 +29,8 @@ async def q_dup_check(event):
 
 async def queue_status(event):
     try:
-        if QUEUE_STATUS:
-            for q_id in QUEUE_STATUS:
+        if _bot.queue_status:
+            for q_id in _bot.queue_status:
                 _chat_id, _msg_id = q_id.split()
                 if event.chat_id == int(_chat_id):
                     msg = await pyro.get_messages(int(_chat_id), int(_msg_id))
@@ -38,10 +38,10 @@ async def queue_status(event):
                         await msg.delete()
                     except Exception:
                         pass
-                    QUEUE_STATUS.remove(q_id)
-            return QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
+                    _bot.queue_status.remove(q_id)
+            return _bot.queue_status.append(str(event.chat_id) + " " + str(event.id))
         else:
-            QUEUE_STATUS.append(str(event.chat_id) + " " + str(event.id))
+            _bot.queue_status.append(str(event.chat_id) + " " + str(event.id))
     except Exception:
         await logger(Exception)
 
@@ -51,35 +51,39 @@ async def get_queue_msg():
     button = None
     cmd_s = conf.CMD_SUFFIX.strip()
     try:
-        i = len(QUEUE)
+        i = len(_bot.queue)
         globals()["PAGES"] = (i + STATUS_LIMIT - 2) // STATUS_LIMIT
         if PAGE_NO > PAGES and PAGES != 0:
             globals()["STATUS_START"] = (STATUS_LIMIT * PAGES) - 9
             globals()["PAGE_NO"] = PAGES
 
         for file, _no in zip(
-            list(QUEUE.values())[STATUS_START : STATUS_LIMIT + STATUS_START],
+            list(_bot.queue.values())[STATUS_START : STATUS_LIMIT + STATUS_START],
             itertools.count(STATUS_START),
         ):
             file_name, u_msg, ver_fil = file
-            chat_id, msg_id = list(QUEUE.keys())[list(QUEUE.values()).index(file)]
+            chat_id, msg_id = list(_bot.queue.keys())[
+                list(_bot.queue.values()).index(file)
+            ]
             user_id, message = u_msg
             user_id = (
                 777000 if not user_id or str(user_id).startswith("-100") else user_id
             )
             user = await pyro.get_users(user_id)
-            ver, fil, mode = ver_fil
+            ver, fil, mode, rname, ani_uri = ver_fil
 
             if fil and len(fil.split("\n")) > 2:
                 rm, ftag, ctag = fil.split("\n", maxsplit=2)
                 fil = f"[-rm: `{rm}`, -tf: `{ftag}`, -tc: `{ctag}`]"
 
-            batch = "  ├**Batch:** Yes\n  " if mode[1].lower() == "batch." else "  "
+            batch = "  ├**Batch:** Yes\n" if mode[1].lower() == "batch." else ""
+            force_rnm = f"  ├**Force rename to:** `{rname}`\n" if rname else ""
+            anilist = "  ├**Anilist:** Off\n" if not ani_uri[0] else ""
 
             msg += (
                 f"{_no}. `{file_name}`\n  ├**Filter:** {fil}\n  ├**Release version:** {ver}\n"
-                f"{batch}"
-                f"└**Added by:** [{user.first_name}](tg://user?id={user_id})\n\n"
+                f"{batch}{force_rnm}{anilist}"
+                f"  └**Added by:** [{user.first_name}](tg://user?id={user_id})\n\n"
             )
 
         if not msg:
