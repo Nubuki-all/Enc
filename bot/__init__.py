@@ -44,6 +44,7 @@ from html_telegraph_poster import TelegraphPoster
 from html_telegraph_poster import errors as telegraph_errors
 from pyrogram import Client
 from pyrogram import errors as pyro_errors
+from pyrogram import utils as pyro_utils
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from qbittorrentapi import Client as qbClient
 from telethon import Button, TelegramClient, errors, events, functions, types
@@ -134,6 +135,9 @@ cd_pause = "cd_pause"
 dl_pause = "dl_pause"
 id_pause = "id_pause"
 
+#Temp fix for new channels
+pyro_utils.MIN_CHAT_ID = -999999999999
+pyro_utils.MIN_CHANNEL_ID = -100999999999999
 
 if sys.version_info < (3, 10):
     LOGS.critical("Please use Python 3.10+")
