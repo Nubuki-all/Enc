@@ -135,7 +135,7 @@ cd_pause = "cd_pause"
 dl_pause = "dl_pause"
 id_pause = "id_pause"
 
-#Temp fix for new channels
+# Temp fix for new channels
 pyro_utils.MIN_CHAT_ID = -999999999999
 pyro_utils.MIN_CHANNEL_ID = -100999999999999
 
