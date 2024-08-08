@@ -28,7 +28,6 @@ class Config:
             self.API_HASH = config(
                 "API_HASH", default="eb06d4abfb49dc3eeb1aeb98ae0f581e"
             )
-            self.ARIA2_PORT = config("ARIA2_PORT", default=6800, cast=int)
             self.BOT_TOKEN = config("BOT_TOKEN")
             self.CACHE_DL = config("CACHE_DL", default=False, cast=bool)
             self.CAP_DECO = config("CAP_DECO", default="◉")
@@ -39,7 +38,6 @@ class Config:
             self.DEV = config("DEV", default=0, cast=int)
             self.DL_STUFF = config("DL_STUFF", default=None)
             self.DUMP_CHANNEL = config("DUMP_CHANNEL", default=0, cast=int)
-            self.DUMP_LEECH = config("DUMP_LEECH", default=True, cast=bool)
             self.DYNO = config("DYNO", default=None)
             self.ENCODER = config("ENCODER", default=None)
             self.EXT_CAP = config("EXTENDED_CAPTIONS", default=True, cast=bool)
@@ -65,8 +63,6 @@ class Config:
             self.OVR = config("OVR", default=None)
             self.OWNER = config("OWNER")
             self.PAUSE_ON_DL_INFO = config("PODI", default=True, cast=bool)
-            self.QBIT_PORT = config("QBIT_PORT", default=8090, cast=int)
-            self.QBIT_TIMEOUT = config("QBIT_TIMEOUT", default=20, cast=int)
             self.RSS_CHAT = config("RSS_CHAT", default=0, cast=int)
             self.RSS_DELAY = config("RSS_DELAY", default=60, cast=int)
             self.RSS_DIRECT = config("RSS_DIRECT", default=True, cast=bool)
@@ -93,11 +89,7 @@ class Config:
 
 
 class Runtime_Config:
-    # will slowly replace the Var_list class in utils.bot_utils
-    # Progress 1 / 2
-    # checking for missed variables
     def __init__(self):
-        self.aria2 = None
         self.batch_ing = []
         self.batch_queue = {}
         self.cached = False

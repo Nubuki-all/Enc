@@ -10,19 +10,6 @@ from bot.utils.bot_utils import encode_info, get_codec, get_pause_status, sync_t
 from bot.utils.log_utils import logger
 
 
-async def batch_status_preview(msg, v, f):
-    msg += "  **CURRENTLY QUEUED ITEMS IN BATCH:**\n" f"{lvbar}\n"
-    blist, left = await get_batch_list(encode_info._current, v=v, f=f, get_nleft=True)
-    for name, i in zip(blist, itertools.count(start=1)):
-        msg += f"{i}. `{name}`\n"
-    if left:
-        msg += f"__+{left} more…__\n"
-    if not blist and encode_info.current:
-        loc = await sync_to_async(enquotes)
-        msg += f"Nothing Here; While you wait:\n\n{loc}\n"
-    return msg
-
-
 async def queue_status_preview(start, msg, queue):
     msg += "    **CURRRENT ITEMS ON QUEUE:**\n" f"{lvbar}\n"
     for key, i in zip(list(queue.keys())[start:], itertools.count(start=1)):
@@ -57,11 +44,7 @@ async def encodestat():
         key = list(_bot.queue.keys())[0]
         out = _bot.queue.get(key)
         v, f, m, n, au = out[2]
-        if m[1].lower() == "batch.":
-            msg = await batch_status_preview(msg, v, f)
-            single = False
-        else:
-            msg = await queue_status_preview(i, msg, _bot.queue)
+        msg = await queue_status_preview(i, msg, _bot.queue)
         if len(_bot.queue) == 1 and single and encode_info.current:
             loc = await sync_to_async(enquotes)
             msg += f"Nothing Here; While you wait:\n\n{loc}"

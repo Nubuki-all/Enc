@@ -73,10 +73,6 @@ def get_pause_status():
     return _bot.paused[0] if _bot.paused else None
 
 
-def get_aria2():
-    return _bot.aria2
-
-
 def get_var(var):
     var_dict = dict()
     var_dict.update(
@@ -116,18 +112,6 @@ def rm_temp_user(id):
     _bot.temp_users.remove(id)
 
 
-class Qbit_c:
-    def __init__(self, count=None, flist=None, error=None):
-        self.count = count
-        self.file_list = flist
-        self.error = error
-        self.hash = None
-        self.name = None
-
-    def __str__(self):
-        return self.error or self.name
-
-
 class Encode_info:
     def __init__(self):
         self.previous = None
@@ -140,7 +124,6 @@ class Encode_info:
         self.current = None
         self.batch = False
         self.cached_dl = False
-        self.qbit = False
         self.select = None
         self.uri = None
         self._current = None
@@ -161,7 +144,6 @@ sdict.update(
 
 
 THREADPOOL = ThreadPoolExecutor(max_workers=1000)
-MAGNET_REGEX = r"magnet:\?xt=urn:[a-z0-9]+:[a-zA-Z0-9]{32}"
 URL_REGEX = r"^(https?://|ftp://)?(www\.)?[^/\s]+\.[^/\s:]+(:\d+)?(/[^?\s]*[\s\S]*)?(\?[^#\s]*[\s\S]*)?(#.*)?$"
 SIZE_UNITS = ["B", "KB", "MB", "GB", "TB", "PB"]
 
@@ -181,10 +163,6 @@ video_mimetype = [
     "video/quicktime",
     "video/mpeg",
 ]
-
-
-def is_magnet(magnet_link):
-    return bool(re_match(MAGNET_REGEX, magnet_link))
 
 
 def is_url(url):

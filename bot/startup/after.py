@@ -8,46 +8,6 @@ from bot.workers.auto.transcode import something
 from .before import *
 
 
-async def start_aria2p():
-    try:
-        aria2 = aria2p.API(
-            aria2p.Client(host="http://localhost", port=conf.ARIA2_PORT, secret="")
-        )
-        aria2.add(
-            "https://nyaa.si/download/1752639.torrent",
-            {"dir": f"{os.getcwd()}/temp"},
-        )
-        await asyncio.sleep(2)
-        downloads = aria2.get_downloads()
-        await asyncio.sleep(3)
-        aria2.remove(downloads, force=True, files=True, clean=True)
-        _bot.aria2 = aria2
-        _bot.sas = True
-
-    except Exception:
-        await logger(Exception, critical=True)
-        # return None
-
-
-async def start_qbit():
-    os.system(
-        f"qbittorrent-nox -d --webui-port={conf.QBIT_PORT} --profile={os.getcwd()}"
-    )
-    # TO_DO: Properly check if qbit is fully operational.
-    _bot.sqs = True
-
-
-async def start_rpc():
-    os.system(
-        f"aria2c --enable-rpc=true --rpc-max-request-size=1024M --rpc-listen-port={conf.ARIA2_PORT} "
-        "--seed-time=0 --follow-torrent=mem --summary-interval=0 --daemon=true --allow-overwrite=true "
-        "--user-agent=Wget/1.12"
-    )
-    if not _bot.started:
-        await asyncio.sleep(1)
-        await start_aria2p()
-
-
 async def onrestart():
     try:
         if sys.argv[1] == "restart":
@@ -80,15 +40,6 @@ async def onstart():
             await tele.send_message(
                 conf.LOG_CHANNEL, f"**{me.first_name} is {enquip()} {enmoji()}**"
             )
-        dev = conf.DEV or conf.LOG_CHANNEL or int(conf.OWNER.split()[0])
-        try:
-            await tele.send_message(
-                dev,
-                f"**Aria2:** `{'Online' if _bot.sas else 'Offline/Not_ready'}`"
-                f"\n**Qbit:** `{'Online' if _bot.sqs else 'Offline/Not_ready'}`",
-            )
-        except Exception:
-            await logger(Exception)
     except BaseException:
         pass
 
@@ -113,8 +64,6 @@ async def on_termination():
 async def on_startup():
     try:
         asyncio.create_task(autostat())
-        asyncio.create_task(start_rpc())
-        asyncio.create_task(start_qbit())
         loop = asyncio.get_running_loop()
         for signame in {"SIGINT", "SIGTERM", "SIGABRT"}:
             loop.add_signal_handler(

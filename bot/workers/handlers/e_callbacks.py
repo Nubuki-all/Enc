@@ -183,8 +183,6 @@ async def dl_stat(client, query):
         dl = d.path
         if file_exists(dl):
             dls = dl
-        elif file_exists(dls := (dl + ".!qB")):
-            pass
         else:
             dls = f"{dl}.temp"
         file_name = (os.path.split(d.file_name))[1]

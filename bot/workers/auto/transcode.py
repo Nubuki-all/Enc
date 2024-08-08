@@ -7,11 +7,6 @@ from bot.config import conf
 from bot.others.exceptions import AlreadyDl
 from bot.startup.before import entime
 from bot.utils.ani_utils import custcap, dynamicthumb, f_post, parse, qparse_t
-from bot.utils.batch_utils import (
-    get_batch_list,
-    get_downloadable_batch,
-    mark_file_as_done,
-)
 from bot.utils.bot_utils import enc_canceller as e_cancel
 from bot.utils.bot_utils import encode_info as einfo
 from bot.utils.bot_utils import get_bqueue, get_queue, get_var, hbs
@@ -30,7 +25,6 @@ from bot.utils.os_utils import file_exists, info, pos_in_stm, s_remove, size_of
 from bot.workers.downloaders.dl_helpers import cache_dl
 from bot.workers.downloaders.download import Downloader as downloader
 from bot.workers.encoders.encode import Encoder as encoder
-from bot.workers.uploaders.dump import dumpdl
 from bot.workers.uploaders.upload import Uploader as uploader
 
 thumb2 = "thumb2.jpg"
@@ -92,14 +86,7 @@ async def forward_(name, out, ds, mi, f, ani, n):
         queue = get_queue()
         bqueue = get_bqueue()
         queue_id = list(queue.keys())[0]
-        if bqueue.get(queue_id):
-            name, _none, v_f = list(queue.values())[0]
-            blist = await get_batch_list(einfo._current, 1, v_f[0], v_f[1], parse=False)
-            if blist:
-                _pname = await qparse_t(einfo._current, v_f[0], v_f[1])
-                _pname2 = await qparse_t(blist[0], v_f[0], v_f[1])
-                if _pname == _pname2:
-                    return
+            
 
         elif len(queue) > 1:
             name, _none, v_f = list(queue.values())[0]
@@ -118,14 +105,7 @@ async def forward_(name, out, ds, mi, f, ani, n):
 
 
 def skip(queue_id):
-    if einfo.batch:
-        return
-    bqueue = get_bqueue()
     queue = get_queue()
-    try:
-        bqueue.pop(queue_id)
-    except Exception:
-        pass
     try:
         queue.pop(queue_id)
     except Exception:
@@ -169,17 +149,10 @@ async def thing():
 
         # Batches shenanigans
         if m[1].lower() == "batch.":
-            einfo.batch = einfo.qbit = True
-            file_name, index, name = get_downloadable_batch(queue_id)
-            einfo.select = index
-            n = None  # To prevent hell from breaking loose
-            if name is None:
-                einfo.batch = None
-                skip(queue_id)
-                await save2db()
-                await save2db("batches")
-                await asyncio.sleep(2)
-                return
+            skip(queue_id)
+            await save2db()
+            await asyncio.sleep(2)
+            return
 
         try:
             msg_p = await message.reply("`Download Pending…`", quote=True)
@@ -211,10 +184,10 @@ async def thing():
         try:
             dl = "downloads/" + name
             if einfo.uri:
-                if m[0] == "qbit":
-                    einfo.qbit = True
-                    if m[1].split()[0].lower() == "select.":
-                        einfo.select = int(m[1].split()[1])
+                skip(queue_id)
+                await save2db()
+                await asyncio.sleep(2)
+                return
 
             if await cache_dl(check=True):
                 raise (AlreadyDl)
@@ -222,7 +195,7 @@ async def thing():
             sdt = time.time()
             # await mssg_r.edit("`Waiting for download to complete.`")
             download = downloader(
-                sender_id, op, _id, uri=einfo.uri, dl_info=True, qbit=einfo.qbit
+                sender_id, op, _id, uri=einfo.uri, dl_info=True,
             )
             download._sender = sender
             downloaded = await download.start(
@@ -239,9 +212,7 @@ async def thing():
                     )
             if not downloaded or download.is_cancelled:
                 skip(queue_id)
-                mark_file_as_done(einfo.select, queue_id)
                 await save2db()
-                await save2db("batches")
                 await asyncio.sleep(2)
                 return
             dl = download.path
@@ -258,9 +229,7 @@ async def thing():
         except Exception:
             await logger(Exception)
             skip(queue_id)
-            mark_file_as_done(einfo.select, queue_id)
             await save2db()
-            await save2db("batches")
             return
         edt = time.time()
         dtime = tf(edt - sdt)
@@ -292,8 +261,6 @@ async def thing():
                 c_n = c_n.replace(x, "_")
             await op.reply("#" + c_n) if op else None
             await msg_p.reply("#" + c_n) if log_channel == chat_id else None
-        if einfo.uri and conf.DUMP_LEECH is True:
-            asyncio.create_task(dumpdl(dl, name, thumb2, msg_t.chat_id, message))
         if len(queue) > 1 and conf.CACHE_DL and not einfo.batch:
             await cache_dl()
         with open(ffmpeg_file, "r") as file:
@@ -325,10 +292,8 @@ async def thing():
                 await download.clean_download()
             s_remove(out)
             skip(queue_id)
-            mark_file_as_done(einfo.select, queue_id)
             e_cancel().pop(_id) if e_cancel().get(_id) else None
             await save2db()
-            await save2db("batches")
             return
         eet = time.time()
         etime = tf(eet - _set)
@@ -363,10 +328,8 @@ async def thing():
                     await download.clean_download()
                 s_remove(out, _out)
                 skip(queue_id)
-                mark_file_as_done(einfo.select, queue_id)
                 e_cancel().pop(_id) if e_cancel().get(_id) else None
                 await save2db()
-                await save2db("batches")
                 return
             s_remove(out)
             copy_file(_out, out)
@@ -393,9 +356,7 @@ async def thing():
             if op:
                 await op.edit(m)
             skip(queue_id)
-            mark_file_as_done(einfo.select, queue_id)
             await save2db()
-            await save2db("batches")
             if download:
                 await download.clean_download()
             s_remove(thumb2, dl, out)
@@ -440,9 +401,7 @@ async def thing():
         await forward_task
 
         skip(queue_id)
-        mark_file_as_done(einfo.select, queue_id)
         await save2db()
-        await save2db("batches")
         s_remove(thumb2)
         if download:
             await download.clean_download()

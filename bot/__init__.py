@@ -39,21 +39,18 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 import aiohttp
-import aria2p
 from html_telegraph_poster import TelegraphPoster
 from html_telegraph_poster import errors as telegraph_errors
 from pyrogram import Client
 from pyrogram import errors as pyro_errors
 from pyrogram import utils as pyro_utils
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from qbittorrentapi import Client as qbClient
 from telethon import Button, TelegramClient, errors, events, functions, types
 from telethon.sessions import StringSession
 from telethon.utils import pack_bot_file_id
 
 from .config import _bot, conf
 
-batch_lock = asyncio.Lock()
 bot_id = conf.BOT_TOKEN.split(":", 1)[0]
 botStartTime = time.time()
 caption_file = "NO_CAPTION"

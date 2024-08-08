@@ -16,7 +16,6 @@ from bot import (
 from bot.config import _bot, conf
 from bot.startup.before import entime
 from bot.utils.bot_utils import (
-    get_aria2,
     get_bqueue,
     get_html,
     get_pause_status,
@@ -49,8 +48,7 @@ from bot.utils.os_utils import (
     updater,
     x_or_66,
 )
-from bot.utils.rss_utils import schedule_rss, scheduler
-from bot.workers.downloaders.dl_helpers import get_qbclient
+
 
 
 async def nuke(event, args, client):
@@ -60,13 +58,11 @@ async def nuke(event, args, client):
     try:
         if not _bot.docker_deployed:
             await event.reply("`Exited.`")
-            await clean_all_qb()
             await qclean()
             return exit(1)
         rst = await event.reply("`Trying To Nuke ☣️`")
         await asyncio.sleep(1)
         await rst.edit("`☢️ Nuked!`")
-        await clean_all_qb()
         x_or_66()
     except Exception:
         await event.reply("Error Occurred")
@@ -84,10 +80,6 @@ async def restart(event, args, client):
         rst = await rst.edit(f"`{rst_msg}`")
         message = str(rst.chat_id) + ":" + str(rst.id)
         await enquoter(rst_msg, rst)
-        try:
-            await clean_all_qb()
-        except Exception:
-            pass
         await re_x("restart", message)
     except Exception:
         await event.reply("Error Occurred")
@@ -102,30 +94,9 @@ async def update2(client, message):
         upt_mess = "Updating…"
         reply = await message.reply(f"`{upt_mess}`", quote=True)
         await enquoter(upt_mess, reply)
-        try:
-            await clean_all_qb()
-        except Exception:
-            pass
         await updater(reply)
     except Exception:
         await logger(Exception)
-
-
-async def clean_all_aria2():
-    aria2 = get_aria2()
-    if aria2:
-        downloads = aria2.get_downloads()
-        await asyncio.sleep(3)
-        aria2.remove(downloads, force=True, files=True, clean=True)
-
-
-async def clean_all_qb():
-    qb = await sync_to_async(get_qbclient)
-    for torrent in await sync_to_async(qb.torrents_info):
-        print(f"{torrent.hash[-6:]}: {torrent.name} ({torrent.state})")
-        await sync_to_async(
-            qb.torrents_delete, delete_files=True, torrent_hashes=torrent.hash
-        )
 
 
 async def clean(event, args, client):
@@ -137,9 +108,6 @@ async def clean(event, args, client):
         cached files - if caching is enabled
 
     Or:
-    if 'aria2' is specified;
-        cleans only files downloaded by aria2
-            Not advised if you're currently encoding.
     if 'ffmpeg' is specified;
         kills all ffmpeg processes
             Not advised if you're running multiple ffmpeg process.
@@ -157,28 +125,15 @@ async def clean(event, args, client):
             get_bqueue().clear()
             get_queue().clear()
             await save2db()
-            await save2db("batches")
             return await event.reply("Cleared ALL items on queue.")
 
-        if args and args.casefold() in ("aria", "aria2"):
-            await clean_all_aria2()
-            return await event.reply("Cleaned up all aria2 files.")
-        if args and args.casefold() in ("qbit", "qbittorrent", "qb"):
-            await clean_all_qb()
-            return await event.reply("Cleaned up all qbit fies.")
         await event.reply(
             "**Cleared all queued , encoding processes and cached downloads!**"
         )
         get_bqueue().clear()
         get_queue().clear()
         await save2db()
-        await save2db("batches")
         await qclean()
-        await clean_all_aria2()
-        try:
-            await clean_all_qb()
-        except Exception:
-            pass
         return
     except Exception as e:
         await logger(Exception)
@@ -189,7 +144,7 @@ async def allowgroupenc(event, args, client):
     """
     Turns on group encoding on and off;
     Group encoding allows bot to:
-        - Download & encode files in group (doesn't affect the /leech command)
+        - Download & encode files in group
         - Set thumbnails in group.
 
     Required arguments:
@@ -753,402 +708,3 @@ async def fc_forward(msg, args, client):
     except Exception:
         await logger(Exception)
 
-
-async def rss_handler(event, args, client):
-    """
-    Base command for rss:
-        *Arguments:
-            -d (TITLE): To delete already an subscribed feed.
-            -e (TITLE): To edit configurations for already subscribed rss feed.
-            -g (TITLE, AMOUNT): To get previous feeds for given TITLE. (Amount corresponds to AMOUNT)
-            -l (NO REQUIRED ARGS) To list subscribed feeds.
-            -s (TITLE, LINK): To subscribe an rss feed.
-
-        for additional help send the above arguments with -h/--help or without additional params.
-        *listed in the order priority.
-    """
-    if not user_is_owner(event.sender_id):
-        return await try_delete(event)
-    arg, args = get_args(
-        ["-d", "store_true"],
-        ["-e", "store_true"],
-        ["-g", "store_true"],
-        ["-l", "store_true"],
-        ["-s", "store_true"],
-        to_parse=args,
-        get_unknown=True,
-    )
-    if not (arg.d or arg.e or arg.g or arg.l or arg.s):
-        return await avoid_flood(event.reply, f"`{rss_handler.__doc__}`")
-    if arg.d:
-        await event_handler(
-            event, del_rss, client, True, default_args=args, use_default_args=True
-        )
-    elif arg.e:
-        await event_handler(event, rss_editor, client, True, default_args=args)
-    elif arg.g:
-        await event_handler(event, rss_get, client, True, default_args=args)
-    elif arg.l:
-        await event_handler(event, rss_list, client, default_args=args)
-    elif arg.s:
-        await event_handler(event, rss_sub, client, True, default_args=args)
-
-
-async def rss_list(event, args, client):
-    """
-    Get list of subscribed rss feeds
-        Args:
-            None.
-        Returns:
-            List of subscribed rss feeds.
-    """
-    if not user_is_owner(event.sender_id):
-        return
-    if not _bot.rss_dict:
-        return await event.reply("<b> No subscriptions!</b>", parse_mode="html")
-    list_feed = str()
-    pre_event = event
-
-    def parse_filter(ftr: str):
-        if not ftr:
-            return None
-        return ", ".join(["(" + ", ".join(map(str, sublist)) + ")" for sublist in ftr])
-
-    async with rss_dict_lock:
-        for i, (title, data) in zip(itertools.count(1), list(_bot.rss_dict.items())):
-            list_feed += f"\n\n{i}.<b>Title:</b> <code>{title}</code>\n<b>Feed Url: </b><code>{data['link']}</code>\n"
-            list_feed += f"<b>Chat:</b> <code>{data['chat'] or 'Default'}</code>\n"
-            list_feed += f"<b>Command:</b> <code>{data['command']}</code>\n"
-            list_feed += f"<b>Direct:</b> <code>{data.get('direct', True)}</code>\n"
-            list_feed += (
-                f"<b>Include filter:</b> <code>{parse_filter(data['inf'])}</code>\n"
-            )
-            list_feed += (
-                f"<b>Exclude filter:</b> <code>{parse_filter(data['exf'])}</code>\n"
-            )
-            list_feed += f"<b>Paused:</b> <code>{data['paused']}</code>"
-
-    lmsg = await split_text(list_feed.strip("\n"), "\n\n", True)
-    for i, msg in zip(itertools.count(1), lmsg):
-        msg = f"<b>Your subscriptions</b> #{i}" + msg
-        pre_event = await avoid_flood(pre_event.reply, msg, parse_mode="html")
-        await asyncio.sleep(1)
-
-
-async def rss_get(event, args, client):
-    """
-    Get the links of titles in rss:
-    Arguments:
-        [Title] - Title used in subscribing rss
-        -a [Amount] - Amount of links to grab
-    """
-    if not user_is_owner(event.sender_id):
-        return
-    arg, args = get_args(
-        "-a",
-        ["-g", "store_true"],
-        to_parse=args,
-        get_unknown=True,
-    )
-    if not arg.a:
-        if len(args.split()) != 2:
-            return await event.reply(f"`{rss_get.__doc__}`")
-        args, arg.a = args.split()
-    if not arg.a.isdigit():
-        return await event.reply("Second argument must be a digit.")
-
-    title = args
-    count = int(arg.a)
-    data = _bot.rss_dict.get(title)
-    if not (data and count > 0):
-        return await event.reply(f"`{rss_get.__doc__}`")
-    try:
-        imsg = await event.reply(
-            f"Getting the last <b>{count}</b> item(s) from {title}...",
-            parse_mode="html",
-        )
-        pre_event = imsg
-        html = await get_html(data["link"])
-        rss_d = feedparse(html)
-        item_info = ""
-        for item_num in range(count):
-            try:
-                link = rss_d.entries[item_num]["links"][1]["href"]
-            except IndexError:
-                link = rss_d.entries[item_num]["link"]
-            item_info += f"<b>Name: </b><code>{rss_d.entries[item_num]['title'].replace('>', '').replace('<', '')}</code>\n"
-            item_info += f"<b>Link: </b><code>{link}</code>\n\n"
-        for msg in await split_text(item_info, "\n\n"):
-            pre_event = await avoid_flood(pre_event.reply, msg, parse_mode="html")
-            await asyncio.sleep(2)
-        await avoid_flood(
-            imsg.edit,
-            f"Here are the last <b>{count}</b> item(s) from {title}:",
-            parse_mode="html",
-        )
-    except IndexError:
-        await avoid_flood(
-            imsg.edit, "Parse depth exceeded. Try again with a lower value."
-        )
-    except Exception as e:
-        await logger(Exception)
-        await avoid_flood(event.reply, f"error! - `{str(e)}`")
-
-
-async def rss_editor(event, args, client):
-    """
-    Edit subscribed rss feeds!
-    simply pass the rss title with the following arguements:
-        Additional args:
-            -c (/command): command to prefix the rss link
-            --exf (what_to_exclude): keyword of words to fiter out*
-            --inf (what_to_include): keywords to include*
-            --chat (chat_id) chat to send rss overides RSS_CHAT pass 'default' to reset.
-            -p () to pause the rss feed
-            -r () to resume the rss feed
-            --nodirect () disables rss direct
-            --direct () enables rss direct
-
-        *format = "x or y|z"
-        *to unset pass 'disable' or 'off'
-        where:
-            or - means either of both values
-            | - means and
-        Returns:
-            success message on successfully editing the rss configuration
-    """
-    if not user_is_owner(event.sender_id):
-        return
-    arg, args = get_args(
-        "-c",
-        "--exf",
-        "--inf",
-        "--chat",
-        ["-e", "store_true"],
-        ["-p", "store_true"],
-        ["-r", "store_true"],
-        ["--direct", "store_true"],
-        ["--nodirect", "store_true"],
-        to_parse=args,
-        get_unknown=True,
-    )
-    if not args:
-        return await event.reply(f"Please pass the title of the rss item to edit")
-    if not (data := _bot.rss_dict.get(args)):
-        return await event.reply(f"Could not find rss with title - {args}.")
-    if not (
-        arg.c
-        or arg.exf
-        or arg.inf
-        or arg.p
-        or arg.r
-        or arg.chat
-        or arg.direct
-        or arg.nodirect
-    ):
-        return await event.reply("Please supply at least one additional arguement.")
-    if arg.chat and not (
-        arg.chat.lstrip("-").isdigit() or arg.chat.casefold() == "default"
-    ):
-        return await avoid_flood(
-            event.reply,
-            f"Chat must be a Telegram chat id (with -100 if a group or channel)\nNot '{arg.chat}'",
-        )
-    if arg.c:
-        if not arg.c.startswith("/"):
-            return await event.reply("'-c': arguement must start with '/'")
-        data["command"] = arg.c
-    if arg.chat:
-        data["chat"] = int(arg.chat) if arg.chat.casefold() != "default" else None
-    if arg.direct and arg.nodirect:
-        await avoid_flood(event.reply, "**Warning:** Ignoring '--direct'")
-    if arg.direct or arg.nodirect:
-        data["direct"] = False if arg.nodirect else arg.direct
-    if arg.exf:
-        exf_lists = []
-        if arg.exf.casefold() not in ("disable", "off"):
-            filters_list = arg.exf.split("|")
-            for x in filters_list:
-                y = x.split(" or ")
-                exf_lists.append(y)
-        data["exf"] = exf_lists
-    if arg.inf:
-        inf_lists = []
-        if arg.inf.casefold() not in ("disable", "off"):
-            filters_list = arg.inf.split("|")
-            for x in filters_list:
-                y = x.split(" or ")
-                inf_lists.append(y)
-        data["inf"] = inf_lists
-    if arg.p:
-        data["paused"] = True
-    elif arg.r:
-        data["allow_rss_spam"] = True
-        data["paused"] = False
-        if scheduler.state == 2:
-            scheduler.resume()
-        elif not scheduler.running:
-            schedule_rss()
-            scheduler.start()
-    await save2db2(_bot.rss_dict, "rss")
-    await event.reply(
-        f"Edited rss configurations for rss feed with title - `{args}` successfully!"
-    )
-
-
-async def del_rss(event, args, client):
-    """
-    Removes feed with designated title from list of subscribed feeds
-        Args:
-            TITLE (str): subscribed rss feed title to remove
-
-
-        Returns:
-            Success message on successfull removal
-            Not found message if TITLE passed was not found
-    """
-    if not user_is_owner(event.sender_id):
-        return
-    if not _bot.rss_dict.get(args):
-        return await event.reply(f"'{args}' not found in list of subscribed rss feeds!")
-    _bot.rss_dict.pop(args)
-    msg = f"Succesfully removed '{args}' from subscribed feeds!"
-    await save2db2(_bot.rss_dict, "rss")
-    await event.reply(msg)
-    await logger(e=msg)
-
-
-async def rss_sub(event, args, client):
-    """
-    Subscribe rss feeds!
-    simply pass the rss link with the following arguements:
-        Args:
-            -t (TITLE): New Title of the subscribed rss feed [Required]
-            -c (/command): command to prefix the rss link [Required]
-            --exf (what_to_exclude): keyword of words to fiter out*
-            --inf (what_to_include): keywords to include*
-            -p () to pause the rss feed
-            -r () to resume the rss feed
-            --chat (chat_id) chat to send feeds
-            --nodirect () to disable rss message getting passed directly* to bot
-            --direct () to enable the above
-                if not specified, defaults to RSS_DIRECT env.
-
-        *format = "x or y|z"
-        where:
-            or - means either of both values
-            | - means and
-        *only leech and qbleech commands are passed
-        Returns:
-            success message on successfully editing the rss configuration
-    """
-    if not user_is_owner(event.sender_id):
-        return
-    arg, args = get_args(
-        "-c",
-        "-t",
-        "--exf",
-        "--inf",
-        "--chat",
-        ["--direct", "store_true"],
-        ["--nodirect", "store_true"],
-        ["-p", "store_true"],
-        ["-s", "store_true"],
-        to_parse=args,
-        get_unknown=True,
-    )
-    if not (arg.c and arg.t and args):
-        return await event.reply(f"`{rss_sub.__doc__}`")
-    feed_link = args
-    title = arg.t
-    if not arg.c.startswith("/"):
-        return await event.reply("'-c': arguement must start with '/'")
-    if arg.chat and not arg.chat.lstrip("-").isdigit():
-        return await avoid_flood(
-            event.reply,
-            f"Chat must be a Telegram chat id (with -100 if a group or channel)\nNot '{arg.chat}'",
-        )
-    if arg.direct and arg.nodirect:
-        await avoid_flood(event.reply, "**Warning:** Ignoring '--direct'")
-    if _bot.rss_dict.get(title):
-        return await avoid_flood(
-            event.reply,
-            f"This title **{title}** has already been subscribed!. **Please choose another title!**",
-        )
-    inf_lists = []
-    exf_lists = []
-    msg = str()
-    if arg.chat:
-        arg.chat = int(arg.chat)
-    if arg.inf:
-        filters_list = arg.inf.split("|")
-        for x in filters_list:
-            y = x.split(" or ")
-            inf_lists.append(y)
-    if arg.exf:
-        filters_list = arg.exf.split("|")
-        for x in filters_list:
-            y = x.split(" or ")
-            exf_lists.append(y)
-    if arg.nodirect:
-        arg.direct = False
-    elif not arg.direct:
-        arg.direct = conf.RSS_DIRECT
-    try:
-        html = await get_html(feed_link)
-        rss_d = feedparse(html)
-        last_title = rss_d.entries[0]["title"]
-        msg += "<b>Subscribed!</b>"
-        msg += f"\n<b>Title: </b><code>{title}</code>\n<b>Feed Url: </b>{feed_link}"
-        msg += f"\n<b>latest record for </b>{rss_d.feed.title}:"
-        msg += f"\nName: <code>{last_title.replace('>', '').replace('<', '')}</code>"
-        try:
-            last_link = rss_d.entries[0]["links"][1]["href"]
-        except IndexError:
-            last_link = rss_d.entries[0]["link"]
-        msg += f"\nLink:- <code>{last_link}</code>"
-        msg += f"\n<b>Chat:- </b><code>{arg.chat or 'Default'}</code>"
-        msg += f"\n<b>Command:- </b><code>{arg.c}</code>"
-        msg += f"\n<b>Direct:- </b><code>{arg.direct}</code>"
-        msg += f"\n<b>Filters:-</b>\ninf: <code>{arg.inf}</code>\nexf: <code>{arg.exf}<code/>"
-        msg += f"\n<b>Paused:- </b><code>{arg.p}</code>"
-        async with rss_dict_lock:
-            _bot.rss_dict[title] = {
-                "link": feed_link,
-                "last_feed": last_link,
-                "last_title": last_title,
-                "chat": arg.chat,
-                "command": arg.c,
-                "direct": arg.direct,
-                "inf": inf_lists,
-                "exf": exf_lists,
-                "paused": arg.p,
-            }
-        await logger(
-            e="Rss Feed Added:"
-            f"\nby:- {event.sender_id}"
-            f"\ntitle:- {title}"
-            f"\nlink:- {feed_link}"
-            f"\nchat:- {arg.chat}"
-            f"\ncommand:- {arg.c}"
-            f"\ndirect:- {arg.direct}"
-            f"\ninclude filter:- {arg.inf}"
-            f"\nexclude filter:- {arg.exf}"
-            f"\npaused:- {arg.p}"
-        )
-    except (IndexError, AttributeError) as e:
-        emsg = f"The link: {feed_link} doesn't seem to be a RSS feed or it's region-blocked!"
-        await avoid_flood(event.reply, emsg + "\nError: " + str(e))
-    except Exception as e:
-        await logger(Exception)
-        return await avoid_flood(event.reply, str(e))
-    await save2db2(_bot.rss_dict, "rss")
-    if msg:
-        await avoid_flood(event.reply, msg, parse_mode="html")
-    if arg.p:
-        return
-    if scheduler.state == 2:
-        scheduler.resume()
-    elif not scheduler.running:
-        schedule_rss()
-        scheduler.start()

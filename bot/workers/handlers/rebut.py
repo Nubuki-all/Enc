@@ -17,7 +17,6 @@ from bot.utils.bot_utils import (
     code,
     get_f,
     get_filename,
-    is_magnet,
     is_supported_file,
     is_url,
     is_video_file,
@@ -51,19 +50,14 @@ from bot.utils.os_utils import (
     s_remove,
     size_of,
 )
-from bot.workers.downloaders.dl_helpers import (
-    get_leech_name,
-    get_torrent,
-    rm_leech_file,
-)
+
 from bot.workers.downloaders.download import Downloader as downloader
 from bot.workers.encoders.encode import Encoder as encoder
 from bot.workers.uploaders.upload import Uploader as uploader
 
 thumb3 = "thumb3.jpg"
-aria2_err_msg = "`An error with aria2 occurred`"
 no_fl_spt_msg = "`File is not a video.`"
-not_vid_msg = "`Batches and Non-videos not supported`"
+not_vid_msg = "`Non-videos not supported`"
 
 
 async def getlogs(event, args, client):
@@ -130,15 +124,15 @@ async def en_download(event, args, client):
     if not user_is_owner(event.sender_id):
         return await event.delete()
     if not event.is_reply:
-        return await event.reply("`Reply to a file or link to download it`")
+        return await event.reply("`Reply to a file to download it`")
     try:
         _dir = None
         loc = None
         link = None
         rep_event = await event.get_reply_message()
         message = await client.get_messages(event.chat_id, int(rep_event.id))
-        if message.text and not (is_url(message.text) or is_magnet(message.text)):
-            return await message.reply("`Not a valid link`")
+        if message.text:
+            return await message.reply("`links not supported`")
         e = await message.reply(f"{enmoji()} `Downloading…`", quote=True)
         if args is not None:
             arg, args = get_args(
@@ -158,7 +152,6 @@ async def en_download(event, args, client):
                 _dir = arg.dir
             if arg.cap and not message.text:
                 loc = message.caption
-        link = message.text if message.text else link
         if not loc:
             loc = rep_event.file.name if not link else link
         _dir = "downloads/" if not _dir else _dir
@@ -179,7 +172,7 @@ async def en_download(event, args, client):
 
 async def en_rename(event, args, client):
     """
-    Reply to a file/link to download,rename and upload it.
+    Reply to a file to download,rename and upload it.
 
     Available flags:
     -np - disables anilist parsing.
@@ -208,11 +201,10 @@ async def en_rename(event, args, client):
         _em = _forced = _q = _tc = _tf = _v = None
         rep_event = await event.get_reply_message()
         message = await client.get_messages(event.chat_id, int(rep_event.id))
-        if message.text and not (is_url(message.text) or is_magnet(message.text)):
-            return await message.reply("`Not a valid link.`")
+        if message.text:
+            return await message.reply("`Links are not supported.`")
         elif not (message.text or message.document or message.video):
-            return await message.reply("`Kindly Reply to a link/video.`")
-        link = message.text if message.text else None
+            return await message.reply("`Kindly Reply to a video.`")
         if args:
             arg, args = get_args(
                 ["--force", "store_true"],
@@ -232,28 +224,18 @@ async def en_rename(event, args, client):
             _tc = arg.tc
             _tf = arg.tf
             _v = arg.v
-        if not args and not link:
+        if not args:
             loc = rep_event.file.name
             if not arg.force:
                 return await event.reply("**Force rename to what exactly?**")
-        elif args == "0" and not link:
+        elif args == "0":
             loc = message.caption
-            _forced = loc if _forced else None
-        elif not link:
-            loc = check_ext(args)
-        if not link:
-            __loc = loc
-            __out, __none = await parse(
-                loc, anilist=_parse, folder=work_folder, direct=_forced
-            )
-        else:
-            file = await get_leech_name(link)
-            if file.error:
-                return await rep_event.reply(f"`{error}`")
-            if not is_video_file(file.name):
-                error = not_vid_msg
-                return await rep_event.reply(error)
-            __loc = __out = file.name
+        _forced = loc if _forced else None
+        loc = check_ext(args)
+        __loc = loc
+        __out, __none = await parse(
+            loc, anilist=_parse, folder=work_folder, direct=_forced
+        )
         _f = get_f()
         turn().append(turn_id)
         if waiting_for_turn():
@@ -317,26 +299,23 @@ async def en_rename(event, args, client):
     finally:
         if turn(turn_id):
             turn().pop(0)
-        if link and download and downloaded:
-            rm_leech_file(download.uri_gid)
 
 
 async def en_mux(event, args, client):
     """
-    Remuxes/encodes a replied video/link
+    Remuxes/encodes a replied video
         - Does not recover from database during restart
     Required arguments:
         valid ffmpeg parameters without the 'ffmpeg', '-i' or output
     Optional arguments:
         All optional arguments are passed seperated from the required argument with a newline
-        -i {link of file to download, tg link also supported(must be a supergroup link to file)}
+        -i {link of file to download, only tg link is supported(must be a supergroup link to file)}
         -np to turn off anilist
         -d {file_name} to change download name
         -du {chat_id} id of chat to dump resulting file.
         -c to delete command after muxing - needs no argument.
         -v tag files with versions.
         -q custom caption codec
-        -qs {file_id} select file in a torrent; get file_id with /list
         -default_a {lang_iso3} iso3 of the audio language to default.
             if there are multiple matching languages the first is selected.
         -default_s {lang_iso3} same as above but for subtitles.
@@ -364,7 +343,7 @@ async def en_mux(event, args, client):
         flags = None
         forced_file = None
         input_2 = None
-        link = qb = select = None
+        link = None
         ver = None
         work_folder = "mux/"
         cap_tag = file_tag = force_ext = None
@@ -374,10 +353,6 @@ async def en_mux(event, args, client):
         if message.document:
             if message.document.mime_type not in video_mimetype:
                 return
-        elif message.text:
-            if not (is_url(message.text) or is_magnet(message.text)):
-                return await message.reply("`Invalid Link.`")
-            link = message.text
         elif not message.video:
             return
         if args is None:
@@ -397,7 +372,6 @@ async def en_mux(event, args, client):
                 "-i",
                 ["-np", "store_true"],
                 "-q",
-                "-qs",
                 "-tc",
                 "-tf",
                 "-v",
@@ -405,32 +379,7 @@ async def en_mux(event, args, client):
             )
         if not link:
             name = get_filename(message)
-        elif flags and flag.qs:
-            if not flag.qs.isdigit():
-                return await event.reply(
-                    "Parameter '-qs' requires digits <int> as argument."
-                )
-            file = await get_torrent(link)
-            if file.error:
-                return await event.reply(f"`{file.error}`")
-            if (ind := int(flag.qs)) > (file.count - 1):
-                return await event.reply(
-                    f"'-qs': `{flag.qs} is more than last file_id :- {file.count - 1}\n"
-                    f"Total files in folder :- {file.count}`"
-                )
-            if not is_video_file(file.file_list[ind]):
-                return await event.reply("'-qs': " + no_fl_spt_msg)
-            name = (file.file_list[ind].split("/"))[-1]
-            qb = True
-            select = ind
-        else:
-            file = await get_leech_name(link)
-            if file.error:
-                return await rep_event.reply(f"{file.error}")
-            if not is_video_file(file.name):
-                error = not_vid_msg
-                return await rep_event.reply(error)
-            name = file.name
+        
         if flags:
             if flag.du:
                 if not flag.du.lstrip("-").isdigit():
@@ -438,7 +387,7 @@ async def en_mux(event, args, client):
                 flag.du = int(flag.du)
             if flag.np or flag.f:
                 ani_parse = False
-            if flag.i and (is_url(flag.i) or is_magnet(flag.i)):
+            if flag.i and is_url(flag.i):
                 link2 = None
                 if flag.i.startswith("https://t.me"):
                     message_2 = await get_message_from_link(flag.i)
@@ -452,15 +401,8 @@ async def en_mux(event, args, client):
                         )
                     name_2 = get_filename(message_2)
                 else:
-                    link2 = flag.i
-                    message_2 = None
-                    file2 = await get_leech_name(link2)
-                    if file2.error:
-                        return await event.reply(f"{file.error}")
-                    if not is_supported_file(file2.name):
-                        error = "`Input 2 is either a folder or not in the list of supported files.`"
-                        return await event.reply(error)
-                    name_2 = file2.name
+                    error = "`Input 2 is not a valid link to a telegram file.`"
+                    return await event.reply(error)
                 input_2 = work_folder + name_2
             cap_tag = flag.tc
             codec = flag.q
@@ -486,8 +428,8 @@ async def en_mux(event, args, client):
         e = await message.reply(f"{enmoji()} **Downloading:-** `{name}`…", quote=True)
         await asyncio.sleep(5)
         d_id = f"{e.chat.id}:{e.id}"
-        download = downloader(_id=d_id, uri=link, folder=work_folder, qbit=qb)
-        downloaded = await download.start(name, 0, message, e, select=select)
+        download = downloader(_id=d_id, uri=link, folder=work_folder,)
+        downloaded = await download.start(name, 0, message, e,)
         if download.is_cancelled or download.download_error:
             await download.clean_download()
             return await report_failed_download(download, e, name, user)
@@ -622,12 +564,10 @@ async def en_mux(event, args, client):
 
 async def en_upload(event, args, client):
     """
-    Uploads a file/files from local directory or direct/torrent link
+    Uploads a file/files from local directory
     Just pass any of the following:
         - the file (with -f) e.g -f "something.txt"
         - the folder path
-        - direct link
-        - torrent/magnet link
         -
             --ext (optional argument) [Low priority]
                 changes the extension of a single file while uploading
@@ -635,10 +575,6 @@ async def en_upload(event, args, client):
                 same as above but only changes to 'mkv' same as passing --ext ".mkv"
             -s (optional argument)
                 cleans command and remits no message as to what or how many files were uploaded.
-            -qb (optional argument)
-                forces downloading using qbtorrent (Only for torrent or magnetic links)
-            -qs (optional argument)
-                <int>: selects file to upload from batch torrent using qbittorrent
     __as an argument.
     """
     if not user_is_owner(event.sender_id):
@@ -647,7 +583,6 @@ async def en_upload(event, args, client):
         download = None
         ext = None
         folder = "downloads2/" f"{event.chat_id}:{event.id}/"
-        qb = select = None
         uri = None
         topic_id = None
         u_can_msg = "`Folder upload has been force cancelled`"
@@ -661,14 +596,10 @@ async def en_upload(event, args, client):
             "--ext",
             "-f",
             ["--mkv", "store_true"],
-            "-qs",
-            ["-qb", "store_true"],
             ["-s", "store_true"],
             to_parse=args,
             get_unknown=True,
         )
-        if arg.qs and not arg.qs.isdigit():
-            return await event.reply("'-qs': `param accepts only digits`")
         if arg.s and topic_id:
             message = await client.get_messages(event.chat_id, int(topic_id))
         else:
@@ -678,33 +609,6 @@ async def en_upload(event, args, client):
 
         if arg.f:
             file = arg.f
-        elif is_url(args) or is_magnet(args):
-            if arg.qs:
-                file = await get_torrent(args)
-                if file.error:
-                    return await event.reply(f"`{file.error}`")
-                if (ind := int(arg.qs)) > (file.count - 1):
-                    return await event.reply(
-                        f"'-qs': `{arg.qs} is more than last file_id :- {file.count - 1}\n"
-                        f"Total files in folder :- {file.count}`"
-                    )
-                qb = True
-                select = ind
-            qb = arg.qb or qb
-            uri = True
-            dl = await message.reply(
-                "`Preparing to download file from link…`",
-                quote=True,
-            )
-            d_id = f"{dl.chat.id}:{dl.id}"
-            download = downloader(_id=d_id, uri=args, folder=folder, qbit=qb)
-            downloaded = await download.start(None, None, True, dl, select=select)
-            if download.is_cancelled or download.download_error:
-                return await report_failed_download(
-                    download, dl, download.file_name, event.sender_id
-                )
-            await dl.delete()
-            file = download.path
         else:
             file = args
         if arg.mkv:
@@ -826,48 +730,10 @@ async def en_upload(event, args, client):
             else:
                 _no = 0
                 await edit_message(r, f"`Uploading of {cap} has been cancelled.`")
-        if uri:
-            await asyncio.sleep(5)
-            arg.s or await reply_message(
-                event,
-                f"`{_no} file(s) have been uploaded from` `{args}` `successfully. {enmoji()}`",
-            )
+
     except Exception as e:
         await logger(Exception)
         await reply_message(event, str(e), quote=True)
-    finally:
-        if download:
-            await download.clean_download()
-            s_remove(folder, folders=True)
-
-
-async def en_list(event, args, client):
-    """
-    List items in a torrent along with their file_ids
-    Arguments:
-        torrent/magnetic link (Required)
-
-    *Will fail if the same torrent link is being in use by qbittorrent in bot.
-    """
-    try:
-        if not (is_url(args) or is_magnet(args)):
-            return await event.reply(
-                "Please pass a valid torrent/magnetic link as argument. "
-            )
-        file = await get_torrent(args)
-        if file.error:
-            return await event.reply(f"`{file.error}`")
-        msg = str()
-        for item, no in zip(file.file_list, itertools.count()):
-            msg += f"{no}. `{item}`"
-            msg += "\n\n"
-        msg += f"**Total files:** {file.count}"
-        pre_event = event
-        for smsg in await split_text(msg):
-            pre_event = await reply_message(pre_event, smsg, quote=True)
-    except Exception as e:
-        await logger(Exception)
-        await event.reply("An error occurred:\n" f"- `{str(e)}`")
 
 
 async def en_airing(event, args, client):

@@ -43,7 +43,6 @@ from .workers.handlers.manage import (
     reffmpeg,
     restart,
     rmfilter,
-    rss_handler,
     save_thumb,
     set_mux_args,
     update2,
@@ -54,10 +53,6 @@ from .workers.handlers.manage import (
 from .workers.handlers.queue import (
     addqueue,
     clearqueue,
-    edit_batch,
-    enleech,
-    enleech2,
-    enselect,
     listqueue,
     pencode,
 )
@@ -302,27 +297,8 @@ async def _(e):
     await event_handler(e, eval_, pyro, True)
 
 
-@tele.on(events.NewMessage(pattern=command(["leech", "l"])))
-async def _(e):
-    await event_handler(e, enleech, pyro)
 
-
-@tele.on(events.NewMessage(pattern=command(["qbleech", "ql"])))
-async def _(e):
-    await event_handler(e, enleech2, pyro)
-
-
-@tele.on(events.NewMessage(pattern=command(["list"], ["/", "!"])))
-async def _(e):
-    await event_handler(e, en_list, pyro, require_args=True)
-
-
-@tele.on(events.NewMessage(pattern=command(["select", "s"])))
-async def _(e):
-    await event_handler(e, enselect, pyro, require_args=True)
-
-
-@tele.on(events.NewMessage(pattern=command(["add", "releech"])))
+@tele.on(events.NewMessage(pattern=command(["add"])))
 async def _(e):
     await event_handler(e, addqueue, pyro)
 
@@ -393,11 +369,6 @@ async def _(e):
 @tele.on(events.NewMessage(pattern=command(["queue"], ["/", "!"])))
 async def _(e):
     await event_handler(e, listqueue)
-
-
-@tele.on(events.NewMessage(pattern=command(["batch", "gb"])))
-async def _(e):
-    await event_handler(e, edit_batch, pyro)
 
 
 ######## DEBUG #########

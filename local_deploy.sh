@@ -25,7 +25,7 @@ if grep -qi "fedora" /etc/os-release; then
         yum -qq -y update && yum -qq -y sudo
     fi
     sleep 2
-    sudo yum -qq -y update && sudo yum -qq -y install git aria2 bash xz wget curl pv jq python3-pip mediainfo procps-ng qbittorrent-nox
+    sudo yum -qq -y update && sudo yum -qq -y install git bash xz wget curl pv jq python3-pip mediainfo procps-ng
 
 elif grep -qi "ubuntu\|debian" /etc/os-release; then
     # Install the package on Ubuntu or Debian using apt
@@ -40,7 +40,7 @@ elif grep -qi "ubuntu\|debian" /etc/os-release; then
         apt -y -qq update && apt install sudo -y
     fi
     sleep 2
-    sudo apt -y -qq update && sudo apt -y -qq install -y git wget curl aria2 pv jq python3-pip mediainfo qbittorrent-nox 
+    sudo apt -y -qq update && sudo apt -y -qq install -y git wget curl pv jq python3-pip mediainfo 
     #sudo apt -qq install handbrake-cli
 
 

@@ -63,11 +63,6 @@
             "value": "🌸",
             "required": false
         },
-        "DUMP_LEECH": {
-            "description": "Enable/disable dumping",
-            "value": "False",
-            "required": false
-        },
         "CACHE_DL": {
             "description": "Enable/disable caching downloads.",
             "value": "True",
