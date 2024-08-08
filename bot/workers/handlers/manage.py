@@ -1,8 +1,6 @@
 import asyncio
 import itertools
 
-from feedparser import parse as feedparse
-
 from bot import (
     caption_file,
     ffmpeg_file,
@@ -10,21 +8,18 @@ from bot import (
     mux_file,
     parse_file,
     rename_file,
-    rss_dict_lock,
     thumb,
 )
 from bot.config import _bot, conf
 from bot.startup.before import entime
 from bot.utils.bot_utils import (
     get_bqueue,
-    get_html,
     get_pause_status,
     get_queue,
     get_var,
     list_to_str,
     split_text,
     string_escape,
-    sync_to_async,
     time_formatter,
 )
 from bot.utils.db_utils import save2db, save2db2
@@ -33,7 +28,6 @@ from bot.utils.msg_utils import (
     avoid_flood,
     bc_msg,
     enquoter,
-    event_handler,
     get_args,
     msg_sleep_delete,
     try_delete,
@@ -48,7 +42,6 @@ from bot.utils.os_utils import (
     updater,
     x_or_66,
 )
-
 
 
 async def nuke(event, args, client):
@@ -707,4 +700,3 @@ async def fc_forward(msg, args, client):
             await try_delete(rep)
     except Exception:
         await logger(Exception)
-

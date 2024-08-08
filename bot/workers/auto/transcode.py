@@ -84,9 +84,9 @@ async def forward_(name, out, ds, mi, f, ani, n):
         return
     if not fb:
         queue = get_queue()
-        bqueue = get_bqueue()
-        queue_id = list(queue.keys())[0]
-            
+        get_bqueue()
+        list(queue.keys())[0]
+
         if len(queue) > 1:
             name, _none, v_f = list(queue.values())[0]
             name2, _none, v_f2 = list(queue.values())[1]
@@ -194,7 +194,11 @@ async def thing():
             sdt = time.time()
             # await mssg_r.edit("`Waiting for download to complete.`")
             download = downloader(
-                sender_id, op, _id, uri=einfo.uri, dl_info=True,
+                sender_id,
+                op,
+                _id,
+                uri=einfo.uri,
+                dl_info=True,
             )
             download._sender = sender
             downloaded = await download.start(

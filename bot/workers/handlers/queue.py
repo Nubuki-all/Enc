@@ -1,26 +1,16 @@
 from pyrogram.types import Message
 
-from bot import asyncio, dl_pause, errors, itertools, queue_lock
+from bot import asyncio, errors, itertools, queue_lock
 from bot.fun.quips import enquip4
 from bot.utils.ani_utils import qparse
 from bot.utils.bot_utils import (
     bot_is_paused,
-    check_cmds,
-    get_bqueue,
     get_f,
     get_filename,
     get_pause_status,
-    get_preview,
-    get_previewer,
     get_queue,
     get_v,
     get_var,
-    is_url,
-    is_video_file,
-    pause,
-    rm_pause,
-    sdict,
-    split_text,
     string_escape,
     video_mimetype,
 )

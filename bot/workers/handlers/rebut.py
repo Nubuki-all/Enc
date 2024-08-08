@@ -17,9 +17,7 @@ from bot.utils.bot_utils import (
     code,
     get_f,
     get_filename,
-    is_supported_file,
     is_url,
-    is_video_file,
     split_text,
     u_cancelled,
     video_mimetype,
@@ -50,7 +48,6 @@ from bot.utils.os_utils import (
     s_remove,
     size_of,
 )
-
 from bot.workers.downloaders.download import Downloader as downloader
 from bot.workers.encoders.encode import Encoder as encoder
 from bot.workers.uploaders.upload import Uploader as uploader
@@ -248,7 +245,7 @@ async def en_rename(event, args, client):
         await asyncio.sleep(5)
         d_id = f"{e.chat.id}:{e.id}"
         download = downloader(_id=d_id, uri=link, folder=work_folder)
-        downloaded = await download.start(loc, 0, message, e)
+        await download.start(loc, 0, message, e)
         if download.is_cancelled or download.download_error:
             return await report_failed_download(download, e, __out, user)
         loc = work_folder + __out
@@ -379,7 +376,7 @@ async def en_mux(event, args, client):
             )
         if not link:
             name = get_filename(message)
-        
+
         if flags:
             if flag.du:
                 if not flag.du.lstrip("-").isdigit():
@@ -428,8 +425,17 @@ async def en_mux(event, args, client):
         e = await message.reply(f"{enmoji()} **Downloading:-** `{name}`…", quote=True)
         await asyncio.sleep(5)
         d_id = f"{e.chat.id}:{e.id}"
-        download = downloader(_id=d_id, uri=link, folder=work_folder,)
-        downloaded = await download.start(name, 0, message, e,)
+        download = downloader(
+            _id=d_id,
+            uri=link,
+            folder=work_folder,
+        )
+        downloaded = await download.start(
+            name,
+            0,
+            message,
+            e,
+        )
         if download.is_cancelled or download.download_error:
             await download.clean_download()
             return await report_failed_download(download, e, name, user)
@@ -580,10 +586,8 @@ async def en_upload(event, args, client):
     if not user_is_owner(event.sender_id):
         return await event.delete()
     try:
-        download = None
         ext = None
         folder = "downloads2/" f"{event.chat_id}:{event.id}/"
-        uri = None
         topic_id = None
         u_can_msg = "`Folder upload has been force cancelled`"
         if getattr(event.reply_to, "forum_topic", None):

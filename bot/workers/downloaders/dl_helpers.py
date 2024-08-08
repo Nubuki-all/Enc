@@ -1,14 +1,7 @@
-import uuid
-
 from bot import asyncio, math, os, pyro, time
 from bot.config import _bot, conf
-from bot.utils.bot_utils import (
-    get_queue,
-    replace_proxy,
-    sync_to_async,
-)
-from bot.utils.log_utils import log, logger
-
+from bot.utils.bot_utils import get_queue
+from bot.utils.log_utils import logger
 
 
 async def download2(dl, file, message=None, e=None):
@@ -37,7 +30,6 @@ async def download2(dl, file, message=None, e=None):
         return download_task
     except Exception:
         await logger(Exception)
-
 
 
 async def cache_dl(check=False):

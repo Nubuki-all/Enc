@@ -1,15 +1,7 @@
 from bot import *
 from bot.config import _bot, conf
 from bot.fun.emojis import enhearts, enmoji, enmoji2
-from bot.utils.bot_utils import (
-    code,
-    decode,
-    hbs,
-    replace_proxy,
-    sync_to_async,
-    time_formatter,
-    value_check,
-)
+from bot.utils.bot_utils import code, decode, hbs, replace_proxy, time_formatter
 from bot.utils.log_utils import log, logger
 from bot.utils.os_utils import parse_dl, s_remove
 
@@ -154,8 +146,6 @@ class Downloader:
             await logger(Exception)
             return None
 
-    
-
     async def progress_for_pyrogram(self, current, total, app, ud_type, message, start):
         fin_str = enhearts()
         now = time.time()
@@ -228,8 +218,6 @@ class Downloader:
             except BaseException:
                 await logger(Exception)
                 # debug
-
-    
 
     def register(self):
         try:

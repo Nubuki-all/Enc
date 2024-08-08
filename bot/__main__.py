@@ -50,17 +50,11 @@ from .workers.handlers.manage import (
     version2,
     vfilter,
 )
-from .workers.handlers.queue import (
-    addqueue,
-    clearqueue,
-    listqueue,
-    pencode,
-)
+from .workers.handlers.queue import addqueue, clearqueue, listqueue, pencode
 from .workers.handlers.rebut import (
     en_airing,
     en_anime,
     en_download,
-    en_list,
     en_mux,
     en_rename,
     en_upload,
@@ -295,7 +289,6 @@ async def _(e):
 @tele.on(events.NewMessage(pattern=command(["eval"])))
 async def _(e):
     await event_handler(e, eval_, pyro, True)
-
 
 
 @tele.on(events.NewMessage(pattern=command(["add"])))
