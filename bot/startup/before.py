@@ -21,6 +21,11 @@ if file_exists(version_file):
 
 LOGS.info(f"Branch: {_bot.repo_branch or 'Unknown!'}")
 LOGS.info(vmsg)
+
+if os.path.isdir("/tgenc"):
+    _bot.docker_deployed = True
+    LOGS.info("Docker: Yes")
+
 LOGS.info("=" * 30)
 
 if conf.THUMB:
@@ -57,12 +62,8 @@ if not os.path.isdir("dump/"):
     os.mkdir("dump/")
 if not os.path.isdir("mux/"):
     os.mkdir("mux/")
-if not os.path.isdir("thumb/"):
-    os.mkdir("thumb/")
-
-
-if os.path.isdir("/tgenc"):
-    _bot.docker_deployed = True
+if not os.path.isdir("minfo/"):
+    os.mkdir("minfo/")
 
 if conf.TEMP_USER:
     for t in conf.TEMP_USER.split():

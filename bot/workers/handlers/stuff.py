@@ -76,6 +76,7 @@ async def status(event, args, client):
         f"**Version:** `{vercheck}`\n"
         f"**Branch:** `{branch}`\n"
         f"**Commit Date:** `{last_commit}`\n\n"
+        f"**Docker:** `{'Yes' if _bot.docker_deployed else 'No'}`\n"
         f"**Bot Uptime:** `{currentTime}`\n"
         f"**System Uptime:** `{ostime}`\n\n"
         f"**Total Disk Space:** `{total}`\n"

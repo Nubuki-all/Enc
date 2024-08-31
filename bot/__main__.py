@@ -70,6 +70,7 @@ from .workers.handlers.rebut import (
     en_rename,
     en_upload,
     getlogs,
+    getminfo,
     getthumb,
 )
 from .workers.handlers.stuff import beck
@@ -325,6 +326,11 @@ async def _(e):
 @tele.on(events.NewMessage(pattern=command(["add", "releech"])))
 async def _(e):
     await event_handler(e, addqueue, pyro)
+
+
+@tele.on(events.NewMessage(pattern=command(["m", "mediainfo"])))
+async def _(e):
+    await event_handler(e, getminfo, pyro)
 
 
 @tele.on(events.NewMessage(pattern=command(["download", "dl"], ["/", "!", "/"])))

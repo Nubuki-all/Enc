@@ -46,6 +46,7 @@ from bot.utils.os_utils import (
     check_ext,
     dir_exists,
     file_exists,
+    info,
     pos_in_stm,
     read_n_to_last_line,
     s_remove,
@@ -175,6 +176,66 @@ async def en_download(event, args, client):
         await e.edit(f"__Saved to__ `{f_loc}` __successfully!__")
     except Exception:
         await logger(Exception)
+
+
+async def getminfo(event, args, client):
+    """
+    Downloads the replied message and gets its media info.
+    Available arguments:
+        -c: to treat caption as filename 
+        -f or --full: To get a more verbose media info
+        text: Treat text as filename 
+    """
+    if not user_is_allowed(event.sender_id):
+        return await event.delete()
+    if not event.is_reply:
+        return await event.reply("`Reply to a file or link to get the media info`")
+    try:
+        _dir = "minfo/"
+        download = None
+        full = None
+        loc = None
+        link = None
+        rep_event = await event.get_reply_message()
+        message = await client.get_messages(event.chat_id, int(rep_event.id))
+        if message.text and not (is_url(message.text) or is_magnet(message.text)):
+            return await message.reply("`Not a valid link`")
+        e = await message.reply(f"{enmoji()} `Downloading…`", quote=True)
+        if args:
+            arg, args = get_args(
+                ["-c", "store_true"],
+                ["-f", "store_true"],
+                ["--full", "store_true"],
+                to_parse=args,
+                get_unknown=True,
+            )
+            if arg.c and not message.text:
+                loc = message.caption
+            elif args:
+                loc = args
+            else:
+                loc = rep_event.file.name
+            full = arg.f or arg.full
+        link = message.text if message.text else link
+        await try_delete(event)
+        d_id = f"{e.chat.id}:{e.id}"
+        download = downloader(_id=d_id, uri=link, folder=_dir)
+        downloaded = await download.start(loc, 0, message, e)
+        if download.is_cancelled or download.download_error:
+            return await report_failed_download(
+                download, e, download.file_name, event.sender_id
+            )
+        f_loc = _dir + download.file_name
+        await e.edit(f"__Generating media info for__ `{f_loc}` __…__")
+        m_info = await info(f_loc, full)
+        if not m_info:
+            return await e.edit(f"__Generating media info for__ `{f_loc}` __failed!__")
+        await e.edit(f"Mediainfo for: **[{download.file_name}]({m_info})**")
+    except Exception:
+        await logger(Exception)
+    finally:
+        if download and downloaded:
+            await download.clean_download()
 
 
 async def en_rename(event, args, client):

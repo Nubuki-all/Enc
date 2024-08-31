@@ -7,7 +7,7 @@ from bot.config import _bot, conf
 from bot.workers.auto.schedule import addjob, scheduler
 from bot.workers.handlers.queue import enleech, enleech2
 
-from .bot_utils import check_cmds, get_html
+from .bot_utils import check_cmds, get_html, pause, rm_pause
 from .db_utils import save2db2
 from .log_utils import log
 from .msg_utils import send_rss
@@ -34,6 +34,7 @@ async def rss_monitor():
     if len(_bot.rss_dict) == 0:
         scheduler.pause()
         return
+    pause(status="rss")
     all_paused = True
     for title, data in list(_bot.rss_dict.items()):
         try:
@@ -113,6 +114,7 @@ async def rss_monitor():
     if all_paused:
         scheduler.pause()
         log(e="No active rss feed\nRss Monitor has been paused!")
+    rm_pause("rss")
     elif not _bot.rss_ran_once:
         _bot.rss_ran_once = True
 

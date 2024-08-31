@@ -34,10 +34,10 @@ async def is_running(proc):
     return proc.returncode is None
 
 
-async def info(file):
+async def info(file, full=False):
     try:
         out = await sync_to_async(
-            pymediainfo.MediaInfo.parse, file, output="HTML", full=False
+            pymediainfo.MediaInfo.parse, file, output="HTML", full=full
         )
         if len(out) > 65536:
             out = (
@@ -112,7 +112,7 @@ async def qclean():
         os.system("rm -rf downloads2/*")
         os.system("rm -rf encode/*")
         os.system("rm -rf mux/*")
-        os.system("rm thumb/*")
+        os.system("rm minfo/*")
         try:
             with open(ffmpeg_file, "r") as file:
                 ffmpeg = file.read().rstrip().split()[0]
