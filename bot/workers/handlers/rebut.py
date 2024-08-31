@@ -182,9 +182,9 @@ async def getminfo(event, args, client):
     """
     Downloads the replied message and gets its media info.
     Available arguments:
-        -c: to treat caption as filename 
+        -c: to treat caption as filename
         -f or --full: To get a more verbose media info
-        text: Treat text as filename 
+        text: Treat text as filename
     """
     if not user_is_allowed(event.sender_id):
         return await event.delete()
