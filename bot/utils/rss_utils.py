@@ -111,7 +111,7 @@ async def rss_monitor():
         except Exception as e:
             log(e=f"{e} - Feed Name: {title} - Feed Link: {data['link']}")
             continue
-    rm_pause("rss")
+    await rm_pause("rss")
     if all_paused:
         scheduler.pause()
         log(e="No active rss feed\nRss Monitor has been paused!")

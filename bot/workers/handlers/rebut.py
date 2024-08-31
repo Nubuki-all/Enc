@@ -213,10 +213,10 @@ async def getminfo(event, args, client):
                 loc = message.caption
             elif args:
                 loc = args
-            else:
-                loc = rep_event.file.name
             full = arg.f or arg.full
         link = message.text if message.text else link
+        if not loc:
+            loc = rep_event.file.name if not link else link
         await try_delete(event)
         d_id = f"{e.chat.id}:{e.id}"
         download = downloader(_id=d_id, uri=link, folder=_dir)
