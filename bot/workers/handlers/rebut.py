@@ -191,7 +191,7 @@ async def getminfo(event, args, client):
     if not event.is_reply:
         return await event.reply("`Reply to a file or link to get the media info`")
     try:
-        _dir = "minfo/"
+        _dir = f"minfo/{event.chat_id}:{event.id}/"
         download = None
         full = None
         loc = None
