@@ -482,12 +482,10 @@ class Downloader:
             await asyncio.sleep(10)
             download = await self.progress_for_aria2(download, start, message, silent)
 
-
         except pyro_errors.FloodWait as e:
             await asyncio.sleep(e.value)
             await asyncio.sleep(2)
             download = await self.progress_for_aria2(download, start, message, silent)
-
 
         except Exception:
             await logger(Exception)
@@ -587,12 +585,10 @@ class Downloader:
             await asyncio.sleep(10)
             download = await self.progress_for_qbit()
 
-
         except pyro_errors.FloodWait as e:
             await asyncio.sleep(e.value)
             await asyncio.sleep(2)
             download = await self.progress_for_qbit()
-
 
         except Exception as e:
             self.download_error = str(e)
@@ -600,7 +596,7 @@ class Downloader:
             download = await self.clean_download()
 
         finally:
-            return download 
+            return download
 
     def register(self):
         try:
@@ -639,7 +635,7 @@ class Downloader:
             await self.clean_download()
         except Exception:
             log(Exception)
-    
+
     async def wait(self):
         if (
             self.message
