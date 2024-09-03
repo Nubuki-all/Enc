@@ -633,10 +633,10 @@ class Downloader:
         except Exception:
             log(Exception)
 
-   async def download_timeout(self):
-       try:
-           self.download_error = "E28: Download took longer than the specified time limit and has therefore been cancelled!"
-           await self.clean_download()
+    async def download_timeout(self):
+        try:
+            self.download_error = "E28: Download took longer than the specified time limit and has therefore been cancelled!"
+            await self.clean_download()
         except Exception:
             log(Exception)
     
