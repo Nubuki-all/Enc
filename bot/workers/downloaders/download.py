@@ -381,13 +381,8 @@ class Downloader:
                     self.download_error = (
                         "E" + download.error_code + ": " + download.error_message
                     )
-                await sync_to_async(download.remove, force=True, files=True)
-                if download.following_id:
-                    download = await sync_to_async(
-                        self.aria2.get_download, download.following_id
-                    )
-                    await sync_to_async(download.remove, force=True, files=True)
-                return None
+                download = None
+                return await self.clean_download()
 
             ud_type = "`Download Pending…`"
             if not download.name.endswith(".torrent"):
@@ -408,6 +403,10 @@ class Downloader:
             now = time.time()
             diff = now - start
             fin_str = enhearts()
+
+            if conf.ADL_TIMEOUT and (diff => conf.ADL_TIMEOUT):
+                download = None
+                return await self.download_timeout()
 
             if download.completed_length and download.download_speed:
                 time_to_completion = time_formatter(
@@ -442,7 +441,7 @@ class Downloader:
             )
             if silent:
                 await asyncio.sleep(10)
-                return download
+                return
             try:
                 # Attach the button to the message with an inline keyboard
                 reply_markup = []
@@ -478,30 +477,32 @@ class Downloader:
                 )
 
             await asyncio.sleep(10)
-            return download
+
         except pyro_errors.BadRequest:
             await asyncio.sleep(10)
-            dl = await self.progress_for_aria2(download, start, message, silent)
-            return dl
+            download = await self.progress_for_aria2(download, start, message, silent)
+
 
         except pyro_errors.FloodWait as e:
             await asyncio.sleep(e.value)
             await asyncio.sleep(2)
-            dl = await self.progress_for_aria2(download, start, message, silent)
-            return dl
+            download = await self.progress_for_aria2(download, start, message, silent)
+
 
         except Exception:
             await logger(Exception)
-            await self.clean_download()
-            return None
+            download = await self.clean_download()
+
+        finally:
+            return download
 
     async def progress_for_qbit(self):
         try:
             download = await sync_to_async(self.qb.torrents_info, tag=self.id)
             download = download[0]
             if self.is_cancelled:
-                await self.clean_download()
-                return
+                download = None
+                return await self.clean_download()
             ud_type = "`..................`"
             if download.state == "pausedUP":
                 return download
@@ -523,6 +524,10 @@ class Downloader:
             diff = now - start
             fin_str = enhearts()
             d_progress = (current / total) * 100
+
+            if conf.QDL_TIMEOUT and (diff => conf.QDL_TIMEOUT):
+                download = None
+                return await self.download_timeout()
 
             progress = "```\n{0}{1}```\n<b>Progress:</b> `{2}%`\n".format(
                 "".join([fin_str for i in range(math.floor(d_progress / 10))]),
@@ -577,23 +582,25 @@ class Downloader:
                 )
 
             await asyncio.sleep(10)
-            return download
+
         except pyro_errors.BadRequest:
             await asyncio.sleep(10)
-            dl = await self.progress_for_qbit()
-            return dl
+            download = await self.progress_for_qbit()
+
 
         except pyro_errors.FloodWait as e:
             await asyncio.sleep(e.value)
             await asyncio.sleep(2)
-            dl = await self.progress_for_qbit()
-            return dl
+            download = await self.progress_for_qbit()
+
 
         except Exception as e:
             self.download_error = str(e)
             await logger(Exception)
-            await self.clean_download()
-            return None
+            download = await self.clean_download()
+
+        finally:
+            return download 
 
     def register(self):
         try:
@@ -620,12 +627,19 @@ class Downloader:
                 await rm_torrent_file(self.uri_gid, qb=self.qb)
                 await rm_torrent_tag(self.id, qb=self.qb)
             elif self.uri:
-                rm_leech_file(self.uri_gid)
+                await sync_to_async(rm_leech_file, self.uri_gid)
             else:
-                s_remove(self.path)
+                await sync_to_async(s_remove, self.path)
         except Exception:
             log(Exception)
 
+   async def download_timeout(self):
+       try:
+           self.download_error = "E28: Download took longer than the specified time limit and has therefore been cancelled!"
+           await self.clean_download()
+        except Exception:
+            log(Exception)
+    
     async def wait(self):
         if (
             self.message

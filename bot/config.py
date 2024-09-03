@@ -20,6 +20,7 @@ from decouple import config
 class Config:
     def __init__(self):
         try:
+            self.ADL_TIMEOUT = config("ARIA2_DL_TIMEOUT", default=0, cast=int)
             self.ALWAYS_DEPLOY_LATEST = config(
                 "ALWAYS_DEPLOY_LATEST", default=False, cast=bool
             )
@@ -65,6 +66,7 @@ class Config:
             self.OVR = config("OVR", default=None)
             self.OWNER = config("OWNER")
             self.PAUSE_ON_DL_INFO = config("PODI", default=True, cast=bool)
+            self.QDL_TIMEOUT = config("QBIT_DL_TIMEOUT", default=0, cast=int)
             self.QBIT_PORT = config("QBIT_PORT", default=8090, cast=int)
             self.QBIT_TIMEOUT = config("QBIT_TIMEOUT", default=20, cast=int)
             self.RSS_CHAT = config("RSS_CHAT", default=0, cast=int)

@@ -306,6 +306,7 @@ v{s} - turn v2,3,4… on (with message) or off
 download{s} - download a file or link to bot
 upload{s} - upload from a local directory or link
 rename{s} - rename a video file/link
+m{s} - get the media info of a replied file/link
 mux{s} - remux a file
 get{s} - get current ffmpeg code
 set{s} - set custom ffmpeg code

@@ -61,6 +61,7 @@ v - turn v2,3,4… on (with message) or off
 download - download a file or link to bot
 upload - upload from a local directory or link
 rename - rename a video file/link
+mediainfo - get the media info of a replied file/link
 mux - remux a file
 get - get current ffmpeg code
 set - set custom ffmpeg code
