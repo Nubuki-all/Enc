@@ -404,7 +404,7 @@ class Downloader:
             diff = now - start
             fin_str = enhearts()
 
-            if conf.ADL_TIMEOUT and (diff => conf.ADL_TIMEOUT):
+            if conf.ADL_TIMEOUT and (diff >= conf.ADL_TIMEOUT):
                 download = None
                 return await self.download_timeout()
 
@@ -525,7 +525,7 @@ class Downloader:
             fin_str = enhearts()
             d_progress = (current / total) * 100
 
-            if conf.QDL_TIMEOUT and (diff => conf.QDL_TIMEOUT):
+            if conf.QDL_TIMEOUT and (diff >= conf.QDL_TIMEOUT):
                 download = None
                 return await self.download_timeout()
 
