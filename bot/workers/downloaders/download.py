@@ -487,7 +487,8 @@ class Downloader:
             await asyncio.sleep(2)
             download = await self.progress_for_aria2(download, start, message, silent)
 
-        except Exception:
+        except Exception as e:
+            self.download_error = str(e)
             await logger(Exception)
             download = await self.clean_download()
 
@@ -607,8 +608,8 @@ class Downloader:
         except Exception:
             log(Exception)
 
-    def un_register(self):
-        if self.dl_info:
+    def un_register(self, force=False):
+        if (self.dl_info and conf.COMP_MODE) and not force:
             return
         try:
             decode(self.id, pop=True)

@@ -242,6 +242,8 @@ async def thing():
                 mark_file_as_done(einfo.select, queue_id)
                 await save2db()
                 await save2db("batches")
+                if conf.COMP_MODE:
+                    download.un_register(True)
                 await asyncio.sleep(2)
                 return
             dl = download.path
@@ -261,6 +263,8 @@ async def thing():
             mark_file_as_done(einfo.select, queue_id)
             await save2db()
             await save2db("batches")
+            if download and conf.COMP_MODE:
+                download.un_register(True)
             return
         edt = time.time()
         dtime = tf(edt - sdt)
@@ -308,6 +312,8 @@ async def thing():
         # await mssg_r.edit("`Waiting For Encoding To Complete`")
         await encode.start(cmd)
         await encode.callback(dl, out, msg_t, sender_id, stime=_set)
+        if download and conf.COMP_MODE:
+            download.un_register(True)
         stdout, stderr = await encode.await_completion()
         await report_encode_status(
             encode.process,

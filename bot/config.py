@@ -35,6 +35,7 @@ class Config:
             self.CAP_DECO = config("CAP_DECO", default="◉")
             self.C_LINK = config("C_LINK", default="@ANi_MiNE")
             self.CMD_SUFFIX = config("CMD_SUFFIX", default=str())
+            self.COMP_MODE = config("COMPATIBILITY_MODE", default=True, cast=bool)
             self.DATABASE_URL = config("DATABASE_URL", default=None)
             self.DBNAME = config("DBNAME", default="ENC")
             self.DEV = config("DEV", default=0, cast=int)
