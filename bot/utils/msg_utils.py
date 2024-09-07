@@ -343,7 +343,8 @@ async def report_encode_status(
             reply += f"Failed. {enmoji2()}\nLogs available below."
             if _bot.report_failed_enc and user:
                 reportee = int(conf.OWNER.split()[0])
-                if reportee == int(user):
+                chat = msg.chat_id if not pyro_msg else msg.chat.id
+                if reportee == int(chat):
                     reportee = None
 
         reply += "!"
@@ -392,6 +393,7 @@ async def report_encode_status(
 
 
 async def report_failed_download(download, msg, file, user=None):
+    pyro_msg = False
     reply = f"Download of `{file}` "
     if download.is_cancelled:
         reply += "was cancelled."
@@ -402,13 +404,15 @@ async def report_failed_download(download, msg, file, user=None):
             if not isinstance(msg, pyrogram.types.Message):
                 reply += f"[{download.canceller.first_name}](tg://user?id={user})"
             else:
+                pyro_msg = True
                 reply += download.canceller.mention()
     else:
         reply += f"failed.\n- `{download.download_error}`"
     reply += "!"
     if not download.is_cancelled and user and _bot.report_failed_dl:
         reportee = int(conf.OWNER.split()[0])
-        if not reportee == int(user):
+        chat = msg.chat_id if not pyro_msg else msg.chat.id
+        if not reportee == int(chat):
             await tele.send_message(reportee, reply)
     return await msg.edit(reply)
 
