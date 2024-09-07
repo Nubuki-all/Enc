@@ -70,10 +70,13 @@ class Config:
             self.QDL_TIMEOUT = config("QBIT_DL_TIMEOUT", default=0, cast=int)
             self.QBIT_PORT = config("QBIT_PORT", default=8090, cast=int)
             self.QBIT_TIMEOUT = config("QBIT_TIMEOUT", default=20, cast=int)
+            self.RELEASER = config("RELEASER", default="A-M|ANi-MiNE")
+            self.REPORT_FAILED = config("REPORT_FAILED", default=True, cast=bool)
+            self.REPORT_FAILED_DL = config("REPORT_FAILED_DL", default=False, cast=bool)
+            self.REPORT_FAILED_ENC = config("REPORT_FAILED_ENC", default=False, cast=bool)
             self.RSS_CHAT = config("RSS_CHAT", default=0, cast=int)
             self.RSS_DELAY = config("RSS_DELAY", default=60, cast=int)
             self.RSS_DIRECT = config("RSS_DIRECT", default=True, cast=bool)
-            self.RELEASER = config("RELEASER", default="A-M|ANi-MiNE")
             self.TELEGRAPH_API = config(
                 "TELEGRAPH_API", default="https://api.telegra.ph"
             )
@@ -120,6 +123,8 @@ class Runtime_Config:
         self.queue_status = []
         self.r_queue = []
         self.repo_branch = None
+        self.report_failed_dl = False
+        self.report_failed_enc = False
         self.rss_dict = {}
         self.rss_ran_once = False
         self.sas = False

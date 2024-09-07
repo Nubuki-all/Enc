@@ -38,6 +38,16 @@ if conf.DL_STUFF:
 if conf.NO_TEMP_PM:
     _bot.temp_only_in_group = True
 
+if conf.REPORT_FAILED:
+    _bot.report_failed_dl = True
+    _bot.report_failed_enc = True
+
+if conf.REPORT_FAILED_DL:
+    _bot.report_failed_dl = True
+
+if conf.REPORT_FAILED_ENC:
+    _bot.report_failed_enc = True
+
 if not file_exists(ffmpeg_file):
     with open(ffmpeg_file, "w") as file:
         file.write(str(conf.FFMPEG) + "\n")
