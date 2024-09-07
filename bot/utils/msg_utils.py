@@ -393,7 +393,7 @@ async def report_encode_status(
 
 
 async def report_failed_download(download, msg, file, user=None):
-    pyro_msg = False
+    pyro_msg = True if isinstance(msg, pyrogram.types.Message) else False
     reply = f"Download of `{file}` "
     if download.is_cancelled:
         reply += "was cancelled."
@@ -401,10 +401,9 @@ async def report_failed_download(download, msg, file, user=None):
             not user or (user and download.canceller.id != user)
         ):
             reply += " by "
-            if not isinstance(msg, pyrogram.types.Message):
+            if not pyro_msg:
                 reply += f"[{download.canceller.first_name}](tg://user?id={user})"
             else:
-                pyro_msg = True
                 reply += download.canceller.mention()
     else:
         reply += f"failed.\n- `{download.download_error}`"
