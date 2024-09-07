@@ -73,7 +73,9 @@ class Config:
             self.RELEASER = config("RELEASER", default="A-M|ANi-MiNE")
             self.REPORT_FAILED = config("REPORT_FAILED", default=True, cast=bool)
             self.REPORT_FAILED_DL = config("REPORT_FAILED_DL", default=False, cast=bool)
-            self.REPORT_FAILED_ENC = config("REPORT_FAILED_ENC", default=False, cast=bool)
+            self.REPORT_FAILED_ENC = config(
+                "REPORT_FAILED_ENC", default=False, cast=bool
+            )
             self.RSS_CHAT = config("RSS_CHAT", default=0, cast=int)
             self.RSS_DELAY = config("RSS_DELAY", default=60, cast=int)
             self.RSS_DIRECT = config("RSS_DIRECT", default=True, cast=bool)
