@@ -312,8 +312,6 @@ async def thing():
         # await mssg_r.edit("`Waiting For Encoding To Complete`")
         await encode.start(cmd)
         await encode.callback(dl, out, msg_t, sender_id, stime=_set)
-        if download and conf.COMP_MODE:
-            download.un_register(True)
         stdout, stderr = await encode.await_completion()
         await report_encode_status(
             encode.process,
