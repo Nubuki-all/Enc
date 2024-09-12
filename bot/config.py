@@ -101,9 +101,6 @@ class Config:
 
 
 class Runtime_Config:
-    # will slowly replace the Var_list class in utils.bot_utils
-    # Progress 1 / 2
-    # checking for missed variables
     def __init__(self):
         self.aria2 = None
         self.batch_ing = []
