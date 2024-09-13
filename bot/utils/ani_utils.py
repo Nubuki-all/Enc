@@ -424,7 +424,7 @@ async def parse(
         if a_con:
             file_name += f" [{a_con}]"
         file_name2 = file_name.replace(f_title, title)
-        file_name2 = file_name2.replace(release_name, release_name_b)
+        file_name2 = file_name2.replace(release_name, release_name_b) if release_name else file_name2
         file_name2 = (
             file_name2.replace(f"[{a_con}]", f"- {et} [{a_con}]")
             if et and a_con

@@ -93,12 +93,14 @@ if conf.TELEGRAPH_AUTHOR and len(conf.TELEGRAPH_AUTHOR.split("|")) > 1:
 if "|" in conf.RELEASER:
     release_name = conf.RELEASER.split("|")[0]
     release_name_b = conf.RELEASER.split("|")[1]
+elif conf.RELEASER.casefold() == "none":
+    release_name = release_name_b = str()
 else:
     release_name = conf.RELEASER
     release_name_b = conf.RELEASER
 
-release_name = f"[{release_name.strip()}]"
-release_name_b = f"[{release_name_b.strip()}]"
+release_name = f"[{release_name.strip()}]" if release_name else str()
+release_name_b = f"[{release_name_b.strip()}]" if release_name_b else str()
 
 
 if os.path.exists(log_file_name):
