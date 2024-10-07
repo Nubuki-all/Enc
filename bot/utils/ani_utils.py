@@ -210,7 +210,7 @@ async def get_file_tag(_infile, caption=False, audio_only=False):
             elif len(_ainfo.split("|")) == 2:
                 out = "Dual"
             else:
-                out = None if not audio_only else _ainfo
+                out = None if not audio_only else _ainfo.capitalize()
         elif _ainfo is None:
             out = "TBD"
     else:
@@ -405,7 +405,7 @@ async def parse(
             f_title = title
 
         ar = txt_to_str(ar_file)
-        f_title = await auto_rename(f_title, or_title, ar)
+        f_title = title = await auto_rename(f_title, or_title, ar)
 
         file_name = str()
         file_name += release_name
@@ -468,6 +468,12 @@ async def dynamicthumb(name, thum="thumb2.jpg", anilist=True, _filter=None):
             sn = None
         # release group
         rg = parsed.get("release_group")
+        
+        ar = txt_to_str(ar_file)
+        tparse, title_ = await auto_rename(title, title, ar, general=True)
+        anilist = False if not tparse else anilist 
+        title = title_
+
         if file_exists(parse_file) or not anilist:
             raise Exception("Parsing turned off")
         try:
@@ -788,6 +794,10 @@ async def f_post(
         if sn == "1":
             sn = None
 
+        ar = txt_to_str(ar_file)
+        tparse, title_ = await auto_rename(title, title, ar, general=True)
+        anilist = False if not tparse else anilist 
+        title = title_
         codec = fcodec if fcodec else await get_codec()
 
         try:

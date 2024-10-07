@@ -565,12 +565,13 @@ async def get_codec():
 
 
 async def auto_rename(
-    parsed_name: str, original_name: str, refunc: str, caption=False
+    parsed_name: str, original_name: str, refunc: str, caption=False, general=False)
 ) -> str:
     """
     Auto-rename file/caption name, if it matches given string or list of strings seperated by newlines
     """
     out_name = ""
+    caption = True if general else caption 
     if refunc:
         for ren in refunc.split("\n"):
             ren = ren.strip()
@@ -588,6 +589,20 @@ async def auto_rename(
                     out_name = re_name
                 else:
                     out_name = cap_name
+            if general:
+                if len(ren.split("|")) > 3:
+                    key = ren.split("|")[2].strip()
+                    if str(key) == "00":
+                        return False, original_name
+                    elif str(key) == "0":
+                        return False, out_name
+                    elif str(key) == "1":
+                        return True, out_name
+                    else:
+                        return True, key
+                else:
+                    return True, original_name
+                    
     if not out_name:
         out_name = parsed_name
     elif str(out_name) == "00":

@@ -460,14 +460,19 @@ async def auto_rename(event, args, client):
     Required arguments:
         - {anime_name} [Required] (get by clicking i button while downloadingl
         - {replace_name} [Required] (if anime_name is matched use this instead)
-        - {replace_cap} [Optional]
+        - {replace_caption} [Optional]
             • if not specified caption inherits replace_name.
             • if '0', a digit, is passed, filter is ignored for caption.
             • if '1', a digit, is passed, it is the same as not specifying.
-            • if anything else is specified it uses that as captain name instead.
-        Both {replace_name} and {replace_cap} also accept '00', a double digit
-        which essentially disables all fiter and anilist parsing
-        for the anime_name.
+            • if anything else is specified it uses that as caption name instead.
+        - {replace_banner} [Optional]
+            • if not specified, do nothing.
+            • if '0', a digit, is passed, disables anilist for banner & thumbnail and banner inherits the result of {replace_caption}
+            • if '1', a digit, is passed, value resulting from {replace_caption} is parsed by anilist for banner and thumbnail 
+            • if any other value is passed it is parsed by anilist for banner and thumbnail 
+        {replace_name}, {replace_caption} and {replace_banner} also accept '00', a double digit
+        which essentially disables all fiter and anilist parsing for the anime_name.
+        {replace_banner} cannot be set without {replace_caption} since it depends on it
 
     How to use:
         Example : /name My Little Puppy|MLP|0
