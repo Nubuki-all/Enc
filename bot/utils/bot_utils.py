@@ -603,6 +603,8 @@ async def auto_rename(
                 else:
                     return True, original_name
 
+    if general:
+        return True, original_name
     if not out_name:
         out_name = parsed_name
     elif str(out_name) == "00":
