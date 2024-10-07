@@ -565,7 +565,7 @@ async def get_codec():
 
 
 async def auto_rename(
-    parsed_name: str, original_name: str, refunc: str, caption=False, general=False)
+    parsed_name: str, original_name: str, refunc: str, caption=False, general=False
 ) -> str:
     """
     Auto-rename file/caption name, if it matches given string or list of strings seperated by newlines
