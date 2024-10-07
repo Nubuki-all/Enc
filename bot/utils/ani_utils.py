@@ -209,6 +209,8 @@ async def get_file_tag(_infile, caption=False, audio_only=False):
                 out = "Tri"
             elif len(_ainfo.split("|")) == 2:
                 out = "Dual"
+                if _ainfo.split("|")[0] == _ainfo.split("|")[1]:
+                    out = None if not audio_only else _ainfo.split("|")[0].capitalize()
             else:
                 out = None if not audio_only else _ainfo.capitalize()
         elif _ainfo is None:
@@ -223,7 +225,10 @@ async def get_file_tag(_infile, caption=False, audio_only=False):
                 elif audio_count == 3:
                     out += "(Tri-Audio) "
                 elif audio_count == 2:
-                    out += f"(Dual-Audio) "
+                    if _ainfo.split("|")[0] == _ainfo.split("|")[1]:
+                        pass
+                    else:
+                        out += f"(Dual-Audio) "
             if _sinfo:
                 subs = _sinfo.split("|")
                 sub_count = len(subs)
