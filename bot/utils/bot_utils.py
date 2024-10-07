@@ -571,7 +571,7 @@ async def auto_rename(
     Auto-rename file/caption name, if it matches given string or list of strings seperated by newlines
     """
     out_name = ""
-    caption = True if general else caption 
+    caption = True if general else caption
     if refunc:
         for ren in refunc.split("\n"):
             ren = ren.strip()
@@ -602,7 +602,7 @@ async def auto_rename(
                         return True, key
                 else:
                     return True, original_name
-                    
+
     if not out_name:
         out_name = parsed_name
     elif str(out_name) == "00":

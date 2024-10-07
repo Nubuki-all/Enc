@@ -468,10 +468,10 @@ async def dynamicthumb(name, thum="thumb2.jpg", anilist=True, _filter=None):
             sn = None
         # release group
         rg = parsed.get("release_group")
-        
+
         ar = txt_to_str(ar_file)
         tparse, title_ = await auto_rename(title, title, ar, general=True)
-        anilist = False if not tparse else anilist 
+        anilist = False if not tparse else anilist
         title = title_
 
         if file_exists(parse_file) or not anilist:
@@ -796,7 +796,7 @@ async def f_post(
 
         ar = txt_to_str(ar_file)
         tparse, title_ = await auto_rename(title, title, ar, general=True)
-        anilist = False if not tparse else anilist 
+        anilist = False if not tparse else anilist
         title = title_
         codec = fcodec if fcodec else await get_codec()
 

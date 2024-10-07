@@ -468,8 +468,8 @@ async def auto_rename(event, args, client):
         - {replace_banner} [Optional]
             • if not specified, do nothing.
             • if '0', a digit, is passed, disables anilist for banner & thumbnail and banner inherits the result of {replace_caption}
-            • if '1', a digit, is passed, value resulting from {replace_caption} is parsed by anilist for banner and thumbnail 
-            • if any other value is passed it is parsed by anilist for banner and thumbnail 
+            • if '1', a digit, is passed, value resulting from {replace_caption} is parsed by anilist for banner and thumbnail
+            • if any other value is passed it is parsed by anilist for banner and thumbnail
         {replace_name}, {replace_caption} and {replace_banner} also accept '00', a double digit
         which essentially disables all fiter and anilist parsing for the anime_name.
         {replace_banner} cannot be set without {replace_caption} since it depends on it
