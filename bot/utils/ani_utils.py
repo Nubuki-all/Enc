@@ -409,8 +409,10 @@ async def parse(
         else:
             f_title = title
 
+        re_title = f_title
         ar = txt_to_str(ar_file)
-        f_title = title = await auto_rename(f_title, or_title, ar)
+        f_title = await auto_rename(f_title, or_title, ar)
+        title = f_title if re_title != f_title else title
 
         file_name = str()
         file_name += release_name
