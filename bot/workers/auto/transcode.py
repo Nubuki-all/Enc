@@ -12,6 +12,7 @@ from bot.utils.batch_utils import (
     get_downloadable_batch,
     mark_file_as_done,
 )
+from bot.utils.bot_utils import encode_job as ejob
 from bot.utils.bot_utils import enc_canceller as e_cancel
 from bot.utils.bot_utils import encode_info as einfo
 from bot.utils.bot_utils import get_bqueue, get_queue, get_var, hbs
@@ -71,7 +72,7 @@ async def another(text, title, epi, sea, metadata, dl):
     return text
 
 
-async def forward_(name, out, ds, mi, f, ani, n):
+async def forward_(name, out, ds, mi, f, ani, n, pf):
     fb = conf.FBANNER
     fc = conf.FCHANNEL
     fs = conf.FSTICKER
@@ -79,7 +80,7 @@ async def forward_(name, out, ds, mi, f, ani, n):
         return
     try:
         pic_id, f_msg = await f_post(
-            name, out, ani, conf.FCODEC, mi, _filter=f, evt=fb, direct=n
+            name, out, ani, conf.FCODEC, mi, _filter=f, evt=fb, direct=n, p_file=pf
         )
         if pic_id:
             await pyro.send_photo(photo=pic_id, caption=f_msg, chat_id=fc)
@@ -118,6 +119,9 @@ async def forward_(name, out, ds, mi, f, ani, n):
 
 
 def skip(queue_id):
+    ejob.done()
+    if ejob.pending():
+        return
     if einfo.batch:
         return
     bqueue = get_bqueue()
@@ -161,6 +165,7 @@ async def thing():
         v, f, m, n, au = v_f
         ani = au[0]
         einfo.uri = au[1]
+        param_file = ejob.pending()
         sender_id, message = u_msg
         if not message:
             message = await pyro.get_messages(chat_id, msg_id)
@@ -281,6 +286,7 @@ async def thing():
             folder=d_folder,
             _filter=f,
             direct=n,
+            p_file=param_file,
         )
         out = f"{_dir}/{file_name}"
         title, epi, sn, rlsgrp = await dynamicthumb(
@@ -300,7 +306,7 @@ async def thing():
             asyncio.create_task(dumpdl(dl, name, thumb2, msg_t.chat_id, message))
         if len(queue) > 1 and conf.CACHE_DL and not einfo.batch:
             await cache_dl()
-        with open(ffmpeg_file, "r") as file:
+        with open(param_file, "r") as file:
             nani = file.read().rstrip()
         ffmpeg = await another(nani, title, epi, sn, metadata_name, dl)
 
@@ -356,6 +362,7 @@ async def thing():
                 folder=o_fold,
                 _filter=f,
                 direct=n,
+                p_file=param_file,
             )
             out = f"{_dir}/{file_name}"
             smt = time.time()
@@ -395,7 +402,7 @@ async def thing():
         sut = time.time()
         fname = path_split(out)[1]
         pcap = await custcap(
-            name, fname, anilist=ani, ver=v, encoder=conf.ENCODER, _filter=f, direct=n
+            name, fname, anilist=ani, ver=v, encoder=conf.ENCODER, _filter=f, direct=n, p_file=param_file
         )
         await op.edit(f"`Uploading…` `{out}`") if op else None
         upload = uploader(sender_id, _id)
@@ -433,7 +440,7 @@ async def thing():
 
         text = str()
         mi = await info(dl)
-        forward_task = asyncio.create_task(forward_(name, out, up, mi, f, ani, n))
+        forward_task = asyncio.create_task(forward_(name, out, up, mi, f, ani, n, param_file))
 
         text += f"**Source:** `[{rlsgrp}]`"
         if mi:
@@ -478,4 +485,5 @@ async def thing():
 
     finally:
         einfo.reset()
+        ejob.reset() if not ejob.pending() else None
         await asyncio.sleep(5)

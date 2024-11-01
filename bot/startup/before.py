@@ -52,6 +52,18 @@ if not file_exists(ffmpeg_file):
     with open(ffmpeg_file, "w") as file:
         file.write(str(conf.FFMPEG) + "\n")
 
+if not file_exists(ffmpeg_file2) and conf.FFMPEG2:
+    with open(ffmpeg_file2, "w") as file:
+        file.write(str(conf.FFMPEG2) + "\n")
+
+if not file_exists(ffmpeg_file3) and conf.FFMPEG3:
+    with open(ffmpeg_file3, "w") as file:
+        file.write(str(conf.FFMPEG3) + "\n")
+
+if not file_exists(ffmpeg_file4) and conf.FFMPEG4:
+    with open(ffmpeg_file4, "w") as file:
+        file.write(str(conf.FFMPEG4) + "\n")
+
 if not file_exists(mux_file) and conf.MUX_ARGS:
     with open(mux_file, "w") as file:
         file.write(str(conf.MUX_ARGS) + "\n")
@@ -125,6 +137,9 @@ if conf.DATABASE_URL:
     load_db(filterdb, "filter", filter_file)
     load_db(ffmpegdb, "mux_args", mux_file)
     load_db(rssdb, "rss", _bot.rss_dict, "dict")
+    other_ff = [("ffmpeg2", ffmpeg_file2), ("ffmpeg3", ffmpeg_file3), ("ffmpeg4", ffmpeg_file4)]
+    for ff in other_ff:
+        load_db(ffmpegdb, ff[0], ff[1])
 
 
 else:

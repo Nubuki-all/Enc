@@ -605,7 +605,7 @@ async def en_mux(event, args, client):
         for arg in args.split("-"):
             if "metadata" in arg:
                 args2 += "-" + arg + " "
-        if "This Episode" in args2:
+        if "This Episode" in args2 and b:
             bo = b
             if d:
                 bo = f"Episode {d} of {b}"

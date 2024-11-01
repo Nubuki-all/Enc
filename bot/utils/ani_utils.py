@@ -8,7 +8,7 @@ import flag
 import humanize
 import pycountry
 
-from bot import conf, parse_file, release_name, release_name_b
+from bot import conf, ffmpeg_file, parse_file, release_name, release_name_b
 
 from .bot_utils import (
     auto_rename,
@@ -331,6 +331,7 @@ async def parse(
     _filter=None,
     ccodec=None,
     direct=None,
+    p_file=ffmpeg_file,
 ):
     try:
         if direct:
@@ -374,7 +375,7 @@ async def parse(
         folder += "/" if not folder.endswith("/") else str()
         _infile = folder + _file
         r_is_end = True if ri == "[END]" else False
-        codec = await get_codec()
+        codec = await get_codec(p_file)
         codec = ccodec or codec
         con = None
 
@@ -521,6 +522,7 @@ async def custcap(
     _filter=None,
     ccodec=None,
     direct=None,
+    p_file=ffmpeg_file,
 ):
     if direct:
         return f"`{direct}`"
@@ -528,7 +530,7 @@ async def custcap(
         return f"`{fname}`"
     if not conf.EXT_CAP:
         return await simplecap(
-            name, fname, anilist, cust_type, folder, ver, encoder, _filter, ccodec
+            name, fname, anilist, cust_type, folder, ver, encoder, _filter, ccodec, direct, p_file
         )
     try:
         name, fil2, fil3 = await filter_name(name, _filter)
@@ -566,7 +568,7 @@ async def custcap(
         ccd = conf.CAP_DECO if not ccd else ccd
         or_title = title
         r_is_end = True if ri == "[END]" else False
-        codec = await get_codec()
+        codec = await get_codec(p_file)
         codec = ccodec or codec
         cap_info = await get_cus_tag(name, rg, True)
         cap_info = await get_file_tag(out, True) if not cap_info else cap_info
@@ -651,6 +653,8 @@ async def simplecap(
     encoder=None,
     _filter=None,
     ccodec=None,
+    direct=None,
+    p_file=ffmpeg_file,
 ):
     try:
         name, fil2, fil3 = await filter_name(name, _filter)
@@ -687,7 +691,7 @@ async def simplecap(
         out = folder + fname
         or_title = title
         r_is_end = True if ri == "[END]" else False
-        codec = await get_codec()
+        codec = await get_codec(p_file)
         codec = ccodec or codec
         cap_info = await get_cus_tag(name, rg, True)
         cap_info = await get_file_tag(out, True) if not cap_info else cap_info
@@ -772,7 +776,7 @@ async def qparse_t(name, ver=None, fil=None):
 
 
 async def f_post(
-    name, out, anilist=True, fcodec=None, mi=None, _filter=None, evt=True, direct=None
+    name, out, anilist=True, fcodec=None, mi=None, _filter=None, evt=True, direct=None,p_file=ffmpeg_file,
 ):
     if conf.NO_BANNER:
         return None, None
@@ -805,7 +809,7 @@ async def f_post(
         tparse, title_ = await auto_rename(title, title, ar, general=True)
         anilist = False if not tparse else anilist
         title = title_
-        codec = fcodec if fcodec else await get_codec()
+        codec = fcodec if fcodec else await get_codec(p_file)
 
         try:
             if file_exists(parse_file) or not anilist or direct:

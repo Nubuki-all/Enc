@@ -49,7 +49,7 @@ async def save2db2(data: dict | str = False, db: str = None):
         return
     p_data = pickle.dumps(data)
     _update = {db: p_data}
-    if db in ("ffmpeg", "mux_args"):
+    if db in ("ffmpeg", "mux_args", "ffmpeg2", "ffmpeg3", "ffmpeg4"):
         await sync_to_async(
             ffmpegdb.update_one, _filter, {"$set": _update}, upsert=True
         )

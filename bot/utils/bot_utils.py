@@ -14,6 +14,10 @@ from bot import (
     caption_file,
     dt,
     filter_file,
+    ffmpeg_file,
+    ffmpeg_file2,
+    ffmpeg_file3,
+    ffmpeg_file4,
     itertools,
     tele,
     telegraph_errors,
@@ -140,6 +144,7 @@ class Encode_info:
         self.current = None
         self.batch = False
         self.cached_dl = False
+        self.multiple = or_ffmpeg()
         self.qbit = False
         self.select = None
         self.uri = None
@@ -147,6 +152,48 @@ class Encode_info:
 
 
 encode_info = Encode_info()
+
+class Encode_job:
+    def __init__(self):
+        self.reset()
+
+    class Jobs:
+        def __init__(self):
+            self.f1 = True
+            self.f2 = Path(ffmpeg_file2).is_file()
+            self.f3 = Path(ffmpeg_file3).is_file()
+            self.f4 = Path(ffmpeg_file4).is_file()
+
+    def reset(self):
+        self.ins = self.Jobs()
+
+    def pending(self):
+        if self.ins.f1:
+            return ffmpeg_file
+        elif self.ins.f2:
+            return ffmpeg_file2
+        elif self.ins.f3:
+            return ffmpeg_file3
+        elif self.ins.f4:
+            return ffmpeg_file4
+
+    def done(self):
+        if self.ins.f1:
+            self.ins.f1 = None
+        elif self.ins.f2:
+            self.ins.f2 = None
+        elif self.ins.f3:
+            self.ins.f3 = None
+        elif self.ins.f4:
+            self.ins.f4 = None
+
+encode_job = Encode_job()
+
+def or_ffmpeg():
+    out = [True]
+    out.extend((bool(conf.FFMPEG2), bool(conf.FFMPEG3), bool(conf.FFMPEG4)))
+    return out
+
 
 sdict = dict()
 sdict.update(
@@ -540,15 +587,16 @@ async def crc32(filename: str, chunksize=65536):
         return "%X" % (checksum & 0xFFFFFFFF)
 
 
-async def get_codec():
+async def get_codec(file="ffmpeg.txt"):
     """Get file codec from ffmpeg encoding parameters"""
-    with open("ffmpeg.txt", "r") as file:
+    with open(file, "r") as file:
         ff_code = file.read().rstrip()
         file.close()
     s_check = dict()
     __out = ""
     s_check.update(
         {
+            "360": "360p",
             "480": "480p",
             "720": "720p",
             "1080": "1080p",

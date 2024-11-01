@@ -6,6 +6,9 @@ from feedparser import parse as feedparse
 from bot import (
     caption_file,
     ffmpeg_file,
+    ffmpeg_file2,
+    ffmpeg_file3,
+    ffmpeg_file4,
     filter_file,
     mux_file,
     parse_file,
@@ -281,23 +284,44 @@ async def change(event, args, client):
     Changes bot encoding params;
 
     Requires full shell command with '''{}''' for input and output (use double quotes for better performance)
-        - Binary must me be included in argument and must installed locally or in docker
+        - Binary name must me be included in argument and must installed locally or in docker
         - Both ffmpeg and handbrake-cli are tested and supported. (Test if others work)
         - ffmpeg two-pass requires specifying input twice which is currently not supported.
             • As a workaround you can create a custom bash script
               check handbrakecli.sh for an example on how to create a custom script then do /set myscript.sh
               for bot to always use your script while encoding.
     Or… path/to/bash_script as arguments.
+    To set for FFMPEG2(or 3 or 4), add -2 or -3 and so on, before the shell command for encoding.
     """
     if not user_is_owner(event.sender_id):
         return await try_delete(event)
     try:
-        with open(ffmpeg_file, "w") as file:
-            file.write(str(args) + "\n")
+        if args.startswith("-2"):
+            args = (args.split("-2", maxsplit=1)[1]).strip()
+            file = ffmpeg_file2
+            db = "ffmpeg2"
+            s = "2"
+        elif args.startswith("-3"):
+            args = (args.split("-3", maxsplit=1)[1]).strip()
+            file = ffmpeg_file3
+            db = "ffmpeg3"
+            s = "3"
+        elif args.startswith("-4"):
+            args = (args.split("-4", maxsplit=1)[1]).strip()
+            file = ffmpeg_file4
+            db = "ffmpeg4"
+            s = "4"
+        else:
+            file = ffmpeg_file
+            db = "ffmpeg"
+            s = str()
 
-        await save2db2(args, "ffmpeg")
+        with open(file, "w") as ffile:
+            ffile.write(str(args) + "\n")
+
+        await save2db2(args, db)
         await event.reply(
-            f"<pre>\n<code class='language-Changed ffmpeg CLI parameters to:'>{args}</code>\n</pre>",
+            f"<pre>\n<code class='language-Changed ffmpeg{s} CLI parameters to:'>{args}</code>\n</pre>",
             parse_mode="html",
         )
     except Exception:
@@ -307,15 +331,33 @@ async def change(event, args, client):
 async def check(event, args, client):
     """
     Get custom encoding params.
-    Requires no arguments and any given will be ignored.
+    Arguments:
+        -2
+        -3
+        -4
+        To check for ffmpeg2, 3 and 4 custom encoding params
+    No argument to check first encoding params
     """
     if not user_is_owner(event.sender_id):
         return await try_delete(event)
-    with open(ffmpeg_file, "r") as file:
-        ffmpeg = file.read().rstrip()
+    if "-2" in args:
+        file = ffmpeg_file2
+        s = "2"
+    elif "-3" in args:
+        file = ffmpeg_file3
+        s = "3"
+    elif "-4" in args:
+        file = ffmpeg_file4
+        s = "4"
+    else:
+        file = ffmpeg_file
+        s = str()
+
+    with open(file, "r") as ffile:
+        ffmpeg = ffile.read().rstrip()
 
     await event.reply(
-        f"<pre>\n<code class='language-Current ffmpeg CLI parameters:'>{ffmpeg}</code>\n</pre>",
+        f"<pre>\n<code class='language-Current ffmpeg{s} CLI parameters:'>{ffmpeg}</code>\n</pre>",
         parse_mode="html",
     )
 
@@ -323,12 +365,19 @@ async def check(event, args, client):
 async def reffmpeg(event, args, client):
     """
     Reset encoding params.
-    Default value to reset to, is contained in .config
-    Requires no argument.
+    Default value to reset to, it is either set in .env or contained in .config
+    Arguments:
+        -2
+        -3
+        -4
+        To reset or unset ffmpeg2,3,4
+        No argument for first encoding param
     """
     if not user_is_owner(event.sender_id):
         return await try_delete(event)
     try:
+        if args in ("-2", "-3", "-4"):
+            return await reffmpeg2(event, args, client)
         with open(ffmpeg_file, "w") as file:
             file.write(str(conf.FFMPEG) + "\n")
 
@@ -337,6 +386,58 @@ async def reffmpeg(event, args, client):
             f"<pre>\n<code class='Reseted ffmpeg CLI parameters to:'>{conf.FFMPEG}</code>\n</pre>",
             parse_mode="html",
         )
+    except Exception:
+        await logger(Exception)
+
+
+async def reffmpeg2(event, args, client):
+    """
+    Helper function to assist <reffmpeg>
+    """
+    try:
+        if "-2" in args:
+            s = "2"
+            if not conf.FFMPEG2 and not file_exists(ffmpeg_file2):
+                res = f"FFMPEG{s} not set in .env or bot."
+            else:
+                if file_exists(ffmpeg_file2):
+                    s_remove(ffmpeg_file2)
+                    await save2db2(None, f"ffmpeg{s}")
+                    res = f"FFMPEG{s} params deleted.\nTry again to reset to the param in .env"
+                else:
+                    with open(ffmpeg_file2, "w") as file:
+                        file.write(str(conf.FFMPEG2) + "\n")
+                    await save2db2(conf.FFMPEG2, f"ffmpeg{s}")
+                    res = f"<pre>\n<code class='Reseted ffmpeg{s} CLI parameters to:'>{conf.FFMPEG2}</code>\n</pre>"
+        elif "-3" in args:
+            s = "3"
+            if not conf.FFMPEG3 and not file_exists(ffmpeg_file3):
+                res = f"FFMPEG{s} not set in .env or bot."
+            else:
+                if file_exists(ffmpeg_file3):
+                    s_remove(ffmpeg_file3)
+                    await save2db2(None, f"ffmpeg{s}")
+                    res = f"FFMPEG{s} params deleted.\nTry again to reset to the param in .env"
+                else:
+                    with open(ffmpeg_file3, "w") as file:
+                        file.write(str(conf.FFMPEG3) + "\n")
+                    await save2db2(conf.FFMPEG3, f"ffmpeg{s}")
+                    res = f"<pre>\n<code class='Reseted ffmpeg{s} CLI parameters to:'>{conf.FFMPEG3}</code>\n</pre>"
+        elif "-4" in args:
+            s = "4"
+            if not conf.FFMPEG4 and not file_exists(ffmpeg_file4):
+                res = f"FFMPEG{s} not set in .env or bot."
+            else:
+                if file_exists(ffmpeg_file4):
+                    s_remove(ffmpeg_file4)
+                    await save2db2(None, f"ffmpeg{s}")
+                    res = f"FFMPEG{s} params deleted.\nTry again to reset to the param in .env"
+                else:
+                    with open(ffmpeg_file4, "w") as file:
+                        file.write(str(conf.FFMPEG4) + "\n")
+                    await save2db2(conf.FFMPEG4, f"ffmpeg{s}")
+                    res = f"<pre>\n<code class='Reseted ffmpeg{s} CLI parameters to:'>{conf.FFMPEG4}</code>\n</pre>"
+        await event.reply(res, parse_mode="html",)
     except Exception:
         await logger(Exception)
 
