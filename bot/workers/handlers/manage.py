@@ -437,7 +437,10 @@ async def reffmpeg2(event, args, client):
                         file.write(str(conf.FFMPEG4) + "\n")
                     await save2db2(conf.FFMPEG4, f"ffmpeg{s}")
                     res = f"<pre>\n<code class='Reseted ffmpeg{s} CLI parameters to:'>{conf.FFMPEG4}</code>\n</pre>"
-        await event.reply(res, parse_mode="html",)
+        await event.reply(
+            res,
+            parse_mode="html",
+        )
     except Exception:
         await logger(Exception)
 

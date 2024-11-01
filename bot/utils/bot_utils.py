@@ -13,11 +13,11 @@ from bot import (
     asyncio,
     caption_file,
     dt,
-    filter_file,
     ffmpeg_file,
     ffmpeg_file2,
     ffmpeg_file3,
     ffmpeg_file4,
+    filter_file,
     itertools,
     tele,
     telegraph_errors,
@@ -153,6 +153,7 @@ class Encode_info:
 
 encode_info = Encode_info()
 
+
 class Encode_job:
     def __init__(self):
         self.reset()
@@ -187,7 +188,9 @@ class Encode_job:
         elif self.ins.f4:
             self.ins.f4 = None
 
+
 encode_job = Encode_job()
+
 
 def or_ffmpeg():
     out = [True]

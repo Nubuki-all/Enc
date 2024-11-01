@@ -530,7 +530,17 @@ async def custcap(
         return f"`{fname}`"
     if not conf.EXT_CAP:
         return await simplecap(
-            name, fname, anilist, cust_type, folder, ver, encoder, _filter, ccodec, direct, p_file
+            name,
+            fname,
+            anilist,
+            cust_type,
+            folder,
+            ver,
+            encoder,
+            _filter,
+            ccodec,
+            direct,
+            p_file,
         )
     try:
         name, fil2, fil3 = await filter_name(name, _filter)
@@ -776,7 +786,15 @@ async def qparse_t(name, ver=None, fil=None):
 
 
 async def f_post(
-    name, out, anilist=True, fcodec=None, mi=None, _filter=None, evt=True, direct=None,p_file=ffmpeg_file,
+    name,
+    out,
+    anilist=True,
+    fcodec=None,
+    mi=None,
+    _filter=None,
+    evt=True,
+    direct=None,
+    p_file=ffmpeg_file,
 ):
     if conf.NO_BANNER:
         return None, None

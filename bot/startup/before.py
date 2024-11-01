@@ -137,7 +137,11 @@ if conf.DATABASE_URL:
     load_db(filterdb, "filter", filter_file)
     load_db(ffmpegdb, "mux_args", mux_file)
     load_db(rssdb, "rss", _bot.rss_dict, "dict")
-    other_ff = [("ffmpeg2", ffmpeg_file2), ("ffmpeg3", ffmpeg_file3), ("ffmpeg4", ffmpeg_file4)]
+    other_ff = [
+        ("ffmpeg2", ffmpeg_file2),
+        ("ffmpeg3", ffmpeg_file3),
+        ("ffmpeg4", ffmpeg_file4),
+    ]
     for ff in other_ff:
         load_db(ffmpegdb, ff[0], ff[1])
 

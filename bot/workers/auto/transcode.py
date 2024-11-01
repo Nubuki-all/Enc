@@ -2,7 +2,7 @@ from os.path import split as path_split
 from os.path import splitext as split_ext
 from shutil import copy2 as copy_file
 
-from bot import asyncio, ffmpeg_file, mux_file, pyro, tele, time
+from bot import asyncio, mux_file, pyro, tele, time
 from bot.config import conf
 from bot.others.exceptions import AlreadyDl
 from bot.startup.before import entime
@@ -12,9 +12,9 @@ from bot.utils.batch_utils import (
     get_downloadable_batch,
     mark_file_as_done,
 )
-from bot.utils.bot_utils import encode_job as ejob
 from bot.utils.bot_utils import enc_canceller as e_cancel
 from bot.utils.bot_utils import encode_info as einfo
+from bot.utils.bot_utils import encode_job as ejob
 from bot.utils.bot_utils import get_bqueue, get_queue, get_var, hbs
 from bot.utils.bot_utils import time_formatter as tf
 from bot.utils.db_utils import save2db
@@ -402,7 +402,14 @@ async def thing():
         sut = time.time()
         fname = path_split(out)[1]
         pcap = await custcap(
-            name, fname, anilist=ani, ver=v, encoder=conf.ENCODER, _filter=f, direct=n, p_file=param_file
+            name,
+            fname,
+            anilist=ani,
+            ver=v,
+            encoder=conf.ENCODER,
+            _filter=f,
+            direct=n,
+            p_file=param_file,
         )
         await op.edit(f"`Uploading…` `{out}`") if op else None
         upload = uploader(sender_id, _id)
@@ -440,7 +447,9 @@ async def thing():
 
         text = str()
         mi = await info(dl)
-        forward_task = asyncio.create_task(forward_(name, out, up, mi, f, ani, n, param_file))
+        forward_task = asyncio.create_task(
+            forward_(name, out, up, mi, f, ani, n, param_file)
+        )
 
         text += f"**Source:** `[{rlsgrp}]`"
         if mi:
