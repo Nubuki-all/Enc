@@ -340,7 +340,10 @@ async def check(event, args, client):
     """
     if not user_is_owner(event.sender_id):
         return await try_delete(event)
-    if "-2" in args:
+    if not args:
+        file = ffmpeg_file
+        s = str()
+    elif "-2" in args:
         file = ffmpeg_file2
         s = "2"
     elif "-3" in args:
@@ -349,9 +352,7 @@ async def check(event, args, client):
     elif "-4" in args:
         file = ffmpeg_file4
         s = "4"
-    else:
-        file = ffmpeg_file
-        s = str()
+            file = ffmpeg_file
 
     with open(file, "r") as ffile:
         ffmpeg = ffile.read().rstrip()
@@ -376,7 +377,7 @@ async def reffmpeg(event, args, client):
     if not user_is_owner(event.sender_id):
         return await try_delete(event)
     try:
-        if args in ("-2", "-3", "-4"):
+        if args and args in ("-2", "-3", "-4"):
             return await reffmpeg2(event, args, client)
         with open(ffmpeg_file, "w") as file:
             file.write(str(conf.FFMPEG) + "\n")
