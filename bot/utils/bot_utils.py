@@ -144,7 +144,6 @@ class Encode_info:
         self.current = None
         self.batch = False
         self.cached_dl = False
-        self.multiple = or_ffmpeg()
         self.qbit = False
         self.select = None
         self.uri = None
@@ -191,11 +190,6 @@ class Encode_job:
 
 encode_job = Encode_job()
 
-
-def or_ffmpeg():
-    out = [True]
-    out.extend((bool(conf.FFMPEG2), bool(conf.FFMPEG3), bool(conf.FFMPEG4)))
-    return out
 
 
 sdict = dict()
