@@ -352,7 +352,7 @@ async def check(event, args, client):
     elif "-4" in args:
         file = ffmpeg_file4
         s = "4"
-            file = ffmpeg_file
+        file = ffmpeg_file
 
     with open(file, "r") as ffile:
         ffmpeg = ffile.read().rstrip()
