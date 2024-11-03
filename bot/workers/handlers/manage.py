@@ -18,6 +18,7 @@ from bot import (
 )
 from bot.config import _bot, conf
 from bot.startup.before import entime
+from bot.utils.bot_utils import encode_job as ejob
 from bot.utils.bot_utils import (
     get_aria2,
     get_bqueue,
@@ -320,6 +321,7 @@ async def change(event, args, client):
             ffile.write(str(args) + "\n")
 
         await save2db2(args, db)
+        ejob.reset() if s else None
         await event.reply(
             f"<pre>\n<code class='language-Changed ffmpeg{s} CLI parameters to:'>{args}</code>\n</pre>",
             parse_mode="html",
@@ -342,16 +344,15 @@ async def check(event, args, client):
         return await try_delete(event)
     if not args:
         file = ffmpeg_file
-        s = str()
-    elif "-2" in args:
+        args = str()
+    elif "-2" in (args := args[:2]):
         file = ffmpeg_file2
-        s = "2"
     elif "-3" in args:
         file = ffmpeg_file3
-        s = "3"
     elif "-4" in args:
         file = ffmpeg_file4
-        s = "4"
+    else:
+        return
 
     if not file_exists(file):
         return await event.reply(
@@ -362,7 +363,7 @@ async def check(event, args, client):
         ffmpeg = ffile.read().rstrip()
 
     await event.reply(
-        f"<pre>\n<code class='language-Current ffmpeg{s} CLI parameters:'>{ffmpeg}</code>\n</pre>",
+        f"<pre>\n<code class='language-Current ffmpeg{args[1:]} CLI parameters:'>{ffmpeg}</code>\n</pre>",
         parse_mode="html",
     )
 
@@ -381,7 +382,7 @@ async def reffmpeg(event, args, client):
     if not user_is_owner(event.sender_id):
         return await try_delete(event)
     try:
-        if args and args in ("-2", "-3", "-4"):
+        if args and (args := args[:2]) in ("-2", "-3", "-4"):
             return await reffmpeg2(event, args, client)
         with open(ffmpeg_file, "w") as file:
             file.write(str(conf.FFMPEG) + "\n")
@@ -400,8 +401,8 @@ async def reffmpeg2(event, args, client):
     Helper function to assist <reffmpeg>
     """
     try:
+        s = arg[1:]
         if "-2" in args:
-            s = "2"
             if not conf.FFMPEG2 and not file_exists(ffmpeg_file2):
                 res = f"FFMPEG{s} not set in .env or bot."
             else:
@@ -415,7 +416,6 @@ async def reffmpeg2(event, args, client):
                     await save2db2(conf.FFMPEG2, f"ffmpeg{s}")
                     res = f"<pre>\n<code class='Reseted ffmpeg{s} CLI parameters to:'>{conf.FFMPEG2}</code>\n</pre>"
         elif "-3" in args:
-            s = "3"
             if not conf.FFMPEG3 and not file_exists(ffmpeg_file3):
                 res = f"FFMPEG{s} not set in .env or bot."
             else:
@@ -429,7 +429,6 @@ async def reffmpeg2(event, args, client):
                     await save2db2(conf.FFMPEG3, f"ffmpeg{s}")
                     res = f"<pre>\n<code class='Reseted ffmpeg{s} CLI parameters to:'>{conf.FFMPEG3}</code>\n</pre>"
         elif "-4" in args:
-            s = "4"
             if not conf.FFMPEG4 and not file_exists(ffmpeg_file4):
                 res = f"FFMPEG{s} not set in .env or bot."
             else:
@@ -442,6 +441,8 @@ async def reffmpeg2(event, args, client):
                         file.write(str(conf.FFMPEG4) + "\n")
                     await save2db2(conf.FFMPEG4, f"ffmpeg{s}")
                     res = f"<pre>\n<code class='Reseted ffmpeg{s} CLI parameters to:'>{conf.FFMPEG4}</code>\n</pre>"
+        
+        ejob.reset()
         await event.reply(
             res,
             parse_mode="html",

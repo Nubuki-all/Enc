@@ -119,6 +119,7 @@ async def forward_(name, out, ds, mi, f, ani, n, pf):
 
 
 def skip(queue_id):
+    ejob.busy = True
     ejob.done()
     if ejob.pending():
         return
@@ -258,6 +259,7 @@ async def thing():
             sdt = time.time()
             rslt = await get_cached(dl, sender, sender_id, msg_t, op)
             await msg_r.delete()
+            download = ejob.prev_dl_client
             if rslt is False:
                 await msg_p.delete()
                 await op.delete() if op else None
@@ -304,7 +306,10 @@ async def thing():
             await msg_p.reply("#" + c_n) if log_channel == chat_id else None
         if einfo.uri and conf.DUMP_LEECH is True:
             asyncio.create_task(dumpdl(dl, name, thumb2, msg_t.chat_id, message))
-        if len(queue) > 1 and conf.CACHE_DL and not einfo.batch:
+        if ejob.jobs > 1:
+            await cache_dl(cached=True)
+            ejob.prev_dl_client = download
+        elif len(queue) > 1 and conf.CACHE_DL and not einfo.batch:
             await cache_dl()
         with open(param_file, "r") as file:
             nani = file.read().rstrip()
@@ -331,8 +336,6 @@ async def thing():
             exe_prefix=ffmpeg.split(maxsplit=1)[0],
         )
         if encode.process.returncode != 0:
-            if download:
-                await download.clean_download()
             s_remove(out)
             skip(queue_id)
             mark_file_as_done(einfo.select, queue_id)
@@ -384,8 +387,6 @@ async def thing():
                 log_msg=op,
             )
             if encode.process.returncode != 0:
-                if download:
-                    await download.clean_download()
                 s_remove(out, _out)
                 skip(queue_id)
                 mark_file_as_done(einfo.select, queue_id)
@@ -428,9 +429,7 @@ async def thing():
             mark_file_as_done(einfo.select, queue_id)
             await save2db()
             await save2db("batches")
-            if download:
-                await download.clean_download()
-            s_remove(thumb2, dl, out)
+            s_remove(thumb2, out)
             return
         eut = time.time()
         utime = tf(eut - sut)
@@ -480,7 +479,7 @@ async def thing():
         s_remove(thumb2)
         if download:
             await download.clean_download()
-        s_remove(dl, out)
+        s_remove(out)
 
     except Exception:
         await logger(Exception)
@@ -494,5 +493,9 @@ async def thing():
 
     finally:
         einfo.reset()
-        ejob.reset() if not ejob.pending() else None
+        if not ejob.pending():
+            ejob.reset(force=True)
+            if download:
+                if not (download.is_cancelled or download.download_error):
+                    await download.clean_download()
         await asyncio.sleep(5)

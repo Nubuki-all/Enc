@@ -155,7 +155,7 @@ encode_info = Encode_info()
 
 class Encode_job:
     def __init__(self):
-        self.reset()
+        self.reset(force=True)
 
     class Jobs:
         def __init__(self):
@@ -164,18 +164,11 @@ class Encode_job:
             self.f3 = Path(ffmpeg_file3).is_file()
             self.f4 = Path(ffmpeg_file4).is_file()
 
-    def reset(self):
-        self.ins = self.Jobs()
-
-    def pending(self):
-        if self.ins.f1:
-            return ffmpeg_file
-        elif self.ins.f2:
-            return ffmpeg_file2
-        elif self.ins.f3:
-            return ffmpeg_file3
-        elif self.ins.f4:
-            return ffmpeg_file4
+    def jobs(self):
+        job = []
+        for x in (self.ins.f1, self.ins.f2, self.ins.f3, self.ins.f4):
+            job.append(x) if x else None
+        return (len(job))
 
     def done(self):
         if self.ins.f1:
@@ -187,6 +180,42 @@ class Encode_job:
         elif self.ins.f4:
             self.ins.f4 = None
 
+    def get_pending_index(self):
+        if self.ins.f1:
+            return 1
+        elif self.ins.f2:
+            return 2
+        elif self.ins.f3:
+            return 3
+        elif self.ins.f4:
+            return 4
+
+    def get_pending_pos(self):
+        if self.ins.f1:
+            return
+        elif self.ins.f2:
+            return "2nd"
+        elif self.ins.f3:
+            return "3rd"
+        elif self.ins.f4:
+            return "4th"
+
+    def pending(self):
+        if self.ins.f1:
+            return ffmpeg_file
+        elif self.ins.f2:
+            return ffmpeg_file2
+        elif self.ins.f3:
+            return ffmpeg_file3
+        elif self.ins.f4:
+            return ffmpeg_file4
+
+    def reset(self, force=False):
+        if not force and self.busy:
+            return
+        self.ins = self.Jobs()
+        self.busy = False
+        self.prev_dl_client = None
 
 encode_job = Encode_job()
 
