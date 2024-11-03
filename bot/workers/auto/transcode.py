@@ -477,8 +477,6 @@ async def thing():
         await save2db()
         await save2db("batches")
         s_remove(thumb2)
-        if download:
-            await download.clean_download()
         s_remove(out)
 
     except Exception:
