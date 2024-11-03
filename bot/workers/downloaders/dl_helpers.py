@@ -201,7 +201,7 @@ async def cache_dl(check=False, cached=False):
     if check:
         return _bot.cached
     if cached:
-        _bot.cached = True
+        return _bot.cached = True
     try:
         queue = get_queue()
         chat_id, msg_id = list(queue.keys())[1]
