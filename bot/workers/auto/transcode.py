@@ -306,7 +306,7 @@ async def thing():
             await msg_p.reply("#" + c_n) if log_channel == chat_id else None
         if einfo.uri and conf.DUMP_LEECH is True:
             asyncio.create_task(dumpdl(dl, name, thumb2, msg_t.chat_id, message))
-        if ejob.jobs > 1:
+        if ejob.jobs() > 1:
             await cache_dl(cached=True)
             ejob.prev_dl_client = download
         elif len(queue) > 1 and conf.CACHE_DL and not einfo.batch:
