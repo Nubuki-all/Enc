@@ -401,7 +401,7 @@ async def reffmpeg2(event, args, client):
     Helper function to assist <reffmpeg>
     """
     try:
-        s = arg[1:]
+        s = args[1:]
         if "-2" in args:
             if not conf.FFMPEG2 and not file_exists(ffmpeg_file2):
                 res = f"FFMPEG{s} not set in .env or bot."
