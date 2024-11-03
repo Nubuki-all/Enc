@@ -168,7 +168,7 @@ class Encode_job:
         job = []
         for x in (self.ins.f1, self.ins.f2, self.ins.f3, self.ins.f4):
             job.append(x) if x else None
-        return (len(job))
+        return len(job)
 
     def done(self):
         if self.ins.f1:
@@ -216,6 +216,7 @@ class Encode_job:
         self.ins = self.Jobs()
         self.busy = False
         self.prev_dl_client = None
+
 
 encode_job = Encode_job()
 

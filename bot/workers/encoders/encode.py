@@ -4,8 +4,9 @@ import os
 from bot import Button
 from bot.config import conf
 from bot.fun.emojis import enmoji
-from bot.utils.bot_utils import code, decode, get_codec
+from bot.utils.bot_utils import code, decode
 from bot.utils.bot_utils import encode_job as ejob
+from bot.utils.bot_utils import get_codec
 from bot.utils.log_utils import logger
 
 def_enc_msg = "**Currently Encoding {}:**\n└`{}`\n\n{}**⏳This Might Take A While⏳**"
@@ -40,7 +41,11 @@ class Encoder:
             code(self.process, dl, en, user, stime, self.enc_id)
             out = (os.path.split(en))[1]
             wah = 0
-            a_msg = f"**{ejob.get_pending_pos()} Job**\n└`{(await get_codec(ejob.pending()))}`\n\n" if ejob.get_pending_pos() else str()
+            a_msg = (
+                f"**{ejob.get_pending_pos()} Job**\n└`{(await get_codec(ejob.pending()))}`\n\n"
+                if ejob.get_pending_pos()
+                else str()
+            )
             e_msg = await event.edit(
                 text.format(enmoji(), out, a_msg),
                 buttons=[
