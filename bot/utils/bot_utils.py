@@ -164,10 +164,12 @@ class Encode_job:
             self.f3 = Path(ffmpeg_file3).is_file()
             self.f4 = Path(ffmpeg_file4).is_file()
 
-    def jobs(self):
+    def jobs(self, list=False):
         job = []
         for x in (self.ins.f1, self.ins.f2, self.ins.f3, self.ins.f4):
             job.append(x) if x else None
+        if list:
+            return job
         return len(job)
 
     def done(self):
@@ -215,6 +217,7 @@ class Encode_job:
             return
         self.ins = self.Jobs()
         self.busy = False
+        self.id = None
         self.prev_dl_client = None
 
 

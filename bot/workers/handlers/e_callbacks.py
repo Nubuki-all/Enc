@@ -9,6 +9,7 @@ from pyrogram.handlers import CallbackQueryHandler
 from bot import asyncio, botStartTime, pyro, time
 from bot.utils.ani_utils import qparse
 from bot.utils.batch_utils import get_batch_list
+from bot.utils.bot_utils import encode_job as ejob
 from bot.utils.bot_utils import (
     decode,
     enc_canceller,
@@ -101,7 +102,7 @@ async def pres(e):
         )
 
 
-async def skip(e):
+async def skip(e, skip_jobs=False):
     _id = f"{e.chat_id}:{e.message_id}"
     req_info = decode(_id)
     if not req_info:
@@ -116,6 +117,14 @@ async def skip(e):
         await e.delete()
         return u_cancelled().append(_id)
     ans = "Cancelling encoding please wait…"
+
+    if skip_jobs:
+        ans = "Cancelling encoding and all pending jobs, please wait…""
+        if not ejob.id == _id:
+            return await clean_old_message(e)
+        for i in ejob.jobs(list=True):
+            ejob.done()
+    
     await e.answer(ans)
     process.kill()
     # await e.delete()
@@ -124,6 +133,10 @@ async def skip(e):
     enc_canceller().update({_id: e.query.user_id})
 
     return
+
+
+async def skip_jobs(e):
+    return await skip(e, skip_jobs=True)
 
 
 async def stats(e):

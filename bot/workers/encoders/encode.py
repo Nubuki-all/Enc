@@ -46,6 +46,8 @@ class Encoder:
                 if ejob.get_pending_pos()
                 else str()
             )
+            c_button = [Button.inline("Cancel", data=f"skip{wah}")]
+            c_button.append(Button.inline("❌ all jobs", data=f"jskip{wah}")) if ejob.jobs() > 1 else None
             e_msg = await event.edit(
                 text.format(enmoji(), out, a_msg),
                 buttons=[
@@ -54,7 +56,7 @@ class Encoder:
                         Button.inline("Progress", data=f"stats0"),
                         Button.inline("Server-info", data=f"stats1"),
                     ],
-                    [Button.inline("Cancel", data=f"skip{wah}")],
+                    c_button,
                 ],
             )
             if self.log_msg and self.sender:

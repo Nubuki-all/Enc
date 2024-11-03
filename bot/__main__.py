@@ -24,7 +24,7 @@ from .utils.msg_utils import event_handler
 from .workers.handlers.dev import bash
 from .workers.handlers.dev import eval as eval_
 from .workers.handlers.dev import eval_message_p
-from .workers.handlers.e_callbacks import pres, skip, stats
+from .workers.handlers.e_callbacks import pres, skip, skip_jobs, stats
 from .workers.handlers.manage import (
     allowgroupenc,
     auto_rename,
@@ -268,6 +268,11 @@ async def _(e):
 @tele.on(events.callbackquery.CallbackQuery(data=re.compile(b"skip(.*)")))
 async def _(e):
     await skip(e)
+
+
+@tele.on(events.callbackquery.CallbackQuery(data=re.compile(b"jskip(.*)")))
+async def _(e):
+    await skip_jobs(e)
 
 
 @tele.on(events.callbackquery.CallbackQuery(data=re.compile(b"dl_stat(.*)")))
