@@ -257,9 +257,10 @@ async def thing():
             einfo.cached_dl = True
             msg_r = await reply_message(msg_p, "`Waiting for caching to complete.`")
             sdt = time.time()
+            download = ejob.prev_dl_client
+            dl = download.path if download else dl
             rslt = await get_cached(dl, sender, sender_id, msg_t, op)
             await msg_r.delete()
-            download = ejob.prev_dl_client
             if rslt is False:
                 await msg_p.delete()
                 await op.delete() if op else None

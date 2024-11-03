@@ -119,7 +119,7 @@ async def skip(e):
     await e.answer(ans)
     process.kill()
     # await e.delete()
-    s_remove(dl)
+    # s_remove(dl)
     s_remove(en)
     enc_canceller().update({_id: e.query.user_id})
 
