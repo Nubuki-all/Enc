@@ -9,15 +9,9 @@ from pyrogram.handlers import CallbackQueryHandler
 from bot import asyncio, botStartTime, pyro, time
 from bot.utils.ani_utils import qparse
 from bot.utils.batch_utils import get_batch_list
+from bot.utils.bot_utils import decode, enc_canceller
 from bot.utils.bot_utils import encode_job as ejob
-from bot.utils.bot_utils import (
-    decode,
-    enc_canceller,
-    get_queue,
-    hbs,
-    time_formatter,
-    u_cancelled,
-)
+from bot.utils.bot_utils import get_queue, hbs, time_formatter, u_cancelled
 from bot.utils.log_utils import logger
 from bot.utils.msg_utils import clean_old_message, turn, user_is_owner
 from bot.utils.os_utils import file_exists, s_remove
@@ -124,7 +118,7 @@ async def skip(e, skip_jobs=False):
             return await clean_old_message(e)
         for i in ejob.jobs(list=True):
             ejob.done()
-    
+
     await e.answer(ans)
     process.kill()
     # await e.delete()

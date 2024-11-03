@@ -47,7 +47,11 @@ class Encoder:
                 else str()
             )
             c_button = [Button.inline("Cancel", data=f"skip{wah}")]
-            c_button.append(Button.inline("❌ all jobs", data=f"jskip{wah}")) if ejob.jobs() > 1 else None
+            (
+                c_button.append(Button.inline("❌ all jobs", data=f"jskip{wah}"))
+                if ejob.jobs() > 1
+                else None
+            )
             e_msg = await event.edit(
                 text.format(enmoji(), out, a_msg),
                 buttons=[
