@@ -354,7 +354,9 @@ async def check(event, args, client):
         s = "4"
 
     if not file_exists(file):
-        return await event.reply("**Encoding params not found, use /set to set encoding params.**")
+        return await event.reply(
+            "**Encoding params not found, use /set to set encoding params.**"
+        )
 
     with open(file, "r") as ffile:
         ffmpeg = ffile.read().rstrip()
