@@ -251,9 +251,7 @@ async def custom_rename(event, args, client):
     )
     if (arg.c or arg.d or arg.r) and args:
         return await event.reply(f"`{custom_rename.__doc__}`")
-    state = (
-        f"**Custom rename format is {'not ' if not _bot.custom_rename else str()}present.**"
-    )
+    state = f"**Custom rename format is {'not ' if not _bot.custom_rename else str()}present.**"
     if arg.c:
         return await event.reply(state)
     if arg.d:
