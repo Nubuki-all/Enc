@@ -191,7 +191,7 @@ async def get_video_thumbnail(file, output="thumb2.jpg"):
             duration = 3
         duration = duration // 2
         out = await enshell(
-            f"ffmpeg -hide_banner -loglevel error -ss {duration} -i {video_file} -vf thumbnail -q:v 1 -frames:v 1 -threads {cpu_count() // 2} {output}"
+            f"ffmpeg -hide_banner -loglevel error -ss {duration} -i {file} -vf thumbnail -q:v 1 -frames:v 1 -threads {cpu_count() // 2} {output}"
         )
         if not file_exists(output):
             return None
