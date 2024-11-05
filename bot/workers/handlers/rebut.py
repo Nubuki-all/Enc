@@ -295,7 +295,7 @@ async def en_rename(event, args, client):
             _v = arg.v
         if not args and not link:
             loc = rep_event.file.name
-            if not arg.force:
+            if _forced:
                 return await event.reply("**Force rename to what exactly?**")
         elif args == "0" and not link:
             loc = message.caption
