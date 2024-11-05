@@ -30,7 +30,9 @@ class Uploader:
             fm = f"**From folder:** `{os.path.split(filepath)[0]}`"
             fm += f"\n**File:** `{os.path.split(filepath)[1]}`"
             if conf.UAV:
-                s = await self.upload_video(caption, filepath, fm, from_user_id, message, reply)
+                s = await self.upload_video(
+                    caption, filepath, fm, from_user_id, message, reply
+                )
                 return s
             async with tele.action(from_user_id, "file"):
                 await reply.edit("🔺Uploading🔺")
