@@ -464,7 +464,7 @@ async def parse(
         file_name += ".mkv"
     except Exception:
         await logger(Exception)
-        file_name = _file.replace(f".{_ext}", f" {conf.C_LINK}.{_ext}")
+        file_name = _file.replace(f"{_ext}", f" {conf.C_LINK}{_ext}")
         file_name2 = file_name
     if "/" in file_name:
         file_name = file_name.replace("/", " ")

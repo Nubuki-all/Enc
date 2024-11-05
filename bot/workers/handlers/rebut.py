@@ -822,6 +822,7 @@ async def en_upload(event, args, client):
                             u_id = f"{ul.chat.id}:{ul.id}"
                             await asyncio.sleep(10)
                             upload = uploader(_id=u_id)
+                            upload.force_up_as_files = True
                             d_msg = await upload.start(
                                 event.chat_id,
                                 file,

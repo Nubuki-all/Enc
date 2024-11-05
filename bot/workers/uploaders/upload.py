@@ -13,6 +13,7 @@ class Uploader:
         self.is_cancelled = False
         self.id = _id
         self.canceller = None
+        self.force_up_as_files = False
         self.time = None
         self.unfin_str = conf.UN_FINISHED_PROGRESS_STR
 
@@ -29,7 +30,7 @@ class Uploader:
             code(self, index=self.id)
             fm = f"**From folder:** `{os.path.split(filepath)[0]}`"
             fm += f"\n**File:** `{os.path.split(filepath)[1]}`"
-            if conf.UAV:
+            if conf.UAV and not self.force_up_as_files:
                 s = await self.upload_video(
                     caption, filepath, fm, from_user_id, message, reply, thum
                 )

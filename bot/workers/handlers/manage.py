@@ -252,7 +252,7 @@ async def custom_rename(event, args, client):
     if (arg.c or arg.d or arg.r) and args:
         return await event.reply(f"`{custom_rename.__doc__}`")
     state = (
-        f"**Custom rename is {'not ' if not _bot.custom_rename else str()}present.**"
+        f"**Custom rename format is {'not ' if not _bot.custom_rename else str()}present.**"
     )
     if arg.c:
         return await event.reply(state)
@@ -270,7 +270,7 @@ async def custom_rename(event, args, client):
         return await event.reply("Custom rename format has been reset to value in env.")
     _bot.custom_rename = args
     await save2db2(args, "cus_rename")
-    return await event.reply("**Custom rename has been changed.**")
+    return await event.reply("**Custom rename format has been changed.**")
 
 
 async def set_mux_args(event, args, client):
