@@ -72,7 +72,7 @@ class Uploader:
             decode(self.id, pop=True)
             await logger(Exception)
 
-    async def upload_video(caption, filepath, fm, from_user_id, message, reply):
+    async def upload_video(self, caption, filepath, fm, from_user_id, message, reply):
         async with tele.action(from_user_id, "file"):
             await reply.edit("🔺Uploading🔺")
             self.time = u_start = time.time()
