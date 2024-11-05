@@ -35,7 +35,6 @@ def load_local_db():
         _bot.custom_rename = local_format
 
 
-
 def save2db_lcl():
     with open(local_qdb, "wb") as file:
         pickle.dump(_bot.queue, file)
@@ -53,4 +52,3 @@ def save2db_lcl2(db):
     elif db == "cus_rename":
         with open(local_cdb, "wb") as file:
             pickle.dump(_bot.custom_rename, file)
-        

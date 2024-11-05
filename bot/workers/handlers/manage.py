@@ -230,11 +230,11 @@ async def custom_rename(event, args, client):
     Set a custom rename format if args are passed without parameters
     Available variables:
         {season} Season number ('S' not added)
-        {episode} Episode number 
-        {title} Title of video 
+        {episode} Episode number
+        {title} Title of video
         {quality} Quality of anime (Already in [])
         {codec} codec of video (Already in [])
-        {audio} Audio(s) in video 
+        {audio} Audio(s) in video
         *Extension is added automatically
     Or send one of the following params:
         -c To check if a custom rename is set
@@ -251,7 +251,9 @@ async def custom_rename(event, args, client):
     )
     if (arg.c or arg.d or arg.r) and args:
         return await event.reply(f"`{custom_rename.__doc__}`")
-    state = f"**Custom rename is {'not ' if not _bot.custom_rename else str()}present.**"
+    state = (
+        f"**Custom rename is {'not ' if not _bot.custom_rename else str()}present.**"
+    )
     if arg.c:
         return await event.reply(state)
     if arg.d:

@@ -31,13 +31,13 @@ from .workers.handlers.manage import (
     change,
     check,
     clean,
+    custom_rename,
     del_auto_rename,
     discap,
     fc_forward,
 )
 from .workers.handlers.manage import filter as filter_
 from .workers.handlers.manage import (
-    custom_rename,
     get_mux_args,
     nuke,
     pause,
