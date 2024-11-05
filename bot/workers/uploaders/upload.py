@@ -72,7 +72,9 @@ class Uploader:
             decode(self.id, pop=True)
             await logger(Exception)
 
-    async def upload_video(self, caption, filepath, fm, from_user_id, message, reply, thum):
+    async def upload_video(
+        self, caption, filepath, fm, from_user_id, message, reply, thum
+    ):
         thum = "thumb2.jpg" if not thum or thum == thumb else thum
         thum = await get_video_thumbnail(filepath, thum)
         async with tele.action(from_user_id, "file"):
