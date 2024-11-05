@@ -10,6 +10,8 @@ import anitopy
 import psutil
 import pymediainfo
 
+from os import cpu_count
+
 from bot import ffmpeg_file, signal, version_file
 
 from .bot_utils import post_to_tgph, sync_to_async
@@ -164,6 +166,35 @@ def read_n_to_last_line(filename, n=1):
         last_line = f.readline().decode()
     return last_line
 
+async def get_stream_duration(file):
+    if not Path(file).is_file():
+        return
+    result = 0
+    try:
+        out = await enshell(
+            f'ffprobe -hide_banner -show_streams -show_format -print_format json """{file}"""'
+        )
+        details = json.loads(out[1])
+        result = round(float(details.get('format').get("duration")))
+    except Exception:
+        await logger(Exception)
+    finally:
+        return result
+
+async def get_video_thumbnail(file, output="thumb2.jpg"):
+    try:
+        duration = await get_stream_duration(file)
+        if not duration:
+            return
+        if duration == 0:
+            duration = 3
+        duration = duration // 2
+        out = await enshell(f"ffmpeg -hide_banner -loglevel error -ss {duration} -i {video_file} -vf thumbnail -q:v 1 -frames:v 1 -threads {cpu_count() // 2} {output}")
+        if not file_exists(output):
+            return None
+        return output
+    except Exception:
+        await logger(Exception)
 
 async def get_stream_info(file):
     try:

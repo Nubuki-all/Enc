@@ -3,7 +3,7 @@ from bot.config import conf
 from bot.fun.emojis import enhearts, enmoji, enmoji2
 from bot.utils.bot_utils import code, decode, hbs, time_formatter
 from bot.utils.log_utils import logger
-from bot.utils.os_utils import file_exists
+from bot.utils.os_utils import file_exists, get_video_thumbnail
 
 
 class Uploader:
@@ -31,7 +31,7 @@ class Uploader:
             fm += f"\n**File:** `{os.path.split(filepath)[1]}`"
             if conf.UAV:
                 s = await self.upload_video(
-                    caption, filepath, fm, from_user_id, message, reply
+                    caption, filepath, fm, from_user_id, message, reply, thum
                 )
                 return s
             async with tele.action(from_user_id, "file"):
@@ -72,14 +72,16 @@ class Uploader:
             decode(self.id, pop=True)
             await logger(Exception)
 
-    async def upload_video(self, caption, filepath, fm, from_user_id, message, reply):
+    async def upload_video(self, caption, filepath, fm, from_user_id, message, reply, thum):
+        thum = "thumb2.jpg" if not thum or thum == thumb else thum
+        thum = await get_video_thumbnail(filepath, thum)
         async with tele.action(from_user_id, "file"):
             await reply.edit("🔺Uploading🔺")
             self.time = u_start = time.time()
             s = await message.reply_video(
                 video=filepath,
                 quote=True,
-                thumb=None,
+                thumb=thum,
                 caption=caption,
                 has_spoiler=conf.UVS,
                 supports_streaming=True,
