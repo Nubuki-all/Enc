@@ -94,8 +94,10 @@ class Config:
             self.UN_FINISHED_PROGRESS_STR = config(
                 "UN_FINISHED_PROGRESS_STR", default="🤍"
             )
+            self.UAV = config("UPLOAD_AS_VIDEO", default=False, cast=bool)
             self.USE_ANILIST = config("USE_ANILIST", default=True, cast=bool)
             self.USE_CAPTION = config("USE_CAPTION", default=True, cast=bool)
+            self.UVS = config("UPLOAD_VIDEO_AS_SPOILER", default=False, cast=bool)
             self.WORKERS = config("WORKERS", default=2, cast=int)
         except Exception:
             print("Environment vars Missing; or")

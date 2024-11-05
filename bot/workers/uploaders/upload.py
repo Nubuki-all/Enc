@@ -19,7 +19,7 @@ class Uploader:
     def __str__(self):
         return "#wip"
 
-    async def start(self, from_user_id, filepath, reply, thum, caption, message=""):
+    async def start(self, from_user_id, filepath, reply, thum, caption, message):
         try:
             if not thum or not (thum and file_exists(thum)):
                 if not file_exists(thumb):
@@ -29,6 +29,9 @@ class Uploader:
             code(self, index=self.id)
             fm = f"**From folder:** `{os.path.split(filepath)[0]}`"
             fm += f"\n**File:** `{os.path.split(filepath)[1]}`"
+            if conf.UAV:
+                s = await self.upload_video(caption, filepath, fm, from_user_id, message, reply)
+                return s
             async with tele.action(from_user_id, "file"):
                 await reply.edit("🔺Uploading🔺")
                 self.time = u_start = time.time()
@@ -66,6 +69,29 @@ class Uploader:
         except Exception:
             decode(self.id, pop=True)
             await logger(Exception)
+
+    async def upload_video(caption, filepath, fm, from_user_id, message, reply):
+        async with tele.action(from_user_id, "file"):
+            await reply.edit("🔺Uploading🔺")
+            self.time = u_start = time.time()
+            s = await message.reply_video(
+                video=filepath,
+                quote=True,
+                thumb=None,
+                caption=caption,
+                has_spoiler=conf.UVS,
+                supports_streaming=True,
+                progress=self.progress_for_pyrogram,
+                progress_args=(
+                    pyro,
+                    f"**{conf.CAP_DECO} Uploading…**",
+                    reply,
+                    u_start,
+                    fm,
+                ),
+            )
+        decode(self.id, pop=True)
+        return s
 
     async def progress_for_pyrogram(
         self, current, total, app, ud_type, message, start, file_info
