@@ -258,8 +258,8 @@ async def get_file_tag(_infile, caption=False, audio_only=False):
 
 def custom_rename(title, season, episode, audio, rcodec):
     res = _bot.custom_rename
-    codec = (rcodec.split([1])).strip() if rcodec else str()
-    quality = (rcodec.split([0])).strip() if rcodec else str()
+    codec = (rcodec.split()[1]).strip() if rcodec else str()
+    quality = (rcodec.split()[0]).strip() if rcodec else str()
     season = "1" if not season else season
     res = res.format(**locals())
     res = res.strip()
