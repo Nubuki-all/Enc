@@ -31,6 +31,9 @@ LOGS.info("=" * 30)
 if conf.THUMB:
     os.system(f"wget {conf.THUMB} -O thumb.jpg")
 
+if conf.CUSTOM_RENAME:
+    _bot.custom_rename = conf.CUSTOM_RENAME
+
 if conf.DL_STUFF:
     for link in conf.DL_STUFF.split(","):
         os.system(f"wget {link.strip()}")
@@ -115,6 +118,8 @@ def load_db(_db, _key, var, var_type=None):
                 var.append(item)
     elif var_type == "dict":
         var.update(out)
+    elif var_type == "cust_r":
+        _bot.custom_rename = out.strip()
     else:
         with open(var, "w") as file:
             file.write(out + "\n")
@@ -133,6 +138,7 @@ if conf.DATABASE_URL:
     load_db(queuedb, "queue", _bot.queue, "dict")
     load_db(userdb, "t_users", _bot.temp_users, "list")
     load_db(filterdb, "autoname", rename_file)
+    load_db(filterdb, "cus_rename", None, "cust_r")
     load_db(ffmpegdb, "ffmpeg", ffmpeg_file)
     load_db(filterdb, "filter", filter_file)
     load_db(ffmpegdb, "mux_args", mux_file)

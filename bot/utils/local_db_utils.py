@@ -29,6 +29,12 @@ def load_local_db():
             if user not in _bot.temp_users:
                 _bot.temp_users.append(user)
 
+    if file_exists(local_cdb):
+        with open(local_cdb, "rb") as file:
+            local_format = pickle.load(file)
+        _bot.custom_rename = local_format
+
+
 
 def save2db_lcl():
     with open(local_qdb, "wb") as file:
@@ -44,3 +50,7 @@ def save2db_lcl2(db):
     elif db == "rss":
         with open(local_rdb, "wb") as file:
             pickle.dump(_bot.rss_dict, file)
+    elif db == "cus_rename":
+        with open(local_cdb, "wb") as file:
+            pickle.dump(_bot.custom_rename, file)
+        

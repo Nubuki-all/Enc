@@ -73,6 +73,7 @@ delfilter - delete filter
 rss - edit, delete & subscribe rss feeds
 anime - get anime info
 airing - get anime's airing info
+setrename - set custom_rename format
 name - quick filter with anime_title
 vname - get list of name filter
 delname - delete name filter

@@ -54,7 +54,7 @@ async def save2db2(data: dict | str = False, db: str = None):
             ffmpegdb.update_one, _filter, {"$set": _update}, upsert=True
         )
         return
-    if db in ("autoname", "filter"):
+    if db in ("autoname", "cus_rename", "filter"):
         await sync_to_async(
             filterdb.update_one, _filter, {"$set": _update}, upsert=True
         )

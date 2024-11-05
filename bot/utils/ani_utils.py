@@ -8,7 +8,7 @@ import flag
 import humanize
 import pycountry
 
-from bot import conf, ffmpeg_file, parse_file, release_name, release_name_b
+from bot import _bot, conf, ffmpeg_file, parse_file, release_name, release_name_b
 
 from .bot_utils import (
     auto_rename,
@@ -255,6 +255,15 @@ async def get_file_tag(_infile, caption=False, audio_only=False):
             out = None
     return out
 
+def custom_rename(title, season, episode, audio, rcodec):
+    res = _bot.custom_rename
+    codec = (rcodec.split([1])).strip() if rcodec else str()
+    quality = (rcodec.split([0])).strip() if rcodec else str()
+    season = "1" if not season else season
+    res = res.format(**locals())
+    res = res.strip()
+    res += ".mkv"
+    return res, res
 
 def get_flag(lang_t):
     if not lang_t == "?":
@@ -414,6 +423,9 @@ async def parse(
         ar = txt_to_str(ar_file)
         f_title = await auto_rename(f_title, or_title, ar)
         title = f_title if re_title != f_title else title
+
+        if _bot.custom_rename:
+            return custom_rename(f_title, sn, epi, a_con, codec)
 
         file_name = str()
         file_name += release_name

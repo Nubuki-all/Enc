@@ -225,6 +225,52 @@ async def allowgroupenc(event, args, client):
         )
 
 
+async def custom_rename(event, args, client):
+    """
+    Set a custom rename format if args are passed without parameters
+    Available variables:
+        {season} Season number ('S' not added)
+        {episode} Episode number 
+        {title} Title of video 
+        {quality} Quality of anime (Already in [])
+        {codec} codec of video (Already in [])
+        {audio} Audio(s) in video 
+        *Extension is added automatically
+    Or send one of the following params:
+        -c To check if a custom rename is set
+        -d to delete previously set custom_rename
+        -r to reset back to what was set in env
+
+    """
+    arg, args = get_args(
+        ["-c", "store_true"],
+        ["-d", "store_true"],
+        ["-r", "store_true"],
+        to_parse=args,
+        get_unknown=True,
+    )
+    if (arg.c or arg.d or arg.r) and args:
+        return await event.reply(f"`{custom_rename.__doc__}`")
+    state = f"**Custom rename is {'not ' if not _bot.custom_rename else str()}present.**"
+    if arg.c:
+        return await event.reply(state)
+    if arg.d:
+        if not _bot.custom_rename:
+            return await event.reply(state)
+        _bot.custom_rename = None
+        await save2db2(None, "cus_rename")
+        return await event.reply("Custom rename format deleted.")
+    if arg.r:
+        if not conf.CUSTOM_RENAME:
+            return await event.reply("Custom rename format not added in env.")
+        _bot.custom_rename = conf.CUSTOM_RENAME.strip()
+        await save2db2(_bot.custom_rename, "cus_rename")
+        return await event.reply("Custom rename format has been reset to value in env.")
+    _bot.custom_rename = args
+    await save2db2(args, "cus_rename")
+    return await event.reply("**Custom rename has been changed.**")
+
+
 async def set_mux_args(event, args, client):
     """
     Set, reset or disable muxing after transcoding.
@@ -1036,6 +1082,7 @@ async def rss_editor(event, args, client):
         return
     arg, args = get_args(
         "-c",
+        "-l",
         "--exf",
         "--inf",
         "--chat",
@@ -1053,6 +1100,7 @@ async def rss_editor(event, args, client):
         return await event.reply(f"Could not find rss with title - {args}.")
     if not (
         arg.c
+        or arg.l
         or arg.exf
         or arg.inf
         or arg.p
@@ -1073,6 +1121,8 @@ async def rss_editor(event, args, client):
         if not arg.c.startswith("/"):
             return await event.reply("'-c': arguement must start with '/'")
         data["command"] = arg.c
+    if arg.l:
+        data["link"] = arg.l
     if arg.chat:
         data["chat"] = int(arg.chat) if arg.chat.casefold() != "default" else None
     if arg.direct and arg.nodirect:

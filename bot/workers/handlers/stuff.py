@@ -322,6 +322,7 @@ anime{s} - get anime info
 name{s} - quick filter with anime_title
 vname{s} - get list of name filter
 delname{s} - delete name filter
+setrename{s} - set custom_rename format
 rss{s} - edit, delete & subscribe rss feeds
 status{s} - 🆕 get bot's status
 showthumb{s} - 🖼️ show current thumbnail

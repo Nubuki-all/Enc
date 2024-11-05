@@ -36,6 +36,7 @@ class Config:
             self.C_LINK = config("C_LINK", default="@ANi_MiNE")
             self.CMD_SUFFIX = config("CMD_SUFFIX", default=str())
             self.COMP_MODE = config("COMPATIBILITY_MODE", default=True, cast=bool)
+            self.CUSTOM_RENAME = config("CUSTOM_RENAME", default=None)
             self.DATABASE_URL = config("DATABASE_URL", default=None)
             self.DBNAME = config("DBNAME", default="ENC")
             self.DEV = config("DEV", default=0, cast=int)
@@ -110,6 +111,7 @@ class Runtime_Config:
         self.batch_queue = {}
         self.cached = False
         self.cached_dl = False
+        self.custom_rename = None
         self.display_additional_dl_info = False
         self.docker_deployed = False
         self.e_cancel = {}

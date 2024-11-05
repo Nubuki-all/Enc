@@ -64,6 +64,7 @@ ffmpeg_file4 = "ffmpeg4.txt"
 mux_file = "mux.txt"
 filter_file = "filter.txt"
 home_dir = os.getcwd()
+local_cdb = ".crf.pkl"
 local_qdb = ".local_queue.pkl"
 local_qdb2 = ".local_bqueue.pkl"
 local_rdb = ".local_rssdb.pkl"

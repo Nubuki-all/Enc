@@ -37,6 +37,7 @@ from .workers.handlers.manage import (
 )
 from .workers.handlers.manage import filter as filter_
 from .workers.handlers.manage import (
+    custom_rename,
     get_mux_args,
     nuke,
     pause,
@@ -384,6 +385,11 @@ async def _(e):
 @tele.on(events.NewMessage(pattern=command(["anime"])))
 async def _(e):
     await event_handler(e, en_anime, require_args=True)
+
+
+@tele.on(events.NewMessage(pattern=command(["setrename"])))
+async def _(e):
+    await event_handler(e, custom_rename, require_args=True)
 
 
 @tele.on(events.NewMessage(pattern=command(["name"])))
