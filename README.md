@@ -92,6 +92,9 @@ help - same as start
 - Install Docker
 - Clone repository to your preferred location 
 - Ensure you are in the proper directory with Dockerfile and .env file present
+- For a faster build run (optional):
+  - `python3 update.py Dockerfile` (case sensitive)
+  (Or manually edit Dockerfile, instructions provided there.)
 - Run:
   - `docker build . -t enc`
   - `docker run enc`
