@@ -7,7 +7,6 @@ from subprocess import check_output
 from subprocess import run as bashrun
 
 
-
 def varsgetter(files):
     evars = ""
     if files.is_file():
@@ -75,6 +74,7 @@ def update():
         varssaver(rvars, r_filep)
     else:
         print("Auto-update is disabled.")
+
 
 try:
     if __name__ == "__main__":
