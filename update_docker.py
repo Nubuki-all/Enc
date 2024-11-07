@@ -4,7 +4,7 @@ from update import varssaver
 
 if len(sys.argv) == 1:
     entry = (
-    """# Base Image
+        """# Base Image
 FROM colserra/fedora37_wf
 
 # 1. Setup home directory, non interactive shell and timezone
@@ -22,7 +22,7 @@ CMD ["bash","run.sh"]"""
     )
 else:
     entry = (
-"""# Base Image
+        """# Base Image
 FROM fedora:37
 #FROM colserra/fedora37_wf
 # 2nd docker image allows skipping step 2-3 & 5-6
