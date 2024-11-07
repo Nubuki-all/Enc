@@ -95,7 +95,7 @@ help - same as start
 - For a faster build run (optional):
   - `python3 update_docker.py`
   (Or manually edit Dockerfile, instructions provided there.
-  To undo run the above command run:
+  To undo, run:
   `python3 update_docker.py undo`
 - Run:
   - `docker build . -t enc`
