@@ -93,8 +93,10 @@ help - same as start
 - Clone repository to your preferred location 
 - Ensure you are in the proper directory with Dockerfile and .env file present
 - For a faster build run (optional):
-  - `python3 update.py Dockerfile` (case sensitive)
-  (Or manually edit Dockerfile, instructions provided there.)
+  - `python3 update_docker.py`
+  (Or manually edit Dockerfile, instructions provided there.
+  To undo run the above command run:
+  `python3 update_docker.py undo`
 - Run:
   - `docker build . -t enc`
   - `docker run enc`

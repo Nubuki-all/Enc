@@ -1,5 +1,4 @@
 import os
-import sys
 import traceback
 
 from decouple import config
@@ -7,25 +6,6 @@ from pathlib import Path
 from subprocess import check_output
 from subprocess import run as bashrun
 
-if len(sys.argv) == 2 and sys.argv[1] == "Dockerfile":
-    entry = """
-# Base Image
-FROM colserra/fedora37_wf
-
-# 1. Setup home directory, non interactive shell and timezone
-RUN mkdir -p /bot /tgenc && chmod 777 /bot
-WORKDIR /bot
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=Africa/Lagos
-ENV TERM=xterm
-
-# 2. Copy files from repo to home directory
-COPY . .
-
-# 3. Start bot
-CMD ["bash","run.sh"]
-    """
-    return varssaver(entry, sys.argv[1])
 
 try:
     print("Default var for upstream repo & branch will used if none were given!")
