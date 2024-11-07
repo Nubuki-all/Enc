@@ -9,7 +9,7 @@ from subprocess import run as bashrun
 
 if len(sys.argv) == 2 and sys.argv[1] == "Dockerfile":
     entry = """
-# Base Image 
+# Base Image
 FROM colserra/fedora37_wf
 
 # 1. Setup home directory, non interactive shell and timezone
