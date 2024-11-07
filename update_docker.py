@@ -2,7 +2,7 @@ import sys
 
 from update import varssaver
 
-if not len(sys.argv) == 1:
+if len(sys.argv) == 1:
     entry = """
 # Base Image
 FROM colserra/fedora37_wf
