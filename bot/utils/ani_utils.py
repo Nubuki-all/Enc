@@ -13,7 +13,9 @@ from bot import _bot, conf, ffmpeg_file, parse_file, release_name, release_name_
 from .bot_utils import (
     auto_rename,
     crc32,
+    encode_job,
     get_codec,
+    get_codecs,
     post_to_tgph,
     sync_to_async,
     text_filter,
@@ -812,6 +814,8 @@ async def f_post(
 ):
     if conf.NO_BANNER:
         return None, None
+    if encode_job.pending() != ffmpeg_file:
+        return None, None
     try:
         name = (await filter_name(name, _filter))[0]
         ## Get info ##
@@ -841,7 +845,7 @@ async def f_post(
         tparse, title_ = await auto_rename(title, title, ar, general=True)
         anilist = False if not tparse else anilist
         title = title_
-        codec = fcodec if fcodec else await get_codec(p_file)
+        codec = fcodec if fcodec else await get_codecs(encode_job.get_pending())
 
         try:
             if file_exists(parse_file) or not anilist or direct:

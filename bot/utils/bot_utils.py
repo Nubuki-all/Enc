@@ -182,6 +182,18 @@ class Encode_job:
         elif self.ins.f4:
             self.ins.f4 = None
 
+    def get_pending(self):
+        list = []
+        if self.ins.f1:
+            list.append(ffmpeg_file)
+        elif self.ins.f2:
+            list.append(ffmpeg_file2)
+        elif self.ins.f3:
+            list.append(ffmpeg_file3)
+        elif self.ins.f4:
+            list.append(ffmpeg_file4)
+        return list 
+
     def get_pending_index(self):
         if self.ins.f1:
             return 1
@@ -615,6 +627,12 @@ async def crc32(filename: str, chunksize=65536):
             checksum = zlib.crc32(chunk, checksum)
         return "%X" % (checksum & 0xFFFFFFFF)
 
+async def get_codecs(files):
+    out = str()
+    for file in files:
+        out += await get_codec(file)
+        out += ", "
+    return out.strip(", ")
 
 async def get_codec(file="ffmpeg.txt"):
     """Get file codec from ffmpeg encoding parameters"""

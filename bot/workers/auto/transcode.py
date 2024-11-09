@@ -89,6 +89,8 @@ async def forward_(name, out, ds, mi, f, ani, n, pf):
     await ds.copy(chat_id=fc)
     if not fs:
         return
+    if ejob.jobs() > 1:
+        return
     if not fb:
         queue = get_queue()
         bqueue = get_bqueue()
