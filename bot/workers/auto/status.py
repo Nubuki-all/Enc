@@ -6,7 +6,7 @@ from bot.fun.quotes import enquotes
 from bot.fun.stuff import lvbar
 from bot.utils.ani_utils import qparse
 from bot.utils.batch_utils import get_batch_list
-from bot.utils.bot_utils import encode_info, get_codec, get_pause_status, sync_to_async
+from bot.utils.bot_utils import encode_info, encode_job, get_codec, get_pause_status, sync_to_async
 from bot.utils.log_utils import logger
 
 
@@ -71,7 +71,7 @@ async def encodestat():
         # pass
         await logger(Exception)
     me = await tele.get_me()
-    codec = await get_codec()
+    codec = await get_codec(encode_job.pending())
     msg += f"\n\nYours truly,\n  {enmoji()} `{me.first_name}`"
     msg += f"\n    == {codec} =="
     return msg
@@ -95,6 +95,7 @@ async def autostat():
                 self.file = None
                 self.queue = {}
                 self.state = None
+                self.job = None
 
         check = Check()
 
@@ -104,6 +105,7 @@ async def autostat():
                 and _bot.batch_queue == check.batch
                 and check.file == encode_info._current
                 and check.state == (get_pause_status() == 0)
+                and check.job == encode_job.pending()
             )
 
         def wait():
@@ -112,6 +114,7 @@ async def autostat():
             check.batch.clear(), check.batch.update(_bot.batch_queue)
             check.queue.clear(), check.queue.update(_bot.queue)
             check.file = encode_info._current
+            check.job = encode_job.pending()
             check.state = get_pause_status() == 0
             return False
 

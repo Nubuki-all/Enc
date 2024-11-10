@@ -183,6 +183,7 @@ async def thing():
             n = None  # To prevent hell from breaking loose
             if name is None:
                 einfo.batch = None
+                ejob.complete()
                 skip(queue_id)
                 await save2db()
                 await save2db("batches")

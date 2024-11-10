@@ -172,6 +172,10 @@ class Encode_job:
             return job
         return len(job)
 
+    def complete(self):
+        for i in self.jobs(list=True):
+            self.done()
+
     def done(self):
         if self.ins.f1:
             self.ins.f1 = None

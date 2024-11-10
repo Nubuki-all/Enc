@@ -116,8 +116,7 @@ async def skip(e, skip_jobs=False):
         ans = "Cancelling encoding and all pending jobs, please wait…"
         if not ejob.id == _id:
             return await clean_old_message(e)
-        for i in ejob.jobs(list=True):
-            ejob.done()
+        ejob.complete()
 
     await e.answer(ans)
     process.kill()
