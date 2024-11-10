@@ -6,7 +6,13 @@ from bot.fun.quotes import enquotes
 from bot.fun.stuff import lvbar
 from bot.utils.ani_utils import qparse
 from bot.utils.batch_utils import get_batch_list
-from bot.utils.bot_utils import encode_info, encode_job, get_codec, get_pause_status, sync_to_async
+from bot.utils.bot_utils import (
+    encode_info,
+    encode_job,
+    get_codec,
+    get_pause_status,
+    sync_to_async,
+)
 from bot.utils.log_utils import logger
 
 
