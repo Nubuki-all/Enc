@@ -190,11 +190,11 @@ class Encode_job:
         list = []
         if self.ins.f1:
             list.append(ffmpeg_file)
-        elif self.ins.f2:
+        if self.ins.f2:
             list.append(ffmpeg_file2)
-        elif self.ins.f3:
+        if self.ins.f3:
             list.append(ffmpeg_file3)
-        elif self.ins.f4:
+        if self.ins.f4:
             list.append(ffmpeg_file4)
         return list
 
