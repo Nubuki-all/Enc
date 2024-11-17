@@ -247,6 +247,7 @@ async def thing():
                         + f_msg.text.markdown,
                     )
             if not downloaded or download.is_cancelled:
+                ejob.complete()
                 skip(queue_id)
                 mark_file_as_done(einfo.select, queue_id)
                 await save2db()
@@ -323,7 +324,7 @@ async def thing():
         einfo.current = file_name
         einfo._current = name
         cmd = ffmpeg.format(dl, out)
-        encode = encoder(_id, sender, msg_t, op)
+        encode = encoder(_id, sender, msg_t, op, True)
         # await mssg_r.edit("`Waiting For Encoding To Complete`")
         await encode.start(cmd)
         await encode.callback(dl, out, msg_t, sender_id, stime=_set)

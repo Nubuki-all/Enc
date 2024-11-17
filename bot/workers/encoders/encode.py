@@ -13,7 +13,7 @@ def_enc_msg = "**Currently Encoding {}:**\n└`{}`\n\n{}**⏳This Might Take A W
 
 
 class Encoder:
-    def __init__(self, _id, sender=None, event=None, log=None):
+    def __init__(self, _id, sender=None, event=None, log=None, sjob=False):
         self.client = None if not event else event.client
         self.enc_id = _id
         self.event = event
@@ -21,6 +21,7 @@ class Encoder:
         self.process = None
         self.req_clean = False
         self.sender = sender
+        self.sjob = sjob
         self.log_enc_id = None
         if self.log_msg:
             self.log_enc_id = f"{log.chat_id}:{log.id}"
@@ -43,13 +44,13 @@ class Encoder:
             wah = 0
             a_msg = (
                 f"**{ejob.get_pending_pos()} Job**\n└`{(await get_codec(ejob.pending()))}`\n\n"
-                if ejob.get_pending_pos()
+                if self.sjob and ejob.get_pending_pos()
                 else str()
             )
             c_button = [Button.inline("Cancel", data=f"skip{wah}")]
             (
                 c_button.append(Button.inline("❌ all jobs", data=f"jskip{wah}"))
-                if ejob.jobs() > 1
+                if self.sjob and ejob.jobs() > 1
                 else None
             )
             e_msg = await event.edit(
