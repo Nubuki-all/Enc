@@ -73,6 +73,7 @@ class Config:
             self.PAUSE_ON_DL_INFO = config("PODI", default=True, cast=bool)
             self.QDL_TIMEOUT = config("QBIT_DL_TIMEOUT", default=0, cast=int)
             self.QBIT_PORT = config("QBIT_PORT", default=8090, cast=int)
+            self.QBIT_PORT2 = config("QBIT_PORT2", default=8091, cast=int)
             self.QBIT_TIMEOUT = config("QBIT_TIMEOUT", default=20, cast=int)
             self.RELEASER = config("RELEASER", default="A-M|ANi-MiNE")
             self.REPORT_FAILED = config("REPORT_FAILED", default=True, cast=bool)

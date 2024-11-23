@@ -1,3 +1,5 @@
+import shutil
+
 from bot.config import _bot, conf
 from bot.fun.emojis import enmoji, enmoji2
 from bot.fun.quips import enquip, enquip2
@@ -31,8 +33,12 @@ async def start_aria2p():
 
 
 async def start_qbit():
+    shutil.copytree("qBittorrent", "qbit2/qBittorrent")
     os.system(
         f"qbittorrent-nox -d --webui-port={conf.QBIT_PORT} --profile={os.getcwd()}"
+    )
+    os.system(
+        f"qbittorrent-nox -d --webui-port={conf.QBIT_PORT2} --profile={os.getcwd()}/qbit2"
     )
     # TO_DO: Properly check if qbit is fully operational.
     _bot.sqs = True
