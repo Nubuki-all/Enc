@@ -1,4 +1,5 @@
 import pickle
+import shutil
 
 from pymongo import MongoClient
 
@@ -89,6 +90,9 @@ if not os.path.isdir("mux/"):
     os.mkdir("mux/")
 if not os.path.isdir("minfo/"):
     os.mkdir("minfo/")
+
+if not os.path.isdir("qbit2/"):
+    shutil.copytree("qBittorrent", "qbit2/qBittorrent")
 
 if conf.TEMP_USER:
     for t in conf.TEMP_USER.split():
