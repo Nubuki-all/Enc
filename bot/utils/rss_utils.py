@@ -140,4 +140,4 @@ def schedule_rss():
 
 
 schedule_rss()
-scheduler.start()
+# scheduler.start()
