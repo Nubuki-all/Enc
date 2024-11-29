@@ -71,6 +71,7 @@ local_rdb = ".local_rssdb.pkl"
 local_udb = ".t_users.pkl"
 log_file_name = "Logs.txt"
 parse_file = "NO_PARSE"
+qb_lock = asyncio.Lock()
 queue_lock = asyncio.Lock()
 rename_file = "Auto-rename.txt"
 rss_dict_lock = asyncio.Lock()

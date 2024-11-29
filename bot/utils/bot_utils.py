@@ -234,6 +234,7 @@ class Encode_job:
         self.ins = self.Jobs()
         self.busy = False
         self.id = None
+        self.sminfo = None
         self.prev_dl_client = None
 
 

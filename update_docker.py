@@ -1,6 +1,13 @@
 import sys
 
-from update import varssaver
+
+
+def varssaver(evars, files):
+    if evars:
+        file = open(files, "w")
+        file.write(str(evars) + "\n")
+        file.close()
+
 
 if len(sys.argv) == 1:
     entry = (

@@ -77,7 +77,8 @@ class Uploader:
         self, caption, filepath, fm, from_user_id, message, reply, thum
     ):
         thum = "thumb2.jpg" if not thum or thum == thumb else thum
-        thum = await get_video_thumbnail(filepath, thum)
+        out = await get_video_thumbnail(filepath, thum, with_dur)
+        thum, dur = out if len(out) > 1 else (out, 0)
         async with tele.action(from_user_id, "file"):
             await reply.edit("🔺Uploading🔺")
             self.time = u_start = time.time()
@@ -86,6 +87,7 @@ class Uploader:
                 quote=True,
                 thumb=thum,
                 caption=caption,
+                duration=dur,
                 has_spoiler=conf.UVS,
                 supports_streaming=True,
                 progress=self.progress_for_pyrogram,

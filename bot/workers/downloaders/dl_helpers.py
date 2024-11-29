@@ -1,6 +1,6 @@
 import uuid
 
-from bot import asyncio, math, os, pyro, qbClient, time
+from bot import asyncio, math, os, pyro, qbClient, qb_lock, time
 from bot.config import _bot, conf
 from bot.utils.bot_utils import (
     Qbit_c,
@@ -142,7 +142,7 @@ async def get_leech_name(url):
         return dinfo
 
 
-async def get_torrent(url):
+async def base_get_torrent(url):
     qinfo = Qbit_c()
     tag = "qb_dl" + str(uuid.uuid4())
     url = replace_proxy(url)
@@ -196,6 +196,11 @@ async def get_torrent(url):
         await logger(Exception)
     finally:
         return qinfo
+
+
+async def get_torrent(url):
+    async with qb_lock:
+        return await base_get_torrent(url)
 
 
 async def cache_dl(check=False, cached=False):

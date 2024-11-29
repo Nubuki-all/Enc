@@ -36,9 +36,9 @@ async def queue_status(event):
                     msg = await pyro.get_messages(int(_chat_id), int(_msg_id))
                     try:
                         await msg.delete()
+                        _bot.queue_status.remove(q_id)
                     except Exception:
                         pass
-                    _bot.queue_status.remove(q_id)
             return _bot.queue_status.append(str(event.chat_id) + " " + str(event.id))
         else:
             _bot.queue_status.append(str(event.chat_id) + " " + str(event.id))

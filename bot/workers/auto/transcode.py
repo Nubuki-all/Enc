@@ -450,7 +450,7 @@ async def thing():
         mux_msg = f"Muxed in `{mtime}`\n" if mux_args else str()
 
         text = str()
-        mi = await info(dl)
+        mi = ejob.sminfo = await info(dl) if not ejob.sminfo else ejob.sminfo
         forward_task = asyncio.create_task(
             forward_(name, out, up, mi, f, ani, n, param_file)
         )

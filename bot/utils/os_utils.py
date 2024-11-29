@@ -182,19 +182,21 @@ async def get_stream_duration(file):
         return result
 
 
-async def get_video_thumbnail(file, output="thumb2.jpg"):
+async def get_video_thumbnail(file, output="thumb2.jpg", with_dur=False):
     try:
         duration = await get_stream_duration(file)
         if not duration:
             return
         if duration == 0:
             duration = 3
-        duration = duration // 2
+        tduration = duration // 2
         out = await enshell(
-            f'ffmpeg -hide_banner -loglevel error -ss {duration} -i """{file}""" -vf thumbnail -q:v 1 -frames:v 1 -threads {cpu_count() // 2} {output} -y'
+            f'ffmpeg -hide_banner -loglevel error -ss {tduration} -i """{file}""" -vf thumbnail -q:v 1 -frames:v 1 -threads {cpu_count() // 2} {output} -y'
         )
         if not file_exists(output):
             return None
+        if with_dur:
+            return (output, duration)
         return output
     except Exception:
         await logger(Exception)
