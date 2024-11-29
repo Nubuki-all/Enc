@@ -77,7 +77,7 @@ class Uploader:
         self, caption, filepath, fm, from_user_id, message, reply, thum
     ):
         thum = "thumb2.jpg" if not thum or thum == thumb else thum
-        out = await get_video_thumbnail(filepath, thum, with_dur)
+        out = await get_video_thumbnail(filepath, thum, with_dur=True)
         thum, dur = out if len(out) > 1 else (out, 0)
         async with tele.action(from_user_id, "file"):
             await reply.edit("🔺Uploading🔺")
