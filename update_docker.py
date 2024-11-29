@@ -1,7 +1,6 @@
 import sys
 
 
-
 def varssaver(evars, files):
     if evars:
         file = open(files, "w")
