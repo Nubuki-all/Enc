@@ -1,6 +1,6 @@
 import pickle
 
-from bot import _bot, local_qdb, local_qdb2, local_rdb, local_udb
+from bot import _bot, local_cdb, local_qdb, local_qdb2, local_rdb, local_udb
 
 from .bot_utils import list_to_str
 from .os_utils import file_exists
@@ -25,7 +25,7 @@ def load_local_db():
     if file_exists(local_udb):
         with open(local_udb, "rb") as file:
             local_users = pickle.load(file)
-        for user in local_users:
+        for user in local_users.split():
             if user not in _bot.temp_users:
                 _bot.temp_users.append(user)
 
