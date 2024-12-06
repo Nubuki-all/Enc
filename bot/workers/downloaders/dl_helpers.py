@@ -128,7 +128,7 @@ async def get_leech_name(url):
             ):
                 await asyncio.sleep(2)
                 continue
-            if not (os.path.splitext(download.name))[1] and not download.total_length:
+            if not download.total_length:
                 await asyncio.sleep(2)
                 continue
 
