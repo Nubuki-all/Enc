@@ -50,6 +50,7 @@ if conf.REPORT_FAILED_DL:
 if conf.REPORT_FAILED_ENC:
     _bot.report_failed_enc = True
 
+
 if not file_exists(ffmpeg_file):
     with open(ffmpeg_file, "w") as file:
         file.write(str(conf.FFMPEG) + "\n")
@@ -89,8 +90,8 @@ if not os.path.isdir("mux/"):
 if not os.path.isdir("minfo/"):
     os.mkdir("minfo/")
 
-if not os.path.isdir("qbit2/"):
-    shutil.copytree("qBittorrent", "qbit2/qBittorrent")
+
+# shutil.copytree("qBittorrent", "qbit2/qBittorrent")
 
 if conf.TEMP_USER:
     for t in conf.TEMP_USER.split():

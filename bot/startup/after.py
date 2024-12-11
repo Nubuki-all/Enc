@@ -33,10 +33,10 @@ async def start_aria2p():
 
 async def start_qbit():
     os.system(
-        f"qbittorrent-nox -d --webui-port={conf.QBIT_PORT} --profile={os.getcwd()}"
+        f"qbittorrent-nox -d --webui-port={conf.QBIT_PORT} --profile={os.getcwd()}/qbit"
     )
     os.system(
-        f"qbittorrent-nox -d --webui-port={conf.QBIT_PORT2} --profile={os.getcwd()}/qbit2"
+        f"qbittorrent-nox -d --webui-port={conf.QBIT_PORT2} --profile={os.getcwd()}/qbit  --configuration=1"
     )
     # TO_DO: Properly check if qbit is fully operational.
     _bot.sqs = True
