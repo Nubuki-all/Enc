@@ -1,5 +1,4 @@
 import pickle
-import shutil
 
 from pymongo import MongoClient
 
