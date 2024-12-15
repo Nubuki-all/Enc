@@ -9,7 +9,7 @@ from bot.fun.quips import enquip3
 from bot.fun.quotes import enquotes
 from bot.others.exceptions import ArgumentParserError
 
-from .bot_utils import gfn, is_url, sync_to_async
+from .bot_utils import get_pause_status, gfn, is_url, sync_to_async
 from .log_utils import log, logger
 from .os_utils import s_remove
 
@@ -141,6 +141,9 @@ async def enpause(message):
         " `Bot has been paused to continue, unpause bot using the /pause command`"
     )
     while _bot.paused:
+        if get_pause_status() == "rss":
+            if len(_bot.paused) == 1:
+                break
         try:
             await message.edit(enmoji() + pause_msg)
             await asyncio.sleep(10)
