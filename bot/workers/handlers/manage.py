@@ -1202,7 +1202,7 @@ async def rss_sub(event, args, client):
         Args:
             -t (TITLE): New Title of the subscribed rss feed [Required]
             -c (/command): command to prefix the rss link [Required]
-            
+
             [Optional]
             --exf (what_to_exclude): keyword of words to fiter out*
             --inf (what_to_include): keywords to include*
@@ -1267,7 +1267,7 @@ async def rss_sub(event, args, client):
                 if _current:
                     continue
                 chat_ = str(event.chat.id)
-                _current =True
+                _current = True
             if chat_.casefold() != "default":
                 chat.append(chat_)
             else:
