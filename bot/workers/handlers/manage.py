@@ -1064,7 +1064,7 @@ async def rss_editor(event, args, client):
             -c (/command): command to prefix the rss link
             --exf (what_to_exclude): keyword of words to fiter out*
             --inf (what_to_include): keywords to include*
-            --chat (chat_id) chat to send rss overides RSS_CHAT pass 'default' to reset.
+            --chat (chat_id)* chat to send rss overides RSS_CHAT pass 'default' to reset.
             -p () to pause the rss feed
             -r () to resume the rss feed
             --nodirect () disables rss direct
@@ -1075,6 +1075,7 @@ async def rss_editor(event, args, client):
         where:
             or - means either of both values
             | - means and
+        or '.' for current chat
         Returns:
             success message on successfully editing the rss configuration
     """
@@ -1110,13 +1111,14 @@ async def rss_editor(event, args, client):
         or arg.nodirect
     ):
         return await event.reply("Please supply at least one additional arguement.")
-    if arg.chat and not (
-        arg.chat.lstrip("-").isdigit() or arg.chat.casefold() == "default"
-    ):
-        return await avoid_flood(
-            event.reply,
-            f"Chat must be a Telegram chat id (with -100 if a group or channel)\nNot '{arg.chat}'",
-        )
+    if arg.chat:
+        for chat in arg.chat.split():
+            chat = chat.split(":")[0]
+            if not (chat.lstrip("-").isdigit() or chat.casefold() in ("default", ".")):
+                return await avoid_flood(
+                    event.reply,
+                    f"Chat must be a Telegram chat id (with -100 if a group or channel) or default\nNot '{chat}'",
+                )
     if arg.c:
         if not arg.c.startswith("/"):
             return await event.reply("'-c': arguement must start with '/'")
@@ -1124,7 +1126,17 @@ async def rss_editor(event, args, client):
     if arg.l:
         data["link"] = arg.l
     if arg.chat:
-        data["chat"] = int(arg.chat) if arg.chat.casefold() != "default" else None
+        _default = False
+        data["chat"] = []
+        for chat in arg.chat.split():
+            chat = str(event.chat.id) if chat == "." else chat
+            if chat.casefold() != "default":
+                data["chat"].append(chat)
+            else:
+                if _default:
+                    continue
+                data["chat"].append(None)
+                _default = True
     if arg.direct and arg.nodirect:
         await avoid_flood(event.reply, "**Warning:** Ignoring '--direct'")
     if arg.direct or arg.nodirect:
@@ -1190,11 +1202,13 @@ async def rss_sub(event, args, client):
         Args:
             -t (TITLE): New Title of the subscribed rss feed [Required]
             -c (/command): command to prefix the rss link [Required]
+            
+            [Optional]
             --exf (what_to_exclude): keyword of words to fiter out*
             --inf (what_to_include): keywords to include*
             -p () to pause the rss feed
             -r () to resume the rss feed
-            --chat (chat_id) chat to send feeds
+            --chat (chat_id)* chat to send feeds
             --nodirect () to disable rss message getting passed directly* to bot
             --direct () to enable the above
                 if not specified, defaults to RSS_DIRECT env.
@@ -1203,6 +1217,7 @@ async def rss_sub(event, args, client):
         where:
             or - means either of both values
             | - means and
+        * --chat also accepts '.' for current chat and 'default' which is the same as not specifying; defaults to RSS_CHAT
         *only leech and qbleech commands are passed
         Returns:
             success message on successfully editing the rss configuration
@@ -1228,11 +1243,14 @@ async def rss_sub(event, args, client):
     title = arg.t
     if not arg.c.startswith("/"):
         return await event.reply("'-c': arguement must start with '/'")
-    if arg.chat and not arg.chat.lstrip("-").isdigit():
-        return await avoid_flood(
-            event.reply,
-            f"Chat must be a Telegram chat id (with -100 if a group or channel)\nNot '{arg.chat}'",
-        )
+    if arg.chat:
+        for chat in arg.chat.split():
+            chat = chat.split(":")[0]
+            if not (chat.lstrip("-").isdigit() or chat.casefold() in ("default", ".")):
+                return await avoid_flood(
+                    event.reply,
+                    f"Chat must be a Telegram chat id (with -100 if a group or channel) or default\nNot '{chat}'",
+                )
     if arg.direct and arg.nodirect:
         await avoid_flood(event.reply, "**Warning:** Ignoring '--direct'")
     if _bot.rss_dict.get(title):
@@ -1240,11 +1258,25 @@ async def rss_sub(event, args, client):
             event.reply,
             f"This title **{title}** has already been subscribed!. **Please choose another title!**",
         )
+    chat = []
+    if arg.chat:
+        _current = False
+        _default = False
+        for chat_ in arg.chat.split():
+            if chat_ == ".":
+                if _current:
+                    continue
+                chat_ = str(event.chat.id)
+                _current =True
+            if chat_.casefold() != "default":
+                chat.append(chat_)
+            else:
+                if _default:
+                    continue
+                chat.append(None)
+                _default = True
     inf_lists = []
     exf_lists = []
-    msg = str()
-    if arg.chat:
-        arg.chat = int(arg.chat)
     if arg.inf:
         filters_list = arg.inf.split("|")
         for x in filters_list:
@@ -1259,6 +1291,7 @@ async def rss_sub(event, args, client):
         arg.direct = False
     elif not arg.direct:
         arg.direct = conf.RSS_DIRECT
+    msg = str()
     try:
         html = await get_html(feed_link)
         rss_d = feedparse(html)
@@ -1282,7 +1315,7 @@ async def rss_sub(event, args, client):
                 "link": feed_link,
                 "last_feed": last_link,
                 "last_title": last_title,
-                "chat": arg.chat,
+                "chat": chat,
                 "command": arg.c,
                 "direct": arg.direct,
                 "inf": inf_lists,

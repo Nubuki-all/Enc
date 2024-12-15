@@ -154,10 +154,28 @@ async def enpause(message):
             await logger(Exception)
 
 
-async def send_rss(msg: str, chat_id: int = None):
+def get_expanded_chats(chat):
+    expanded_chat = []
+    for chat in chats:
+        (
+            expanded_chat.append(chat)
+            if chat
+            else expanded_chat.extend(conf.RSS_CHAT.split())
+        )
+    return expanded_chat
+
+
+async def send_rss(msg: str, chat_ids: list = None):
     try:
-        chat = chat_id or conf.RSS_CHAT
-        return await avoid_flood(tele.send_message, chat, msg)
+        chats = chat_ids or conf.RSS_CHAT
+        chats = [chats] if isinstance(chats, int) else chats #backward compatibility
+        for chat in get_expanded_chats(chats):
+            top_chat = chat.split(":")
+            chat, top_id = (
+                map(int, top_chat) if len(top_chat) > 1 else (int(top_chat[0]), None)
+            )
+            event = await avoid_flood(tele.send_message, chat, msg, reply_to=top_id)
+        return event
     except Exception:
         await logger(Exception)
 

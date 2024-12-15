@@ -90,8 +90,6 @@ if not os.path.isdir("minfo/"):
     os.mkdir("minfo/")
 
 
-# shutil.copytree("qBittorrent", "qbit2/qBittorrent")
-
 if conf.TEMP_USER:
     for t in conf.TEMP_USER.split():
         if t in conf.OWNER.split():
@@ -168,7 +166,7 @@ class EnTimer:
     def __init__(self):
         self.ind_pause = conf.LOCK_ON_STARTUP
         self.time = 0
-        self.msg = None
+        self.msg = []
 
     async def start(self):
         asyncio.create_task(self.timer())
@@ -193,7 +191,7 @@ class EnTimer:
                         )
                 except Exception:
                     pass
-                self.msg = None
+                self.msg = []
 
     def new_timer(self, new_time, lmsg=None):
         if isinstance(new_time, int):
