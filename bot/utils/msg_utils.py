@@ -154,7 +154,7 @@ async def enpause(message):
             await logger(Exception)
 
 
-def get_expanded_chats(chat):
+def get_expanded_chats(chats):
     expanded_chat = []
     for chat in chats:
         (

@@ -1217,7 +1217,9 @@ async def rss_sub(event, args, client):
         where:
             or - means either of both values
             | - means and
-        * --chat also accepts '.' for current chat and 'default' which is the same as not specifying; defaults to RSS_CHAT
+        * --chat:
+            also accepts '.' for current chat and 'default' which is the same as not specifying; defaults to RSS_CHAT
+            also accepts topics send with '{chat_id}:{topic_id}'
         *only leech and qbleech commands are passed
         Returns:
             success message on successfully editing the rss configuration
