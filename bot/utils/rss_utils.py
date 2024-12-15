@@ -109,6 +109,8 @@ async def rss_monitor():
             log(e=f"Feed Name: {title}")
             log(e=f"Last item: {last_link}")
         except Exception as e:
+            # debug
+            log(Exception)
             log(e=f"{e} - Feed Name: {title} - Feed Link: {data['link']}")
             continue
     await rm_pause("rss")

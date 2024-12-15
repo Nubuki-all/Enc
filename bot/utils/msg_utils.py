@@ -168,7 +168,7 @@ def get_expanded_chats(chats):
 async def send_rss(msg: str, chat_ids: list = None):
     try:
         chats = (
-            [chat_ids] if isinstance(chat_ids, int) else chat_ids
+            [chat_ids] if not isinstance(chat_ids, list) else chat_ids
         )  # backward compatibility
         for chat in get_expanded_chats(chats):
             top_chat = chat.split(":")
