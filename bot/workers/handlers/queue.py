@@ -231,7 +231,7 @@ async def enleech(event, args: str, client, direct=False):
         cust_v = flag.v
         force_name = flag.n
     try:
-        if event.is_reply:
+        if event.is_reply and not direct:
             rep_event = await event.get_reply_message()
             if rep_event.file:
                 await event.reply("**Warning:** `Use /add for files instead.`")
@@ -426,7 +426,7 @@ async def enleech2(event, args: str, client, direct=False):
         if flag.s and not flag.s.isdigit():
             return await event.reply("`Value for '-s' arg has to be digit.`")
     try:
-        if event.is_reply:
+        if event.is_reply and not direct:
             rep_event = await event.get_reply_message()
             if rep_event.file:
                 return await event.reply("**Error:** `Use /add for files instead.`")
