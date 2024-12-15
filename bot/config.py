@@ -81,7 +81,7 @@ class Config:
             self.REPORT_FAILED_ENC = config(
                 "REPORT_FAILED_ENC", default=False, cast=bool
             )
-            self.RSS_CHAT = config("RSS_CHAT", default=0, cast=int)
+            self.RSS_CHAT = config("RSS_CHAT", default=0, cast=str)
             self.RSS_DELAY = config("RSS_DELAY", default=60, cast=int)
             self.RSS_DIRECT = config("RSS_DIRECT", default=True, cast=bool)
             self.TELEGRAPH_API = config(
