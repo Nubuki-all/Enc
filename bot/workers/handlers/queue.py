@@ -201,6 +201,7 @@ async def enleech(event, args: str, client, direct=False):
     mode = "None"
     o_args = None
     queue = get_queue()
+    topic_id = None
     invalid_msg = "`Invalid torrent/direct link`"
     no_uri_msg = (
         "`uhm you need to reply to or send command alongside a uri/direct link`"
@@ -230,8 +231,14 @@ async def enleech(event, args: str, client, direct=False):
         anilist = flag.da
         cust_v = flag.v
         force_name = flag.n
+    if getattr(event.reply_to, "forum_topic", None):
+        topic_id = (
+            top
+            if (top := event.reply_to.reply_to_top_id)
+            else event.reply_to_msg_id
+        )
     try:
-        if event.is_reply and not direct:
+        if event.is_reply and not direct and topic_id != event.reply_to_msg_id:
             rep_event = await event.get_reply_message()
             if rep_event.file:
                 await event.reply("**Warning:** `Use /add for files instead.`")
@@ -397,6 +404,7 @@ async def enleech2(event, args: str, client, direct=False):
     no_bt_spt_msg = "`Torrent is a batch torrent.\nTo add to queue use -b`"
     no_fl_spt_msg = "`File is not a video.`"
     or_event = event
+    topic_id = None
     if args:
         flag, args = get_args(
             "-d",
@@ -425,8 +433,14 @@ async def enleech2(event, args: str, client, direct=False):
         force_name = flag.n
         if flag.s and not flag.s.isdigit():
             return await event.reply("`Value for '-s' arg has to be digit.`")
+    if getattr(event.reply_to, "forum_topic", None):
+        topic_id = (
+            top
+            if (top := event.reply_to.reply_to_top_id)
+            else event.reply_to_msg_id
+        )
     try:
-        if event.is_reply and not direct:
+        if event.is_reply and not direct and topic_id != event.reply_to_msg_id:
             rep_event = await event.get_reply_message()
             if rep_event.file:
                 return await event.reply("**Error:** `Use /add for files instead.`")
