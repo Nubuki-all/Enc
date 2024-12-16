@@ -233,9 +233,7 @@ async def enleech(event, args: str, client, direct=False):
         force_name = flag.n
     if getattr(event.reply_to, "forum_topic", None):
         topic_id = (
-            top
-            if (top := event.reply_to.reply_to_top_id)
-            else event.reply_to_msg_id
+            top if (top := event.reply_to.reply_to_top_id) else event.reply_to_msg_id
         )
     try:
         if event.is_reply and not direct and topic_id != event.reply_to_msg_id:
@@ -435,9 +433,7 @@ async def enleech2(event, args: str, client, direct=False):
             return await event.reply("`Value for '-s' arg has to be digit.`")
     if getattr(event.reply_to, "forum_topic", None):
         topic_id = (
-            top
-            if (top := event.reply_to.reply_to_top_id)
-            else event.reply_to_msg_id
+            top if (top := event.reply_to.reply_to_top_id) else event.reply_to_msg_id
         )
     try:
         if event.is_reply and not direct and topic_id != event.reply_to_msg_id:
