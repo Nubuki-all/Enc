@@ -716,24 +716,24 @@ async def auto_rename(
 
 async def text_filter():
     """Read three filter (.txt) files and returns the contents"""
-    nft = Path("Namefilter.txt")
-    rft = Path("Releasefilter.txt")
-    rct = Path("Release_caption.txt")
+    nft = Path("filters/Namefilter.txt")
+    rft = Path("filters/Releasefilter.txt")
+    rct = Path("filters/Release_caption.txt")
 
     if nft.is_file():
-        with open("Namefilter.txt", "r") as file:
+        with open(nft, "r") as file:
             nf = file.read().strip()
             file.close()
     else:
         nf = None
     if rft.is_file():
-        with open("Releasefilter.txt", "r") as file:
+        with open(rft, "r") as file:
             rf = file.read().strip()
             file.close()
     else:
         rf = None
     if rct.is_file():
-        with open("Release_caption.txt", "r") as file:
+        with open(rct, "r") as file:
             rc = file.read().strip()
             file.close()
     else:

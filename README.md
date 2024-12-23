@@ -92,17 +92,17 @@ help - same as start
 - Install Docker
 - Clone repository to your preferred location 
 - Ensure you are in the proper directory with Dockerfile and .env file present
-- For a faster build run (optional):
-  - `python3 update_docker.py`
+- For a faster build run (optional) (don't run from the scripts directory):
+  - `python3 scripts/update_docker.py`
   (Or manually edit Dockerfile, instructions provided there.
   To undo, run:
-  `python3 update_docker.py undo`
+  `python3 scripts/update_docker.py undo`
 - Run:
   - `docker build . -t enc`
   - `docker run enc`
 
 **Without Docker:**
-- Install required dependencies check [Dockerfile](Dockerfile) or preferably [local_deploy.sh](local_deploy.sh) for inspiration (I no longer maintain the local_deploy script so run at your own risk)
+- Install required dependencies check [Dockerfile](Dockerfile) or preferably [local_deploy.sh](scripts/local_deploy.sh) for inspiration (I no longer maintain the local_deploy script so run at your own risk)
 - python3.10, ffmpeg, ffprobe & mediainfo is required
 - Run:
   - `bash run.sh` _To start bot normally_
