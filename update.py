@@ -35,7 +35,7 @@ def update():
         default="https://github.com/Nubuki-all/Enc")
     UPSTREAM_BRANCH = config("UPSTREAM_BRANCH", default="main")
 
-    r_filep = Path("Auto-rename.txt")
+    r_filep = Path("filters/Auto-rename.txt")
     rvars = varsgetter(r_filep)
     update_check = Path("update")
     cmd = (

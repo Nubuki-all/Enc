@@ -8,7 +8,7 @@ import flag
 import humanize
 import pycountry
 
-from bot import _bot, conf, ffmpeg_file, parse_file, release_name, release_name_b
+from bot import _bot, conf, filter_file, ffmpeg_file, parse_file, release_name, release_name_b, rename_file
 
 from .bot_utils import (
     auto_rename,
@@ -24,8 +24,6 @@ from .bot_utils import (
 from .log_utils import log, logger
 from .os_utils import check_ext, file_exists, get_stream_info, info, p_dl
 
-ar_file = "Auto-rename.txt"
-filter_file = "filter.txt"
 url = "https://graphql.anilist.co"
 
 anime_query = """
@@ -424,7 +422,7 @@ async def parse(
             f_title = title
 
         re_title = f_title
-        ar = txt_to_str(ar_file)
+        ar = txt_to_str(rename_file)
         f_title = await auto_rename(f_title, or_title, ar)
         title = f_title if re_title != f_title else title
 
@@ -493,7 +491,7 @@ async def dynamicthumb(name, thum="thumb2.jpg", anilist=True, _filter=None):
         # release group
         rg = parsed.get("release_group")
 
-        ar = txt_to_str(ar_file)
+        ar = txt_to_str(rename_file)
         tparse, title_ = await auto_rename(title, title, ar, general=True)
         anilist = False if not tparse else anilist
         title = title_
@@ -619,7 +617,7 @@ async def custcap(
             log(Exception)
 
         title = string.capwords(title)
-        ar = txt_to_str(ar_file)
+        ar = txt_to_str(rename_file)
         title = await auto_rename(title, or_title, ar, caption=True)
         crc32s, mi = None, None
         if file_exists(out):
@@ -743,7 +741,7 @@ async def simplecap(
             pass
 
         title = string.capwords(title)
-        ar = txt_to_str(ar_file)
+        ar = txt_to_str(rename_file)
         title = await auto_rename(title, or_title, ar, caption=True)
         crc32s, mi = None, None
         if file_exists(out):
@@ -841,7 +839,7 @@ async def f_post(
         if sn == "1":
             sn = None
 
-        ar = txt_to_str(ar_file)
+        ar = txt_to_str(rename_file)
         tparse, title_ = await auto_rename(title, title, ar, general=True)
         anilist = False if not tparse else anilist
         title = title_

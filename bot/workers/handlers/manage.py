@@ -634,7 +634,7 @@ async def auto_rename(event, args, client):
         Example : /name My Little Puppy|MLP|0
             - All files with My Little Puppy get renamed to MLP.
             - Caption is ignored and normal settings apply.
-        For more examples see Auto-rename.txt.
+        For more examples see filters/Auto-rename.txt.
     """
     fail_msg = (
         "failed…\n**Try:**\n/name " "`(Add_name_to_check_for|Add_name_to_replace_with)`"
