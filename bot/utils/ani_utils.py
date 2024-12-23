@@ -8,7 +8,16 @@ import flag
 import humanize
 import pycountry
 
-from bot import _bot, conf, filter_file, ffmpeg_file, parse_file, release_name, release_name_b, rename_file
+from bot import (
+    _bot,
+    conf,
+    ffmpeg_file,
+    filter_file,
+    parse_file,
+    release_name,
+    release_name_b,
+    rename_file,
+)
 
 from .bot_utils import (
     auto_rename,
