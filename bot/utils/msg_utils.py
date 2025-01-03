@@ -161,7 +161,7 @@ def get_expanded_chats(chats):
     expanded_chat = []
     for chat in chats:
         (
-            expanded_chat.append(chat)
+            expanded_chat.append(str(chat))
             if chat
             else expanded_chat.extend(conf.RSS_CHAT.split())
         )
