@@ -1277,6 +1277,8 @@ async def rss_sub(event, args, client):
                     continue
                 chat.append(None)
                 _default = True
+    else:
+        chat.append(None)
     inf_lists = []
     exf_lists = []
     if arg.inf:

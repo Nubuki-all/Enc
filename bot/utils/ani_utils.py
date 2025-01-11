@@ -1058,7 +1058,7 @@ async def airing_anim(query):
     result = await get_ani_info(query=anime_query, var=vars_)
     error = result.get("errors")
     if error:
-        alog(e=f"**ANILIST RETURNED FOLLOWING ERROR:**\n\n`{error}`")
+        (e=f"**ANILIST RETURNED FOLLOWING ERROR:**\n\n`{error}`")
         error_sts = error[0].get("message")
         raise Exception(f"[{error_sts}]")
 
