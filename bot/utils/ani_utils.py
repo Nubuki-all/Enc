@@ -549,7 +549,7 @@ async def custcap(
 ):
     if direct:
         return f"`{direct}`"
-    if conf.FL_CAP
+    if conf.FL_CAP:
         return f"`{fname}`"
     if not conf.EXT_CAP:
         return await simplecap(
