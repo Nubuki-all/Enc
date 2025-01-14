@@ -2,6 +2,7 @@ import string
 from datetime import datetime
 
 import aiohttp
+import anitopy
 import country_converter as coco
 import flag
 import humanize
@@ -19,7 +20,6 @@ from bot import (
 )
 
 from .bot_utils import (
-    anitopy,
     auto_rename,
     crc32,
     encode_job,
@@ -383,7 +383,7 @@ async def parse(
         yr = parsed.get("anime_year")
         # episode title
         et = parsed.get("episode_title")
-        not_allowed = "END", "MULTi", "WEB", "WEB-DL", "DDP5.1", "DDP2.0"
+        not_allowed = "END", "MULTi", "WEB", "WEB-DL", "DDP5.1", "DDP2.0", "AAC2"
         et = None if (et and any(nall in et for nall in not_allowed)) else et
         # source
         sor = parsed.get("source")
@@ -549,7 +549,7 @@ async def custcap(
 ):
     if direct:
         return f"`{direct}`"
-    if conf.FL_CAP:
+    if conf.FL_CAP
         return f"`{fname}`"
     if not conf.EXT_CAP:
         return await simplecap(
@@ -590,7 +590,7 @@ async def custcap(
         yr = parsed.get("anime_year")
         # episode title
         et = parsed.get("episode_title")
-        not_allowed = "END", "MULTi", "WEB", "WEB-DL", "DDP5.1", "DDP2.0"
+        not_allowed = "END", "MULTi", "WEB", "WEB-DL", "DDP5.1", "DDP2.0", "AAC2"
         et = None if (et and any(nall in et for nall in not_allowed)) else et
         # source
         sor = parsed.get("source")
@@ -714,7 +714,7 @@ async def simplecap(
         yr = parsed.get("anime_year")
         # episode title
         et = parsed.get("episode_title")
-        not_allowed = "END", "MULTi", "WEB", "WEB-DL", "DDP5.1", "DDP2.0"
+        not_allowed = "END", "MULTi", "WEB", "WEB-DL", "DDP5.1", "DDP2.0", "AAC2"
         et = None if (et and any(nall in et for nall in not_allowed)) else et
         # source
         sor = parsed.get("source")

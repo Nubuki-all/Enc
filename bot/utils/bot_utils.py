@@ -249,6 +249,8 @@ def my_decorator(f):
         if len(filename.split(".")) > 2:
             root, ext = os.path.splitext(filename)
             filename = root.replace(".", " ") + ext
+        if "varyg" in filename.casefold():
+            filename = "[VARYG] " + filename
         kwargs = {"filename": filename}
         if options:
             kwargs.update({"options": options})
