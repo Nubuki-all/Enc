@@ -1,10 +1,12 @@
 import os
+import functools
 import zlib
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from pathlib import Path
 from re import match as re_match
 
+import anitopy
 import requests
 from aiohttp import ClientSession
 
@@ -240,6 +242,18 @@ class Encode_job:
 
 encode_job = Encode_job()
 
+def my_decorator(f):
+    @functools.wraps(f)
+    def patch_parse(filename, options=None):
+        if len(filename.split(".")) > 2:
+            root, ext = os.path.splitext(filename)
+            filename = root.replace(".", " ") + ext
+        kwargs= {"filename": filename}
+        if options:
+            kwargs.update({"options": options})
+        return f(**kwargs)
+    return patch_parse
+anitopy.parse = my_decorator(anitopy.parse)
 
 sdict = dict()
 sdict.update(

@@ -2,7 +2,6 @@ import string
 from datetime import datetime
 
 import aiohttp
-import anitopy
 import country_converter as coco
 import flag
 import humanize
@@ -20,6 +19,7 @@ from bot import (
 )
 
 from .bot_utils import (
+    anitopy,
     auto_rename,
     crc32,
     encode_job,
