@@ -1,3 +1,4 @@
+import asyncio
 from functools import partial
 
 import pyrogram
