@@ -621,7 +621,7 @@ async def custcap(
             if sn:
                 json = await get_ani_info(f"{title} {sn}")
             te = str(json.get("episodes"))
-            te = "0" + str(te) if epi.startswith("0") else te
+            te = "0" + str(te) if epi and epi.startswith("0") else te
         except Exception:
             log(Exception)
 

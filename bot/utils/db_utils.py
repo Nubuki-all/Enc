@@ -19,7 +19,7 @@ database = conf.DATABASE_URL
 
 async def save2db(db="queue", retries=3):
     if not database:
-        return sync_to_async(save2db_lcl)
+        return await sync_to_async(save2db_lcl)
     d = {"queue": _bot.queue, "batches": _bot.batch_queue}
     data = pickle.dumps(d.get(db))
     _update = {db: data}

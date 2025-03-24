@@ -7,6 +7,7 @@ from pyrogram.filters import regex
 from pyrogram.handlers import CallbackQueryHandler
 
 from bot import asyncio, botStartTime, pyro, time
+from bot.config import _bot
 from bot.utils.ani_utils import qparse
 from bot.utils.batch_utils import get_batch_list
 from bot.utils.bot_utils import decode, enc_canceller
@@ -117,6 +118,7 @@ async def skip(e, skip_jobs=False):
         if not ejob.id == _id:
             return await clean_old_message(e)
         ejob.complete()
+        _bot.cached = False
 
     await e.answer(ans)
     process.kill()
