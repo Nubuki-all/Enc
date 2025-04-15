@@ -513,6 +513,9 @@ class Downloader:
                 file_name = (os.path.split(self.file_name))[1]
                 ud_type = f"**Downloading:**\n`{file_name}`"
                 ud_type += "\n**via:** Torrent."
+            else:
+                #debug
+                await logger(e=download.state)
             total = download.size
             current = download.completed
             speed = download.dlspeed
