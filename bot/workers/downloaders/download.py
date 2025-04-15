@@ -514,7 +514,7 @@ class Downloader:
                 ud_type = f"**Downloading:**\n`{file_name}`"
                 ud_type += "\n**via:** Torrent."
             else:
-                #debug
+                # debug
                 await logger(e=download.state)
             total = download.size
             current = download.completed
