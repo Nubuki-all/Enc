@@ -503,7 +503,7 @@ class Downloader:
                 download = None
                 return await self.clean_download()
             ud_type = "`..................`"
-            if download.state == "pausedUP":
+            if download.state in ("pausedUP", "stoppedUP"):
                 return download
             elif download.state == "checkingResumeData":
                 ud_type = "`Starting Download…`"
