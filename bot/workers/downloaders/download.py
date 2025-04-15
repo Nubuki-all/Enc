@@ -283,7 +283,7 @@ class Downloader:
                 download = await self.progress_for_qbit()
                 if not download:
                     break
-                if download.state == "pausedUP":
+                if download.state in ("pausedUP", "stoppedUP"):
                     break
             await self.wait()
             self.un_register()
