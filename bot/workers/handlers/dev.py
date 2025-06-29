@@ -65,8 +65,12 @@ async def eval(event, cmd, client):
 
 
 async def aexec(code, event):
-    exec(f"async def __aexec(event): " + "".join(f"\n {l}" for l in code.split("\n")))
-    return await locals()["__aexec"](event)
+    res = {}
+    exec(f"async def __aexec(event): " + "".join(f"\n {l}" for l in code.split("\n"))
+        globals(),
+        res
+    )
+    return await res["__aexec"](event)
 
 
 async def bash(event, cmd, client):
@@ -109,11 +113,14 @@ async def bash(event, cmd, client):
 
 
 async def aexec2(code, client, message):
+    res = {}
     exec(
         f"async def __aexec2(client, message): "
         + "".join(f"\n {l}" for l in code.split("\n"))
+        globals(),
+        res,
     )
-    return await locals()["__aexec2"](client, message)
+    return await res["__aexec2"](client, message)
 
 
 async def eval_message_p(message, cmd, client):
