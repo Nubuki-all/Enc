@@ -66,7 +66,8 @@ async def eval(event, cmd, client):
 
 async def aexec(code, event):
     res = {}
-    exec(f"async def __aexec(event): " + "".join(f"\n {l}" for l in code.split("\n")),
+    exec(
+        f"async def __aexec(event): " + "".join(f"\n {l}" for l in code.split("\n")),
         globals(),
         res,
     )
