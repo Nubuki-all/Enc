@@ -25,10 +25,8 @@ class Config:
                 "ALWAYS_DEPLOY_LATEST", default=False, cast=bool
             )
             self.ALLOW_ACTION = config("ALLOW_ACTION", default=True, cast=bool)
-            self.APP_ID = config("APP_ID", default=6, cast=int)
-            self.API_HASH = config(
-                "API_HASH", default="eb06d4abfb49dc3eeb1aeb98ae0f581e"
-            )
+            self.APP_ID = config("APP_ID", cast=int)
+            self.API_HASH = config("API_HASH")
             self.ARIA2_PORT = config("ARIA2_PORT", default=6800, cast=int)
             self.BOT_TOKEN = config("BOT_TOKEN")
             self.CACHE_DL = config("CACHE_DL", default=False, cast=bool)

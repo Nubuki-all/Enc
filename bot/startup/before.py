@@ -50,25 +50,21 @@ if conf.REPORT_FAILED_ENC:
     _bot.report_failed_enc = True
 
 
+ff_files = {
+    ffmpeg_file2: conf.FFMPEG2,
+    ffmpeg_file3: conf.FFMPEG3,
+    ffmpeg_file4: conf.FFMPEG4,
+    mux_file: conf.MUX_ARGS,
+}
+
 if not file_exists(ffmpeg_file):
     with open(ffmpeg_file, "w") as file:
         file.write(str(conf.FFMPEG) + "\n")
 
-if not file_exists(ffmpeg_file2) and conf.FFMPEG2:
-    with open(ffmpeg_file2, "w") as file:
-        file.write(str(conf.FFMPEG2) + "\n")
-
-if not file_exists(ffmpeg_file3) and conf.FFMPEG3:
-    with open(ffmpeg_file3, "w") as file:
-        file.write(str(conf.FFMPEG3) + "\n")
-
-if not file_exists(ffmpeg_file4) and conf.FFMPEG4:
-    with open(ffmpeg_file4, "w") as file:
-        file.write(str(conf.FFMPEG4) + "\n")
-
-if not file_exists(mux_file) and conf.MUX_ARGS:
-    with open(mux_file, "w") as file:
-        file.write(str(conf.MUX_ARGS) + "\n")
+for f_path, value in ff_files.items():
+    if not file_exists(f_path) and value:
+        with open(f_path, "w") as file:
+            file.write(value + "\n")
 
 if not conf.USE_ANILIST:
     Path("NO_PARSE").touch()
@@ -76,18 +72,12 @@ if not conf.USE_ANILIST:
 if not conf.USE_CAPTION:
     Path("NO_CAPTION").touch()
 
-if not os.path.isdir("downloads/"):
-    os.mkdir("downloads/")
-if not os.path.isdir("encode/"):
-    os.mkdir("encode/")
-if not os.path.isdir("temp/"):
-    os.mkdir("temp/")
-if not os.path.isdir("dump/"):
-    os.mkdir("dump/")
-if not os.path.isdir("mux/"):
-    os.mkdir("mux/")
-if not os.path.isdir("minfo/"):
-    os.mkdir("minfo/")
+dirs = (
+    "downloads/", "dump/", "encode/", "minfo/", "mux/", "temp/",
+)
+for dir_ in dirs:
+    if not os.path.isdir(dir_):
+        os.mkdir(dir_)
 
 
 if conf.TEMP_USER:
@@ -176,7 +166,12 @@ class EnTimer:
             while self.ind_pause or self.time > 0:
                 _bot.paused.append(0) if not _bot.paused else None
                 await asyncio.sleep(1)
-                print(f"paused for {self.time}")
+                str_ = "Paused "
+                if self.ind_pause:
+                    str_ += "Indefinitely!"
+                else:
+                    str_ += f"for {self.time}"
+                print(str_)
                 if self.time:
                     self.ind_pause = False
                     self.time = self.time - 1

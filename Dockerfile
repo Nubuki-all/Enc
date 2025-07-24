@@ -1,5 +1,5 @@
 # Base Image 
-FROM fedora:37
+FROM fedora:40
 #FROM colserra/fedora37_wf
 # 2nd docker image allows skipping step 2-3 & 5-6
 
