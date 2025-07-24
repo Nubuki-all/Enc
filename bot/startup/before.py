@@ -73,7 +73,12 @@ if not conf.USE_CAPTION:
     Path("NO_CAPTION").touch()
 
 dirs = (
-    "downloads/", "dump/", "encode/", "minfo/", "mux/", "temp/",
+    "downloads/",
+    "dump/",
+    "encode/",
+    "minfo/",
+    "mux/",
+    "temp/",
 )
 for dir_ in dirs:
     if not os.path.isdir(dir_):
